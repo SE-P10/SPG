@@ -7,9 +7,7 @@ import {
   Switch,
   Redirect,
 } from "react-router-dom";
-import MyNavbar from "./MyNavbar";
-
-import ErrorToast from "./components/ErrorToast";
+import MyNavbar from "./ui-components/MyNavbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -20,15 +18,12 @@ const App = () => {
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  
-
 
   const doLogin = async (credentials) => {
     try {
       const user = await API.logIn(credentials);
       setLoggedIn(true);
       setUser(user);
-      setCounterId(user.counter_id);
       setMessage({ msg: "Welcome, " + user.name, type: "success" });
     } catch (err) {
       setMessage({ msg: err, type: "danger" });
@@ -52,6 +47,28 @@ const App = () => {
         loggedIn={loggedIn}
         closeMessage={closeMessage}
       />
+
+      <Switch>
+        <Route
+          exact
+          path='/login'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              <Row className='vh-100vh mt-10'>
+                {loggedIn ? (
+                  <Redirect to='/' />
+                ) : (
+                  <LoginForm
+                    closeMessage={closeMessage}
+                    message={message}
+                    login={doLogin}
+                  />
+                )}
+              </Row>
+            </Container>
+          )}
+        />
+      </Switch>
     </Router>
   );
 };

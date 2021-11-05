@@ -1,14 +1,17 @@
 import { Button, Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { userIcon } from "./components/Icons";
-
+import { userIcon, plantIcon } from "./Icons";
+import "../css/custom.css";
 function MyNavbar(props) {
   return (
-    <Navbar bg='primary' variant='dark'>
+    <Navbar className='SGP-Navbar' variant='dark'>
       <Nav.Item>
         <Link to={"/"}>
           {" "}
-          <Navbar.Brand> &nbsp;SPG</Navbar.Brand>{" "}
+          <Navbar.Brand className='mainColor'>
+            {" "}
+            {plantIcon} &nbsp;SPG
+          </Navbar.Brand>{" "}
         </Link>
       </Nav.Item>
 
@@ -25,10 +28,8 @@ function MyNavbar(props) {
           </Link>
         </Nav.Item>
       ) : (
-        <Nav.Item className='ml-auto mr-3 text-white'>
-          <Link to='login'>
-            <Button> {userIcon} Login </Button>{" "}
-          </Link>
+        <Nav.Item className='ml-auto mr-3 mainColor'>
+          <Link to='login'>{userIcon} Login </Link>
         </Nav.Item>
       )}
     </Navbar>
