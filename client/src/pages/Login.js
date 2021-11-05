@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Form, Button, Row, Col, Container } from "react-bootstrap";
+import { plantIcon } from "../ui-components/Icons";
+import "../css/custom.css";
 
 function LoginForm(props) {
   const [username, setUsername] = useState("");
@@ -25,14 +27,17 @@ function LoginForm(props) {
   };
 
   return (
-    <Container className='mx-auto'>
+    <Container className='below-navbar'>
       <Form>
         {/* {props.message !== '' ? <Alert variant={props.message.type} onClose={props.closeMessage} dismissible> {props.message.msg} </Alert> : <></>}
       {errorMessage !== '' ? <Alert variant='danger'>{errorMessage}</Alert> : ''} */}
         <Row>
           <Col sm={8}>
-            <Form.Group controlId='username'>
-              <Form.Label>username</Form.Label>
+            <Row className=' mx-auto justify-content-center'>
+              <h2> Log In {plantIcon} </h2>
+            </Row>
+            <Form.Group controlId='username' className='mt-4'>
+              <Form.Label>Username</Form.Label>
               <Form.Control
                 type='text'
                 value={username}
@@ -52,7 +57,9 @@ function LoginForm(props) {
           </Col>
         </Row>
         <br />
-        <Button onClick={handleSubmit}>Login</Button>
+        <Button variant='dark' className='mainColor' onClick={handleSubmit}>
+          Login
+        </Button>
       </Form>
     </Container>
   );

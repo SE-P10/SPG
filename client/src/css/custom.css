@@ -3,5 +3,9 @@
 }
 
 .mainColor {
-  color: chartreuse;
+  color: chartreuse !important;
+}
+
+.below-navbar {
+  margin-top: 20px !important;
 }

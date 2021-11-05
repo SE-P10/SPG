@@ -29,7 +29,9 @@ function MyNavbar(props) {
         </Nav.Item>
       ) : (
         <Nav.Item className='ml-auto mr-3 mainColor'>
-          <Link to='login'>{userIcon} Login </Link>
+          <Link className='mainColor' to='login'>
+            {userIcon} Login{" "}
+          </Link>
         </Nav.Item>
       )}
     </Navbar>

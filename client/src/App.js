@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { Container, Row, Col, Alert } from "react-bootstrap";
-import { LoginForm } from "./Login";
+import { LoginForm } from "./pages/Login";
 import {
   BrowserRouter as Router,
   Route,
