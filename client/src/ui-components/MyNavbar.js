@@ -16,17 +16,19 @@ function MyNavbar(props) {
       </Nav.Item>
 
       {props.loggedIn ? (
-        <Nav.Item className='ml-auto mr-3 text-white'>
-          <Link to={"/"}>
-            <Button
+        <>
+          <Nav.Item className='ml-auto mr-3 text-white'>
+            <Link
+              to={"/"}
+              className='mainColor'
               onClick={() => {
                 props.closeMessage();
                 props.doLogOut();
               }}>
-              Logout
-            </Button>{" "}
-          </Link>
-        </Nav.Item>
+              Logout{" "}
+            </Link>
+          </Nav.Item>{" "}
+        </>
       ) : (
         <Nav.Item className='ml-auto mr-3 mainColor'>
           <Link className='mainColor' to='login'>
