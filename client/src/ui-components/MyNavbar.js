@@ -10,23 +10,37 @@ function MyNavbar(props) {
           {" "}
           <Navbar.Brand className='mainColor'>
             {" "}
-            {plantIcon} &nbsp;SPG
+            {plantIcon} &nbsp;SolidarityPurchasingGroup
           </Navbar.Brand>{" "}
         </Link>
       </Nav.Item>
 
+      <Nav.Item>
+        <Link to={"/"} className='secondColor'>
+          {" "}
+          Home
+        </Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Link to={"/"} className='secondColor'>
+          {" "}
+          About{" "}
+        </Link>
+      </Nav.Item>
       {props.loggedIn ? (
-        <Nav.Item className='ml-auto mr-3 text-white'>
-          <Link to={"/"}>
-            <Button
+        <>
+          <Nav.Item className='ml-auto mr-3 text-white'>
+            <Link
+              to={"/"}
+              className='mainColor'
               onClick={() => {
                 props.closeMessage();
                 props.doLogOut();
               }}>
-              Logout
-            </Button>{" "}
-          </Link>
-        </Nav.Item>
+              Logout{" "}
+            </Link>
+          </Nav.Item>{" "}
+        </>
       ) : (
         <Nav.Item className='ml-auto mr-3 mainColor'>
           <Link className='mainColor' to='login'>

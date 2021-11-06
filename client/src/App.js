@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { Container, Row, Col, Alert } from "react-bootstrap";
 import { LoginForm } from "./pages/Login";
+import { ShopEmployee } from "./pages/ShopEmployee";
 import {
   BrowserRouter as Router,
   Route,
@@ -23,7 +24,9 @@ const App = () => {
     try {
       const user = await API.logIn(credentials);
       setLoggedIn(true);
+
       setUser(user);
+
       setMessage({ msg: "Welcome, " + user.name, type: "success" });
     } catch (err) {
       setMessage({ msg: err, type: "danger" });
@@ -56,7 +59,7 @@ const App = () => {
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
                 {loggedIn ? (
-                  <Redirect to='/' />
+                  <Redirect to='/shopemployee' />
                 ) : (
                   <LoginForm
                     closeMessage={closeMessage}
@@ -65,6 +68,27 @@ const App = () => {
                   />
                 )}
               </Row>
+            </Container>
+          )}
+        />
+
+        <Route
+          exact
+          path='/'
+          render={() => (
+            <Container
+              fluid
+              className='justify-content-center d-flex'></Container>
+          )}
+        />
+
+        <Route
+          exact
+          path='/shopemployee'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <ShopEmployee user={user} />
             </Container>
           )}
         />
