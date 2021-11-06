@@ -10,11 +10,23 @@ function MyNavbar(props) {
           {" "}
           <Navbar.Brand className='mainColor'>
             {" "}
-            {plantIcon} &nbsp;SPG
+            {plantIcon} &nbsp;SolidarityPurchasingGroup
           </Navbar.Brand>{" "}
         </Link>
       </Nav.Item>
 
+      <Nav.Item>
+        <Link to={"/"} className='secondColor'>
+          {" "}
+          Home
+        </Link>
+      </Nav.Item>
+      <Nav.Item>
+        <Link to={"/"} className='secondColor'>
+          {" "}
+          About{" "}
+        </Link>
+      </Nav.Item>
       {props.loggedIn ? (
         <>
           <Nav.Item className='ml-auto mr-3 text-white'>

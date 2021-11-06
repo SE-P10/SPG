@@ -27,14 +27,14 @@ function LoginForm(props) {
   };
 
   return (
-    <Container className='below-navbar'>
+    <Container className='below '>
       <Form>
         {/* {props.message !== '' ? <Alert variant={props.message.type} onClose={props.closeMessage} dismissible> {props.message.msg} </Alert> : <></>}
       {errorMessage !== '' ? <Alert variant='danger'>{errorMessage}</Alert> : ''} */}
         <Row>
           <Col sm={8}>
             <Row className=' mx-auto justify-content-center'>
-              <h2> Log In {plantIcon} </h2>
+              <h2 className='navbar-link'> Log In {plantIcon} </h2>
             </Row>
             <Form.Group controlId='username' className='mt-4'>
               <Form.Label>Username</Form.Label>
@@ -57,7 +57,10 @@ function LoginForm(props) {
           </Col>
         </Row>
         <br />
-        <Button variant='dark' className='mainColor' onClick={handleSubmit}>
+        <Button
+          variant='dark'
+          className='mainColor spg-button border border-warning'
+          onClick={handleSubmit}>
           Login
         </Button>
       </Form>

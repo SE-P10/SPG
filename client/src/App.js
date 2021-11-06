@@ -87,7 +87,8 @@ const App = () => {
           path='/shopemployee'
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
-              {/* inserire controllo loggedIn e ruolo*/} <ShopEmployee />
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <ShopEmployee user={user} />
             </Container>
           )}
         />
