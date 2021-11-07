@@ -6,7 +6,7 @@
 }
 
 .mainColor {
-  color: #fb931c !important;
+  color: #e9692c !important;
 }
 
 .below {
@@ -36,5 +36,5 @@
 
 .se-button:hover {
   background-color: none !important; /* Green */
-  color: #668d2e !important;
+  color: #9d2932 !important;
 }
