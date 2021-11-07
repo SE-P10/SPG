@@ -6,7 +6,7 @@
 //La importo qui così viene importata prima di ogni test
 import '@testing-library/jest-dom';
 //Setup example
-/*
+/* 
 const localStorageMock = {
     getItem: jest.fn(),
     setItem: jest.fn(),
