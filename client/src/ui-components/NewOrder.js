@@ -1,4 +1,4 @@
-import { Button, Alert, Form, Row, Col } from "react-bootstrap";
+import { Button, Alert, Form, Row, Col , Dropdown, DropdownButton} from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
 
@@ -6,8 +6,8 @@ function NewOrder(props) {
 
   const handleSubmit = (event,props) => {
 
-
-    console.log("ciao")
+    //fare controllo che email sia presente nel db e invocare API che fa ordine 
+    //console.log(orderProduct)
     props.changeAction(0);
 
   }
@@ -41,12 +41,33 @@ function NewOrder(props) {
 
   return (
     <> <Form>
+        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+      <Form.Label>Client mail</Form.Label>
+      <Form.Control type="email"  />
+    </Form.Group>
       {products.map((p) => (
         <Row>
         {p.id}{" "}
         {p.name}{" "}
-        {p.price}{" "} 
-        <Col><Form.Check   /></Col>
+        {p.price}{" "}
+        <Col>
+        <DropdownButton id="dropdown-basic-button" title="Select Quantity">
+         {[...Array(p.quantity+1).keys()].map( (i) => <Dropdown.Item   onClick={ () => {
+           setOrderProducts(old => {
+             const list = old.map( (item) => {
+               if (item.idProduct === p.id) return {idProduct : p.id , quantity : i}
+               else return item;
+
+              });
+              return list;
+           })
+           console.log(i)
+
+         }}>{i}</Dropdown.Item> )}
+          </DropdownButton>
+         </Col>
+        
+
 
         
         </Row>
