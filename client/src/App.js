@@ -2,6 +2,7 @@ import { React, useState, useEffect } from "react";
 import { Container, Row, Col, Alert } from "react-bootstrap";
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployee";
+import { ClientPage } from "./pages/ClientPage";
 import {
   BrowserRouter as Router,
   Route,
@@ -101,6 +102,17 @@ const App = () => {
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
               <ShopEmployee user={user} />
+            </Container>
+          )}
+        />
+
+        <Route
+          exact
+          path='/clientpage'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <ClientPage user={user} />
             </Container>
           )}
         />
