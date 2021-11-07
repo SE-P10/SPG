@@ -20,12 +20,24 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
 
+  useEffect(() => {
+    //per non perdere utente loggato se aggiorno pagina, da qui viene l'errore della GET 401(unhautorized)
+    const checkAuth = async () => {
+      const user = await API.getUserInfo();
+      setLoggedIn(true);
+      setUser(user);
+      console.log(user.role);
+    };
+    checkAuth().catch((err) => console.log(err));
+  }, []);
+
   const doLogin = async (credentials) => {
     try {
       const user = await API.logIn(credentials);
       setLoggedIn(true);
 
       setUser(user);
+      console.log(user.role);
 
       setMessage({ msg: "Welcome, " + user.name, type: "success" });
     } catch (err) {
@@ -58,7 +70,7 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {loggedIn ? (
+                {loggedIn && user !== null && user.role == 1 ? (
                   <Redirect to='/shopemployee' />
                 ) : (
                   <LoginForm
