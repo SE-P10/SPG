@@ -38,7 +38,7 @@ function TopUpWallet(props) {
             {" "}
             <Row className='justify-content-center below'>
               {" "}
-              <h1> Wallet </h1>{" "}
+              <h1> Wallet ciao a tutti</h1>{" "}
             </Row>
             <Form onSubmit={rechargeWallet}>
               <Form.Label> Actual Balance: </Form.Label>
