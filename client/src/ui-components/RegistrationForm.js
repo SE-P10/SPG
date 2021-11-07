@@ -47,6 +47,7 @@ function RegistrationForm(props) {
                 <Form.Group as={Col} controlId='formGridName'>
                   <Form.Label>Name</Form.Label>
                   <Form.Control
+                    required
                     type='text'
                     value={name}
                     onChange={(ev) => setName(ev.target.value)}
@@ -57,6 +58,7 @@ function RegistrationForm(props) {
                 <Form.Group as={Col} controlId='formGridSurname'>
                   <Form.Label>Surname</Form.Label>
                   <Form.Control
+                    required
                     type='text'
                     value={surname}
                     onChange={(ev) => setSurname(ev.target.value)}
@@ -69,6 +71,7 @@ function RegistrationForm(props) {
                 <Form.Group as={Col} controlId='formGridUsername'>
                   <Form.Label>Username</Form.Label>
                   <Form.Control
+                    required
                     type='text'
                     value={username}
                     onChange={(ev) => setUsername(ev.target.value)}
@@ -79,6 +82,7 @@ function RegistrationForm(props) {
                 <Form.Group as={Col} controlId='formGridEmail'>
                   <Form.Label>Email</Form.Label>
                   <Form.Control
+                    required
                     type='email'
                     value={email}
                     onChange={(ev) => setEmail(ev.target.value)}
