@@ -4,25 +4,6 @@ import { useEffect } from "react";
 
 function NewOrder(props) {
 
-  const handleSubmit = (event,props) => {
-
-    //fare controllo che email sia presente nel db e invocare API che fa ordine 
-    //console.log(orderProduct)
-    props.changeAction(0);
-
-  }
-
-
-
-  const [products, setProducts] = useState([
-    { id: 1, quantity: 2, price: 20.5, name: "test" },
-    { id: 2, quantity: 2, price: 20.5, name: "test" },
-    { id: 3, quantity: 2, price: 20.5, name: "test" },
-  ]);
-  
-  const [orderProduct, setOrderProducts] = useState([{idProduct : 1 , quantity : 0 },{idProduct : 2 , quantity : 0 },{idProduct : 3 , quantity : 0 }]);
-  const [users,setUsers] = useState({email:"user1"},{email:"user2"})
-
   useEffect(() => {
     const fillTables = async () => {
       //const productsTmp = await API.getProducts();
@@ -39,11 +20,45 @@ function NewOrder(props) {
   }, []);
   //return <> NewOrder </>;
 
+  const handleSubmit = (event,props) => {
+
+    //fare controllo che email sia presente nel db e invocare API che fa ordine
+    let foundUser = false;
+    //console.log(mail);
+    for (let user of users){
+      if (user.email === mailInserted) foundUser = true;
+    }
+    if (foundUser === false) setErrorMessage("User not registered");
+    else{
+    console.log(orderProduct)
+    props.addMessage("Request sent correctly!")
+
+    //API.insertOrder(orderProducts,mail)
+    props.changeAction(0);
+    }
+  }
+
+
+  const [errorMessage,setErrorMessage] = useState('')
+  const [products, setProducts] = useState([
+    { id: 1, quantity: 2, price: 20.5, name: "test" },
+    { id: 2, quantity: 3, price: 20.5, name: "test" },
+    { id: 3, quantity: 1, price: 20.5, name: "test" },
+  ]);
+  
+  const [orderProduct, setOrderProducts] = useState([{idProduct : 1 , quantity : 0 },{idProduct : 2 , quantity : 0 },{idProduct : 3 , quantity : 0 }]);
+  const [users,setUsers] = useState([{email:"user1"},{email:"user2"}])
+  const [mailInserted,setMailInserted] = useState(undefined)
+
+  
+
   return (
-    <> <Form>
+    <> 
+    {errorMessage ? <Alert variant='danger' onClose={() => setErrorMessage('')} dismissible> {errorMessage} </Alert> : ""}
+    <Form>
         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
       <Form.Label>Client mail</Form.Label>
-      <Form.Control type="email"  />
+      <Form.Control type="email" onChange={(ev) => {setMailInserted(ev.target.value)}} />
     </Form.Group>
       {products.map((p) => (
         <Row>
@@ -61,8 +76,6 @@ function NewOrder(props) {
               });
               return list;
            })
-           console.log(i)
-
          }}>{i}</Dropdown.Item> )}
           </DropdownButton>
          </Col>
