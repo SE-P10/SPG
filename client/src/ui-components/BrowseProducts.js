@@ -1,4 +1,4 @@
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
 
@@ -23,6 +23,10 @@ function BrowserProducts(props) {
 
   return (
     <> 
+   <Container className='justify-content-center'>
+    <Row className='justify-content-center'>
+          <h2>Products</h2>
+      </Row>
       <Col>
       {products.map((p) => (
         <Row>
@@ -34,6 +38,7 @@ function BrowserProducts(props) {
         </Row>
       ))}
       </Col>
+      </Container>
       </>
   );
 }

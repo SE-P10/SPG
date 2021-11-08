@@ -33,14 +33,7 @@ function HandOut(props) {
     }
   };
 
-  useEffect(() => {
-    const fillTables = async () => {
-      //const ordersTmp = await API.getOrders();
-      //setOrderss(orderssTmp);
-    };
-
-    fillTables();
-  }, []);
+  
 
   return (
     <Container>

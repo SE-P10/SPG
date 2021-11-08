@@ -1,4 +1,4 @@
-import { Button, Alert, Form, Row, Col , Dropdown, DropdownButton} from "react-bootstrap";
+import { Button, Alert, Form, Row, Col , Dropdown, DropdownButton,Container} from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
 
@@ -54,6 +54,10 @@ function NewOrder(props) {
 
   return (
     <> 
+    <Container className='justify-content-center'>
+    <Row className='justify-content-center'>
+          <h2>Issue Order</h2>
+        </Row>
     {errorMessage ? <Alert variant='danger' onClose={() => setErrorMessage('')} dismissible> {errorMessage} </Alert> : ""}
     <Form>
         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
@@ -92,9 +96,10 @@ function NewOrder(props) {
 <Button
                 className='se-button btn-block'
                 onClick={(ev) => handleSubmit(ev,props)}>
-                Register a Client
+                Issue Order
           </Button>
       </Form>
+      </Container>
     </>
   );
 }
