@@ -1,4 +1,4 @@
-import { Container, Row, Col, ListGroup, Button , Alert} from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Button, Alert } from "react-bootstrap";
 import { Card } from "react-bootstrap";
 import { useState } from "react";
 import { HandOut } from "../ui-components/HandOut.js";
@@ -10,7 +10,7 @@ import { BrowserProducts } from "../ui-components/BrowseProducts";
 import "../css/custom.css";
 
 function ShopEmployee(props) {
-  const [message,setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [action, setAction] = useState(0);
   const changeAction = (action) => {
     setAction(action);
@@ -31,11 +31,18 @@ function ShopEmployee(props) {
   return (
     <>
       <Container>
-        <Row className='secondColor justify-content-center'>
+        <Row className='thirdColor justify-content-center'>
           {" "}
           <h2> ShopEmployee personal page </h2>{" "}
         </Row>
-        {message ? <Alert variant='success' onClose={() => setMessage('')} dismissible> {message} </Alert> : ""}
+        {message ? (
+          <Alert variant='success' onClose={() => setMessage("")} dismissible>
+            {" "}
+            {message}{" "}
+          </Alert>
+        ) : (
+          ""
+        )}
 
         <Row className='secondColor justify-content-center below'>
           <Col>
@@ -100,10 +107,16 @@ function ShopEmployee(props) {
         </Row>
         <Row className='below'>
           {action === 1 ? (
-            <RegistrationForm changeAction={changeAction} addMessage={addMessage} />
+            <RegistrationForm
+              changeAction={changeAction}
+              addMessage={addMessage}
+            />
           ) : null}
           {action === 2 ? (
-            <BrowserProducts changeAction={changeAction} addMessage={addMessage}/>
+            <BrowserProducts
+              changeAction={changeAction}
+              addMessage={addMessage}
+            />
           ) : null}
           {action === 3 ? (
             <TopUpWallet
@@ -112,9 +125,15 @@ function ShopEmployee(props) {
               className='justify-content-center'
             />
           ) : null}
-          {action === 4 ? <NewOrder changeAction={changeAction} addMessage={addMessage}/> : null}
-          {action === 5 ? <HandOut changeAction={changeAction}  addMessage={addMessage}/> : null}
-          {action === 6 ? <CheckOrders changeAction={changeAction} addMessage={addMessage}/> : null}
+          {action === 4 ? (
+            <NewOrder changeAction={changeAction} addMessage={addMessage} />
+          ) : null}
+          {action === 5 ? (
+            <HandOut changeAction={changeAction} addMessage={addMessage} />
+          ) : null}
+          {action === 6 ? (
+            <CheckOrders changeAction={changeAction} addMessage={addMessage} />
+          ) : null}
         </Row>
       </Container>
     </>
