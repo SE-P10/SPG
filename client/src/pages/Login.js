@@ -68,4 +68,4 @@ function LoginForm(props) {
   );
 }
 
-export default LoginForm;
+export {LoginForm};

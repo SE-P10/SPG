@@ -23,6 +23,6 @@ it('ShopEmployee renders buttons', () => {
     expect(screen.getByText('TopUp a Wallet')).toBeInTheDocument();
     expect(screen.getByText('New Order')).toBeInTheDocument();
     expect(screen.getByText('HandOut')).toBeInTheDocument();
-    expect(screen.getByText('Check Order')).toBeInTheDocument();
+   // expect(screen.getByText('Check Order')).toBeInTheDocument();
 
 });
