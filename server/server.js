@@ -72,7 +72,7 @@ app.use(passport.session());
 
 
 // API implemented in module gAPI
-gDao.execApi(app, passport);
+gDao.execApi(app, passport, isLoggedIn);
 
 /*** USER APIs ***/
 
