@@ -7,6 +7,7 @@ const { check, validationResult } = require("express-validator"); // validation 
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 
+const gDao = require("./g-dao");
 const userDao = require("./user-dao");
 
 /*** Set up Passport ***/
@@ -68,6 +69,10 @@ app.use(
 // init Passport to use sessions
 app.use(passport.initialize());
 app.use(passport.session());
+
+
+// API implemented in module gAPI
+gDao.execApi(app, passport);
 
 /*** USER APIs ***/
 
