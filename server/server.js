@@ -8,12 +8,13 @@ const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 
 const userDao = require("./user-dao");
+const walletDao = require("./wallet-dao");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
 passport.use(
-  new LocalStrategy(function (username, password, done) {
+  new LocalStrategy(function(username, password, done) {
     userDao.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, {
@@ -72,7 +73,7 @@ app.use(passport.session());
 /*** USER APIs ***/
 
 // Login --> POST /sessions
-app.post("/api/sessions", function (req, res, next) {
+app.post("/api/sessions", function(req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
 
@@ -113,6 +114,20 @@ app.get("/api/user/:id", (req, res) => {
       .catch((err) => {
         res.status(503).json({});
       });
+  } catch (err) {
+    res.status(500).json(false);
+  }
+});
+
+// POST /wallet/update/:client_email/:ammount
+// up to the wallet the ammount
+app.get("/api/wallet/update/:client_email/:ammount", isLoggedIn, (req, res) => {
+  try {
+    walletDao.updateWallet(req.params.ammount, req.params.client_email).then(() => {
+      res.status(200);
+    }).catch((err) => {
+      res.status(503).json({});
+    });
   } catch (err) {
     res.status(500).json(false);
   }
