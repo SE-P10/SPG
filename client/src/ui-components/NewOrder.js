@@ -37,6 +37,7 @@ function NewOrder(props) {
     if (foundUser === false) setErrorMessage("User not registered");
     else {
       console.log(orderProduct);
+      //fare parseInt
       props.addMessage("Request sent correctly!");
 
       //API.insertOrder(orderProducts,mail)
@@ -46,9 +47,9 @@ function NewOrder(props) {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([
-    { id: 1, quantity: 2, price: 20.5, name: "test" },
-    { id: 2, quantity: 3, price: 20.5, name: "test" },
-    { id: 3, quantity: 1, price: 20.5, name: "test" },
+    { id: 1, quantity: 2, price: 20.5, name: "test1" },
+    { id: 2, quantity: 3, price: 20.5, name: "test2" },
+    { id: 3, quantity: 1, price: 20.5, name: "test3" },
   ]);
 
   const [orderProduct, setOrderProducts] = useState([
@@ -94,15 +95,25 @@ function NewOrder(props) {
                 <Col> Img </Col>
                 <Col>{p.name} </Col>
                 <Col>{p.price}</Col>
+                <Col>max quantity : {p.quantity}</Col> 
                 <Form.Group>
                   <Col>
                     {" "}
                     Q :
-                    <Form.Control
+                    <Form.Control  onClick={(ev) => {
+                      setOrderProducts((old) => {
+                        const list = old.map((item) => {
+                          if (item.idProduct === p.id)
+                            return { idProduct: p.id, quantity: parseInt(ev.target.value) };
+                          else return item;
+                        });
+                        return list;
+                      });
+                    }}
                       id={p.id}
                       type='number'
                       size='sm'
-                      max='20'
+                      max={p.quantity}
                       min='0'></Form.Control>
                   </Col>
                 </Form.Group>
