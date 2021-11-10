@@ -121,9 +121,10 @@ app.get("/api/user/:id", (req, res) => {
 
 // GET /orders
 // get all the orders
-app.get("/api/orders/:clientID", isLoggedIn, (req, res) => {
+// app.get("/api/orders/:client_email", (req, res) => {
+app.get("/api/orders/:client_email", isLoggedIn, (req, res) => {
   try {
-    ordersDao.getOrders(req.params.clientID).then((orders) => {
+    ordersDao.getOrders(req.params.client_email).then((orders) => {
       res.status(200).json(orders);
     }).catch((err) => {
       res.status(503).json({});

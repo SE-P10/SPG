@@ -1,14 +1,9 @@
 const db = require('./db.js');
 
-exports.getOrders = (userID = null) => {
+exports.getOrders = (client_email = null) => {
   return new Promise((resolve, reject) => {
-    let sql = "";
-    if (userID = null) {
-      sql = "select * from orders";
-    } else {
-      sql = "select * from orders where user_id = ?"
-    }
-    db.all(sql, [userID], (err, rows) => {
+    let sql = "select * from orders, users where users.email = ? and orders.user_id = users.id"
+    db.all(sql, [client_email], (err, rows) => {
       if (err) {
         console.log(err);
         reject(err);
@@ -27,5 +22,4 @@ exports.getOrders = (userID = null) => {
       resolve(orders);
     });
   });
-
 }
