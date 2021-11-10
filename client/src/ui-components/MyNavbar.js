@@ -21,12 +21,7 @@ function MyNavbar(props) {
           Home
         </Link>
       </Nav.Item>
-      <Nav.Item>
-        <Link to={"/"} className='secondColor'>
-          {" "}
-          About{" "}
-        </Link>
-      </Nav.Item>
+
       {props.loggedIn ? (
         <>
           <Nav.Item className='ml-auto mr-3 text-white'>

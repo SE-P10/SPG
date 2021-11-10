@@ -44,14 +44,14 @@
 |product_id|INTEGER||
 |estimated_quantity|INTEGER||
 
-## order_products
+## order_product
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |order_id|INTEGER||
 |product_id|INTEGER||
 |quantity|INTEGER||
 
-## order_products
+## orders
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||

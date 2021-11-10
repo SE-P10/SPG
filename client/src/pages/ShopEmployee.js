@@ -1,39 +1,139 @@
-import { Container, Row, Col, ListGroup, Button } from "react-bootstrap";
+import { Container, Row, Col, ListGroup, Button, Alert } from "react-bootstrap";
 import { Card } from "react-bootstrap";
+import { useState } from "react";
+import { HandOut } from "../ui-components/HandOut.js";
+import { CheckOrders } from "../ui-components/CheckOrders";
+import { NewOrder } from "../ui-components/NewOrder";
+import { TopUpWallet } from "../ui-components/TopUpWallet.js";
+import { RegistrationForm } from "../ui-components/RegistrationForm";
+import { BrowserProducts } from "../ui-components/BrowseProducts";
 import "../css/custom.css";
 
 function ShopEmployee(props) {
+  const [message, setMessage] = useState("");
+  const [action, setAction] = useState(0);
+  const changeAction = (action) => {
+    setAction(action);
+  };
+
+  const addMessage = (message) => {
+    setMessage(message);
+  };
+  /* Actions 
+    0 = No actions (Home)
+    1 = Register New client 
+    2 = Browser Product 
+    3 = TopUp a Wallet
+    4 = New Order 
+    5 = HandOut
+    6 = Check Orders */
+
   return (
     <>
       <Container>
-        <Row className='secondColor justify-content-center'>
+        <Row className='thirdColor justify-content-center'>
           {" "}
           <h2> ShopEmployee personal page </h2>{" "}
         </Row>
+        {message ? (
+          <Alert variant='success' onClose={() => setMessage("")} dismissible>
+            {" "}
+            {message}{" "}
+          </Alert>
+        ) : (
+          ""
+        )}
+
         <Row className='secondColor justify-content-center below'>
           <Col>
             <Row className='secondColor justify-content-center below'>
-              <Button className='se-button btn-block'>Register a Client</Button>
+              <Button
+                className='se-button btn-block'
+                onClick={() => {
+                  setAction(1);
+                }}>
+                Register a Client
+              </Button>
             </Row>
             <Row className='secondColor justify-content-center below'>
-              <Button className='se-button btn-block'>Browse Products</Button>
+              <Button
+                className='se-button btn-block'
+                onClick={() => {
+                  setAction(2);
+                }}>
+                Browse Products
+              </Button>
             </Row>
             <Row className='secondColor justify-content-center below'>
-              <Button className='se-button btn-block'>TopUp a Wallet</Button>
+              <Button
+                className='se-button btn-block'
+                onClick={() => {
+                  setAction(3);
+                }}>
+                TopUp a Wallet
+              </Button>
             </Row>
           </Col>
 
           <Col className='ml-2'>
             <Row className='secondColor justify-content-center below'>
-              <Button className='se-button btn-block'>New Order</Button>
+              <Button
+                className='se-button btn-block'
+                onClick={() => {
+                  setAction(4);
+                }}>
+                New Order
+              </Button>
             </Row>
             <Row className='secondColor justify-content-center below'>
-              <Button className='se-button btn-block'>HandOut</Button>
+              <Button
+                className='se-button btn-block'
+                onClick={() => {
+                  setAction(5);
+                }}>
+                HandOut
+              </Button>
             </Row>
             <Row className='secondColor justify-content-center below'>
-              <Button className='se-button btn-block'>Check Order</Button>
+              <Button
+                className='se-button btn-block'
+                onClick={() => {
+                  setAction(6);
+                }}>
+                Check Orders
+              </Button>
             </Row>
           </Col>
+        </Row>
+        <Row className='below'>
+          {action === 1 ? (
+            <RegistrationForm
+              changeAction={changeAction}
+              addMessage={addMessage}
+            />
+          ) : null}
+          {action === 2 ? (
+            <BrowserProducts
+              changeAction={changeAction}
+              addMessage={addMessage}
+            />
+          ) : null}
+          {action === 3 ? (
+            <TopUpWallet
+              changeAction={changeAction}
+              addMessage={addMessage}
+              className='justify-content-center'
+            />
+          ) : null}
+          {action === 4 ? (
+            <NewOrder changeAction={changeAction} addMessage={addMessage} />
+          ) : null}
+          {action === 5 ? (
+            <HandOut changeAction={changeAction} addMessage={addMessage} />
+          ) : null}
+          {action === 6 ? (
+            <CheckOrders changeAction={changeAction} addMessage={addMessage} />
+          ) : null}
         </Row>
       </Container>
     </>

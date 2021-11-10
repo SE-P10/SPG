@@ -59,7 +59,7 @@ function LoginForm(props) {
         <br />
         <Button
           variant='dark'
-          className='mainColor spg-button border border-warning'
+          className='mainColor spg-button border '
           onClick={handleSubmit}>
           Login
         </Button>
