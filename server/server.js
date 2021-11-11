@@ -125,34 +125,34 @@ app.get("/api/user/:id", (req, res) => {
   }
 });
 
-// POST /wallet/update/:client_email/:amount
+// POST /wallet/update/
 // up to the wallet the amount
 app.post("/api/wallet/update/",
-  [
-    body('client_email').isEmail(),
-    body('amount').isNumeric(),
-  ],
-  isLoggedIn,
-  (req, res) => {
-    if (!validationResult(req).isEmpty())
-      return res.status(400).render('contact', { errors: "error in the parameters" });
+  // [
+  //   body('client_email').isEmail(),
+  //   body('amount').isNumeric(),
+  // ],
+  // isLoggedIn,
+  function(req, res) {
+    // if (!validationResult(req).isEmpty())
+    //   return res.status(400).render('contact', { errors: "error in the parameters" });
     try {
       walletDao.updateWallet(req.body.amount, req.body.client_email).then(() => {
         res.status(200);
+        console.log("done")
       }).catch((err) => {
         res.status(503).json({});
       });
     } catch (err) {
       res.status(500).json(false);
     }
-  });
+  }
+);
 
 // GET /orders
 // get all the orders
-// app.get("/api/orders/:client_email", (req, res) => {
 app.get("/api/orders/:client_email", isLoggedIn, (req, res) => {
   try {
-
     ordersDao.getOrders(req.params.client_email).then((orders) => {
       res.status(200).json(orders);
     }).catch((err) => {
