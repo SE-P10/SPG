@@ -3,12 +3,14 @@
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
-const { check, validationResult } = require("express-validator"); // validation middleware
+const { check, validationResult, body } = require("express-validator"); // validation middleware
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 
+const gDao = require("./g-dao");
 const userDao = require("./user-dao");
 const walletDao = require("./wallet-dao");
+const ordersDao = require('./orders-dao.js');
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -70,6 +72,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+// API implemented in module gAPI
+gDao.execApi(app, passport, isLoggedIn);
+
 /*** USER APIs ***/
 
 // Login --> POST /sessions
@@ -119,12 +125,36 @@ app.get("/api/user/:id", (req, res) => {
   }
 });
 
-// POST /wallet/update/:client_email/:ammount
-// up to the wallet the ammount
-app.get("/api/wallet/update/:client_email/:ammount", isLoggedIn, (req, res) => {
+// POST /wallet/update/:client_email/:amount
+// up to the wallet the amount
+app.post("/api/wallet/update/",
+  [
+    body('client_email').isEmail(),
+    body('amount').isNumeric(),
+  ],
+  isLoggedIn,
+  (req, res) => {
+    if (!validationResult(req).isEmpty())
+      return res.status(400).render('contact', { errors: "error in the parameters" });
+    try {
+      walletDao.updateWallet(req.body.amount, req.body.client_email).then(() => {
+        res.status(200);
+      }).catch((err) => {
+        res.status(503).json({});
+      });
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  });
+
+// GET /orders
+// get all the orders
+// app.get("/api/orders/:client_email", (req, res) => {
+app.get("/api/orders/:client_email", isLoggedIn, (req, res) => {
   try {
-    walletDao.updateWallet(req.params.ammount, req.params.client_email).then(() => {
-      res.status(200);
+
+    ordersDao.getOrders(req.params.client_email).then((orders) => {
+      res.status(200).json(orders);
     }).catch((err) => {
       res.status(503).json({});
     });

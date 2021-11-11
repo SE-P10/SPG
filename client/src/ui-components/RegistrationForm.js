@@ -15,16 +15,25 @@ function RegistrationForm(props) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const registrationSubmit = () => {
-    if (name && surname && username && email) {
+    if (name && surname && username && email && password && confirmPassword) {
+      if(password === confirmPassword){
       //Need to call the API to insert into the DB
-      alert("Inserimento riuscito con successo");
+      //alert("Inserimento riuscito con successo");
+      props.addMessage("successfully registered customer")
       console.log(name + " " + surname + " " + username + " " + email);
       props.changeAction(0);
+      }
+      else{
+        //password mismatch
+        setErrorMessage("Password Mismatch")
+      }
     } else {
       //error in the input of the Data
-      setErrorMessage("Missing Data");
+      setErrorMessage("Missing Data, check all the fields");
     }
   };
 
@@ -35,7 +44,7 @@ function RegistrationForm(props) {
           <h2>Register a new Client</h2>
         </Row>
         {errorMessage ? (
-          <Alert variant='danger'> Missing Data, check all the fields</Alert>
+          <Alert variant='danger'> {errorMessage} </Alert>
         ) : (
           ""
         )}
@@ -90,6 +99,30 @@ function RegistrationForm(props) {
                   />
                 </Form.Group>
               </Row>
+
+              <Row className='mb-3'>
+              <Form.Group as={Col} controlId='formGridPassword'>
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    required
+                    type='password'
+                    value={password}
+                    onChange={(ev) => setPassword(ev.target.value)}
+                    placeholder='Enter Password'
+                  />
+                </Form.Group>
+
+                <Form.Group as={Col} controlId='formGridConfirmPassword'>
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    required
+                    type='password'
+                    value={confirmPassword}
+                    onChange={(ev) => setConfirmPassword(ev.target.value)}
+                    placeholder='Confirm Password'
+                  />
+                </Form.Group>
+                </Row>
             </Form>
           </Card.Body>
         </Card>
