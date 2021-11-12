@@ -1,20 +1,27 @@
-import { Container, Row, Form, Button } from "react-bootstrap";
+import { Container, Row, Form, Button, Alert } from "react-bootstrap";
 import { SearchComponent } from "./SearchComponent";
 import { useState } from "react";
+import API from "../API"
 
 function TopUpWallet(props) {
   const [walletId, setWalletId] = useState(null);
   const [walletValue, setWalletValue] = useState(0);
   const [rechargeAmount, setRechargeAmount] = useState(0);
+  const [email,setEmail] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSearch = (email) => {
+
+  const handleSearch = (emailValue) => {
     // wallet Id = API GetWalletByEmail(email)
     //riempi il wallet value
-    console.log(email);
+    console.log(emailValue);
   };
 
   const rechargeWallet = () => {
     //API rechargeWallet(walletId, rechargeAmount)
+    API.updateWallet(rechargeAmount,email)
+    .catch((e)=> {console.log("Error recharging the wallet " + e)
+  setErrorMessage("Error recharging the wallet " + e)})
   };
 
   return (
@@ -36,10 +43,18 @@ function TopUpWallet(props) {
         {walletId ? (
           <>
             {" "}
+
             <Row className='justify-content-center below'>
               {" "}
-              <h1> Wallet ciao a tutti</h1>{" "}
+              <h2> Your Wallet</h2>{" "}
             </Row>
+
+            {errorMessage ? (
+          <Alert variant='danger'> {errorMessage} </Alert>
+        ) : (
+          ""
+        )}
+        
             <Form onSubmit={rechargeWallet}>
               <Form.Label> Actual Balance: </Form.Label>
               <Form.Control disabled type='text' value={walletValue} />{" "}
