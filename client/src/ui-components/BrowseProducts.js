@@ -1,18 +1,15 @@
 import { Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
+import gAPI from "./../gAPI" 
 
 function BrowserProducts(props) {
-  const [products, setProducts] = useState([
-    { id: 1, quantity: 2, price: 20.5, name: "test" },
-    { id: 2, quantity: 2, price: 20.5, name: "test" },
-    { id: 3, quantity: 2, price: 20.5, name: "test" },
-  ]);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     const fillTables = async () => {
-      //const productsTmp = await API.getProducts();
-      //setProducts(productsTmp);
+      const productsTmp = await gAPI.getProducts();
+      setProducts(productsTmp);
     };
 
     fillTables();

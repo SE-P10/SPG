@@ -5,6 +5,10 @@
   font-weight: bold !important;
 }
 
+body {
+  font-family: "DejaVu Sans Mono", monospace !important;
+}
+
 .mainColor {
   color: #f5ebeb !important;
 }

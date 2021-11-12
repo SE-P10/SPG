@@ -28,6 +28,7 @@ function NewOrder(props) {
   //return <> NewOrder </>;
 
   const handleSubmit = (event, props) => {
+    console.log(orderProduct);
     //fare controllo che email sia presente nel db e invocare API che fa ordine
     let foundUser = false;
     //console.log(mail);
@@ -36,7 +37,7 @@ function NewOrder(props) {
     }
     if (foundUser === false) setErrorMessage("User not registered");
     else {
-      console.log(orderProduct);
+      //fare parseInt
       props.addMessage("Request sent correctly!");
 
       //API.insertOrder(orderProducts,mail)
@@ -46,18 +47,31 @@ function NewOrder(props) {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([
-    { id: 1, quantity: 2, price: 20.5, name: "test" },
-    { id: 2, quantity: 3, price: 20.5, name: "test" },
-    { id: 3, quantity: 1, price: 20.5, name: "test" },
+    { id: 1, quantity: 2, price: 20.5, name: "test1" },
+    { id: 2, quantity: 3, price: 20.5, name: "test2" },
+    { id: 3, quantity: 1, price: 20.5, name: "test3" },
   ]);
 
-  const [orderProduct, setOrderProducts] = useState([
-    { idProduct: 1, quantity: 0 },
-    { idProduct: 2, quantity: 0 },
-    { idProduct: 3, quantity: 0 },
-  ]);
+  const [orderProduct, setOrderProducts] = useState([]);
   const [users, setUsers] = useState([{ email: "user1" }, { email: "user2" }]);
   const [mailInserted, setMailInserted] = useState(undefined);
+  const [selectedPs, setSelectPs] = useState([]);
+
+  const selectProduct = (id) => {
+    if (selectedPs.indexOf(id) == -1) {
+      setOrderProducts((old) => [...old, { idProduct: id, quantity: 1 }]);
+      setSelectPs((selectedPs) => [...selectedPs, id]);
+    } else {
+      setSelectPs((old) =>
+        old.filter((p) => {
+          return p != id;
+        })
+      );
+
+      setOrderProducts((old) => old.filter((p) => p.idProduct !== id));
+    }
+    console.log(orderProduct);
+  };
 
   return (
     <>
@@ -91,20 +105,39 @@ function NewOrder(props) {
           <Col>
             {products.map((p) => (
               <Row>
-                <Col> Img </Col>
                 <Col>{p.name} </Col>
                 <Col>{p.price}</Col>
+                <Col>max quantity : {p.quantity}</Col>
                 <Form.Group>
-                  <Col>
-                    {" "}
-                    Q :
-                    <Form.Control
-                      id={p.id}
-                      type='number'
-                      size='sm'
-                      max='20'
-                      min='0'></Form.Control>
-                  </Col>
+                  {" "}
+                  <Form.Check
+                    onClick={() => selectProduct(p.id)}></Form.Check>{" "}
+                  {selectedPs.indexOf(p.id) !== -1 ? (
+                    <>
+                      {" "}
+                      Q :
+                      <Form.Control
+                        defaultValue={1}
+                        onChange={(ev) => {
+                          setOrderProducts((old) => {
+                            const list = old.map((item) => {
+                              if (item.idProduct === p.id)
+                                return {
+                                  idProduct: p.id,
+                                  quantity: parseInt(ev.target.value),
+                                };
+                              else return item;
+                            });
+                            return list;
+                          });
+                        }}
+                        id={p.id}
+                        type='number'
+                        size='sm'
+                        max={p.quantity}
+                        min='0'></Form.Control>{" "}
+                    </>
+                  ) : null}
                 </Form.Group>
                 {/* <DropdownButton
                 id='dropdown-basic-button'
@@ -130,7 +163,7 @@ function NewOrder(props) {
           </Col>
 
           <Button
-            className='se-button btn-block'
+            className='se-button btn-block below'
             onClick={(ev) => handleSubmit(ev, props)}>
             Issue Order
           </Button>
