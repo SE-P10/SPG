@@ -81,7 +81,8 @@ const API = {
   ...gApi,
   logIn,
   logOut,
-  getUserInfo
+  getUserInfo,
+  getOrders
 };
 
 export default API;
