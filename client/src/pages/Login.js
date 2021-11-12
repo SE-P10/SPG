@@ -26,7 +26,7 @@ function LoginForm(props) {
   };
 
   return (
-    <Container className='below '>
+    <Container className='below  cont'>
       <Form>
         {props.message !== "" ? (
           <Alert

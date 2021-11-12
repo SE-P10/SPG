@@ -16,7 +16,9 @@ body {
 }
 
 .cont {
-  background-color: whitesmoke;
+  background-color: #f5f9ee;
+  margin-bottom: 20px;
+  border-radius: 10px !important;
 }
 
 .mainColor {
@@ -49,6 +51,7 @@ body {
   background-color: #009378 !important; /* Green */
   border: black !important;
   border-width: 10px !important;
+  border-radius: 10px !important;
   color: #f5ebeb !important;
   padding: 15px 32px;
   text-align: center;
@@ -56,6 +59,7 @@ body {
   display: inline-block;
   font-size: 28px !important;
   transition-duration: 0.4s;
+  margin-bottom: 10px;
 }
 
 .se-button:hover {

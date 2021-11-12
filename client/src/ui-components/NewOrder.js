@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
+import "../css/custom.css";
 
 function NewOrder(props) {
   useEffect(() => {

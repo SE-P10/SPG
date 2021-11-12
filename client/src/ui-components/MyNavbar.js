@@ -17,7 +17,7 @@ function MyNavbar(props) {
 
       <Nav.Item>
         {props.loggedIn ? (
-          <Link to={"/personalpage"} className='secondColor'>
+          <Link to={"/personalpage"} className='text-white'>
             {" "}
             Personal Page
           </Link>
