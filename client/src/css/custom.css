@@ -3,15 +3,25 @@
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
   font-weight: bold !important;
+  height: 100px !important;
 }
 
 body {
   font-family: "DejaVu Sans Mono", monospace !important;
   font-size: 20px !important;
+  background-image: url("bg.png") !important;
+  background-repeat: no-repeat;
+  height: 100%;
+  background-size: cover;
+}
+
+.cont {
+  background-color: whitesmoke;
 }
 
 .mainColor {
   color: #f5ebeb !important;
+  font-size: 28px !important;
 }
 
 .below {

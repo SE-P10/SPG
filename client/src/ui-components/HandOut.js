@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Container, Row, Alert, Col, Button } from "react-bootstrap";
 import { SearchComponent } from "./SearchComponent";
 import { useEffect } from "react";
+import "../css/custom.css";
 
 function HandOut(props) {
   const [orders, setOrders] = useState([
@@ -33,8 +34,8 @@ function HandOut(props) {
   };
 
   return (
-    <Container>
-      <Row className='justify-content-center'>
+    <Container className='cont'>
+      <Row className='justify-content-center cont'>
         {" "}
         <h2> Hand out an Order</h2>{" "}
       </Row>
@@ -52,7 +53,7 @@ function HandOut(props) {
       </Row>
 
       {orders ? (
-        <Col className='below'>
+        <Col className='below cont'>
           <h2> Order related to the client: </h2>
           {orders
             .filter((t) => t.status === "NotHandOut")

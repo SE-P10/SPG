@@ -1,6 +1,6 @@
 import { Button, Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { userIcon, plantIcon } from "./Icons";
+import { userIcon, plantIcon, logOutIcon } from "./Icons";
 import "../css/custom.css";
 function MyNavbar(props) {
   return (
@@ -34,7 +34,7 @@ function MyNavbar(props) {
                 props.closeMessage();
                 props.doLogOut();
               }}>
-              Logout{" "}
+              {logOutIcon}Logout{" "}
             </Link>
           </Nav.Item>{" "}
         </>

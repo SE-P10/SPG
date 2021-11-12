@@ -1,6 +1,7 @@
 import { Alert, Form, Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import { SearchComponent } from "./SearchComponent";
+import "../css/custom.css";
 
 function CheckOrders(props) {
   const [orders, setOrders] = useState([]);
@@ -17,7 +18,7 @@ function CheckOrders(props) {
   };
 
   return (
-    <Container>
+    <Container className='cont'>
       <Row className='justify-content-center'>
         {" "}
         <h2> Check Orders</h2>{" "}

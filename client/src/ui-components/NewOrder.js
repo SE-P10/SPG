@@ -75,7 +75,7 @@ function NewOrder(props) {
 
   return (
     <>
-      <Container className='justify-content-center'>
+      <Container className='justify-content-center cont'>
         <Row className='justify-content-center'>
           <h2>Issue Order</h2>
         </Row>
