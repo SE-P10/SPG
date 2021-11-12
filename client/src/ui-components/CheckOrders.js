@@ -10,9 +10,9 @@ function CheckOrders(props) {
     let ordersTmp = [];
     //ordersTmp =  getOrders(email);
     if (ordersTmp.length === 0) {
-      setErrorMessage("There are no orders for this user");
+      setErrorMessage("No orders found for this user.");
     } else {
-      setOrders(ordersTmp)
+      setOrders(ordersTmp);
     }
   };
 
@@ -36,7 +36,11 @@ function CheckOrders(props) {
 
       <Col>
         <Row className='justify-content-center'>
-          { orders.length !== 0 ? <h3 className='thirdColor'> List of the pendind orders </h3> : ""}
+          {orders.length !== 0 ? (
+            <h3 className='thirdColor'> List of the pendind orders </h3>
+          ) : (
+            ""
+          )}
         </Row>
         {orders.map((order) => (
           <Row>

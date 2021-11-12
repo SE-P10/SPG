@@ -102,21 +102,23 @@ function NewOrder(props) {
           </Form.Group>
 
           <h3 className='thirdColor'> List of our products: </h3>
-          <Col>
+          <Col className='below'>
             {products.map((p) => (
-              <Row>
+              <Row className='below'>
                 <Col>{p.name} </Col>
-                <Col>{p.price}</Col>
+                <Col>{p.price} €</Col>
                 <Col>max quantity : {p.quantity}</Col>
                 <Form.Group>
                   {" "}
                   <Form.Check
+                    inline
                     onClick={() => selectProduct(p.id)}></Form.Check>{" "}
                   {selectedPs.indexOf(p.id) !== -1 ? (
                     <>
                       {" "}
-                      Q :
+                      Q:
                       <Form.Control
+                        inline
                         defaultValue={1}
                         onChange={(ev) => {
                           setOrderProducts((old) => {

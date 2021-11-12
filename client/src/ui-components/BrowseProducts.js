@@ -1,7 +1,7 @@
 import { Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
-import gAPI from "./../gAPI" 
+import gAPI from "./../gAPI";
 
 function BrowserProducts(props) {
   const [products, setProducts] = useState([]);
@@ -36,10 +36,10 @@ function BrowserProducts(props) {
           </Col>
         </Row>
         {products.map((p) => (
-          <Row>
+          <Row className='below'>
             <Col> {p.name}</Col>
             <Col> {p.quantity}</Col>
-            <Col>{p.price}</Col>
+            <Col>{p.price} €</Col>
           </Row>
         ))}
       </Container>

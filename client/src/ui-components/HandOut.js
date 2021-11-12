@@ -25,7 +25,7 @@ function HandOut(props) {
     // order Id = API GetOrdersByEmail(email)
     //setIdUsers(Id);
     if (idUser === -1) {
-      setErrorMessage("user not found");
+      setErrorMessage("User not found.");
     } else {
       //let ordersTmp = API.getOrdersById(idUser)
       //setOrders(ordersTmp)
@@ -51,27 +51,32 @@ function HandOut(props) {
         <SearchComponent className='mx-auto' handleSearch={handleSearch} />{" "}
       </Row>
 
-      <Col className='below'>
-        {orders
-          .filter((t) => t.status === "NotHandOut")
-          .map((order) => (
-            <Row className='below'>
-              <Col> id : {order.id}</Col>
-              <Col> date : {order.date}</Col>
-              <Col>price : {order.price}</Col>
-              <Col>
-                <Button
-                  className='spg-button'
-                  onClick={() => {
-                    handOutOrder(order.id);
-                  }}>
-                  {" "}
-                  hand out{" "}
-                </Button>
-              </Col>
-            </Row>
-          ))}
-      </Col>
+      {orders ? (
+        <Col className='below'>
+          <h2> Order related to the client: </h2>
+          {orders
+            .filter((t) => t.status === "NotHandOut")
+            .map((order) => (
+              <Row className='below'>
+                <Col> id : {order.id}</Col>
+                <Col> date : {order.date}</Col>
+                <Col>price : {order.price} €</Col>
+                <Col>
+                  <Button
+                    className='spg-button'
+                    onClick={() => {
+                      handOutOrder(order.id);
+                    }}>
+                    {" "}
+                    hand out{" "}
+                  </Button>
+                </Col>
+              </Row>
+            ))}
+        </Col>
+      ) : (
+        <> No order related to that client </>
+      )}
     </Container>
   );
 }

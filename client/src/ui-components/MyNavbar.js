@@ -4,7 +4,7 @@ import { userIcon, plantIcon } from "./Icons";
 import "../css/custom.css";
 function MyNavbar(props) {
   return (
-    <Navbar className='SGP-Navbar' variant='dark'>
+    <Navbar className='SGP-Navbar block' variant='dark'>
       <Nav.Item>
         <Link to={"/"}>
           {" "}
