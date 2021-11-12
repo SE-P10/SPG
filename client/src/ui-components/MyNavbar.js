@@ -16,10 +16,12 @@ function MyNavbar(props) {
       </Nav.Item>
 
       <Nav.Item>
-        <Link to={"/"} className='secondColor'>
-          {" "}
-          Home
-        </Link>
+        {props.loggedIn ? (
+          <Link to={"/personalpage"} className='secondColor'>
+            {" "}
+            Personal Page
+          </Link>
+        ) : null}
       </Nav.Item>
 
       {props.loggedIn ? (

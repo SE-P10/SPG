@@ -34,7 +34,10 @@ function LoginForm(props) {
         <Row>
           <Col sm={8}>
             <Row className=' mx-auto justify-content-center'>
-              <h2 className='navbar-link'> Log In {plantIcon} </h2>
+              <h1 className='navbar-link'> {plantIcon}</h1>
+            </Row>
+            <Row className=' mx-auto justify-content-center'>
+              <h2 className='navbar-link'> Log In </h2>
             </Row>
             <Form.Group controlId='username' className='mt-4'>
               <Form.Label>Username</Form.Label>
