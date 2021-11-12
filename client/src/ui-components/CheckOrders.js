@@ -3,23 +3,16 @@ import { useState } from "react";
 import { SearchComponent } from "./SearchComponent";
 
 function CheckOrders(props) {
-  const [orders, setOrders] = useState([
-    { id: 1, status: "NotHandOut", price: 3, date: "01-01-2021" },
-    { id: 2, status: "HandOut", price: 3, date: "01-01-2021" },
-    { id: 3, status: "NotHandOut", price: 3, date: "01-01-2021" },
-    { id: 4, status: "NotHandOut", price: 3, date: "01-01-2021" },
-  ]);
-  const [idUser, setIdUsers] = useState(-1);
+  const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSearch = (email) => {
-    // order Id = API GetOrdersByEmail(email)
-    //setIdUsers(Id);
-    if (idUser === -1) {
-      setErrorMessage("user not found");
+    let ordersTmp = [];
+    //ordersTmp =  getOrders(email);
+    if (ordersTmp.length === 0) {
+      setErrorMessage("There are no orders for this user");
     } else {
-      //let ordersTmp = API.getOrdersById(idUser)
-      //setOrders(ordersTmp)
+      setOrders(ordersTmp)
     }
   };
 
@@ -43,7 +36,7 @@ function CheckOrders(props) {
 
       <Col>
         <Row className='justify-content-center'>
-          <h3 className='thirdColor'> List of the pendind orders </h3>{" "}
+          { orders.length !== 0 ? <h3 className='thirdColor'> List of the pendind orders </h3> : ""}
         </Row>
         {orders.map((order) => (
           <Row>
