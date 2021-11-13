@@ -111,7 +111,7 @@ const handleOrderProducts = async (userID, orderID, data = {}) => {
     let order = filter_args({
         id: orderID,
         user_id: userID,
-        status: '',
+        status: orderID ? '' : 'booked',
         price: 0,
         pickup_time: '',
         pickup_place: ''
