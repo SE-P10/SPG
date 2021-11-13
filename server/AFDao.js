@@ -135,7 +135,7 @@ const handleOrderProducts = async (userID, orderID, data = {}) => {
 
             products = await Promise.all(products.map(async (x) => {
 
-                let pID = x.id || Object.keys(x)[0];
+                let pID = x.product_id || x.id || Object.keys(x)[0];
                 let quantity = x.quantity || x[pID];
 
                 let product = await existValueInDB(db, 'products', 'id', pID);
@@ -154,7 +154,7 @@ const handleOrderProducts = async (userID, orderID, data = {}) => {
 
             products = await Promise.all(products.map(async (x) => {
 
-                let pID = x.id || Object.keys(x)[0];
+                let pID = x.product_id || x.id || Object.keys(x)[0];
                 let quantity = x.quantity || x[pID];
 
                 let product = await existValueInDB(db, 'products', 'id', pID);
