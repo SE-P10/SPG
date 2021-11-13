@@ -54,6 +54,16 @@ async function logOut() {
   await fetch("/api/sessions/current", { method: "DELETE" });
 }
 
+async function getOrders(client_email){
+  const response = await fetch("/api/orders/"+client_email, { method: "GET" });
+
+  if (response.ok) {
+    return await response.json();
+  } else {
+    return {};
+  }
+}
+
 async function getUserInfo(userID) {
   const response = await (userID
     ? fetch("/api/user/" + userID)
@@ -68,12 +78,14 @@ async function getUserInfo(userID) {
 }
 
 
+
 const API = {
   ...AFApi,
   ...gApi,
   logIn,
   logOut,
-  getUserInfo
+  getUserInfo,
+  getOrders
 };
 
 export default API;
