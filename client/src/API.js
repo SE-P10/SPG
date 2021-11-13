@@ -1,6 +1,7 @@
 
 import dayjs from "dayjs";
 import gApi from "./gAPI.js"
+import AFApi from "./api/a-API.js"
 
 function getJson(httpResponsePromise) {
   return new Promise((resolve, reject) => {
@@ -68,6 +69,7 @@ async function getUserInfo(userID) {
 
 
 const API = {
+  ...AFApi,
   ...gApi,
   logIn,
   logOut,
