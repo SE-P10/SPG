@@ -184,7 +184,7 @@ const handleOrderProducts = async (userID, orderID, data = {}) => {
 
 exports.execApi = (app, passport, isLoggedIn) => {
 
-    // update existing order POST /api/orders/:user_id
+    // update existing order POST /api/orders/:user_id/:order_id
     app.put('/api/orders/:user_id/:order_id', async (req, res) => {
 
         const errors = validationResult(req);
