@@ -3,10 +3,27 @@
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
   font-weight: bold !important;
+  height: 100px !important;
+}
+
+body {
+  font-family: "DejaVu Sans Mono", monospace !important;
+  font-size: 20px !important;
+  background-image: url("bg.png") !important;
+  background-repeat: no-repeat;
+  height: 100%;
+  background-size: cover;
+}
+
+.cont {
+  background-color: #f5f9ee;
+  margin-bottom: 20px;
+  border-radius: 10px !important;
 }
 
 .mainColor {
   color: #f5ebeb !important;
+  font-size: 28px !important;
 }
 
 .below {
@@ -19,6 +36,7 @@
 
 .spg-button {
   background-color: #009378 !important;
+  border: black !important;
 }
 
 .secondColor {
@@ -33,6 +51,7 @@
   background-color: #009378 !important; /* Green */
   border: black !important;
   border-width: 10px !important;
+  border-radius: 10px !important;
   color: #f5ebeb !important;
   padding: 15px 32px;
   text-align: center;
@@ -40,6 +59,7 @@
   display: inline-block;
   font-size: 28px !important;
   transition-duration: 0.4s;
+  margin-bottom: 10px;
 }
 
 .se-button:hover {

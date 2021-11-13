@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Container, Row, Alert, Col, Button } from "react-bootstrap";
 import { SearchComponent } from "./SearchComponent";
 import { useEffect } from "react";
+
 import API from "./../API"
+import "../css/custom.css";
+
 function HandOut(props) {
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -19,14 +22,14 @@ function HandOut(props) {
     ordersTmp =  await API.getOrders(email)
     if (ordersTmp.length === 0) {
       setErrorMessage("No orders found");
-    } else {
+   else {
       setOrders(ordersTmp)
     }
   };
 
   return (
-    <Container>
-      <Row className='justify-content-center'>
+    <Container className='cont'>
+      <Row className='justify-content-center cont'>
         {" "}
         <h2> Hand out an Order</h2>{" "}
       </Row>
@@ -64,6 +67,7 @@ function HandOut(props) {
             </Row>
           ))}
       </Col>
+
     </Container>
   );
 }

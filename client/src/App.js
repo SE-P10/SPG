@@ -3,6 +3,7 @@ import { Container, Row, Col, Alert } from "react-bootstrap";
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployee";
 import { ClientPage } from "./pages/ClientPage";
+import { HomePage } from "./pages/HomePage";
 import {
   BrowserRouter as Router,
   Route,
@@ -89,9 +90,23 @@ const App = () => {
           exact
           path='/'
           render={() => (
-            <Container
-              fluid
-              className='justify-content-center d-flex'></Container>
+            <Container fluid className='justify-content-center d-flex w-100'>
+              <HomePage className='ciao w-100' />
+            </Container>
+          )}
+        />
+
+        <Route
+          exact
+          path='/personalpage'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              <Row className='vh-100vh mt-10'>
+                {loggedIn && user !== null && user.role == 1 ? (
+                  <Redirect to='/shopemployee' />
+                ) : null}
+              </Row>
+            </Container>
           )}
         />
 

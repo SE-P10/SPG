@@ -2,6 +2,7 @@ import { Alert, Form, Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import { SearchComponent } from "./SearchComponent";
 import API from "./../API"
+import "../css/custom.css";
 
 function CheckOrders(props) {
   const [orders, setOrders] = useState([]);
@@ -11,14 +12,14 @@ function CheckOrders(props) {
     let ordersTmp = [];
     ordersTmp = await API.getOrders(email);
     if (ordersTmp.length === 0) {
-      setErrorMessage("There are no orders for this user");
+      setErrorMessage("No orders found for this user.");
     } else {
-      setOrders(ordersTmp)
+      setOrders(ordersTmp);
     }
   };
 
   return (
-    <Container>
+    <Container className='cont'>
       <Row className='justify-content-center'>
         {" "}
         <h2> Check Orders</h2>{" "}
@@ -37,7 +38,11 @@ function CheckOrders(props) {
 
       <Col>
         <Row className='justify-content-center'>
-          { orders.length !== 0 ? <h3 className='thirdColor'> List of the pendind orders </h3> : ""}
+          {orders.length !== 0 ? (
+            <h3 className='thirdColor'> List of the pendind orders </h3>
+          ) : (
+            ""
+          )}
         </Row>
         {orders.map((order) => (
           <Row>

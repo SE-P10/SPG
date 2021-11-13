@@ -1,6 +1,7 @@
 import { Container, Row, Form, Button } from "react-bootstrap";
 import { SearchComponent } from "./SearchComponent";
 import { useState } from "react";
+import "../css/custom.css";
 
 function TopUpWallet(props) {
   const [walletId, setWalletId] = useState(null);
@@ -20,7 +21,7 @@ function TopUpWallet(props) {
   return (
     <>
       {" "}
-      <Container>
+      <Container className='cont'>
         <Row className='justify-content-center'>
           {" "}
           <h2> TopUp a Client's Wallet </h2>{" "}
