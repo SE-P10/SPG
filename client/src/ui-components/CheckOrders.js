@@ -10,6 +10,7 @@ function CheckOrders(props) {
 
   const handleSearch = async (email) => {
     let ordersTmp = [];
+    if (orders.length !== 0 ) setOrders([])
     ordersTmp = await API.getOrders(email);
     if (ordersTmp.length === 0) {
       setErrorMessage("No orders found for this user.");
