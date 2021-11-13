@@ -12,56 +12,52 @@ import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
 import AFApi  from "../api/a-API";
+import gAPI from "../gAPI";
+
+
+
 
 function NewOrder(props) {
+
+
+
+
   useEffect(() => {
     const fillTables = async () => {
-      //const productsTmp = await API.getProducts();
+      const productsTmp = await gAPI.getProducts();
       //const userTmp = await API.getUsers();
-      //setProducts(productsTmp);
-      //setUsers(usersTmp);
-      //for (let p of productsTmp ){
-      //  setOrderProducts(oldList => {return oldList.concat({idProduct : p.id,quantity : 0})})
-      //}
+      setProducts(productsTmp);
+      
     };
 
     fillTables();
   }, []);
   //return <> NewOrder </>;
 
-  const handleSubmit = (event, props) => {
-    console.log(orderProduct);
-    //fare controllo che email sia presente nel db e invocare API che fa ordine
-    let foundUser = false;
-    //console.log(mail);
-    for (let user of users) {
-      if (user.email === mailInserted) foundUser = true;
-    }
-    if (foundUser === false) setErrorMessage("User not registered");
+  const handleSubmit = async (event, props) => {
+    
+    let userId = await AFApi.getUserId(mailInserted);
+    console.log(userId)
+    if (userId.length === 0) setErrorMessage("User not registered");
     else {
       //fare parseInt
       props.addMessage("Request sent correctly!");
 
-      //API.insertOrder(orderProducts,mail)
+      AFApi.insertOrder(userId[0].id,orderProduct.filter(t => t.quantity !== 0))
       props.changeAction(0);
     }
   };
 
   const [errorMessage, setErrorMessage] = useState("");
-  const [products, setProducts] = useState([
-    { id: 1, quantity: 2, price: 20.5, name: "test1" },
-    { id: 2, quantity: 3, price: 20.5, name: "test2" },
-    { id: 3, quantity: 1, price: 20.5, name: "test3" },
-  ]);
+  const [products, setProducts] = useState([]);
 
   const [orderProduct, setOrderProducts] = useState([]);
-  const [users, setUsers] = useState([{ email: "user1" }, { email: "user2" }]);
   const [mailInserted, setMailInserted] = useState(undefined);
   const [selectedPs, setSelectPs] = useState([]);
 
   const selectProduct = (id) => {
     if (selectedPs.indexOf(id) == -1) {
-      setOrderProducts((old) => [...old, { idProduct: id, quantity: 1 }]);
+      setOrderProducts((old) => [...old, { product_id: id, quantity: 1 }]);
       setSelectPs((selectedPs) => [...selectedPs, id]);
     } else {
       setSelectPs((old) =>
@@ -70,7 +66,7 @@ function NewOrder(props) {
         })
       );
 
-      setOrderProducts((old) => old.filter((p) => p.idProduct !== id));
+      setOrderProducts((old) => old.filter((p) => p.product_id !== id));
     }
     console.log(orderProduct);
   };
@@ -125,9 +121,9 @@ function NewOrder(props) {
                         onChange={(ev) => {
                           setOrderProducts((old) => {
                             const list = old.map((item) => {
-                              if (item.idProduct === p.id)
+                              if (item.product_id === p.id)
                                 return {
-                                  idProduct: p.id,
+                                  product_id: p.id,
                                   quantity: parseInt(ev.target.value),
                                 };
                               else return item;
@@ -151,8 +147,8 @@ function NewOrder(props) {
                     onClick={() => {
                       setOrderProducts((old) => {
                         const list = old.map((item) => {
-                          if (item.idProduct === p.id)
-                            return { idProduct: p.id, quantity: i };
+                          if (item.product_id === p.id)
+                            return { product_id: p.id, quantity: i };
                           else return item;
                         });
                         return list;

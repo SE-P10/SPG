@@ -47,3 +47,23 @@ exports.getUser = (username, password) => {
     });
   });
 };
+
+exports.getuserId = (client_email = null) => {
+  return new Promise((resolve, reject) => {
+    let sql = "select * from users where users.email = ? "
+    db.all(sql, [client_email], (err, rows) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+        return;
+      }
+
+      const orders = rows.map((user) => ({
+        id: user.id,
+        
+      }));
+
+      resolve(orders);
+    });
+  });
+}

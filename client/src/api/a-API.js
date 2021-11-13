@@ -47,9 +47,19 @@ async function insertOrder(userID, products = [], order_details = {}) {
 	});
 }
 
+async function getUserId(email) {
+	const response = await fetch('api/users/'+email);
+	const respondeBody = await response.json();
+	if (response.ok){
+	  return respondeBody;
+	} 
+	else throw respondeBody;
+  }
+
 const AFApi = {
 	updateOrder,
-	insertOrder
+	insertOrder,
+	getUserId
 }
 
 export default AFApi;

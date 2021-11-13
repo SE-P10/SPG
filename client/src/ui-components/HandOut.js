@@ -5,13 +5,18 @@ import { useEffect } from "react";
 
 import API from "./../API"
 import "../css/custom.css";
+import AFApi from "../api/a-API";
 
 function HandOut(props) {
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [mailInserted,setMailInserted] = useState("");
 
-  const handOutOrder = (orderId) => {
+  const handOutOrder = async (orderId) => {
     //API.handOutOrder(orderId)
+    let idUser = await AFApi.getUserId(mailInserted)
+    console.log(idUser)
+    AFApi.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'})
     props.addMessage("Order hands out correctly!");
 
     props.changeAction(0);
@@ -23,6 +28,7 @@ function HandOut(props) {
     if (ordersTmp.length === 0)
       setErrorMessage("No orders found");
    else {
+      setMailInserted(email)
       setOrders(ordersTmp)
     }
   };

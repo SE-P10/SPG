@@ -141,6 +141,18 @@ app.get("/api/orders/:client_email", isLoggedIn, (req, res) => {
   }
 });
 
+app.get("/api/users/:client_email", isLoggedIn, (req, res) => {
+  try {
+    userDao.getuserId(req.params.client_email).then((orders) => {
+      res.status(200).json(orders);
+    }).catch((err) => {
+      res.status(503).json({});
+    });
+  } catch (err) {
+    res.status(500).json(false);
+  }
+});
+
 /*** Other express-related instructions ***/
 
 // Activate the server
