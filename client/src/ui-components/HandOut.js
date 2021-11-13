@@ -20,7 +20,7 @@ function HandOut(props) {
   const handleSearch = async (email) => {
     let ordersTmp = [];
     ordersTmp =  await API.getOrders(email)
-    if (ordersTmp.length === 0) {
+    if (ordersTmp.length === 0)
       setErrorMessage("No orders found");
    else {
       setOrders(ordersTmp)
