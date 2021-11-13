@@ -9,6 +9,8 @@ async function getProducts() {
     }
 }
 
+
+
 async function addClient(newClient) {
     return new Promise((resolve, reject) => {
 		fetch('/api/newClient', {
