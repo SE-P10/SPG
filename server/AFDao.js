@@ -5,8 +5,6 @@ const { validationResult } = require("express-validator");
 const db = require("./db");
 const { isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB } = require("./utility");
 
-
-
 const getOrder = async (orderID) => {
 
     if (!order_id)
@@ -185,7 +183,7 @@ const handleOrderProducts = async (userID, orderID, data = {}) => {
 exports.execApi = (app, passport, isLoggedIn) => {
 
     // update existing order POST /api/orders/:user_id/:order_id
-    app.put('/api/orders/:user_id/:order_id', async (req, res) => {
+    app.put('/api/orders/:user_id/:order_id', isLoggedIn, async (req, res) => {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -213,7 +211,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     });
 
     // insert a new POST /api/orders/:user_id
-    app.post('/api/orders/:user_id', async (req, res) => {
+    app.post('/api/orders/:user_id', isLoggedIn, async (req, res) => {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
