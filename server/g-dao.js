@@ -3,19 +3,33 @@ const bcrypt = require("bcrypt");
 const { check, validationResult } = require("express-validator");
 
 const addClient = async (newClient) => {
-  	return new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const sql = "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0)";
-			bcrypt.hash(newClient.password, 10).then(passwordHash => {
-				db.run(sql, [newClient.email, passwordHash, newClient.username, newClient.name, newClient.surname], (err) => {
-					if (err) reject(err);
-					resolve(this.lastID);
-				});
+		bcrypt.hash(newClient.password, 10).then(passwordHash => {
+			db.run(sql, [newClient.email, passwordHash, newClient.username, newClient.name, newClient.surname], (err) => {
+				if (err) reject(err);
+				resolve(this.lastID);
 			});
+		});
 	});
 };
 
+// delete an existing client
+exports.deleteUser = (userMail) => {
+	return new Promise((resolve, reject) => {
+		const sql = 'DELETE FROM users WHERE email = ?';
+		db.run(sql, [userMail], function (err) {
+			if (err) {
+				reject(err);
+				return;
+			} else
+				resolve(null);
+		});
+	});
+}
+
 const listProducts = () => {
-  	return new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const sql = "SELECT * FROM products";
 		db.all(sql, [], (err, rows) => {
 			if (err) reject(err);
@@ -24,32 +38,47 @@ const listProducts = () => {
 				resolve(Products);
 			}
 		});
-  });
+	});
 };
 
 exports.execApi = (app, passport, isLoggedIn) => {
 
-    app.get('/api/products', async (req, res) => {
-        try {
+	app.get('/api/products', async (req, res) => {
+		try {
 			const Products = await listProducts();
 			res.json(Products);
-        } catch(err) {
-        	res.status(500).end();
-        }
-    });
+		} catch (err) {
+			res.status(500).end();
+		}
+	});
 
-    // POST /api/newClient
-    app.post('/api/newClient', isLoggedIn, async (req, res) => {
+	// POST /api/newClient
+	app.post('/api/newClient', isLoggedIn, async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			return res.status(422).json({errors: errors.array()});
+			return res.status(422).json({ errors: errors.array() });
 		}
 		try {
 			await addClient(req.body);
 			res.status(201).end();
-		} catch(err) {
-			res.status(503).json({error: err});
+		} catch (err) {
+			res.status(503).json({ error: err });
 		}
 	});
+
+	// DELETE /api/clients/:email
+	app.delete('/api/clients/:email', isLoggedIn, param('email').isEmail(), async function (req, res) {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(422).json({ errors: errors.array() })
+		}
+		try {
+			await deleteUser(req.params.email);
+		} catch (err) {
+			console.log(err);
+			res.status(503).json({ error: `Database error during the deletion of user ${req.params.email}.` });
+		}
+	});
+
 
 }
