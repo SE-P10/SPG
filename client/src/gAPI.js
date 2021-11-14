@@ -47,12 +47,22 @@ function deleteUser(email) {
             }
         }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
     });
+async function getWalletByMail(mail) {
+    // call: GET /api/products
+    const response = await fetch('/api/wallet/' + mail);
+    const walletJson = await response.json();
+    if (response.ok) {
+      	return walletJson.wallet;
+    } else {
+      	throw walletJson;  // an object with the error coming from the server
+    }
 }
 
 const gAPI = {
     getProducts,
 	addClient,
-	deleteUser
+	deleteUser,
+	getWalletByMail
 }
 
 export default gAPI;
