@@ -1,5 +1,8 @@
 ## API Server
 
+### POST /api/wallet/update/:client_email/:amount
+Update the value of the wallet of a specific amount
+
 ### Get /api/orders/:client_email
 
 The user need to be authenticated.
