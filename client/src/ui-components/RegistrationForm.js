@@ -8,6 +8,7 @@ import {
   Card,
 } from "react-bootstrap";
 import { useState } from "react";
+import API from "../API"
 
 function RegistrationForm(props) {
   const [name, setName] = useState("");
@@ -23,13 +24,16 @@ function RegistrationForm(props) {
       if(password === confirmPassword){
       //Need to call the API to insert into the DB
       //alert("Inserimento riuscito con successo");
+      let newClient = {email: email, password:password, username:username, name:name, surname:surname,}
+      API.addClient(newClient)
+      .catch((e)=> {console.log("Error during the creation of the client " + e)
+    setErrorMessage("Error during the creation of the client " + e)})
       props.addMessage("successfully registered customer")
-      console.log(name + " " + surname + " " + username + " " + email);
       props.changeAction(0);
       }
       else{
         //password mismatch
-        setErrorMessage("Password Mismatch")
+        setErrorMessage("Password Mismatch");
       }
     } else {
       //error in the input of the Data
@@ -39,15 +43,11 @@ function RegistrationForm(props) {
 
   return (
     <>
-      <Container className='justify-content-center'>
+      <Container className='justify-content-center cont'>
         <Row className='justify-content-center'>
           <h2>Register a new Client</h2>
         </Row>
-        {errorMessage ? (
-          <Alert variant='danger'> {errorMessage} </Alert>
-        ) : (
-          ""
-        )}
+        {errorMessage ? <Alert variant='danger'> {errorMessage} </Alert> : ""}
         <Card className='below'>
           <Card.Header as='h5'>Fill the form</Card.Header>
           <Card.Body>
@@ -101,7 +101,7 @@ function RegistrationForm(props) {
               </Row>
 
               <Row className='mb-3'>
-              <Form.Group as={Col} controlId='formGridPassword'>
+                <Form.Group as={Col} controlId='formGridPassword'>
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     required
@@ -122,7 +122,7 @@ function RegistrationForm(props) {
                     placeholder='Confirm Password'
                   />
                 </Form.Group>
-                </Row>
+              </Row>
             </Form>
           </Card.Body>
         </Card>

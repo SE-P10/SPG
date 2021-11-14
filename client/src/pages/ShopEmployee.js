@@ -30,8 +30,8 @@ function ShopEmployee(props) {
 
   return (
     <>
-      <Container>
-        <Row className='thirdColor justify-content-center'>
+      <Container className='below'>
+        <Row className=' cont below justify-content-center'>
           {" "}
           <h2> ShopEmployee personal page </h2>{" "}
         </Row>

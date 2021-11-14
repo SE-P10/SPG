@@ -3,38 +3,40 @@ import { Container, Row, Alert, Col, Button } from "react-bootstrap";
 import { SearchComponent } from "./SearchComponent";
 import { useEffect } from "react";
 
-function HandOut(props) {
-  const [orders, setOrders] = useState([
-    { id: 1, status: "NotHandOut", price: 3, date: "01-01-2021" },
-    { id: 2, status: "HandOut", price: 3, date: "01-01-2021" },
-    { id: 3, status: "NotHandOut", price: 3, date: "01-01-2021" },
-    { id: 4, status: "NotHandOut", price: 3, date: "01-01-2021" },
-  ]);
-  const [idUser, setIdUsers] = useState(-1);
-  const [errorMessage, setErrorMessage] = useState("");
+import API from "./../API"
+import "../css/custom.css";
+import AFApi from "../api/a-API";
 
-  const handOutOrder = (orderId) => {
-    console.log(orderId);
+function HandOut(props) {
+  const [orders, setOrders] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [mailInserted,setMailInserted] = useState("");
+
+  const handOutOrder = async (orderId) => {
     //API.handOutOrder(orderId)
+    let idUser = await AFApi.getUserId(mailInserted)
+    console.log(idUser)
+    AFApi.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'})
     props.addMessage("Order hands out correctly!");
 
     props.changeAction(0);
   };
 
-  const handleSearch = (email) => {
-    // order Id = API GetOrdersByEmail(email)
-    //setIdUsers(Id);
-    if (idUser === -1) {
-      setErrorMessage("user not found");
-    } else {
-      //let ordersTmp = API.getOrdersById(idUser)
-      //setOrders(ordersTmp)
+  const handleSearch = async (email) => {
+    let ordersTmp = [];
+    setOrders(ordersTmp)
+    ordersTmp =  await API.getOrders(email)
+    if (ordersTmp.length === 0)
+      setErrorMessage("No orders found");
+   else {
+      setMailInserted(email)
+      setOrders(ordersTmp)
     }
   };
 
   return (
-    <Container>
-      <Row className='justify-content-center'>
+    <Container className='cont'>
+      <Row className='justify-content-center cont'>
         {" "}
         <h2> Hand out an Order</h2>{" "}
       </Row>
@@ -53,12 +55,12 @@ function HandOut(props) {
 
       <Col className='below'>
         {orders
-          .filter((t) => t.status === "NotHandOut")
+          .filter((t) => t.status !== "HandOut")
           .map((order) => (
             <Row className='below'>
               <Col> id : {order.id}</Col>
-              <Col> date : {order.date}</Col>
-              <Col>price : {order.price}</Col>
+            <Col>price : {order.price}</Col>
+            <Col>status : {order.status}</Col>
               <Col>
                 <Button
                   className='spg-button'
@@ -72,6 +74,7 @@ function HandOut(props) {
             </Row>
           ))}
       </Col>
+
     </Container>
   );
 }

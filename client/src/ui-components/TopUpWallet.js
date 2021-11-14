@@ -1,26 +1,43 @@
-import { Container, Row, Form, Button } from "react-bootstrap";
+import { Container, Row, Form, Button, Alert } from "react-bootstrap";
 import { SearchComponent } from "./SearchComponent";
 import { useState } from "react";
+import API from "../API"
+import "../css/custom.css";
 
 function TopUpWallet(props) {
-  const [walletId, setWalletId] = useState(null);
-  const [walletValue, setWalletValue] = useState(0);
-  const [rechargeAmount, setRechargeAmount] = useState(0);
 
-  const handleSearch = (email) => {
-    // wallet Id = API GetWalletByEmail(email)
-    //riempi il wallet value
-    console.log(email);
+  const [walletValue, setWalletValue] = useState(null);
+  const [rechargeAmount, setRechargeAmount] = useState(0);
+  const [email,setEmail] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
+
+  const handleSearch = (emailValue) => {
+    setEmail(()=>emailValue)
+    API.getWalletByMail(emailValue)
+    .then((walletValue)=>{setWalletValue(walletValue)})
+    .catch((e)=>{console.log("Error searching the wallet. "+e)
+    setErrorMessage("Error searching the wallet. " + e)});
   };
 
   const rechargeWallet = () => {
-    //API rechargeWallet(walletId, rechargeAmount)
+
+    if(rechargeAmount === 0){
+      setErrorMessage("Select the Amount")
+    }
+    else{
+    API.updateWallet(rechargeAmount,email)
+    .catch((e)=> {console.log("Error recharging the wallet. " + e)
+  setErrorMessage("Error recharging the wallet. " + e)})
+   props.addMessage("successfully recharged your wallet")
+   props.changeAction(0);
+    }
   };
 
   return (
     <>
       {" "}
-      <Container>
+      <Container className='cont'>
         <Row className='justify-content-center'>
           {" "}
           <h2> TopUp a Client's Wallet </h2>{" "}
@@ -33,22 +50,31 @@ function TopUpWallet(props) {
           />{" "}
         </Row>
 
-        {walletId ? (
+        {walletValue ? (
           <>
             {" "}
+
             <Row className='justify-content-center below'>
               {" "}
-              <h1> Wallet ciao a tutti</h1>{" "}
+              <h2> Your Wallet</h2>{" "}
             </Row>
+
+            {errorMessage ? (
+          <Alert variant='danger'> {errorMessage} </Alert>
+        ) : (
+          ""
+        )}
+        
             <Form onSubmit={rechargeWallet}>
               <Form.Label> Actual Balance: </Form.Label>
               <Form.Control disabled type='text' value={walletValue} />{" "}
               <Form.Label> Recharge: </Form.Label>
               <Form.Control
-                type='text'
+                defaultValue={0}
+                type='number'
                 onChange={(ev) => setRechargeAmount(ev.target.value)}
               />{" "}
-              <Button type='submit' className='spg-button below'>
+              <Button onClick={rechargeWallet} className='spg-button below'>
                 {" "}
                 Recharge the wallet
               </Button>

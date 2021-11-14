@@ -1,5 +1,8 @@
 ## API Server
 
+### POST /api/wallet/update/:client_email/:amount
+Update the value of the wallet of a specific amount
+
 ### Get /api/orders/:client_email
 
 The user need to be authenticated.
@@ -18,4 +21,23 @@ http://localhost:3001/api/orders/john.doe@demo01.it
   "pickup_time":"5-11-21-10-00-10",
   "pickup_place":"TO"
 }
+```
+
+
+### POST /api/orders/:user_id
+
+The user need to be authenticated.
+Return success if eveerything run correctly
+
+```url
+http://localhost:3001/api/orders/5
+```
+
+### PUT /api/orders/:user_id/:order_id
+
+The user need to be authenticated.
+Return success if eveerything run correctly
+
+```url
+http://localhost:3001/api/orders/5/80
 ```
