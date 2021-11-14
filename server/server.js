@@ -3,13 +3,14 @@
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
-const { check, validationResult } = require("express-validator"); // validation middleware
+const { check, validationResult, body } = require("express-validator"); // validation middleware
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 
 const gDao = require("./g-dao");
 const AFDao = require("./AFDao");
 const userDao = require("./user-dao");
+const walletDao = require("./wallet-dao");
 const ordersDao = require('./orders-dao.js');
 
 /*** Set up Passport ***/
@@ -126,9 +127,32 @@ app.get("/api/user/:id", (req, res) => {
   }
 });
 
+// POST /wallet/update/
+// up to the wallet the amount
+app.post("/api/wallet/update/",
+  // [
+  //   body('client_email').isEmail(),
+  //   body('amount').isNumeric(),
+  // ],
+  // isLoggedIn,
+  function(req, res) {
+    // if (!validationResult(req).isEmpty())
+    //   return res.status(400).render('contact', { errors: "error in the parameters" });
+    try {
+      walletDao.updateWallet(req.body.amount, req.body.client_email).then(() => {
+        res.status(200);
+        console.log("done")
+      }).catch((err) => {
+        res.status(503).json({});
+      });
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  }
+);
+
 // GET /orders
 // get all the orders
-// app.get("/api/orders/:client_email", (req, res) => {
 app.get("/api/orders/:client_email", isLoggedIn, (req, res) => {
   try {
     ordersDao.getOrders(req.params.client_email).then((orders) => {

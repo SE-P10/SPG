@@ -31,9 +31,21 @@ async function addClient(newClient) {
 	});
 }
 
+async function getWalletByMail(mail) {
+    // call: GET /api/products
+    const response = await fetch('/api/wallet/' + mail);
+    const walletJson = await response.json();
+    if (response.ok) {
+      	return walletJson.wallet;
+    } else {
+      	throw walletJson;  // an object with the error coming from the server
+    }
+}
+
 const gAPI = {
     getProducts,
-	addClient
+	addClient,
+	getWalletByMail
 }
 
 export default gAPI;

@@ -126,7 +126,8 @@ exports.dynamicSQL = (action, obj, where = false) => {
 
     let sql = action + ' ';
 
-    sql += (Object.keys(obj).join(' = ?, ') + ' = ? ');
+    if (!this.isEmptyObject(obj))
+        sql += (Object.keys(obj).join(' = ?, ') + ' = ? ');
 
     if (where)
         sql += "WHERE " + Object.keys(where).join(' = ? AND ') + " = ?";
@@ -177,13 +178,18 @@ exports.bulkSQL = async (db, sql, rows) => {
     });
 }
 
-exports.existValueInDB = async (db, table, field, value, returnDef = false) => {
+exports.existValueInDB = async (db, table, fieldValue, returnDef = false) => {
     return new Promise(async (resolve, reject) => {
-        db.get("SELECT 1 FROM " + table + " WHERE " + field + " = ?", [value], (err, row) => {
+
+        let dinoSQL = this.dynamicSQL("SELECT * FROM " + table, {}, fieldValue);
+
+        db.get(dinoSQL.sql, [...dinoSQL.values], (err, row) => {
             if (err) {
+                console.log(err)
                 return resolve(false);
             }
-            resolve(!!row ? value : returnDef);
+
+            resolve(!!row ? (dinoSQL.values.length === 1 ? dinoSQL.values[0] : dinoSQL.values) : returnDef);
         });
     })
 }
