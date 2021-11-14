@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Button, Row, Col, Container } from "react-bootstrap";
+import { Form, Button, Row, Col, Container, Alert } from "react-bootstrap";
 import { plantIcon } from "../ui-components/Icons";
 import "../css/custom.css";
 
@@ -14,25 +14,35 @@ function LoginForm(props) {
 
     // SOME VALIDATION, ADD MORE!!!
     let valid = true;
-    if (username === "" || password === "")
+    if (username === "" || password === "") {
       //nessun vincolo sulla password
       valid = false;
+    }
 
     if (valid) {
       setErrorMessage("");
       props.login(credentials);
-    } else {
-      setErrorMessage("Username and/or password incorrect");
     }
   };
 
   return (
-    <Container className='below '>
+    <Container className='below  cont'>
       <Form>
-        {/* {props.message !== '' ? <Alert variant={props.message.type} onClose={props.closeMessage} dismissible> {props.message.msg} </Alert> : <></>}
-      {errorMessage !== '' ? <Alert variant='danger'>{errorMessage}</Alert> : ''} */}
+        {props.message !== "" ? (
+          <Alert
+            className='justify-content-center'
+            variant={props.message.type}
+            onClose={props.closeMessage}
+            dismissible>
+            {" "}
+            {props.message.msg}{" "}
+          </Alert>
+        ) : (
+          <></>
+        )}
+
         <Row>
-          <Col sm={8}>
+          <Col sm={8} className='mx-auto'>
             <Row className=' mx-auto justify-content-center'>
               <h1 className='navbar-link'> {plantIcon}</h1>
             </Row>
@@ -48,7 +58,7 @@ function LoginForm(props) {
               />
             </Form.Group>
           </Col>
-          <Col sm={8}>
+          <Col sm={8} className='mx-auto'>
             <Form.Group controlId='password'>
               <Form.Label>Password</Form.Label>
               <Form.Control
@@ -57,15 +67,15 @@ function LoginForm(props) {
                 onChange={(ev) => setPassword(ev.target.value)}
               />
             </Form.Group>
+            <Button
+              variant='dark'
+              className='mainColor below spg-button border mx-auto'
+              onClick={handleSubmit}>
+              Login
+            </Button>
           </Col>
         </Row>
         <br />
-        <Button
-          variant='dark'
-          className='mainColor spg-button border '
-          onClick={handleSubmit}>
-          Login
-        </Button>
       </Form>
     </Container>
   );

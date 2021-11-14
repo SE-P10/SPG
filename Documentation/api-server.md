@@ -19,3 +19,22 @@ http://localhost:3001/api/orders/john.doe@demo01.it
   "pickup_place":"TO"
 }
 ```
+
+
+### POST /api/orders/:user_id
+
+The user need to be authenticated.
+Return success if eveerything run correctly
+
+```url
+http://localhost:3001/api/orders/5
+```
+
+### PUT /api/orders/:user_id/:order_id
+
+The user need to be authenticated.
+Return success if eveerything run correctly
+
+```url
+http://localhost:3001/api/orders/5/80
+```

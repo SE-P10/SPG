@@ -8,6 +8,7 @@ const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 
 const gDao = require("./g-dao");
+const AFDao = require("./AFDao");
 const userDao = require("./user-dao");
 const ordersDao = require('./orders-dao.js');
 
@@ -15,7 +16,7 @@ const ordersDao = require('./orders-dao.js');
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
 passport.use(
-  new LocalStrategy(function(username, password, done) {
+  new LocalStrategy(function (username, password, done) {
     userDao.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, {
@@ -74,11 +75,12 @@ app.use(passport.session());
 
 // API implemented in module gAPI
 gDao.execApi(app, passport, isLoggedIn);
+AFDao.execApi(app, passport, isLoggedIn);
 
 /*** USER APIs ***/
 
 // Login --> POST /sessions
-app.post("/api/sessions", function(req, res, next) {
+app.post("/api/sessions", function (req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
 
@@ -130,6 +132,18 @@ app.get("/api/user/:id", (req, res) => {
 app.get("/api/orders/:client_email", isLoggedIn, (req, res) => {
   try {
     ordersDao.getOrders(req.params.client_email).then((orders) => {
+      res.status(200).json(orders);
+    }).catch((err) => {
+      res.status(503).json({});
+    });
+  } catch (err) {
+    res.status(500).json(false);
+  }
+});
+
+app.get("/api/users/:client_email", isLoggedIn, (req, res) => {
+  try {
+    userDao.getuserId(req.params.client_email).then((orders) => {
       res.status(200).json(orders);
     }).catch((err) => {
       res.status(503).json({});

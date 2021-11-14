@@ -90,8 +90,8 @@ const App = () => {
           exact
           path='/'
           render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              <HomePage />
+            <Container fluid className='justify-content-center d-flex w-100'>
+              <HomePage className='ciao w-100' />
             </Container>
           )}
         />

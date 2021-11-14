@@ -1,10 +1,10 @@
 import { Button, Nav, Navbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { userIcon, plantIcon } from "./Icons";
+import { userIcon, plantIcon, logOutIcon } from "./Icons";
 import "../css/custom.css";
 function MyNavbar(props) {
   return (
-    <Navbar className='SGP-Navbar' variant='dark'>
+    <Navbar className='SGP-Navbar block' variant='dark'>
       <Nav.Item>
         <Link to={"/"}>
           {" "}
@@ -17,7 +17,7 @@ function MyNavbar(props) {
 
       <Nav.Item>
         {props.loggedIn ? (
-          <Link to={"/personalpage"} className='secondColor'>
+          <Link to={"/personalpage"} className='text-white'>
             {" "}
             Personal Page
           </Link>
@@ -34,7 +34,7 @@ function MyNavbar(props) {
                 props.closeMessage();
                 props.doLogOut();
               }}>
-              Logout{" "}
+              {logOutIcon}Logout{" "}
             </Link>
           </Nav.Item>{" "}
         </>
