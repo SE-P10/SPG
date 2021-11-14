@@ -1,6 +1,6 @@
 describe('enterNewClientOrder', () => {
 
-    let userId;
+    //TODO -> Clean every information added during the tests
 
     before(() => {
         //runs once before all tests in the block -> Add new Client
@@ -27,31 +27,31 @@ describe('enterNewClientOrder', () => {
         cy.clearCookies()
 
     })
-    
-        beforeEach(() => {
-            // runs before each test in the block
-            //Go to Login Page
-            cy.visit('http://localhost:3000');
-            cy.findByRole('link', { name: /login/i }).click();
-            //Login as a ShopEmployee
-            cy.findByRole('textbox', { name: /username/i }).type('john.doe@demo01.it');
-            cy.findByLabelText(/password/i).type('password');
-            cy.findByRole('button', { name: /login/i }).click();
-        })
-    /*
-        afterEach(() => {
-            //Logout
-            cy.findByRole('link', { name: /logout/i }).click()
-        })
-    
-        after(() => {
-            cy.request('api/users/:michelebasilico@gmail.com')
-        })
-    */
-    it('a shopEmployee should be able to add a new order of a client (by entering not registered user) ', () => {
+
+    beforeEach(() => {
+        // runs before each test in the block
         //Go to Login Page
+        cy.visit('http://localhost:3000');
+        cy.findByRole('link', { name: /login/i }).click();
+        //Login as a ShopEmployee
+        cy.findByRole('textbox', { name: /username/i }).type('john.doe@demo01.it');
+        cy.findByLabelText(/password/i).type('password');
+        cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
+        
+    })
+    afterEach(() => {
+        //Logout
+        cy.findByRole('link', { name: /logout/i }).click()
+        cy.clearCookies()
+    })
+    after(() => {
+        //clear Db
+        cy.request('DELETE', 'api/users/:michelebasilico@gmail.com')
+    })
+
+    it('a shopEmployee should be able to add a new order of a client (by entering not registered user) ', () => {
         //Insert the user mail
         cy.findByRole('textbox', { name: /client mail/i }).type("michi@gmail.com")
         //Check a product
@@ -71,24 +71,62 @@ describe('enterNewClientOrder', () => {
         cy.findByRole('alert').should('include.text', 'User not registered')
 
     })
-/*
+
     it('a shopEmployee should be able to add a new order of a client (by entering no products) ', () => {
-        //Go to Login Page
-        cy.visit('http://localhost:3000');
-        cy.findByRole('link', { name: /login/i }).click();
-        //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /username/i }).type('john.doe@demo01.it');
-        cy.findByLabelText(/password/i).type('password');
-        cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
         cy.findByRole('textbox', { name: /client mail/i }).type("michi@gmail.com")
         //click issue order button
         cy.findByRole('button', { name: /issue order/i }).click()
-        //Should be appear aler
-        cy.findByRole('alert').should('include.text', 'User not registered')
-
+        //Should be appear alert
+        cy.findByRole('alert').should('include.text', '')
     })
-    */
+
+    it('a shopEmployee should be able to add a new order of a client (by entering n. of product not avaiable) ', () => {
+        //Click a button to add a new order
+        cy.findByRole('button', { name: /new order/i }).click();
+        //Insert the user mail
+        cy.findByRole('textbox', { name: /client mail/i }).type("michi@gmail.com")
+        //Select a product
+        cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
+        //Type a wrong number of product 
+        cy.findByRole('spinbutton').clear().type('4').trigger('change');
+        //click issue order button
+        cy.findByRole('button', { name: /issue order/i }).click()
+        //Should be appear alert
+        cy.findByRole('alert').should('include.text', '')
+    })
+
+    it('a shopEmployee should be able to add a new order of a client (by entering negative n. of product) ', () => {
+        //Click a button to add a new order
+        cy.findByRole('button', { name: /new order/i }).click();
+        //Insert the user mail
+        cy.findByRole('textbox', { name: /client mail/i }).type("michi@gmail.com")
+        //Select a product
+        cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
+        //Type a wrong number of product 
+        cy.findByRole('spinbutton').clear().type('-2').trigger('change');
+        //click issue order button
+        cy.findByRole('button', { name: /issue order/i }).click()
+        //Should be appear alert
+        cy.findByRole('alert').should('include.text', '')
+    })
+
+    it('a shopEmployee should be able to add a new order of a client (by entering correct info) ', () => {
+        //Click a button to add a new order
+        cy.findByRole('button', { name: /new order/i }).click();
+        //Insert the user mail
+        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico@gmail.com")
+        //Select a product
+        cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
+        //Type a wrong number of product 
+        cy.findByRole('spinbutton').clear().type('2').trigger('change');
+        //click issue order button
+        cy.findByRole('button', { name: /issue order/i }).click()
+        //Should be appear alert
+        cy.findByRole('alert').should('include.text', '')
+    })
+
+
 })

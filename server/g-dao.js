@@ -85,7 +85,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
 	});
 
 	// DELETE /api/clients/:email
-	app.delete('/api/clients/:email', isLoggedIn, param('email').isEmail(), async function (req, res) {
+	app.delete('/api/clients/:email', isLoggedIn, async function (req, res) {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			return res.status(422).json({ errors: errors.array() })

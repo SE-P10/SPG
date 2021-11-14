@@ -1,5 +1,7 @@
 describe('enterNewClient', () => {
-    it('a shopEmployee should be able to add a new Client (by entering correct info) ', () => {
+
+    before(() => {
+        //runs once before all tests in the block -> Add new Client
         //Go to Login Page
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
@@ -9,6 +11,47 @@ describe('enterNewClient', () => {
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add new Client
         cy.findByRole('button', { name: /register a client/i }).click();
+        //Insert the Client Info
+        cy.get('#formGridName').type('Michele')
+        cy.get('#formGridSurname').type('Basilico')
+        cy.get('#formGridUsername').type('Miki')
+        cy.get('#formGridEmail').type('michelebasilico@gmail.com')
+        cy.get('#formGridPassword').type('ciao')
+        cy.get('#formGridConfirmPassword').type('ciao')
+        //Click register button
+        cy.get('.spg-button').click()
+        //Logout
+        cy.findByRole('link', { name: /logout/i }).click()
+        cy.clearCookies()
+
+    })
+
+    beforeEach(() => {
+        // runs before each test in the block
+        //Go to Login Page
+        cy.visit('http://localhost:3000');
+        cy.findByRole('link', { name: /login/i }).click();
+        //Login as a ShopEmployee
+        cy.findByRole('textbox', { name: /username/i }).type('john.doe@demo01.it');
+        cy.findByLabelText(/password/i).type('password');
+        cy.findByRole('button', { name: /login/i }).click();
+        //Click a button to add a new order
+        cy.findByRole('button', { name: /register a client/i }).click();
+        
+    })
+
+    afterEach(() => {
+        //Logout
+        cy.findByRole('link', { name: /logout/i }).click()
+        cy.clearCookies()
+    })
+    after(() => {
+        //clear Db
+        cy.request('DELETE', 'api/users/:michelebasilico@gmail.com')
+    })
+
+
+    it('a shopEmployee should be able to add a new Client (by entering correct info) ', () => {
         //Insert the Client Info
         cy.get('#formGridName').type('Michele')
         cy.get('#formGridSurname').type('Basilico')
@@ -22,16 +65,21 @@ describe('enterNewClient', () => {
         cy.findByRole('alert').should('have.text', '×Close alert successfully registered customer ')
         //Find the client added?
     })
+    it('a shopEmployee should be able to add a new Client (by entering already user registered) ', () => {
+        //Insert the Client Info
+        cy.get('#formGridName').type('Michele')
+        cy.get('#formGridSurname').type('Basilico')
+        cy.get('#formGridUsername').type('Miki')
+        cy.get('#formGridEmail').type('michelebasilico@gmail.com')
+        cy.get('#formGridPassword').type('ciao')
+        cy.get('#formGridConfirmPassword').type('ciao')
+        //Click register button
+        cy.get('.spg-button').click()
+        // Assert is shown
+        cy.findByRole('alert').should('include.text', 'Already registered user')
+    })
+
     it('a shopEmployee should be able to add a new Client (by entering wrong password couple) ', () => {
-        //Go to Login Page
-        cy.visit('http://localhost:3000');
-        cy.findByRole('link', { name: /login/i }).click();
-        //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /username/i }).type('john.doe@demo01.it');
-        cy.findByLabelText(/password/i).type('password');
-        cy.findByRole('button', { name: /login/i }).click();
-        //Click a button to add new Client
-        cy.findByRole('button', { name: /register a client/i }).click();
         //Insert the Client Info
         cy.get('#formGridName').type('Michele')
         cy.get('#formGridSurname').type('Basilico')
@@ -42,19 +90,10 @@ describe('enterNewClient', () => {
         //Click register button
         cy.get('.spg-button').click()
         //Succesfully Assert is shown
-        cy.findByRole('alert').should('have.text', ' Password Mismatch ')
+        cy.findByRole('alert').should('include.text', 'Password Mismatch')
     })
 
     it('a shopEmployee should be able to add a new Client (by missing info) ', () => {
-        //Go to Login Page
-        cy.visit('http://localhost:3000');
-        cy.findByRole('link', { name: /login/i }).click();
-        //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /username/i }).type('john.doe@demo01.it');
-        cy.findByLabelText(/password/i).type('password');
-        cy.findByRole('button', { name: /login/i }).click();
-        //Click a button to add new Client
-        cy.findByRole('button', { name: /register a client/i }).click();
         //Insert the Client Info without some info
         //case0 -> Nessuna info
         cy.get('.spg-button').click()

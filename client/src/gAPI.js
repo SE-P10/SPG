@@ -31,8 +31,8 @@ async function addClient(newClient) {
 	});
 }
 
-//Delete meme
-function deleteUser(email) {
+//Delete user
+async function deleteUser(email) {
     return new Promise((resolve, reject) => {
         fetch('/api/clients/' + email, {
             method: 'DELETE',
@@ -47,6 +47,7 @@ function deleteUser(email) {
             }
         }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
     });
+}
 async function getWalletByMail(mail) {
     // call: GET /api/products
     const response = await fetch('/api/wallet/' + mail);
