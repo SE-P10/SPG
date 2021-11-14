@@ -18,4 +18,3 @@ exports.updateWallet = (ammount, client_email) => {
     });
   });
 };
-

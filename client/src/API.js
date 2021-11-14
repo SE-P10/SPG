@@ -67,7 +67,7 @@ async function getUserInfo(userID) {
 }
 
 async function updateWallet(amount, client_email) {
-  const response = await ("/api/wallet/update", {
+  const response = await fetch("/api/wallet/update/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

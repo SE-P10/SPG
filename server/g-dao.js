@@ -27,8 +27,26 @@ const listProducts = () => {
   });
 };
 
+const getWalletByMail = (userId, mail) => {
+  	return new Promise((resolve, reject) => {
+		const sql1 = "SELECT * FROM users WHERE id = ? AND role = 1";
+		db.all(sql1, [userId], (err, rows) => {
+			if (err) reject(err);
+			else if(!rows) reject('User no authorized');
+			}
+		);
+		const sql = "SELECT email, meta_value AS wallet FROM users_meta UM, users U WHERE meta_key = 'wallet' AND user_id = U.id AND email = ?";
+		db.all(sql, [mail], (err, rows) => {
+			if (err) reject(err);
+			else if(!rows.length) reject('User not found!');
+			else resolve({wallet: rows[0].wallet});
+		});
+  });
+};
+
 exports.execApi = (app, passport, isLoggedIn) => {
 
+	// GET /api/products
     app.get('/api/products', async (req, res) => {
         try {
 			const Products = await listProducts();
@@ -51,5 +69,15 @@ exports.execApi = (app, passport, isLoggedIn) => {
 			res.status(503).json({error: err});
 		}
 	});
+
+	// GET /wallet/:mail
+    app.get('/api/wallet/:mail', isLoggedIn, async (req, res) => {
+        try {
+			const wallet = await getWalletByMail(req.user.id, req.params.mail);
+			res.json(wallet);
+        } catch(err) {
+        	res.status(500).end();
+        }
+    });
 
 }
