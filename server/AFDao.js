@@ -40,7 +40,10 @@ const handleOrder = async (orderRAW, status = '') => {
     if (typeof orderRAW === 'number') {
 
         if (!status) {
-            return await existValueInDB(db, 'orders', 'id', orderRAW, 0);
+            /**
+             * return orderID if exist otherwise 0, nothing to update here
+            */
+            return await existValueInDB(db, 'orders', { id: orderRAW }, 0);
         }
 
         orderRAW = { id: orderRAW };
@@ -72,7 +75,7 @@ const handleOrder = async (orderRAW, status = '') => {
 
         if (order.id) {
 
-            if (!await existValueInDB(db, 'orders', 'id', order.id))
+            if (!await existValueInDB(db, 'orders', { id: order.id }))
                 return reject('Is not a valid order, wrong orderID');
 
             let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: order.id });
@@ -87,7 +90,7 @@ const handleOrder = async (orderRAW, status = '') => {
         }
         else {
 
-            if (!order.user_id || !await existValueInDB(db, 'users', 'id', order.user_id))
+            if (!order.user_id || !await existValueInDB(db, 'users', { id: order.user_id, role: '0' }))
                 return reject('Is not a valid order, wrong userID');
 
             let sql = 'INSERT INTO orders (user_id, status, price, pickup_time, pickup_place) VALUES(?, ?, ?, ?, ?)';
@@ -138,7 +141,7 @@ const handleOrderProducts = async (userID, orderID, data = {}) => {
                 let pID = x.product_id || x.id || Object.keys(x)[0];
                 let quantity = x.quantity || x[pID];
 
-                let product = await existValueInDB(db, 'products', 'id', pID);
+                let product = await existValueInDB(db, 'products', { id: pID });
 
                 if (!product)
                     return [];
@@ -157,7 +160,7 @@ const handleOrderProducts = async (userID, orderID, data = {}) => {
                 let pID = x.product_id || x.id || Object.keys(x)[0];
                 let quantity = x.quantity || x[pID];
 
-                let product = await existValueInDB(db, 'products', 'id', pID);
+                let product = await existValueInDB(db, 'products', { id: pID });
 
                 if (!product)
                     return [];
@@ -190,7 +193,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
             return res.status(422).json({ errors: errors.array() });
         }
 
-        let user = await existValueInDB(db, 'users', 'id', req.params.user_id);
+        let user = await existValueInDB(db, 'users', { id: req.params.user_id });
 
         if (!user) {
             res.status(501).json({ error: 'Invalid user ID' });
@@ -218,7 +221,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
             return res.status(422).json({ errors: errors.array() });
         }
 
-        let user = await existValueInDB(db, 'users', 'id', req.params.user_id);
+        let user = await existValueInDB(db, 'users', { id: req.params.user_id });
 
         if (!user) {
             res.status(501).json({ error: 'Invalid user ID' });
