@@ -2,6 +2,7 @@ import { Container, Row, Form, Button, Alert } from "react-bootstrap";
 import { SearchComponent } from "./SearchComponent";
 import { useState } from "react";
 import API from "../API"
+import "../css/custom.css";
 
 function TopUpWallet(props) {
 
@@ -36,7 +37,7 @@ function TopUpWallet(props) {
   return (
     <>
       {" "}
-      <Container>
+      <Container className='cont'>
         <Row className='justify-content-center'>
           {" "}
           <h2> TopUp a Client's Wallet </h2>{" "}

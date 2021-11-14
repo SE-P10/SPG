@@ -6,7 +6,7 @@ function SearchComponent(props) {
   const [email, setEmail] = useState(null);
   return (
     <>
-      <Container className='justify-content-center below'>
+      <Container className='justify-content-center below mb-4'>
         <Card>
           <Card.Header as='h5'>Search </Card.Header>
           <Card.Body>

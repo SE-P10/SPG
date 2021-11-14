@@ -1,30 +1,26 @@
 import { Alert, Form, Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import { SearchComponent } from "./SearchComponent";
+import API from "./../API"
+import "../css/custom.css";
 
 function CheckOrders(props) {
-  const [orders, setOrders] = useState([
-    { id: 1, status: "NotHandOut", price: 3, date: "01-01-2021" },
-    { id: 2, status: "HandOut", price: 3, date: "01-01-2021" },
-    { id: 3, status: "NotHandOut", price: 3, date: "01-01-2021" },
-    { id: 4, status: "NotHandOut", price: 3, date: "01-01-2021" },
-  ]);
-  const [idUser, setIdUsers] = useState(-1);
+  const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSearch = (email) => {
-    // order Id = API GetOrdersByEmail(email)
-    //setIdUsers(Id);
-    if (idUser === -1) {
-      setErrorMessage("user not found");
+  const handleSearch = async (email) => {
+    let ordersTmp = [];
+    if (orders.length !== 0 ) setOrders([])
+    ordersTmp = await API.getOrders(email);
+    if (ordersTmp.length === 0) {
+      setErrorMessage("No orders found for this user.");
     } else {
-      //let ordersTmp = API.getOrdersById(idUser)
-      //setOrders(ordersTmp)
+      setOrders(ordersTmp);
     }
   };
 
   return (
-    <Container>
+    <Container className='cont'>
       <Row className='justify-content-center'>
         {" "}
         <h2> Check Orders</h2>{" "}
@@ -43,13 +39,17 @@ function CheckOrders(props) {
 
       <Col>
         <Row className='justify-content-center'>
-          <h3 className='thirdColor'> List of the pendind orders </h3>{" "}
+          {orders.length !== 0 ? (
+            <h3 className='thirdColor'> List of the pendind orders </h3>
+          ) : (
+            ""
+          )}
         </Row>
         {orders.map((order) => (
           <Row>
             <Col> id : {order.id}</Col>
-            <Col> date : {order.date}</Col>
             <Col>price : {order.price}</Col>
+            <Col>status : {order.status}</Col>
           </Row>
         ))}
       </Col>
