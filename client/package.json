@@ -29,6 +29,22 @@
       "react-app/jest"
     ]
   },
+  "production": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "development": [
+    "last 1 chrome version",
+    "last 1 firefox version",
+    "last 1 safari version"
+  ],
+  "devDependencies": {
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
+    "enzyme-to-json": "^3.6.2",
+    "react-test-renderer": "^17.0.2"
+  },
+  "browserslist": {
     "production": [
       ">0.2%",
       "not dead",
@@ -39,10 +55,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
-    "enzyme-to-json": "^3.6.2",
-    "react-test-renderer": "^17.0.2"
   }
 }
