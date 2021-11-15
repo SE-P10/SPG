@@ -1,6 +1,17 @@
 ## API Server
 
-### POST /api/wallet/update/:client_email/:amount
+### POST /api/wallet/update/
+```url 
+POST /api/wallet/update HTTP/1.1
+Host: localhost
+Content-Type: application/json
+Content-Length: 52
+
+{
+  "client_email": "john.doe@demo01.it",
+  "amount": 10
+}
+```
 Update the value of the wallet of a specific amount
 
 ### Get /api/orders/:client_email

@@ -128,6 +128,7 @@ app.get("/api/user/:id", (req, res) => {
 });
 
 // POST /wallet/update/
+// parameters client_email, amount
 // up to the wallet the amount
 app.post("/api/wallet/update/",
   [
@@ -139,11 +140,11 @@ app.post("/api/wallet/update/",
     if (!validationResult(req).isEmpty())
       return res.status(400).render('contact', { errors: "error in the parameters" });
     try {
-      walletDao.updateWallet(req.body.amount, req.body.client_email).then(() => {
-        res.status(200);
-        console.log("done")
+      walletDao.updateWallet(req.body.amount, req.body.client_email).then((res1) => {
+        res.status(200).json({ "result": res1 });
       }).catch((err) => {
-        res.status(503).json({});
+        console.log(err);
+        res.status(503).json({ "result": err });
       });
     } catch (err) {
       res.status(500).json(false);
