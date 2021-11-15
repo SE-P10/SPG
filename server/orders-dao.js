@@ -2,7 +2,7 @@ const db = require('./db.js');
 
 exports.getOrders = (client_email = null) => {
   return new Promise((resolve, reject) => {
-    let sql = "select * from orders, users where users.email = ? and orders.user_id = users.id"
+    let sql = "select orders.id,user_id,status,price,pickup_time,pickup_place from orders, users where users.email = ? and orders.user_id = users.id"
     db.all(sql, [client_email], (err, rows) => {
       if (err) {
         console.log(err);

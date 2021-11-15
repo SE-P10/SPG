@@ -17,7 +17,7 @@ const ordersDao = require('./orders-dao.js');
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
 passport.use(
-  new LocalStrategy(function (username, password, done) {
+  new LocalStrategy(function(username, password, done) {
     userDao.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, {
@@ -81,7 +81,7 @@ AFDao.execApi(app, passport, isLoggedIn);
 /*** USER APIs ***/
 
 // Login --> POST /sessions
-app.post("/api/sessions", function (req, res, next) {
+app.post("/api/sessions", function(req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
 
@@ -130,14 +130,14 @@ app.get("/api/user/:id", (req, res) => {
 // POST /wallet/update/
 // up to the wallet the amount
 app.post("/api/wallet/update/",
-  // [
-  //   body('client_email').isEmail(),
-  //   body('amount').isNumeric(),
-  // ],
-  // isLoggedIn,
+  [
+    body('client_email').isEmail(),
+    body('amount').isNumeric(),
+  ],
+  isLoggedIn,
   function(req, res) {
-    // if (!validationResult(req).isEmpty())
-    //   return res.status(400).render('contact', { errors: "error in the parameters" });
+    if (!validationResult(req).isEmpty())
+      return res.status(400).render('contact', { errors: "error in the parameters" });
     try {
       walletDao.updateWallet(req.body.amount, req.body.client_email).then(() => {
         res.status(200);

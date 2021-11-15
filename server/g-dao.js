@@ -3,12 +3,21 @@ const bcrypt = require("bcrypt");
 const { check, validationResult } = require("express-validator");
 
 const addClient = async (newClient) => {
-	return new Promise((resolve, reject) => {
-		const sql = "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0)";
+  	return new Promise((resolve, reject) => {
+		const query = "SELECT * FROM users WHERE email = ?";
+		db.all(query, [newClient.email], (err, rows) => {
+			if (err) reject(err);
+			else if(rows.length) reject('The mail is already in use!');
+		});
+		const sql1 = "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0)";
+		const sql2 = "INSERT into users_meta VALUES((SELECT MAX(id)+1 FROM users_meta), (SELECT MAX(id) FROM users), 'wallet', 0)";
 		bcrypt.hash(newClient.password, 10).then(passwordHash => {
-			db.run(sql, [newClient.email, passwordHash, newClient.username, newClient.name, newClient.surname], (err) => {
+			db.run(sql1, [newClient.email, passwordHash, newClient.username, newClient.name, newClient.surname], (err) => {
 				if (err) reject(err);
-				resolve(this.lastID);
+				db.run(sql2, [], (err) => {
+					if (err) reject(err);
+					resolve(this.lastID);
+				});
 			});
 		});
 	});
@@ -46,7 +55,7 @@ const getWalletByMail = (userId, mail) => {
 		const sql1 = "SELECT * FROM users WHERE id = ? AND role = 1";
 		db.all(sql1, [userId], (err, rows) => {
 			if (err) reject(err);
-			else if(!rows) reject('User no authorized');
+			else if(!rows) reject('User not authorized');
 			}
 		);
 		const sql = "SELECT email, meta_value AS wallet FROM users_meta UM, users U WHERE meta_key = 'wallet' AND user_id = U.id AND email = ?";
@@ -55,7 +64,7 @@ const getWalletByMail = (userId, mail) => {
 			else if(!rows.length) reject('User not found!');
 			else resolve({wallet: rows[0].wallet});
 		});
-  });
+  	});
 };
 
 exports.execApi = (app, passport, isLoggedIn) => {
