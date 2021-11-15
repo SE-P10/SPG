@@ -48,12 +48,12 @@ describe('enterNewClientOrder', () => {
     })
     after(() => {
         //clear Db
-        cy.request('DELETE', 'api/users/:michelebasilico@gmail.com')
+        cy.request('DELETE', 'http://localhost:3001/api/clients/michelebasilico@gmail.com')
     })
 
     it('a shopEmployee should be able to add a new order of a client (by entering not registered user) ', () => {
         //Insert the user mail
-        cy.findByRole('textbox', { name: /client mail/i }).type("michi@gmail.com")
+        cy.findByRole('textbox', { name: /client mail/i }).type("carletto@gmail.com")
         //Check a product
         cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
         //Add a quantity for the product -> Cypress works in the browser and the test cose is evaluated inside the browser.
@@ -117,7 +117,7 @@ describe('enterNewClientOrder', () => {
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
-        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico@gmail.com")
+        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico1@gmail.com")
         //Select a product
         cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
         //Type a wrong number of product 

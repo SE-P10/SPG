@@ -20,16 +20,6 @@ describe('enterNewClientOrder', () => {
         cy.get('#formGridConfirmPassword').type('ciao')
         //Click register button
         cy.get('.spg-button').click()
-        //Add new order
-        cy.findByRole('button', { name: /new order/i }).click();
-        //Insert the user mail
-        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico@gmail.com")
-        //Select a product
-        cy.get(':nth-child(2) > .form-group > .form-check > .form-check-input').check();
-        //Type a wrong number of product 
-        cy.findByRole('spinbutton').clear().type('2').trigger('change');
-        //click issue order button
-        cy.findByRole('button', { name: /issue order/i }).click()
         //Logout
         cy.findByRole('link', { name: /logout/i }).click()
         cy.clearCookies()
@@ -46,7 +36,7 @@ describe('enterNewClientOrder', () => {
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to hand out a order
-        cy.findByRole('button', { name: /handout/i }).click();
+        cy.findByRole('button', {  name: /topup a wallet/i}).click()
 
     })
     afterEach(() => {
@@ -56,65 +46,69 @@ describe('enterNewClientOrder', () => {
     })
     after(() => {
         //clear Db
+        //Sconsigliato pulire il db nella after ma per ora ok
         cy.request('DELETE', 'http://localhost:3001/api/clients/michelebasilico@gmail.com')
+        //cy.request('DELETE', 'api/users/:michelebasilico@gmail.com')
     })
 
-    it('a shopEmployee should be able to view a right order price', () => {
-        //Enter wrong email
-        cy.findByRole('textbox').type('michelebasilico@gmail.com')
-        //Click on search button
-        cy.findByRole('button', {  name: /search/i}).click()
-        //Assertion on price
-        cy.get('.below.col > :nth-child(1) > :nth-child(2)').should('include.text','4.6')
-        
-    })
 
-    it('a shopEmployee should be able to hand out a client order (by entering not registered user)', () => {
+    it('a shopEmployee should be able to top up a client wallet (by entering not registered user)', () => {
         //Enter wrong email
         cy.findByRole('textbox').type('topogigio@gmail.it')
         //Click on search button
         cy.findByRole('button', {  name: /search/i}).click()
         //Assertion on alert
-        cy.get('.fade').should('include.text','No orders found')
+        cy.get('.fade').should('include.text','No user found')
         
     })
-/*
-    it('a shopEmployee should be able to hand out a client order (by entering user without order)', () => {
-        //Enter wrong email
-        cy.findByRole('textbox').type('topogigio@gmail.it')
+
+    it('a shopEmployee should be able to top up a client wallet (by entering correct email)', () => {
+        //Enter email
+        cy.findByRole('textbox').type('michelebasilico@gmail.com')
         //Click on search button
         cy.findByRole('button', {  name: /search/i}).click()
-        //Assertion on alert
-        cy.get('.fade').should('include.text','No orders found')
-        
+        //Empty wallet
+        cy.get('[disabled=""]').should('have.value','0')
+        //type a number to recharge
+        cy.findByRole('spinbutton').clear().type('20');
+        //click on recharge button
+        cy.findByRole('button', {  name: /recharge the wallet/i}).click()
+        //Click on topup button
+        cy.findByRole('button', {  name: /topup a wallet/i}).click()       
+        //Enter email
+        cy.findByRole('textbox').type('michelebasilico@gmail.com')
+        //Click on search button
+        cy.findByRole('button', {  name: /search/i}).click()
+        //Check new wallet credit
+        cy.get('[disabled=""]').should('have.value','20')
     })
-*/
-    it('a shopEmployee should be able to hand out a client order (by entering correct email and order)', () => {
+
+    it('a shopEmployee should be able to top up a client wallet (by entering negative amount)', () => {
         //Enter wrong email
         cy.findByRole('textbox').type('michelebasilico@gmail.com')
         //Click on search button
         cy.findByRole('button', {  name: /search/i}).click()
-        //Status booked
-        cy.get('.below.col > :nth-child(1) > :nth-child(3)').should('include.text','booked')
-        //Click on hand out button
-        cy.findByRole('button', {  name: /hand out/i})
-        //Assertion on status
-        cy.get('.below.col > :nth-child(1) > :nth-child(3)').should('include.text','hand out')
-        
+        //Empty wallet
+        cy.get().should('have.text','20')
+        //type a number to recharge
+        cy.findByRole('spinbutton').clear().type('-20');
+        //click on recharge button
+        cy.findByRole('button', {  name: /recharge the wallet/i}).click()
+        //check the alert
+        cy.getByRole('alert').should('include.text','you should enter positive amount')
     })
-/*
-    it('a shopEmployee should see the correct amount of client wallet after a hand out', () => {
-        //TODO
-        
-    })
-    it('a shopEmployee should be able to hand out a client order (by entering correct email and order but without money)', () => {
+
+    it('a shopEmployee should be able to top up a client wallet (by entering wrong input)', () => {
         //Enter wrong email
-        cy.findByRole('textbox').type('michelebasilico2@gmail.com')
+        cy.findByRole('textbox').type('michelebasilico@gmail.com')
         //Click on search button
         cy.findByRole('button', {  name: /search/i}).click()
-        //Check???
-        cy.get('.below.col > :nth-child(1) > :nth-child(3)').should('include.text','hand out')
-        
+        //type a number to recharge
+        cy.findByRole('spinbutton').clear().type('ciao');
+        //click on 
+        cy.findByRole('button', {  name: /recharge the wallet/i}).click()
+        //Check alert
+        cy.findByRole('alert').should('include.text','Enter digits')
     })
-*/
+
 })

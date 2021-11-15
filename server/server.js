@@ -177,6 +177,22 @@ app.get("/api/users/:client_email", isLoggedIn, (req, res) => {
   }
 });
 
+// DELETE /api/clients/:email
+app.delete('/api/clients/:email', async function (req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  try {
+    await gDao.deleteUser(req.params.email);
+    console.log("ciao")
+    res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
+  }
+});
+
 /*** Other express-related instructions ***/
 
 // Activate the server

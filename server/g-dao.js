@@ -30,6 +30,7 @@ exports.deleteUser = (userMail) => {
 		db.run(sql, [userMail], function (err) {
 			if (err) {
 				reject(err);
+				console.log(err)
 				return;
 			} else
 				resolve(null);
@@ -90,20 +91,6 @@ exports.execApi = (app, passport, isLoggedIn) => {
 			res.status(201).end();
 		} catch (err) {
 			res.status(503).json({ error: err });
-		}
-	});
-
-	// DELETE /api/clients/:email
-	app.delete('/api/clients/:email', isLoggedIn, async function (req, res) {
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(422).json({ errors: errors.array() })
-		}
-		try {
-			await deleteUser(req.params.email);
-		} catch (err) {
-			console.log(err);
-			res.status(503).json({ error: `Database error during the deletion of user ${req.params.email}.` });
 		}
 	});
 
