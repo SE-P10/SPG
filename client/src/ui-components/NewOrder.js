@@ -122,7 +122,7 @@ function NewOrder(props) {
                       Q:
                       <Form.Control
                         inline
-                        defaultValue={1}
+                       
                         onChange={(ev) => {
                           setOrderProducts((old) => {
                             const list = old.map((item) => {
