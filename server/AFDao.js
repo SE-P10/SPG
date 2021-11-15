@@ -1,8 +1,8 @@
 'use strict';
 
-const AF_DEBUG = true;
+const AF_DEBUG = false;
 const AF_ALLOW_DIRTY = AF_DEBUG;
-const AF_DEBUG_PROCESS = true;
+const AF_DEBUG_PROCESS = false;
 
 const { validationResult } = require("express-validator");
 
@@ -102,7 +102,7 @@ const handleOrder = async (orderRAW, status = '') => {
     }, orderRAW || {});
 
     // trick to make 0 integer passed through removeEmpty
-    if(order.price !== false)
+    if (order.price !== false)
         order.price += '';
 
     // prepare update data 
@@ -153,13 +153,13 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
             if (updatingOrder) {
 
-                let updateProducts = await Promise.all(products.map(async (x) => {
+                let updateProducts = products.map(async (x) => {
 
                     let pID = x.product_id || x.id || Object.keys(x)[0];
                     let quantity = x.quantity || x[pID];
 
                     return [quantity, orderID, pID];
-                }));
+                });
 
                 try {
 
@@ -249,13 +249,13 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
             }
             else {
 
-                let insertProducts = await Promise.all(products.map(async (x) => {
+                let insertProducts = products.map(async (x) => {
 
                     let pID = x.product_id || x.id || Object.keys(x)[0];
                     let quantity = x.quantity || x[pID];
 
                     return [orderID, pID, quantity];
-                }));
+                });
 
                 try {
                     processedProducts = await bulkSQL(db, "INSERT INTO order_product (order_id, product_id, quantity) VALUES(?, ?, ?)", insertProducts, {
