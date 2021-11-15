@@ -8,7 +8,7 @@ import {
   Card,
 } from "react-bootstrap";
 import { useState } from "react";
-import API from "../API"
+import API from "../API";
 
 function RegistrationForm(props) {
   const [name, setName] = useState("");
@@ -21,17 +21,25 @@ function RegistrationForm(props) {
 
   const registrationSubmit = () => {
     if (name && surname && username && email && password && confirmPassword) {
-      if(password === confirmPassword){
-      //Need to call the API to insert into the DB
-      //alert("Inserimento riuscito con successo");
-      let newClient = {email: email, password:password, username:username, name:name, surname:surname,}
-      API.addClient(newClient)
-      .catch((e)=> {console.log("Error during the creation of the client " + e)
-    setErrorMessage("Error during the creation of the client " + e)})
-      props.addMessage("successfully registered customer")
-      props.changeAction(0);
-      }
-      else{
+      if (password === confirmPassword) {
+        //Need to call the API to insert into the DB
+        //alert("Inserimento riuscito con successo");
+        let newClient = {
+          email: email,
+          password: password,
+          username: username,
+          name: name,
+          surname: surname,
+        };
+        API.addClient(newClient)
+          .then((e) => /* props.addMessage(e) */ console.log(e))
+          .catch((e) => {
+            console.log("Error during the creation of the client " + e);
+            setErrorMessage("Error during the creation of the client " + e);
+          });
+
+        props.changeAction(0);
+      } else {
         //password mismatch
         setErrorMessage("Password Mismatch");
       }
