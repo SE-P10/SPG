@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event'
 import ReactDOM from 'react-dom';
 
 const setup = () => {
-    const utils = render(<LoginForm />)
+    const utils = render(<LoginForm message = ''/>)
     const username = utils.getByLabelText('Username');
     const password = utils.getByLabelText('Password');
     const button = utils.getByRole('button');
@@ -22,18 +22,18 @@ const setup = () => {
 //Smoke Test -> The “smoke test” checks that a component renders without throwing (This test renders App with its children)
 it('LoginForm renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<LoginForm />, div);
+    ReactDOM.render(<LoginForm message = '' />, div);
 });
 
 
 
 //React Testing Library(to test components in isolation from the child components they render)
 it('Login renders username text', () => {
-    render(<LoginForm />);
+    render(<LoginForm message=''/>);
     expect(screen.getByText('Username')).toBeInTheDocument();
 });
 it('Login renders password text', () => {
-    render(<LoginForm />);
+    render(<LoginForm message=''/>);
     expect(screen.getByText('Password')).toBeInTheDocument();
 });
 
@@ -60,7 +60,7 @@ it("The entered username should be shown", () => {
 });
 
 //
-it("The entered username should be shown", () => {
+it("The entered password should be shown", () => {
     const { input } = setup()
     //Cambio il valore dell'input username
     userEvent.type(password, '$2b$10$OMHdOZ.PATpbMoaDz5013edi5QCTEFgpRv7Vn8OyDHQNN/4KXUKdi');
