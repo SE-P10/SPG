@@ -65,7 +65,7 @@ exports.booleanize = (string) => {
         return false;
 
     if (typeof string === 'string')
-        string.toLowerCase().trim();
+        string = string.toLowerCase().trim();
 
     switch (string) {
         case "true":
