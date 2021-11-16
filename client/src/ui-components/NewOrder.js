@@ -117,7 +117,7 @@ function NewOrder(props) {
           </Form.Group>
 
           <h3 className='thirdColor'> List of our products: </h3>
-          <Col className='below'>
+          <Col className='below list'>
             {products.map((p) => (
               <Row className='below'>
                 <Col>{p.name} </Col>
