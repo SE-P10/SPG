@@ -25,7 +25,7 @@ function TopUpWallet(props) {
   };
 
   const rechargeWallet = () => {
-    if (rechargeAmount === 0 || rechargeAmount < 0) {
+    if (rechargeAmount === 0 || rechargeAmount < 0 || rechargeAmount === null) {
       setErrorMessage("The amount must be greater than 0.");
     } else {
       API.updateWallet(rechargeAmount, email).catch((e) => {
