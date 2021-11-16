@@ -15,7 +15,6 @@ function BrowserProducts(props) {
 
     fillTables().catch((err) =>  setProducts([]));
   }, []);
-  //return <> NewOrder </>;
 
   return (
     <>

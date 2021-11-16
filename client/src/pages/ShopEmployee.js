@@ -12,12 +12,12 @@ import "../css/custom.css";
 function ShopEmployee(props) {
   const [message, setMessage] = useState("");
   const [action, setAction] = useState(0);
-  const changeAction = (action) => {
-    setAction(action);
+  const changeAction = (actionN) => {
+    setAction(actionN);
   };
 
-  const addMessage = (message) => {
-    setMessage(message);
+  const addMessage = (messageN) => {
+    setMessage(messageN);
   };
   /* Actions 
     0 = No actions (Home)
