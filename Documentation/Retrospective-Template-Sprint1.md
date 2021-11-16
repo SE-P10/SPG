@@ -67,7 +67,7 @@ We don't have a separate task for unit and E2E but an unique task called 'test a
 ## ASSESSMENT
 
 - What caused your errors in estimation (if any)?
-Testing requires more hours than eximated
+Testing requires more hours than eximated<br>
 We didn't considered problem of having different idea between back-end and front-end
 
 - What lessons did you learn (both positive and negative) in this sprint?
