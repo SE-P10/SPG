@@ -27,9 +27,9 @@ function NewOrder(props) {
   //return <> NewOrder </>;
 
   const handleSubmit = async (event, props) => {
-    console.log(orderProduct);
     let userId = await AFApi.getUserId(mailInserted);
-    if (userId.length === 0) setErrorMessage("User not registered");
+    console.log(userId[0].role)
+    if (userId.length === 0 || userId[0].role != 0) setErrorMessage("Invalid user");
     else {
       //fare parseInt
       let orderOk = true;
@@ -55,11 +55,13 @@ function NewOrder(props) {
       }
 
       if (orderOk) {
-        props.addMessage("Request sent correctly!");
+        
         AFApi.insertOrder(
           userId[0].id,
           orderProduct.filter((t) => t.quantity !== 0)
-        );
+        ).then( () =>props.addMessage("Request sent correctly!") ).catch((err) => {
+          setErrorMessage("Server error during insert order.");
+        });
         props.changeAction(0);
       }
     }

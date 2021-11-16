@@ -15,9 +15,8 @@ function HandOut(props) {
   const handOutOrder = async (orderId) => {
     //API.handOutOrder(orderId)
     let idUser = await AFApi.getUserId(mailInserted)
-    console.log(idUser)
-    AFApi.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'})
-    props.addMessage("Order hands out correctly!");
+    AFApi.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'}).then( () => props.addMessage("Order hands out correctly!")).catch((err) =>  setErrorMessage("Problem with the server") )
+    
 
     props.changeAction(0);
   };

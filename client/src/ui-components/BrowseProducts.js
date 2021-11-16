@@ -13,7 +13,7 @@ function BrowserProducts(props) {
       setProducts(productsTmp);
     };
 
-    fillTables();
+    fillTables().catch((err) =>  setProducts([]));
   }, []);
   //return <> NewOrder </>;
 
