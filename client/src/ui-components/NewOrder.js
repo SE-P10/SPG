@@ -43,16 +43,25 @@ function NewOrder(props) {
           );
           orderOk = false;
         }
+        if (elem.quantity <= 0) {
+          setErrorMessage("Quantity must be greater than 0");
+          orderOk = false;
+        }
       }
 
-      if (orderOk && orderProduct.length !== 0) {
+      if (orderProduct.length === 0) {
+        setErrorMessage("Can't issue an order without items.");
+        orderOk = false;
+      }
+
+      if (orderOk) {
         props.addMessage("Request sent correctly!");
         AFApi.insertOrder(
           userId[0].id,
           orderProduct.filter((t) => t.quantity !== 0)
         );
         props.changeAction(0);
-      } else setErrorMessage("Can't issue an order without items.");
+      }
     }
   };
 
