@@ -70,17 +70,17 @@ We don't have a separate task for unit and E2E but an unique task called 'test a
 
 ## ASSESSMENT
 
-- What caused your errors in estimation (if any)?
-Testing requires more hours than eximated<br>
+- What caused your errors in estimation (if any)? <br>
+Testing required more hours than eximated<br>
 We over-estimated the 'solve git hub issues' task beacuse in the last demo we spent a lot of time on it but during this sprint , thanks to what we have learnt in the previous demo , we spent less time and managed better gitHub.
 
-- What lessons did you learn (both positive and negative) in this sprint?
+- What lessons did you learn (both positive and negative) in this sprint? <br>
 Communication between front-end and back-end in very important , in particular for don't lose time
   
-- Which improvement goals set in the previous retrospective were you able to achieve? 
+- Which improvement goals set in the previous retrospective were you able to achieve? <br>
   None(This was the first sprint)
 
-- Which ones you were not able to achieve? Why?
+- Which ones you were not able to achieve? Why?<br>
   None(This was the first sprint)
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
@@ -90,5 +90,5 @@ Communication between front-end and back-end in very important , in particular f
 <br>Solve issues opened by the stakeholders<br>Add specific task for remediation of a specific issue by Sonar
 
 
-- One thing you are proud of as a Team!!
+- One thing you are proud of as a Team!!<br>
 When we got a problem we go straight to a single and shared solution
