@@ -36,13 +36,15 @@ function BrowserProducts(props) {
             <h4> Price </h4>
           </Col>
         </Row>
-        {products.map((p) => (
-          <Row className='below cont'>
-            <Col> {p.name}</Col>
-            <Col> {p.quantity}</Col>
-            <Col>{p.price} €</Col>
-          </Row>
-        ))}
+        <Container className='list'>
+          {products.map((p) => (
+            <Row className='below cont'>
+              <Col> {p.name}</Col>
+              <Col> {p.quantity}</Col>
+              <Col>{p.price} €</Col>
+            </Row>
+          ))}
+        </Container>
       </Container>
     </>
   );

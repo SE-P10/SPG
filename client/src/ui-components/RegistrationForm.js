@@ -55,7 +55,17 @@ function RegistrationForm(props) {
         <Row className='justify-content-center'>
           <h2>Register a new Client</h2>
         </Row>
-        {errorMessage ? <Alert variant='danger'> {errorMessage} </Alert> : ""}
+        {errorMessage ? (
+          <Alert
+            variant='danger'
+            onClose={() => setErrorMessage("")}
+            dismissible>
+            {" "}
+            {errorMessage}{" "}
+          </Alert>
+        ) : (
+          ""
+        )}
         <Card className='below'>
           <Card.Header as='h5'>Fill the form</Card.Header>
           <Card.Body>
