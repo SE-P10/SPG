@@ -38,7 +38,7 @@ describe('enterNewClient', () => {
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add a new order
         cy.findByRole('button', { name: /register a client/i }).click();
-        
+
     })
 
     afterEach(() => {
@@ -46,7 +46,7 @@ describe('enterNewClient', () => {
         cy.findByRole('link', { name: /logout/i }).click()
         cy.clearCookies()
     })
-    
+
     after(() => {
         //clear Db
         cy.request('DELETE', 'http://localhost:3001/api/clients/michelebasilico@gmail.com')
@@ -66,9 +66,10 @@ describe('enterNewClient', () => {
         //Click register button
         cy.get('.spg-button').click()
         //Succesfully Assert is shown
-        cy.findByRole('alert').should('include.text', 'successfully registered customer ')
-        //Find the client added?
+        cy.findByRole('alert').should('include.text', 'successfully registered customer')
+        //check on the server
     })
+
     it('a shopEmployee should be able to add a new Client (by entering already user registered) ', () => {
         //Insert the Client Info
         cy.get('#formGridName').type('Michele')
@@ -79,8 +80,9 @@ describe('enterNewClient', () => {
         cy.get('#formGridConfirmPassword').type('ciao')
         //Click register button
         cy.get('.spg-button').click()
-        // Assert is shown
+        // Assert is shown - TODO
         cy.findByRole('alert').should('include.text', 'Already registered user')
+        //ToDo: check on the server
     })
 
     it('a shopEmployee should be able to add a new Client (by entering wrong password couple) ', () => {
@@ -95,6 +97,7 @@ describe('enterNewClient', () => {
         cy.get('.spg-button').click()
         //Succesfully Assert is shown
         cy.findByRole('alert').should('include.text', 'Password Mismatch')
+        //Check on the server
     })
 
     it('a shopEmployee should be able to add a new Client (by missing info) ', () => {
@@ -102,6 +105,9 @@ describe('enterNewClient', () => {
         //case0 -> Nessuna info
         cy.get('.spg-button').click()
         cy.findByRole('alert').should('include.text', 'Missing Data, check all the fields ')
+        //Close alert
+        //ToDO -> Check on the server
+        cy.findByRole('alert').close()
         //case1 -> Una info mancante
         cy.get('#formGridName').type('Michele')
         cy.get('#formGridUsername').type('Miki')
@@ -110,6 +116,8 @@ describe('enterNewClient', () => {
         cy.get('#formGridConfirmPassword').type('ciao')
         cy.get('.spg-button').click()
         cy.findByRole('alert').should('include.text', 'Missing Data, check all the fields')
+        //Close alert
+        //ToDO -> Check on the server
         //case2 -> Una info presente
         cy.get('#formGridName').clear()
         cy.get('#formGridUsername').clear()
@@ -119,7 +127,10 @@ describe('enterNewClient', () => {
         cy.get('#formGridSurname').type('Basilico')
         //Click register button
         cy.get('.spg-button').click()
-        //Succesfully Assert is shown
+        // Alert is shown
         cy.findByRole('alert').should('include.text', 'Missing Data, check all the fields')
+        //close alert
+        //ToDO -> Check on the server
+
     })
 })

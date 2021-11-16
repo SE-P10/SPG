@@ -14,7 +14,7 @@ describe('viewProducts', () => {
         cy.get('#formGridName').type('Michele')
         cy.get('#formGridSurname').type('Basilico')
         cy.get('#formGridUsername').type('Miki')
-        cy.get('#formGridEmail').type('utenteprova2@gmail.com')
+        cy.get('#formGridEmail').type('michelebasilico@gmail.com')
         cy.get('#formGridPassword').type('ciao')
         cy.get('#formGridConfirmPassword').type('ciao')
         //Click register button
@@ -23,7 +23,7 @@ describe('viewProducts', () => {
         cy.findByRole('link', { name: /logout/i }).click()
         cy.clearCookies()
 
-        cy.request('DELETE', 'http://localhost:3001/api/clients/utenteprova2@gmail.com')
+        cy.request('DELETE', 'http://localhost:3001/api/clients/michelebasilico@gmail.com')
     })
 
     it("a user should view a products list", () => {
