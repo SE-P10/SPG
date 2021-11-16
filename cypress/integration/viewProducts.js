@@ -38,9 +38,9 @@ describe('viewProducts', () => {
         cy.findByRole('button', { name: /browse products/i }).click();
         //User views a products list  -> TODO: Redo using a for cycle and prebuilded data
         cy.get(':nth-child(1) > h4').should('include.text', 'Name')
-        cy.get(':nth-child(3) > .container > :nth-child(3) > :nth-child(1)').should('include.text', 'banana')
-        cy.get(':nth-child(4) > :nth-child(1)').should('include.text', 'apple')
-        cy.get(':nth-child(5) > :nth-child(1)').should('include.text', 'melon')
+        cy.get('.list > :nth-child(1) > :nth-child(1)').should('include.text', 'banana')
+        cy.get('.list > :nth-child(2) > :nth-child(1)').should('include.text', 'apple')
+        cy.get('.list > :nth-child(3) > :nth-child(1)').should('include.text', 'melon')
 
         cy.get(':nth-child(2) > h4').should('include.text', 'Quantity')
         /* cy.get(':nth-child(3) > :nth-child(2)').should('include.text', ' 3')
@@ -48,9 +48,9 @@ describe('viewProducts', () => {
          cy.get(':nth-child(5) > :nth-child(2)').should('include.text', ' 3')
  */
         cy.get(':nth-child(3) > h4').should('include.text', ' Price ')
-        cy.get(':nth-child(3) > :nth-child(3)').should('include.text', '2.4')
-        cy.get(':nth-child(4) > :nth-child(3)').should('include.text', '2.3')
-        cy.get(':nth-child(5) > :nth-child(3)').should('include.text', '2.4')
+        cy.get('.list > :nth-child(1) > :nth-child(3)').should('include.text', '2.4')
+        cy.get('.list > :nth-child(2) > :nth-child(3)').should('include.text', '2.3')
+        cy.get('.list > :nth-child(3) > :nth-child(3)').should('include.text', '2.4')
 
         //User chooses a product in the list?
 

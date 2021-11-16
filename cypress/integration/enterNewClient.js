@@ -67,6 +67,8 @@ describe('enterNewClient', () => {
         cy.get('.spg-button').click()
         //Succesfully Assert is shown
         cy.findByRole('alert').should('include.text', 'successfully registered customer')
+        //Close Alert
+        cy.findByText(/×/i).click()
         //check on the server
     })
 
@@ -81,8 +83,10 @@ describe('enterNewClient', () => {
         //Click register button
         cy.get('.spg-button').click()
         // Assert is shown - TODO
-        cy.findByRole('alert').should('include.text', 'Already registered user')
+        cy.findByRole('alert').should('include.text', 'Email already in use')
         //ToDo: check on the server
+        //Close Alert
+        cy.findByText(/×/i).click()
     })
 
     it('a shopEmployee should be able to add a new Client (by entering wrong password couple) ', () => {
@@ -98,6 +102,8 @@ describe('enterNewClient', () => {
         //Succesfully Assert is shown
         cy.findByRole('alert').should('include.text', 'Password Mismatch')
         //Check on the server
+        //Close Alert
+        cy.findByText(/×/i).click()
     })
 
     it('a shopEmployee should be able to add a new Client (by missing info) ', () => {
@@ -116,7 +122,8 @@ describe('enterNewClient', () => {
         cy.get('#formGridConfirmPassword').type('ciao')
         cy.get('.spg-button').click()
         cy.findByRole('alert').should('include.text', 'Missing Data, check all the fields')
-        //Close alert
+        //Close Alert
+        cy.findByText(/×/i).click()
         //ToDO -> Check on the server
         //case2 -> Una info presente
         cy.get('#formGridName').clear()
@@ -129,7 +136,8 @@ describe('enterNewClient', () => {
         cy.get('.spg-button').click()
         // Alert is shown
         cy.findByRole('alert').should('include.text', 'Missing Data, check all the fields')
-        //close alert
+        //Close Alert
+        cy.findByText(/×/i).click()
         //ToDO -> Check on the server
 
     })
