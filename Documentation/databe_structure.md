@@ -1,5 +1,7 @@
 # DATABASE TABLES
 
+![Database](https://github.com/SE-P10/SPG/blob/master/Documentation/ERD.jpg?raw=true)
+
 ## Users
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
