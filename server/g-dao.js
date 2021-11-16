@@ -8,18 +8,21 @@ const addClient = async (newClient) => {
 		db.all(query, [newClient.email], (err, rows) => {
 			if (err) reject(err);
 			else if(rows.length) reject('The mail is already in use!');
-		});
-		const sql1 = "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0)";
-		const sql2 = "INSERT into users_meta VALUES((SELECT MAX(id)+1 FROM users_meta), (SELECT MAX(id) FROM users), 'wallet', 0)";
-		bcrypt.hash(newClient.password, 10).then(passwordHash => {
-			db.run(sql1, [newClient.email, passwordHash, newClient.username, newClient.name, newClient.surname], (err) => {
-				if (err) reject(err);
-				db.run(sql2, [], (err) => {
-					if (err) reject(err);
-					resolve(this.lastID);
+			else {
+				const sql1 = "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0)";
+				const sql2 = "INSERT into users_meta VALUES((SELECT MAX(id)+1 FROM users_meta), (SELECT MAX(id) FROM users), 'wallet', 0)";
+				bcrypt.hash(newClient.password, 10).then(passwordHash => {
+					db.run(sql1, [newClient.email, passwordHash, newClient.username, newClient.name, newClient.surname], (err) => {
+						if (err) reject(err);
+						db.run(sql2, [], (err) => {
+							if (err) reject(err);
+							resolve(this.lastID);
+						});
+					});
 				});
-			});
+			}
 		});
+		
 	});
 };
 
