@@ -1,4 +1,4 @@
-TEMPLATE FOR RETROSPECTIVE (Team P10)
+Team P10 RETROSPECTIVE Sprint #1
 =====================================
 
 ## PROCESS MEASURES 
