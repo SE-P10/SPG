@@ -32,13 +32,15 @@ function RegistrationForm(props) {
           surname: surname,
         };
         API.addClient(newClient)
-          .then((e) => { props.addMessage('New client registered'); console.log(''); props.changeAction(0);})
+          .then((e) => {
+            props.addMessage("New client registered");
+            console.log("");
+            props.changeAction(0);
+          })
           .catch((e) => {
             console.log(e.error);
             setErrorMessage(e.error);
           });
-
-        
       } else {
         //password mismatch
         setErrorMessage("Password Mismatch");
