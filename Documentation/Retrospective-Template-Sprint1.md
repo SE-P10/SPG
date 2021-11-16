@@ -46,7 +46,7 @@ We don't have a separate task for unit and E2E but an unique task called 'test a
   - Total hours estimated
   - Total hours spent
   - Nr of automated unit test cases : 9
-  - Coverage (if available)
+  - Coverage (if available) 
 - E2E testing:
   - Total hours estimated
   - Total hours spent
@@ -56,11 +56,15 @@ We don't have a separate task for unit and E2E but an unique task called 'test a
 - Technical Debt management:
   - Total hours estimated : 4h
   - Total hours spent : 4h
-  - Hours estimated for remediation by SonarQube
-  - Hours estimated for remediation by SonarQube only for the selected and planned issues 
-  - Hours spent on remediation  : 3h
-  - debt ratio (as reported by SonarQube under "Measures-Maintainability")
-  - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability )
+  <br>We did the technical debt management entirely with sonar<br>
+  - Hours estimated for remediation by SonarQube : 4h
+  - Hours estimated for remediation by SonarQube only for the selected and planned issues : we did not planned issues in this sprint , for the next sprint during the planning we will plan the remediation for some issues we encountered in this sprint
+  - Hours spent on remediation  : 4h
+  - debt ratio (as reported by SonarQube under "Measures-Maintainability") ; 0.7 %
+  - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ) :
+  <br>Reliability : A  
+  <br>Securety : A
+  <br>Maintainability : A
   
 
 
@@ -83,7 +87,7 @@ Communication between front-end and back-end in very important , in particular f
 <br>Better coordination between Back-end and front-end, in particular for the API calls and function's paramters
 <br>Connect Sonar with Jest and Cypress test to report sonar coverage 
 <br>Add two separate task for testing (unit and E2E), add a task 'code review'
-<br>Solve issues opened by the stakeholders
+<br>Solve issues opened by the stakeholders<br>Add specific task for remediation of a specific issue by Sonar
 
 
 - One thing you are proud of as a Team!!
