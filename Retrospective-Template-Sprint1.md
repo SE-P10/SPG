@@ -13,8 +13,9 @@ TEMPLATE FOR RETROSPECTIVE (Team P10)
 ### Definition of Done
 - Unit Tests passing
 - Code review completed
-- Code present on VCS
+- Working code present on VCS
 - No critical sonar code smells
+- No bugs on sonar
 - End-to-End tests performed
 
 
@@ -49,7 +50,7 @@ TEMPLATE FOR RETROSPECTIVE (Team P10)
   - Total hours spent
 - Code review 
   - Total hours estimated 
-  - Total hours spent
+  - Total hours spent 
 - Technical Debt management:
   - Total hours estimated 
   - Total hours spent
@@ -69,12 +70,14 @@ Testing includes more hours and time spent to solve github issues was less than 
 - What lessons did you learn (both positive and negative) in this sprint?
 
 - Which improvement goals set in the previous retrospective were you able to achieve? 
-<br>Connect Sonar with JS test to report sonar coverage and no more Jest coverage 
-  
+  This was the first sprint
+
 - Which ones you were not able to achieve? Why?
+  This was the first sprint
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
-<br>Better coordination between Back-end and front-end
+<br>Better coordination between Back-end and front-end, in particular for the API calls
+<br>Connect Sonar with Jest and Cypress test to report sonar coverage 
 
 
 > Propose one or two
