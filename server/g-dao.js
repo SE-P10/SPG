@@ -7,7 +7,7 @@ const addClient = async (newClient) => {
     const query = "SELECT * FROM users WHERE email = ?";
     db.all(query, [newClient.email], (err, rows) => {
       if (err) reject(err);
-      else if (rows.length) res.status(500).end();
+      else if (rows.length) reject('Email already in use!');
       else {
         const sql1 =
           "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0)";
