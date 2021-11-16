@@ -71,8 +71,14 @@ Role:<br>
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
+|farmer_id|INTEGER||
 |quantity|INTEGER||
-|price|INTEGER||
+|name|TEXT||
+
+## product_details
+|NAME|TYPE|DESCRIPTION|
+|---|---|---|
+|id|INTEGER||
 |name|TEXT||
 
 
