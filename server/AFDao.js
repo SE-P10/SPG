@@ -2,7 +2,7 @@
 
 const AF_DEBUG = false;
 const AF_ALLOW_DIRTY = AF_DEBUG;
-const AF_DEBUG_PROCESS = false;
+const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const { validationResult } = require("express-validator");
 
@@ -39,7 +39,7 @@ const getOrderProduct = async (orderID, productID) => {
     if (!orderID || !productID)
         return null;
 
-    return await getQuerySQL(db, "SELECT * FROM order_product WHERE order_id = ? AND product_id = ?", [orderID, productID], {
+    return getQuerySQL(db, "SELECT * FROM order_product WHERE order_id = ? AND product_id = ?", [orderID, productID], {
         order_id: 0,
         product_id: 0,
         quantity: 0
@@ -51,7 +51,7 @@ const getProduct = async (productID) => {
     if (!productID)
         return null;
 
-    return await getQuerySQL(db, "SELECT * FROM products where id = ?", [productID], {
+    return getQuerySQL(db, "SELECT * FROM products where id = ?", [productID], {
         id: 0,
         quantity: 0,
         price: 0,
@@ -86,7 +86,7 @@ const handleOrder = async (orderRAW, status = '') => {
             /**
              * return orderID if exist otherwise 0, nothing to update here
             */
-            return await existValueInDB(db, 'orders', { id: orderRAW }, 0);
+            return existValueInDB(db, 'orders', { id: orderRAW }, 0);
         }
 
         orderRAW = { id: orderRAW };
@@ -153,7 +153,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
             if (updatingOrder) {
 
-                let updateProducts = products.map(async (x) => {
+                let updateProducts = products.map((x) => {
 
                     let pID = x.product_id || x.id || Object.keys(x)[0];
                     let quantity = x.quantity || x[pID];
@@ -171,7 +171,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                         before: async (row) => {
 
                             let pID = row[2],
-                                quantity = row[0],
+                                quantity = Number.parseInt(row[0]),
                                 product = await getProduct(pID),
                                 orderedProduct = await getOrderProduct(orderID, pID) || { order_id: orderID, product_id: pID, quantity: 0 };
 
@@ -250,7 +250,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
             }
             else {
 
-                let insertProducts = products.map(async (x) => {
+                let insertProducts = products.map((x) => {
 
                     let pID = x.product_id || x.id || Object.keys(x)[0];
                     let quantity = x.quantity || x[pID];
@@ -266,12 +266,12 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                         before: async (row) => {
 
                             let pID = row[1],
-                                quantity = row[2],
+                                quantity = Number.parseInt(row[2]),
                                 product = await getProduct(pID);
 
                             if (!orderID || !product || quantity < 0) {
                                 if (AF_DEBUG) {
-                                    console.log("Invalid order/product:", orderID, product)
+                                    console.log("Invalid order/product:", orderID, pID, product)
                                 }
                                 return false;
                             }
