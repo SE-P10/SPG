@@ -62,8 +62,7 @@ We don't have a separate task for unit and E2E but an unique task called 'test a
   - Hours spent on remediation  : 4h
   - debt ratio (as reported by SonarQube under "Measures-Maintainability") ; 0.7 %
   - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ) :
-  <br>Reliability : A  
-  <br>Securety : A
+  <br>Reliability : A <br>Security : A
   <br>Maintainability : A
   
 
