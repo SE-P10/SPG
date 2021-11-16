@@ -72,7 +72,7 @@ We don't have a separate task for unit and E2E but an unique task called 'test a
 
 - What caused your errors in estimation (if any)?
 Testing requires more hours than eximated<br>
-We didn't considered problem of having different idea between back-end and front-end
+We over-estimated the 'solve git hub issues' task beacuse in the last demo we spent a lot of time on it but during this sprint , thanks to what we have learnt in the previous demo , we spent less time and managed better gitHub.
 
 - What lessons did you learn (both positive and negative) in this sprint?
 Communication between front-end and back-end in very important , in particular for don't lose time
