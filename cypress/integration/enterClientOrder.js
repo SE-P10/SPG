@@ -39,7 +39,7 @@ describe('enterNewClientOrder', () => {
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
-        
+
     })
     afterEach(() => {
         //Logout
@@ -49,6 +49,7 @@ describe('enterNewClientOrder', () => {
     after(() => {
         //clear Db
         cy.request('DELETE', 'http://localhost:3001/api/clients/michelebasilico@gmail.com')
+        //ToDO -> also clear order
     })
 
     it('a shopEmployee should be able to add a new order of a client (by entering not registered user) ', () => {
@@ -69,6 +70,10 @@ describe('enterNewClientOrder', () => {
         cy.findByRole('button', { name: /issue order/i }).click()
         //Should be appear aler
         cy.findByRole('alert').should('include.text', 'User not registered')
+        //Close Alert
+        cy.findByText(/×/i).click()
+        //ToDO -> Check on the server
+
 
     })
 
@@ -76,33 +81,41 @@ describe('enterNewClientOrder', () => {
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
-        cy.findByRole('textbox', { name: /client mail/i }).type("michi@gmail.com")
+        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico@gmail.com")
         //click issue order button
         cy.findByRole('button', { name: /issue order/i }).click()
         //Should be appear alert
-        cy.findByRole('alert').should('include.text', '')
+        cy.findByRole('alert').should('include.text', "Can't issue an order without items")
+        //Close Alert
+        cy.findByText(/×/i).click()
+        //ToDO -> Check on the server
+
     })
 
-    it('a shopEmployee should be able to add a new order of a client (by entering n. of product not avaiable) ', () => {
+    it('a shopEmployee should be able to add a new order of a client (by entering n. of product not available) ', () => {
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
-        cy.findByRole('textbox', { name: /client mail/i }).type("michi@gmail.com")
+        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico@gmail.com")
         //Select a product
         cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
         //Type a wrong number of product 
-        cy.findByRole('spinbutton').clear().type('4').trigger('change');
+        cy.findByRole('spinbutton').clear().type('1800').trigger('change');
         //click issue order button
         cy.findByRole('button', { name: /issue order/i }).click()
         //Should be appear alert
-        cy.findByRole('alert').should('include.text', '')
+        cy.findByRole('alert').should('include.text', 'You are trying to order more than the quantity available')
+        //Close Alert
+        cy.findByText(/×/i).click()
+        //ToDO -> Check on the server
+
     })
 
     it('a shopEmployee should be able to add a new order of a client (by entering negative n. of product) ', () => {
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
-        cy.findByRole('textbox', { name: /client mail/i }).type("michi@gmail.com")
+        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico@gmail.com")
         //Select a product
         cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
         //Type a wrong number of product 
@@ -110,14 +123,18 @@ describe('enterNewClientOrder', () => {
         //click issue order button
         cy.findByRole('button', { name: /issue order/i }).click()
         //Should be appear alert
-        cy.findByRole('alert').should('include.text', '')
+        cy.findByRole('alert').should('include.text', 'Quantity must be greater than 0')
+        //Close Alert
+        cy.findByText(/×/i).click()
+        //ToDO -> Check on the server
+
     })
 
     it('a shopEmployee should be able to add a new order of a client (by entering correct info) ', () => {
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
-        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico1@gmail.com")
+        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico@gmail.com")
         //Select a product
         cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
         //Type a wrong number of product 
@@ -125,7 +142,10 @@ describe('enterNewClientOrder', () => {
         //click issue order button
         cy.findByRole('button', { name: /issue order/i }).click()
         //Should be appear alert
-        cy.findByRole('alert').should('include.text', '')
+        cy.findByRole('alert').should('include.text', 'Request sent correctly!')
+        //Close Alert
+        cy.findByText(/×/i).click()
+        //ToDO -> Check on the server
     })
 
 

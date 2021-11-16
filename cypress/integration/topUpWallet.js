@@ -36,7 +36,7 @@ describe('enterNewClientOrder', () => {
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to hand out a order
-        cy.findByRole('button', {  name: /topup a wallet/i}).click()
+        cy.findByRole('button', { name: /topup a wallet/i }).click()
 
     })
     afterEach(() => {
@@ -56,59 +56,67 @@ describe('enterNewClientOrder', () => {
         //Enter wrong email
         cy.findByRole('textbox').type('topogigio@gmail.it')
         //Click on search button
-        cy.findByRole('button', {  name: /search/i}).click()
+        cy.findByRole('button', { name: /search/i }).click()
         //Assertion on alert
-        cy.get('.fade').should('include.text','No user found')
-        
+        cy.get('.fade').should('include.text', 'No user found')
+        //Close Alert
+        cy.findByText(/×/i).click()
+
     })
 
+    //Funziona solo col db pulito
     it('a shopEmployee should be able to top up a client wallet (by entering correct email)', () => {
         //Enter email
         cy.findByRole('textbox').type('michelebasilico@gmail.com')
         //Click on search button
-        cy.findByRole('button', {  name: /search/i}).click()
+        cy.findByRole('button', { name: /search/i }).click()
         //Empty wallet
-        cy.get('[disabled=""]').should('have.value','0')
+        cy.get('[disabled=""]').should('have.value', '0')
         //type a number to recharge
         cy.findByRole('spinbutton').clear().type('20');
         //click on recharge button
-        cy.findByRole('button', {  name: /recharge the wallet/i}).click()
+        cy.findByRole('button', { name: /recharge the wallet/i }).click()
+        //Assertion
+        cy.findByRole('alert').should('include.text', 'successfully recharged your wallet')
+        //Close Alert
+        cy.findByText(/×/i).click()
         //Click on topup button
-        cy.findByRole('button', {  name: /topup a wallet/i}).click()       
+        cy.findByRole('button', { name: /topup a wallet/i }).click()
         //Enter email
         cy.findByRole('textbox').type('michelebasilico@gmail.com')
         //Click on search button
-        cy.findByRole('button', {  name: /search/i}).click()
+        cy.findByRole('button', { name: /search/i }).click()
         //Check new wallet credit
-        cy.get('[disabled=""]').should('have.value','20')
+        cy.get('[disabled=""]').should('have.value', '20')
     })
 
     it('a shopEmployee should be able to top up a client wallet (by entering negative amount)', () => {
         //Enter wrong email
         cy.findByRole('textbox').type('michelebasilico@gmail.com')
         //Click on search button
-        cy.findByRole('button', {  name: /search/i}).click()
+        cy.findByRole('button', { name: /search/i }).click()
         //Empty wallet
-        cy.get().should('have.text','20')
+        cy.get().should('have.text', '20')
         //type a number to recharge
         cy.findByRole('spinbutton').clear().type('-20');
         //click on recharge button
-        cy.findByRole('button', {  name: /recharge the wallet/i}).click()
+        cy.findByRole('button', { name: /recharge the wallet/i }).click()
         //check the alert
-        cy.getByRole('alert').should('include.text','you should enter positive amount')
+        cy.getByRole('alert').should('include.text', 'The amount must be greater than 0.')
+        //ToDO -> Check on the server
     })
 
     it('a shopEmployee should be able to top up a client wallet (by entering wrong input)', () => {
         //Enter wrong email
         cy.findByRole('textbox').type('michelebasilico@gmail.com')
         //Click on search button
-        cy.findByRole('button', {  name: /search/i}).click()
+        cy.findByRole('button', { name: /search/i }).click()
         //type a number to recharge
         cy.findByRole('spinbutton').clear().type('ciao');
         //click on 
-        cy.findByRole('button', {  name: /recharge the wallet/i}).click()
+        cy.findByRole('button', { name: /recharge the wallet/i }).click()
         //Check alert
-        cy.findByRole('alert').should('include.text','Enter digits')
+        cy.findByRole('alert').should('include.text', 'The amount must be greater than 0.')
     })
 
 })

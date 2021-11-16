@@ -97,9 +97,15 @@ describe('enterNewClientOrder', () => {
         //Status booked
         cy.get('.below.col > :nth-child(1) > :nth-child(3)').should('include.text','booked')
         //Click on hand out button
-        cy.findByRole('button', {  name: /hand out/i})
-        //Assertion on status
-        cy.get('.below.col > :nth-child(1) > :nth-child(3)').should('include.text','hand out')
+        cy.findByRole('button', {  name: /hand out/i}).click()
+        //Check Alert
+        cy.findByRole('alert').should('include.text', 'Order hands out correctly!')
+        //Check the order
+        cy.findByRole('button', {  name: /check orders/i}).click()
+        cy.findByRole('textbox').type('michelebasilico@gmail.com')
+        cy.findByRole('button', {  name: /search/i}).click()
+        cy.findByText(/status : handout/i).should('exist')
+
         
     })
 /*
