@@ -12,6 +12,10 @@
 |surname|TEXT||
 |approved|INTEGER|default 0|
 
+Role:<br>
+0 client
+1 shop employee
+
 ## users_meta
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
