@@ -99,7 +99,7 @@ describe('enterNewClientOrder', () => {
         //Status booked
         cy.get('.below.col > :nth-child(1) > :nth-child(3)').should('include.text','booked')
         //Click on hand out button
-        cy.findByRole('button', {  name: /hand out/i}).click()
+        cy.get(':nth-child(1) > :nth-child(4) > .spg-button').click()
         //Check Alert
         cy.findByRole('alert').should('include.text', 'Order hands out correctly!')
         //Check the order
