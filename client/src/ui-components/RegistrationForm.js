@@ -32,13 +32,13 @@ function RegistrationForm(props) {
           surname: surname,
         };
         API.addClient(newClient)
-          .then((e) => /* props.addMessage(e) */ console.log(e))
+          .then((e) => { props.addMessage('New client registered'); console.log(''); props.changeAction(0);})
           .catch((e) => {
-            console.log("Error during the creation of the client " + e);
-            setErrorMessage("Error during the creation of the client " + e);
+            console.log(e.error);
+            setErrorMessage(e.error);
           });
 
-        props.changeAction(0);
+        
       } else {
         //password mismatch
         setErrorMessage("Password Mismatch");

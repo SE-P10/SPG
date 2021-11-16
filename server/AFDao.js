@@ -175,7 +175,8 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                                 product = await getProduct(pID),
                                 orderedProduct = await getOrderProduct(orderID, pID) || { order_id: orderID, product_id: pID, quantity: 0 };
 
-                            if (!orderID || !product) {
+                                
+                            if (!orderID || !product || quantity < 0) {
                                 if (AF_DEBUG) {
                                     console.log("Invalid order/product:", orderID, product)
                                 }
@@ -268,7 +269,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                                 quantity = row[2],
                                 product = await getProduct(pID);
 
-                            if (!orderID || !product) {
+                            if (!orderID || !product || quantity < 0) {
                                 if (AF_DEBUG) {
                                     console.log("Invalid order/product:", orderID, product)
                                 }
