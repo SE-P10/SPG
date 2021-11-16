@@ -5,6 +5,9 @@
   font-weight: bold !important;
   height: 100px !important;
 }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: "DejaVu Sans Mono", monospace !important;
@@ -12,7 +15,14 @@ body {
   background-image: url("bg.png") !important;
   background-repeat: no-repeat;
   height: 100%;
+  width: 100%;
   background-size: cover;
+}
+
+.list {
+  width: 200px;
+  height: 300px;
+  overflow-y: scroll;
 }
 
 .cont {
