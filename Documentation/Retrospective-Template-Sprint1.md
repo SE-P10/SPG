@@ -24,7 +24,7 @@ Team P10 RETROSPECTIVE Sprint #1
 
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
-| 0      |    10     |    -   |     82h       |     79h 5m         |
+| 0      |    10     |    -   |     82h       |     80h 5m         |
 | 1      |     3    |    8    |    8h        |    8h 40m          |
 | 2      |    2     |     5   |    4h 30m        |   4h45m           |
 | 3      |    1     |   3     |     1h       |   35m            |
