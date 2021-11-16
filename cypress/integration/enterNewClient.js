@@ -66,7 +66,7 @@ describe('enterNewClient', () => {
         //Click register button
         cy.get('.spg-button').click()
         //Succesfully Assert is shown
-        cy.findByRole('alert').should('include.text', 'successfully registered customer')
+        cy.findByRole('alert').should('include.text', 'New client registered')
         //Close Alert
         cy.findByText(/×/i).click()
         //check on the server
@@ -111,9 +111,9 @@ describe('enterNewClient', () => {
         //case0 -> Nessuna info
         cy.get('.spg-button').click()
         cy.findByRole('alert').should('include.text', 'Missing Data, check all the fields ')
-        //Close alert
         //ToDO -> Check on the server
-        cy.findByRole('alert').close()
+        //Close Alert
+        cy.findByText(/×/i).click()
         //case1 -> Una info mancante
         cy.get('#formGridName').type('Michele')
         cy.get('#formGridUsername').type('Miki')

@@ -1,6 +1,6 @@
 describe('enterNewClientOrder', () => {
 
-    before(() => {
+    before( ()  => {
         //runs once before all tests in the block -> Add new Client
         //Go to Login Page
         cy.visit('http://localhost:3000');
@@ -20,6 +20,7 @@ describe('enterNewClientOrder', () => {
         cy.get('#formGridConfirmPassword').type('ciao')
         //Click register button
         cy.get('.spg-button').click()
+        cy.wait(1000)
         //Add new order
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
@@ -31,6 +32,7 @@ describe('enterNewClientOrder', () => {
         //click issue order button
         cy.findByRole('button', { name: /issue order/i }).click()
         //Logout
+        cy.wait(1000)
         cy.findByRole('link', { name: /logout/i }).click()
         cy.clearCookies()
 
