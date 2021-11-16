@@ -11,23 +11,15 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import AFApi  from "../api/a-API";
+import AFApi from "../api/a-API";
 import gAPI from "../gAPI";
 
-
-
-
 function NewOrder(props) {
-
-
-
-
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
       //const userTmp = await API.getUsers();
       setProducts(productsTmp);
-      
     };
 
     fillTables();
@@ -35,21 +27,32 @@ function NewOrder(props) {
   //return <> NewOrder </>;
 
   const handleSubmit = async (event, props) => {
-    console.log(orderProduct)
+    console.log(orderProduct);
     let userId = await AFApi.getUserId(mailInserted);
     if (userId.length === 0) setErrorMessage("User not registered");
     else {
       //fare parseInt
       let orderOk = true;
-      for (let elem of orderProduct){
-        let quantityAvailable = products.filter(t => t.id === elem.product_id).map(t => t.quantity)
-        if (quantityAvailable < elem.quantity){ setErrorMessage("You are trying to order more than the quantity available");orderOk = false;}
+      for (let elem of orderProduct) {
+        let quantityAvailable = products
+          .filter((t) => t.id === elem.product_id)
+          .map((t) => t.quantity);
+        if (quantityAvailable < elem.quantity) {
+          setErrorMessage(
+            "You are trying to order more than the quantity available"
+          );
+          orderOk = false;
+        }
       }
 
-      if (orderOk)
-      {props.addMessage("Request sent correctly!");
-      AFApi.insertOrder(userId[0].id,orderProduct.filter(t => t.quantity !== 0))
-      props.changeAction(0);}
+      if (orderOk && orderProduct.length !== 0) {
+        props.addMessage("Request sent correctly!");
+        AFApi.insertOrder(
+          userId[0].id,
+          orderProduct.filter((t) => t.quantity !== 0)
+        );
+        props.changeAction(0);
+      } else setErrorMessage("Can't issue an order without items.");
     }
   };
 
@@ -122,7 +125,6 @@ function NewOrder(props) {
                       Q:
                       <Form.Control
                         inline
-                       
                         onChange={(ev) => {
                           setOrderProducts((old) => {
                             const list = old.map((item) => {
