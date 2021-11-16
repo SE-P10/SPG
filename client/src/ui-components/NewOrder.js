@@ -28,7 +28,6 @@ function NewOrder(props) {
 
   const handleSubmit = async (event, props) => {
     let userId = await AFApi.getUserId(mailInserted);
-    console.log(userId[0].role);
     if (userId.length === 0) setErrorMessage("Invalid user");
     else if (userId[0].role != 0) setErrorMessage("Invalid user");
     else {
