@@ -12,5 +12,5 @@
 
 #### API.insertOrder(userID, products, orderDetails) 
   * Description: insert a new order
-  * Request params: userID, list of products as associative list ([{product_id:quantity}, ...] or [{product_id: 5, quantity: 5}, ...] or {{id: 5, quantity: 5}, ...}), order details like {pickup_time: '', pickup_place: '', status: 'booked'}
+  * Request params: userID, list of products as associative list **[{product_id:quantity}, ...]** or **[{product_id: 5, quantity: 5}, ...]** or **[{id: 5, quantity: 5}, ...}]**, order details like **{pickup_time: '', pickup_place: '', status: 'booked'}**
   * Return: true or false
