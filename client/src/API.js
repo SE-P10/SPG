@@ -2,6 +2,7 @@
 import dayjs from "dayjs";
 import gApi from "./gAPI.js"
 import AFApi from "./api/a-API.js"
+import farmerAPI from 'api/farmer-API.js'
 
 function getJson(httpResponsePromise) {
   return new Promise((resolve, reject) => {
@@ -54,8 +55,8 @@ async function logOut() {
   await fetch("/api/sessions/current", { method: "DELETE" });
 }
 
-async function getOrders(client_email){
-  const response = await fetch("/api/orders/"+client_email, { method: "GET" });
+async function getOrders(client_email) {
+  const response = await fetch("/api/orders/" + client_email, { method: "GET" });
 
   if (response.ok) {
     return await response.json();
@@ -100,6 +101,7 @@ async function updateWallet(amount, client_email) {
 const API = {
   ...AFApi,
   ...gApi,
+  ...farmerAPI,
   logIn,
   logOut,
   getUserInfo,
