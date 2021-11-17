@@ -4,6 +4,8 @@
 const db = require("./db");
 const bcrypt = require("bcrypt");
 
+const { runQuerySQL, getQuerySQL } = require("./utility");
+
 exports.getUserById = (id) => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM users WHERE id = ?";
@@ -22,6 +24,20 @@ exports.getUserById = (id) => {
     });
   });
 };
+
+/**
+ * @author sh1zen
+*/
+exports.updateUserMeta = async (userID, meta_key, meta_value) => {
+  return await runQuerySQL(db, "UPDATE users_meta SET meta_value = ? WHERE user_id = ? AND meta_key = ?", [meta_value, userID, meta_key], true);
+}
+
+/**
+ * @author sh1zen
+*/
+exports.getUserMeta = async (userID, meta_key, single = false, failRes = false) => {
+  return (await getQuerySQL(db, "SELECT meta_value FROM users_meta WHERE user_id = ? AND meta_key = ?", [userID, meta_key], null, { meta_value: failRes }, single)).meta_value || failRes;
+}
 
 exports.getUser = (username, password) => {
   return new Promise((resolve, reject) => {
@@ -60,8 +76,8 @@ exports.getuserId = (client_email = null) => {
 
       const orders = rows.map((user) => ({
         id: user.id,
-        role : user.role
-        
+        role: user.role
+
       }));
 
       resolve(orders);
