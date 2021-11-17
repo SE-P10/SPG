@@ -14,9 +14,9 @@ function TopUpWallet(props) {
     console.log("valore email " + emailValue);
     setEmail(() => emailValue);
     API.getWalletByMail(emailValue)
-      .then((walletValue) => {
+      .then((walletValueN) => {
         setErrorMessage("");
-        setWalletValue(walletValue);
+        setWalletValue(walletValueN);
       })
       .catch((e) => {
         setErrorMessage("No user found.");

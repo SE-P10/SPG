@@ -60,6 +60,7 @@ exports.getuserId = (client_email = null) => {
 
       const orders = rows.map((user) => ({
         id: user.id,
+        role : user.role
         
       }));
 

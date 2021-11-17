@@ -39,15 +39,16 @@ const addClient = async (newClient) => {
 
 const listProducts = () => {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM products";
+    const sql = "select p.id AS idP, quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_detalis pd where p.farmer_id = u.id and p.details_id = pd.id";
     db.all(sql, [], (err, rows) => {
       if (err) reject(err);
       else {
         const Products = rows.map((p) => ({
-          id: p.id,
+          id: p.idP,
           quantity: p.quantity,
           price: p.price,
-          name: p.name,
+          name: p.product,
+          Farmer: p.farmer + p.surname
         }));
         resolve(Products);
       }
