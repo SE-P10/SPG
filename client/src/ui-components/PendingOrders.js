@@ -12,8 +12,8 @@ function PendingOrders(props) {
 
   useEffect(() => {
     const fillTables = async () => {
-      const ordersTmp = await gAPI.getProducts();
-      //setOrders(ordersTmp);
+      const ordersTmp = await AFApi.getPendingOrders('pending');
+      setOrders(ordersTmp);
     };
 
     fillTables();
