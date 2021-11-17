@@ -1,9 +1,14 @@
 'use strict';
 
-/** 
- * used to handle comunication with nodejs server
- * @author sh1zen
-*/
+/**
+ * Handle server communication
+ * 
+ * @param {*} filter 
+ * @param {*} products 
+ * @param {*} order_details 
+ * @param {*} method 
+ * @returns miscellaneous
+ */
 async function handleOrderAction(filter, products = [], order_details = {}, method = 'POST') {
 
 	if (typeof order_details === 'number')
@@ -31,12 +36,22 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
 }
 
 /**
- * @return { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
+ * Frontend interface API
+ * 
+ * @param {*} filter 
+ * @returns { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
 */
 async function getPendingOrders(filter) {
+
 	return await handleOrderAction(filter, [], {}, 'GET')
 }
 
+/**
+ * Frontend interface API
+ * 
+ * @param {*} orderID 
+ * @returns true|false
+ */
 async function handOutOrder(orderID = 0) {
 
 	return await handleOrderAction(orderID, [], {
@@ -44,12 +59,24 @@ async function handOutOrder(orderID = 0) {
 		status: 'handout'
 	}, 'PUT')
 }
-
+/**
+ * Frontend interface API
+ * 
+ * @param {*} userID 
+ * @param {*} products 
+ * @param {*} order_details 
+ * @returns true|false
+ */
 async function insertOrder(userID, products = [], order_details = {}) {
 
 	return await handleOrderAction(userID, products, order_details, 'POST')
 }
 
+/**
+ * 
+ * @param {*} email 
+ * @returns 
+ */
 async function getUserId(email) {
 	const response = await fetch('api/users/' + email);
 	const respondeBody = await response.json();
