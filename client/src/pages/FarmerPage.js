@@ -1,5 +1,21 @@
 import "../css/custom.css";
-import { Container, Row } from "react-bootstrap";
+import {
+  Button,
+  Alert,
+  Form,
+  Row,
+  Col,
+  Dropdown,
+  DropdownButton,
+  Container,
+} from "react-bootstrap";
+import { useState } from "react";
+import { useEffect } from "react";
+import "../css/custom.css";
+import AFApi from "../api/a-API";
+import gAPI from "../gAPI";
+
+import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
 
 function FarmerPage(props) {
   const [message, setMessage] = useState("");
@@ -13,8 +29,8 @@ function FarmerPage(props) {
   };
   /* Actions 
     0 = No actions (Home)
-    1 = Browse products 
-    2 = NewOrder*/
+    1 = Update Availability
+    */
 
     return (
       <>
@@ -42,23 +58,13 @@ function FarmerPage(props) {
                   onClick={() => {
                     setAction(1);
                   }}>
-                  Browse products
+                  Update Product Availability
                 </Button>
               </Row>
               : ""}
 
 
-                {action === 0 ? 
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button btn-block'
-                  onClick={() => {
-                    setAction(2);
-                  }}>
-                  New Order
-                </Button>
-              </Row>
-              : ""}
+                
 
               </Col>
 
@@ -68,17 +74,13 @@ function FarmerPage(props) {
          </Row>
           <Row className='below'>
             {action === 1 ? (
-              <BrowserProducts
+              <UpdateAvailability
                 changeAction={changeAction}
                 addMessage={addMessage}
+                user={props.user}
               />
             ) : null}
-            {action === 2 ? (
-              <ClientOrder
-                changeAction={changeAction}
-                addMessage={addMessage}
-              />
-            ) : null}
+            
             
           </Row>
         </Container>
