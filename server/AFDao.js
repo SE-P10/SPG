@@ -191,7 +191,7 @@ const handleOrder = async (orderRAW, status = '') => {
                 // get original order to prevent some malicious actions
                 let order = await getOrder(newOrder.id);
 
-                if (!order)
+                if (!order || !order.id)
                     return reject('Is not a valid order, wrong orderID');
 
                 let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
@@ -199,7 +199,7 @@ const handleOrder = async (orderRAW, status = '') => {
                 let reStatus = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? newOrder.id : 0;
 
                 if (reStatus) {
-                    
+
                     switch (newOrder.status) {
                         case 'handout':
 
