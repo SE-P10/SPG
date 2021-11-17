@@ -7,6 +7,14 @@
   * Return: a list of all the products, it is empty in case the there are no
     products
 
+#### API.updateProducts(productID, newAmount)
+  * Description: update the value of the amount of products of a farmer to the
+    new value.
+  * Request params: productID the products id that is used to indicate that
+    farmer good, newAmount the new value.
+  * Return true or false
+
+
 #### API.updateOrder(orderID, products = []) 
   * Description: update products of an order
   * Request params: userID, list of products as associative list **[{product_id:

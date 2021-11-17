@@ -30,21 +30,7 @@ import {
 
  
         let orderOk = true;
-        for (let elem of orderProduct) {
-          let quantityAvailable = products
-            .filter((t) => t.id === elem.product_id)
-            .map((t) => t.quantity);
-          if (quantityAvailable < elem.quantity) {
-            setErrorMessage(
-              "You are trying to order more than the quantity available"
-            );
-            orderOk = false;
-          }
-          if (elem.quantity <= 0) {
-            setErrorMessage("Quantity must be greater than 0");
-            orderOk = false;
-          }
-        }
+        
   
         if (orderProduct.length === 0) {
           setErrorMessage("Can't issue an order without items.");
@@ -140,8 +126,12 @@ import {
                   {orderProduct.filter(t => t.product_id === p.id && t.confirmed == true).length === 0 ?<Form.Group><Form.Control onChange={ (ev) => {
 
 
-                     
-                      if (orderProduct.filter(t => t.product_id === p.id).length !== 0){setOrderProduct( (old) => {
+                      if (isNaN(parseInt(ev.target.value)) ) setErrorMessage("not a number")
+                      else {
+                      if (orderProduct.filter(t => t.product_id === p.id).length !== 0 ){
+                        
+                        
+                        setOrderProduct( (old) => {
                           const list = old.map( (item) => {
                               if (item.product_id === p.id) return {product_id : p.id , confirmed : item.confirmed, quantity : parseInt(ev.target.value), name : p.name};
                               else return item;
@@ -152,6 +142,8 @@ import {
                           setOrderProduct((old)=> [{product_id : p.id , confirmed : false, quantity : parseInt(ev.target.value), name : p.name},...old])
 
                       }
+                    }
+
                   }
                   } id={p.id} size='sm'/></Form.Group> : ""}</Col>
 
