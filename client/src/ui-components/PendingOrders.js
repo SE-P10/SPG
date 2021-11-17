@@ -1,29 +1,30 @@
 import { Alert, Form, Row, Col, Container } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchComponent } from "./SearchComponent";
 import API from "./../API"
+import AFApi from "../api/a-API";
+import gAPI from "../gAPI";
 import "../css/custom.css";
 
-function CheckOrders(props) {
+function PendingOrders(props) {
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSearch = async (email) => {
-    let ordersTmp = [];
-    if (orders.length !== 0 ) setOrders([])
-    ordersTmp = await API.getOrders(email);
-    if (ordersTmp.length === 0) {
-      setErrorMessage("No orders found for this user.");
-    } else {
-      setOrders(ordersTmp);
-    }
-  };
+  useEffect(() => {
+    const fillTables = async () => {
+      const ordersTmp = await gAPI.getProducts();
+      //setOrders(ordersTmp);
+    };
+
+    fillTables();
+  }, []);
+  
 
   return (
     <Container className='cont'>
       <Row className='justify-content-center'>
         {" "}
-        <h2> Check Orders</h2>{" "}
+        <h2> Pending Orders</h2>{" "}
       </Row>
       {errorMessage ? (
         <Alert variant='danger' onClose={() => setErrorMessage("")} dismissible>
@@ -33,18 +34,17 @@ function CheckOrders(props) {
       ) : (
         ""
       )}
-      <Row>
-        <SearchComponent className='mx-auto' handleSearch={handleSearch} />{" "}
-      </Row>
+      
 
       <Col>
         <Row className='justify-content-center'>
           {orders.length !== 0 ? (
-            <h3 className='thirdColor'> List of orders </h3>
+            <h3 className='thirdColor'> List of the pendind orders </h3>
           ) : (
             ""
           )}
         </Row>
+        {orders.length === 0 ? <h3>There are no pending orders</h3> : ""}
         {orders.map((order) => (
           <Row>
             <Col> id : {order.id}</Col>
@@ -56,4 +56,4 @@ function CheckOrders(props) {
     </Container>
   );
 }
-export { CheckOrders };
+export { PendingOrders };
