@@ -238,7 +238,10 @@ exports.getQuerySQL = async (db, sql, values, objDef = {}, returnFail = null, si
                     resolve(returnFail);
                 }
                 else {
-                    resolve({ ...this.filter_args(objDef, row) });
+                    if (objDef)
+                        resolve({ ...this.filter_args(objDef, row) });
+                    else
+                        resolve({ ...row });
                 }
             });
         }
@@ -249,7 +252,7 @@ exports.getQuerySQL = async (db, sql, values, objDef = {}, returnFail = null, si
                     resolve(returnFail);
                 }
                 else {
-                    const rets = rows.map((row) => { return { ...this.filter_args(objDef, row) } });
+                    const rets = rows.map((row) => { return { ...(!!objDef ? this.filter_args(objDef, row) : row) } });
                     resolve(rets);
                 }
             });
