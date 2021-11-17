@@ -18,18 +18,16 @@ function NewOrder(props) {
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
-      //const userTmp = await API.getUsers();
       setProducts(productsTmp);
     };
 
     fillTables();
   }, []);
-  //return <> NewOrder </>;
 
-  const handleSubmit = async (event, props) => {
-    console.log(orderProduct);
+  const handleSubmit = async (event, propsN) => {
     let userId = await AFApi.getUserId(mailInserted);
-    if (userId.length === 0) setErrorMessage("User not registered");
+    if (userId.length === 0) setErrorMessage("Invalid user");
+    else if (userId[0].role != 0) setErrorMessage("Invalid user");
     else {
       //fare parseInt
       let orderOk = true;
@@ -55,12 +53,15 @@ function NewOrder(props) {
       }
 
       if (orderOk) {
-        props.addMessage("Request sent correctly!");
         AFApi.insertOrder(
           userId[0].id,
           orderProduct.filter((t) => t.quantity !== 0)
-        );
-        props.changeAction(0);
+        )
+          .then(() => propsN.addMessage("Request sent correctly!"))
+          .catch((err) => {
+            setErrorMessage("Server error during insert order.");
+          });
+        propsN.changeAction(0);
       }
     }
   };
@@ -75,7 +76,7 @@ function NewOrder(props) {
   const selectProduct = (id) => {
     if (selectedPs.indexOf(id) == -1) {
       setOrderProducts((old) => [...old, { product_id: id, quantity: 1 }]);
-      setSelectPs((selectedPs) => [...selectedPs, id]);
+      setSelectPs((selectedPsn) => [...selectedPsn, id]);
     } else {
       setSelectPs((old) =>
         old.filter((p) => {
@@ -155,25 +156,7 @@ function NewOrder(props) {
                     </>
                   ) : null}
                 </Form.Group>
-                {/* <DropdownButton
-                id='dropdown-basic-button'
-                title='Select Quantity'>
-                {[...Array(p.quantity + 1).keys()].map((i) => (
-                  <Dropdown.Item
-                    onClick={() => {
-                      setOrderProducts((old) => {
-                        const list = old.map((item) => {
-                          if (item.product_id === p.id)
-                            return { product_id: p.id, quantity: i };
-                          else return item;
-                        });
-                        return list;
-                      });
-                    }}>
-                    {i}
-                  </Dropdown.Item>
-                  ))}
-                  </DropdownButton>*/}
+                
               </Row>
             ))}
           </Col>

@@ -1,6 +1,6 @@
 'use strict';
 
-const AF_DEBUG = false;
+const AF_DEBUG = true;
 const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
@@ -171,11 +171,11 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                         before: async (row) => {
 
                             let pID = row[2],
-                                quantity = Number.parseInt(row[0]),
+                                quantity = Number.parseFloat(row[0]),
                                 product = await getProduct(pID),
                                 orderedProduct = await getOrderProduct(orderID, pID) || { order_id: orderID, product_id: pID, quantity: 0 };
 
-                                
+
                             if (!orderID || !product || quantity < 0) {
                                 if (AF_DEBUG) {
                                     console.log("Invalid order/product:", orderID, product)
@@ -187,10 +187,10 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                                 console.log("Updating product:", orderedProduct, row)
                             }
 
-                            if ((Number.parseInt(orderedProduct.quantity) + Number.parseInt(product.quantity)) < Number.parseInt(quantity)) {
+                            if ((Number.parseFloat(orderedProduct.quantity) + Number.parseFloat(product.quantity)) < Number.parseFloat(quantity)) {
 
                                 if (AF_DEBUG) {
-                                    console.log("Product quantity error:", orderedProduct, Number.parseInt(orderedProduct.quantity) + Number.parseInt(quantity))
+                                    console.log("Product quantity error:", orderedProduct, Number.parseFloat(orderedProduct.quantity) + Number.parseFloat(quantity))
                                 }
 
                                 return false;
@@ -209,9 +209,9 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                             let pID = row[2],
                                 order = await getOrder(orderID),
                                 product = await getProduct(pID),
-                                availableQuantity = Number.parseInt(product.quantity) || 0,
-                                orderedQuantity = Number.parseInt(orderedProduct.quantity) || 0,
-                                updateQuantity = Number.parseInt(row[0]) || 0;
+                                availableQuantity = Number.parseFloat(product.quantity) || 0,
+                                orderedQuantity = Number.parseFloat(orderedProduct.quantity) || 0,
+                                updateQuantity = Number.parseFloat(row[0]) || 0;
 
                             if (!product || !order) {
                                 if (AF_DEBUG) {
@@ -266,7 +266,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                         before: async (row) => {
 
                             let pID = row[1],
-                                quantity = Number.parseInt(row[2]),
+                                quantity = Number.parseFloat(row[2]),
                                 product = await getProduct(pID);
 
                             if (!orderID || !product || quantity < 0) {
@@ -280,7 +280,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                                 console.log("Inserting product order:", product, row)
                             }
 
-                            if (Number.parseInt(product.quantity) < Number.parseInt(quantity)) {
+                            if (Number.parseFloat(product.quantity) < Number.parseFloat(quantity)) {
                                 if (AF_DEBUG) {
                                     console.log("Inserting product error:", product, quantity)
                                 }
@@ -305,9 +305,9 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                                 return false;
                             }
 
-                            let res = await updateProduct(pID, { quantity: (Number.parseInt(product.quantity) - Number.parseInt(row[2])) });
+                            let res = await updateProduct(pID, { quantity: (Number.parseFloat(product.quantity) - Number.parseFloat(row[2])) });
 
-                            res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * Number.parseInt(row[2])) });
+                            res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * Number.parseFloat(row[2])) });
 
                             if (!res) {
                                 if (AF_DEBUG) {
@@ -392,22 +392,15 @@ const handleOrderAction = async (userID, orderID, data = {}) => {
 exports.execApi = (app, passport, isLoggedIn) => {
 
     // update existing order POST /api/orders/:user_id/:order_id
-    app.put('/api/orders/:user_id/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+    app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.array() });
         }
 
-        let user = await existValueInDB(db, 'users', { id: req.params.user_id });
-
-        if (!user) {
-            res.status(501).json({ error: 'Invalid user ID' });
-            return;
-        }
-
         try {
-            let status = await handleOrderAction(req.params.user_id, req.params.order_id, req.body);
+            let status = await handleOrderAction(0, req.params.order_id, req.body);
 
             if (status)
                 res.status(201).end();

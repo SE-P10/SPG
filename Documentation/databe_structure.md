@@ -1,5 +1,7 @@
 # DATABASE TABLES
 
+![Database](https://github.com/SE-P10/SPG/blob/master/Documentation/ERD.jpg?raw=true)
+
 ## Users
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
@@ -11,6 +13,10 @@
 |name|TEXT||
 |surname|TEXT||
 |approved|INTEGER|default 0|
+
+Role:<br>
+0 client
+1 shop employee
 
 ## users_meta
 |NAME|TYPE|DESCRIPTION|
@@ -65,8 +71,15 @@
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
+|farmer_id|INTEGER||
+|details_id|INTEGER||
 |quantity|INTEGER||
-|price|INTEGER||
+|name|TEXT||
+
+## product_details
+|NAME|TYPE|DESCRIPTION|
+|---|---|---|
+|id|INTEGER||
 |name|TEXT||
 
 
