@@ -4,6 +4,7 @@ import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployee";
 import { ClientPage } from "./pages/ClientPage";
 import { HomePage } from "./pages/HomePage";
+import { FarmerPage } from "./pages/FarmerPage";
 import {
   BrowserRouter as Router,
   Route,
@@ -69,8 +70,13 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null && user.role == 1 ? (
-                  <Redirect to='/shopemployee' />
+                {loggedIn && user !== null ? (
+                  <>
+                    {" "}
+                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
+                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
+                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
+                  </>
                 ) : (
                   <LoginForm
                     closeMessage={closeMessage}
@@ -99,9 +105,20 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null && user.role == 1 ? (
-                  <Redirect to='/shopemployee' />
-                ) : <Redirect to='/'/>}
+                {loggedIn && user !== null ? (
+                  <>
+                    {" "}
+                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
+                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
+                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
+                  </>
+                ) : (
+                  <LoginForm
+                    closeMessage={closeMessage}
+                    message={message}
+                    login={doLogin}
+                  />
+                )}
               </Row>
             </Container>
           )}
@@ -114,6 +131,17 @@ const App = () => {
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
               <ShopEmployee user={user} />
+            </Container>
+          )}
+        />
+
+        <Route
+          exact
+          path='/farmerpage'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <FarmerPage user={user} />
             </Container>
           )}
         />

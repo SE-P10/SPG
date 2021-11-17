@@ -13,7 +13,7 @@ function BrowserProducts(props) {
       setProducts(productsTmp);
     };
 
-    fillTables().catch((err) =>  setProducts([]));
+    fillTables().catch((err) => setProducts([]));
   }, []);
 
   return (
@@ -40,7 +40,7 @@ function BrowserProducts(props) {
             <Row className='below cont'>
               <Col> {p.name}</Col>
               <Col> {p.quantity}</Col>
-              <Col>{p.price} €</Col>
+              <Col>{p.price} €/Kg</Col>
             </Row>
           ))}
         </Container>
