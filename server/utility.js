@@ -65,7 +65,7 @@ exports.booleanize = (string) => {
         return false;
 
     if (typeof string === 'string')
-        string.toLowerCase().trim();
+        string = string.toLowerCase().trim();
 
     switch (string) {
         case "true":
@@ -114,7 +114,7 @@ exports.removeEmpty = (item, default_ = null, strict = false) => {
                 });
 
             }
-        } else if (!strict || (strict && this.booleanize(item))) {
+        } else if (strict ? this.booleanize(item) : !!item) {
             res = item;
         }
     }
@@ -135,27 +135,57 @@ exports.dynamicSQL = (action, obj, where = false) => {
     return { sql: sql, values: [...Object.values(obj), ...Object.values(where || {})] }
 }
 
-exports.bulkSQL = async (db, sql, rows) => {
+exports.bulkSQL = async (db, sql, rows, callbacks = {}, transaction = true) => {
 
-    let processed = 0;
+    let processed = [];
 
-    if (!rows || !sql || !db)
-        return 0;
+    let { before, after } = callbacks;
+
+    let beforeRes, afterRes;
 
     return new Promise(async (resolve, reject) => {
 
-        await db.serialize(async () => {
+        if (!rows || !sql || !db)
+            return reject('Empty bulkSQL arguments');
 
-            await db.run("BEGIN TRANSACTION;");
+        db.serialize(async () => {
+
+            if (transaction) {
+                db.run("BEGIN TRANSACTION;");
+            }
 
             for (let i = 0; i < rows.length; i++) {
 
+                if (before) {
+
+                    beforeRes = await before(rows[i]);
+                    if (!beforeRes) {
+                        if (transaction) {
+                            db.run("ROLLBACK;");
+                        }
+                        return reject("Query not passed checks");
+                    }
+                }
+
                 let res = await new Promise((resolve2, reject2) => {
-                    db.run(sql, rows[i], function (err) {
+                    db.run(sql, rows[i], async function (err) {
 
                         if (err) {
-                            db.run("ROLLBACK;");
+                            if (transaction) {
+                                db.run("ROLLBACK;");
+                            }
                             return reject(err);
+                        }
+
+                        if (after) {
+
+                            afterRes = await after(rows[i], this.lastID, beforeRes);
+                            if (!afterRes) {
+                                if (transaction) {
+                                    db.run("ROLLBACK;");
+                                }
+                                return reject("Query not passed actions");
+                            }
                         }
 
                         resolve2(this.lastID || true);
@@ -163,15 +193,17 @@ exports.bulkSQL = async (db, sql, rows) => {
                 })
 
                 if (res) {
-                    processed++;
+                    processed.push(res);
                 }
                 else {
-                    processed = 0;
+                    processed = [];
                     break;
                 }
             }
 
-            await db.run("COMMIT;");
+            if (transaction) {
+                db.run("COMMIT;");
+            }
 
             resolve(processed);
         });
@@ -186,10 +218,60 @@ exports.existValueInDB = async (db, table, fieldValue, returnDef = false) => {
         db.get(dinoSQL.sql, [...dinoSQL.values], (err, row) => {
             if (err) {
                 console.log(err)
-                return resolve(false);
+                resolve(false);
             }
+            else {
+                resolve(!!row ? (dinoSQL.values.length === 1 ? dinoSQL.values[0] : dinoSQL.values) : returnDef);
+            }
+        });
+    })
+}
 
-            resolve(!!row ? (dinoSQL.values.length === 1 ? dinoSQL.values[0] : dinoSQL.values) : returnDef);
+exports.getQuerySQL = async (db, sql, values, objDef = {}, returnFail = null, single = false) => {
+
+    return new Promise((resolve, reject) => {
+
+        if (single) {
+            db.get(sql, [...values], (err, row) => {
+
+                if (err || !row) {
+                    resolve(returnFail);
+                }
+                else {
+                    if (objDef)
+                        resolve({ ...this.filter_args(objDef, row) });
+                    else
+                        resolve({ ...row });
+                }
+            });
+        }
+        else {
+            db.all(sql, [...values], (err, rows) => {
+
+                if (err || !rows) {
+                    resolve(returnFail);
+                }
+                else {
+                    const rets = rows.map((row) => { return { ...(!!objDef ? this.filter_args(objDef, row) : row) } });
+                    resolve(rets);
+                }
+            });
+        }
+    });
+}
+
+exports.runQuerySQL = async (db, sql, values, res = false) => {
+
+    return new Promise((resolve, reject) => {
+
+        db.run(sql, [...values], function (err) {
+
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve(res ? (this.lastID || this.changes) : true);
+            }
         });
     })
 }

@@ -1,15 +1,15 @@
 'use strict';
 
-async function updateOrder(userID, products = [], order_details = {}) {
+async function handleOrderAction(idOU, products = [], order_details = {}, method = 'POST') {
 
 	if (typeof order_details === 'number')
 		order_details = { id: order_details };
-
-	order_details = Object.assign({ id: 0 }, order_details)
+	else
+		order_details = Object.assign({ id: 0 }, order_details)
 
 	return new Promise((resolve, reject) => {
-		fetch('/api/orders/' + userID + '/' + order_details.id, {
-			method: 'PUT',
+		fetch('/api/orders/' + idOU, {
+			method: method,
 			headers: {
 				'Content-Type': 'application/json',
 			},
@@ -24,27 +24,20 @@ async function updateOrder(userID, products = [], order_details = {}) {
 			}
 		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) }); // connection errors
 	});
+
+}
+
+async function handOutOrder(orderID = 0) {
+
+	return handleOrderAction(orderID, [], {
+		id: orderID,
+		status: 'handout'
+	}, 'PUT')
 }
 
 async function insertOrder(userID, products = [], order_details = {}) {
 
-	return new Promise((resolve, reject) => {
-		fetch('/api/orders/' + userID, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ products: products, order: order_details })
-		}).then((response) => {
-			if (response.ok) {
-				resolve(true);
-			} else {
-				response.json()
-					.then((message) => { reject(message); }) // error message in the response body
-					.catch(() => { reject({ error: "Impossible to read server response." }) }); // something else
-			}
-		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) }); // connection errors
-	});
+	return handleOrderAction(userID, products, order_details, 'POST')
 }
 
 async function getUserId(email) {
@@ -57,8 +50,8 @@ async function getUserId(email) {
 }
 
 const AFApi = {
-	updateOrder,
 	insertOrder,
+	handOutOrder,
 	getUserId
 }
 

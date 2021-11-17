@@ -6,7 +6,7 @@ import img3 from "../img3.png"; //
 import "../css/custom.css";
 
 function HomePage(props) {
-  return <> sada</>;
+  return <></>;
 }
 
 export { HomePage };

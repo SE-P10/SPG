@@ -11,45 +11,58 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import AFApi  from "../api/a-API";
+import AFApi from "../api/a-API";
 import gAPI from "../gAPI";
 
-
-
-
 function NewOrder(props) {
-
-
-
-
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
-      //const userTmp = await API.getUsers();
       setProducts(productsTmp);
-      
     };
 
     fillTables();
   }, []);
-  //return <> NewOrder </>;
 
-  const handleSubmit = async (event, props) => {
-    console.log(orderProduct)
+  const handleSubmit = async (event, propsN) => {
     let userId = await AFApi.getUserId(mailInserted);
-    if (userId.length === 0) setErrorMessage("User not registered");
+    if (userId.length === 0) setErrorMessage("Invalid user");
+    else if (userId[0].role != 0) setErrorMessage("Invalid user");
     else {
       //fare parseInt
       let orderOk = true;
-      for (let elem of orderProduct){
-        let quantityAvailable = products.filter(t => t.id === elem.product_id).map(t => t.quantity)
-        if (quantityAvailable < elem.quantity){ setErrorMessage("You are trying to order more than the quantity available");orderOk = false;}
+      for (let elem of orderProduct) {
+        let quantityAvailable = products
+          .filter((t) => t.id === elem.product_id)
+          .map((t) => t.quantity);
+        if (quantityAvailable < elem.quantity) {
+          setErrorMessage(
+            "You are trying to order more than the quantity available"
+          );
+          orderOk = false;
+        }
+        if (elem.quantity <= 0) {
+          setErrorMessage("Quantity must be greater than 0");
+          orderOk = false;
+        }
       }
 
-      if (orderOk)
-      {props.addMessage("Request sent correctly!");
-      AFApi.insertOrder(userId[0].id,orderProduct.filter(t => t.quantity !== 0))
-      props.changeAction(0);}
+      if (orderProduct.length === 0) {
+        setErrorMessage("Can't issue an order without items.");
+        orderOk = false;
+      }
+
+      if (orderOk) {
+        AFApi.insertOrder(
+          userId[0].id,
+          orderProduct.filter((t) => t.quantity !== 0)
+        )
+          .then(() => propsN.addMessage("Request sent correctly!"))
+          .catch((err) => {
+            setErrorMessage("Server error during insert order.");
+          });
+        propsN.changeAction(0);
+      }
     }
   };
 
@@ -63,7 +76,7 @@ function NewOrder(props) {
   const selectProduct = (id) => {
     if (selectedPs.indexOf(id) == -1) {
       setOrderProducts((old) => [...old, { product_id: id, quantity: 1 }]);
-      setSelectPs((selectedPs) => [...selectedPs, id]);
+      setSelectPs((selectedPsn) => [...selectedPsn, id]);
     } else {
       setSelectPs((old) =>
         old.filter((p) => {
@@ -105,7 +118,7 @@ function NewOrder(props) {
           </Form.Group>
 
           <h3 className='thirdColor'> List of our products: </h3>
-          <Col className='below'>
+          <Col className='below list'>
             {products.map((p) => (
               <Row className='below'>
                 <Col>{p.name} </Col>
@@ -122,7 +135,6 @@ function NewOrder(props) {
                       Q:
                       <Form.Control
                         inline
-                        defaultValue={1}
                         onChange={(ev) => {
                           setOrderProducts((old) => {
                             const list = old.map((item) => {
@@ -144,25 +156,7 @@ function NewOrder(props) {
                     </>
                   ) : null}
                 </Form.Group>
-                {/* <DropdownButton
-                id='dropdown-basic-button'
-                title='Select Quantity'>
-                {[...Array(p.quantity + 1).keys()].map((i) => (
-                  <Dropdown.Item
-                    onClick={() => {
-                      setOrderProducts((old) => {
-                        const list = old.map((item) => {
-                          if (item.product_id === p.id)
-                            return { product_id: p.id, quantity: i };
-                          else return item;
-                        });
-                        return list;
-                      });
-                    }}>
-                    {i}
-                  </Dropdown.Item>
-                  ))}
-                  </DropdownButton>*/}
+                
               </Row>
             ))}
           </Col>
