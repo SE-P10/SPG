@@ -7,6 +7,9 @@
   * Return: a list of all the products, it is empty in case the there are no
     products
 
+#### API.updateProducts(product_id,new_amount)
+
+
 #### API.updateOrder(orderID, products = []) 
   * Description: update products of an order
   * Request params: userID, list of products as associative list **[{product_id:
