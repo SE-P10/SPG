@@ -1,5 +1,9 @@
 'use strict';
 
+/** 
+ * used to handle comunication with nodejs server
+ * @author sh1zen
+*/
 async function handleOrderAction(filter, products = [], order_details = {}, method = 'POST') {
 
 	if (typeof order_details === 'number')
@@ -32,7 +36,6 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
 async function getPendingOrders(filter) {
 	return await handleOrderAction(filter, [], {}, 'GET')
 }
-
 
 async function handOutOrder(orderID = 0) {
 
