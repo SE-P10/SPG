@@ -2,9 +2,6 @@
   "name": "client",
   "version": "1.0.0",
   "private": true,
-  "jest": {
-    "testResultsProcessor": "jest-sonar-reporter"
-  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
