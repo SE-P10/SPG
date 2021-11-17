@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="H:\Michele\Università\Magistrale Polito\Software Engineering II\SPG\SPG\client\src\App.test.js">
+    <testCase name="App renders without crashing" duration="126"/>
+  </file>
+  <file path="H:\Michele\Università\Magistrale Polito\Software Engineering II\SPG\SPG\client\src\pages\ShopEmployee.test.js">
+    <testCase name="ShopEmployee renders without crashing" duration="15"/>
+    <testCase name="ShopEmployee renders buttons" duration="69"/>
+  </file>
+  <file path="H:\Michele\Università\Magistrale Polito\Software Engineering II\SPG\SPG\client\src\pages\Login.test.js">
+    <testCase name="LoginForm renders without crashing" duration="80"/>
+    <testCase name="Login renders username text" duration="25"/>
+    <testCase name="Login renders password text" duration="16"/>
+    <testCase name="Username and Password fields Should be in the document and free of text" duration="217"/>
+    <testCase name="The entered username should be shown" duration="201"/>
+    <testCase name="The entered password should be shown" duration="209"/>
+  </file>
+</testExecutions>
