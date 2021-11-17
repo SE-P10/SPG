@@ -56,7 +56,7 @@ const getOrders = async (status = '') => {
         values.push(status)
     }
 
-    let orders = await getQuerySQL(db, "SELECT * FROM orders where status = ?", values, {
+    let orders = await getQuerySQL(db, sql, values, {
         id: 0,
         user_id: 0,
         status: '',
