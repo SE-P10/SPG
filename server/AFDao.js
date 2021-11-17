@@ -188,33 +188,42 @@ const handleOrder = async (orderRAW, status = '') => {
 
                 db.run("BEGIN TRANSACTION;");
 
-                if (!await existValueInDB(db, 'orders', { id: newOrder.id }))
+                // get original order to prevent some malicious actions
+                let order = await getOrder(newOrder.id);
+
+                if (!order)
                     return reject('Is not a valid order, wrong orderID');
 
                 let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
 
-                let res = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? newOrder.id : 0;
+                let reStatus = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? newOrder.id : 0;
 
-                if (newOrder.status === 'handout') {
+                if (reStatus) {
+                    
+                    switch (newOrder.status) {
+                        case 'handout':
 
-                    // get the order from database to be sure for price
-                    let order = await getOrder(newOrder.id),
-                        wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
+                            let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
 
-                    if (res && Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
-                        res = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
-                    }
-                    else {
-                        res = 0;
+                            reStatus = 0;
+
+                            if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
+                                reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
+                            }
+
+                            break;
                     }
                 }
 
-                if (res)
+                if (reStatus) {
                     db.run("COMMIT;");
-                else
+                    resolve(newOrder.id);
+                }
+                else {
                     db.run("ROLLBACK;");
+                    resolve(0);
+                }
 
-                resolve(newOrder.id);
             });
         }
         else {
