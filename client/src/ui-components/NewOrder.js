@@ -129,6 +129,7 @@ function NewOrder(props) {
                   <Form.Check
                     inline
                     onClick={() => selectProduct(p.id)}></Form.Check>{" "}
+                    
                   {selectedPs.indexOf(p.id) !== -1 ? (
                     <>
                       {" "}

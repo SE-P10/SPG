@@ -42,6 +42,11 @@ async function getWalletByMail(mail) {
     }
 }
 
+//async function insertProductInBasket(object)  //mettere controllo se prodotto già c'è o meno
+// object {product_id : , quantity :  } se in Basket c'è gia questo prodotto per questo utente alloda Update o delete (in base a quantity) altrimenti insert
+
+//async function deleteAllBasket() //l'id dello user te lo prendi tu
+
 const gAPI = {
     getProducts,
 	addClient,

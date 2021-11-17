@@ -2,7 +2,7 @@
 import dayjs from "dayjs";
 import gApi from "./gAPI.js"
 import AFApi from "./api/a-API.js"
-import farmerAPI from 'api/farmer-API.js'
+import farmerAPI from './api/farmer-API.js'
 
 function getJson(httpResponsePromise) {
   return new Promise((resolve, reject) => {
