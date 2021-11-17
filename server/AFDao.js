@@ -132,13 +132,12 @@ const handleOrder = async (orderRAW, status = '') => {
 
                 let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
 
-                let res = await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true) ? newOrder.id : 0;
-
+                let res = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? newOrder.id : 0;
 
                 if (newOrder.status === 'handout') {
 
                     // get the order from database to be sure for price
-                    let order = getOrder(newOrder.id),
+                    let order = await getOrder(newOrder.id),
                         wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
 
                     if (res && Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
@@ -154,7 +153,7 @@ const handleOrder = async (orderRAW, status = '') => {
                 else
                     db.run("ROLLBACK;");
 
-                resolve(res);
+                resolve(newOrder.id);
             });
         }
         else {
@@ -403,15 +402,20 @@ const processOrder = async (userID, orderID, data = {}) => {
     /**
      * Insert / Update a product list [{"id": "quantity"}, ...]
     */
-    if (orderID && isArray(products) && products.length > 0) {
+    if (orderID) {
 
-        let processed = await handleOrderProducts(orderID, products, updatingOrder);
+        if (isArray(products) && products.length > 0) {
 
-        if (AF_DEBUG_PROCESS) {
-            console.log("Processed products:", processed)
+            let processed = await handleOrderProducts(orderID, products, updatingOrder);
+
+            if (AF_DEBUG_PROCESS) {
+                console.log("Processed products:", processed)
+            }
+
+            return processed;
         }
-
-        return processed;
+        
+        return orderID;
     }
 
     return 0;

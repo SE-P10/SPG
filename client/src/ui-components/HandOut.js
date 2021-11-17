@@ -14,8 +14,10 @@ function HandOut(props) {
 
   const handOutOrder = async (orderId) => {
     //API.handOutOrder(orderId)
-    let idUser = await AFApi.getUserId(mailInserted)
-    AFApi.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'}).then( () => props.addMessage("Order hands out correctly!")).catch((err) =>  setErrorMessage("Problem with the server") )
+    let esito = await AFApi.handOutOrder(orderId)
+    if (esito) props.addMessage("Order hands out correctly!")
+    else setErrorMessage("Problem with the server")
+    //AFApi.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'}).then( () => props.addMessage("Order hands out correctly!")).catch((err) =>  setErrorMessage("Problem with the server") )
     
 
     props.changeAction(0);
@@ -54,7 +56,7 @@ function HandOut(props) {
 
       <Col className='below'>
         {orders
-          .filter((t) => t.status !== "HandOut")
+          .filter((t) => t.status !== "handout")
           .map((order) => (
             <Row className='below'>
               <Col> id : {order.id}</Col>
