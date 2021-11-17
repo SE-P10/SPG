@@ -1,5 +1,12 @@
 'use strict';
 
+
+
+//async function getPendingOrders() : 
+// Valore ritorno lista di ordini con i seguenti campi : id , prezzo , mail user che ha fatto ordine che si trova facendo join tra tabella user e orders
+
+
+
 async function handleOrderAction(idOU, products = [], order_details = {}, method = 'POST') {
 
 	if (typeof order_details === 'number')
