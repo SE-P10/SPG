@@ -30,9 +30,70 @@ const getOrder = async (orderID) => {
             product_id: '',
             quantity: 0
         })
+
+        order['user'] = await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
+            id: 0,
+            username: '',
+            email: '',
+            name: '',
+            surname: ''
+        })
     }
 
     return order;
+}
+
+const getOrders = async (status = '') => {
+
+    if (typeof status === 'number' || /^\d+$/.test(status))
+        return getOrder(status);
+
+    let sql = 'SELECT * FROM orders',
+        values = [];
+
+    if (status) {
+        sql += " WHERE status = ?;"
+        values.push(status)
+    }
+
+    let orders = await getQuerySQL(db, "SELECT * FROM orders where status = ?", values, {
+        id: 0,
+        user_id: 0,
+        status: '',
+        price: 0,
+        pickup_time: '',
+        pickup_place: ''
+    }, null);
+
+    if (orders && orders.length > 0) {
+        orders = Promise.all(orders.map(async (order) => {
+
+            console.log(await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
+                id: 0,
+                username: '',
+                email: '',
+                name: '',
+                surname: ''
+            }, null, true))
+            return {
+                ...order,
+                user: await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
+                    id: 0,
+                    username: '',
+                    email: '',
+                    name: '',
+                    surname: ''
+                }, null, true),
+                products: await getQuerySQL(db, "SELECT * FROM order_product where order_id = ?", [order.id], {
+                    order_id: 0,
+                    product_id: '',
+                    quantity: 0
+                })
+            }
+        }))
+    }
+
+    return orders;
 }
 
 const getOrderProduct = async (orderID, productID) => {
@@ -414,7 +475,7 @@ const processOrder = async (userID, orderID, data = {}) => {
 
             return processed;
         }
-        
+
         return orderID;
     }
 
@@ -437,7 +498,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
             if (status)
                 res.status(201).end();
             else
-                res.status(400).json({ error: 'Bad request' });
+                res.status(400).json({ error: 'Unable to update the order' });
 
         } catch (err) {
             res.status(503).json({ error: err });
@@ -465,7 +526,29 @@ exports.execApi = (app, passport, isLoggedIn) => {
             if (status)
                 res.status(201).end();
             else
-                res.status(400).json({ error: 'Bad request' });
+                res.status(400).json({ error: 'Unable to insert a new order' });
+
+        } catch (err) {
+            console.log(err)
+            res.status(503).json({ error: err });
+        }
+    });
+
+    // GET order / orders /api/orders/:order_id
+    app.get('/api/orders/:filter', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        }
+
+        try {
+            let status = await getOrders(req.params.filter);
+
+            if (status)
+                res.status(200).json(status).end();
+            else
+                res.status(400).json({ error: 'Unable to get orders' });
 
         } catch (err) {
             console.log(err)

@@ -1,13 +1,6 @@
 'use strict';
 
-
-
-//async function getPendingOrders() : 
-// Valore ritorno lista di ordini con i seguenti campi : id , prezzo , mail user che ha fatto ordine che si trova facendo join tra tabella user e orders
-
-
-
-async function handleOrderAction(idOU, products = [], order_details = {}, method = 'POST') {
+async function handleOrderAction(filter, products = [], order_details = {}, method = 'POST') {
 
 	if (typeof order_details === 'number')
 		order_details = { id: order_details };
@@ -15,12 +8,12 @@ async function handleOrderAction(idOU, products = [], order_details = {}, method
 		order_details = Object.assign({ id: 0 }, order_details)
 
 	return new Promise((resolve, reject) => {
-		fetch('/api/orders/' + idOU, {
+		fetch('/api/orders/' + filter, {
 			method: method,
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ products: products, order: order_details })
+			body: JSON.stringify((!!products || !!order_details) ? { products: products, order: order_details } : '')
 		}).then((response) => {
 			if (response.ok) {
 				resolve(true);
@@ -31,12 +24,19 @@ async function handleOrderAction(idOU, products = [], order_details = {}, method
 			}
 		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) }); // connection errors
 	});
-
 }
+
+/**
+ * @return { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
+*/
+async function getPendingOrders() {
+	return await handleOrderAction('', [], {}, 'GET')
+}
+
 
 async function handOutOrder(orderID = 0) {
 
-	return handleOrderAction(orderID, [], {
+	return await handleOrderAction(orderID, [], {
 		id: orderID,
 		status: 'handout'
 	}, 'PUT')
@@ -44,7 +44,7 @@ async function handOutOrder(orderID = 0) {
 
 async function insertOrder(userID, products = [], order_details = {}) {
 
-	return handleOrderAction(userID, products, order_details, 'POST')
+	return await handleOrderAction(userID, products, order_details, 'POST')
 }
 
 async function getUserId(email) {
@@ -59,6 +59,7 @@ async function getUserId(email) {
 const AFApi = {
 	insertOrder,
 	handOutOrder,
+	getPendingOrders,
 	getUserId
 }
 
