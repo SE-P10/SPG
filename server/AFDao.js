@@ -544,7 +544,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     });
 
     // GET order / orders /api/orders/:order_id
-    app.get('/api/orders/:filter', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+    app.get('/api/orders/:filter?', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
