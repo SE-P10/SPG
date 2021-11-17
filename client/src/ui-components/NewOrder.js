@@ -7,6 +7,7 @@ import {
   Dropdown,
   DropdownButton,
   Container,
+  Image,
 } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -121,6 +122,13 @@ function NewOrder(props) {
           <Col className='below list'>
             {products.map((p) => (
               <Row className='below'>
+                <Col>
+                  {" "}
+                  <Image
+                    src={"./img/" + p.name + ".jpeg"}
+                    className='ph-prev'
+                  />{" "}
+                </Col>
                 <Col>{p.name} </Col>
                 <Col>{p.price} €</Col>
                 <Col>max quantity : {p.quantity}</Col>
@@ -156,7 +164,6 @@ function NewOrder(props) {
                     </>
                   ) : null}
                 </Form.Group>
-                
               </Row>
             ))}
           </Col>
