@@ -16,34 +16,67 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
 	else
 		order_details = Object.assign({ id: 0 }, order_details)
 
-	return new Promise((resolve, reject) => {
-		fetch('/api/orders/' + filter, {
-			method: method,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify((!!products || !!order_details) ? { products: products, order: order_details } : '')
-		}).then((response) => {
-			if (response.ok) {
-				resolve(true);
-			} else {
-				response.json()
-					.then((message) => { reject(message); }) // error message in the response body
-					.catch(() => { reject({ error: "Impossible to read server response." }) }); // something else
+	let request;
+
+	switch (method) {
+		case 'HEAD':
+		case 'GET':
+			request = {
+				method: method,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			};
+			break;
+
+		default:
+			request = {
+				method: method,
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ products: products, order: order_details })
 			}
-		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) }); // connection errors
+	}
+
+	return new Promise((resolve, reject) => {
+		fetch('/api/orders/' + filter, request).then(async (response) => {
+
+			try {
+				let parsed = await response.json();
+				if (response.ok) {
+					resolve(parsed);
+				}
+				else {
+					reject(parsed);
+				}
+			} catch (e) {
+				reject({ error: "Impossible to read server response." })
+			}
+
+		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) });
 	});
+}
+
+/**
+ * 
+ * @param {*} filter 
+ * @returns { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
+ */
+async function getOrders(filter) {
+
+	return (await handleOrderAction(filter, [], {}, 'GET')) || []
 }
 
 /**
  * Frontend interface API
  * 
  * @param {*} filter 
- * @returns { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
-*/
-async function getPendingOrders(filter) {
+ * @returns order in pending status
+ */
+async function getPendingOrders() {
 
-	return await handleOrderAction(filter, [], {}, 'GET')
+	return getOrders('pending')
 }
 
 /**
@@ -54,7 +87,7 @@ async function getPendingOrders(filter) {
  */
 async function handOutOrder(orderID = 0) {
 
-	return await handleOrderAction(orderID, [], {
+	return handleOrderAction(orderID, [], {
 		id: orderID,
 		status: 'handout'
 	}, 'PUT')
@@ -69,7 +102,7 @@ async function handOutOrder(orderID = 0) {
  */
 async function insertOrder(userID, products = [], order_details = {}) {
 
-	return await handleOrderAction(userID, products, order_details, 'POST')
+	return handleOrderAction(userID, products, order_details, 'POST')
 }
 
 /**
@@ -90,6 +123,7 @@ const AFApi = {
 	insertOrder,
 	handOutOrder,
 	getPendingOrders,
+	getOrders,
 	getUserId
 }
 
