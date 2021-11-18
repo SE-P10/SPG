@@ -73,7 +73,40 @@ const getWalletByMail = (userId, mail) => {
   });
 };
 
+const updateBasketElement = (product, userId) => {
+  return new Promise((resolve, reject) => {
+    const sql1 = "DELETE FROM basket WHERE user_id = ? AND product_id = ?";
+    db.all(sql1, [userId, product.product_id], (err) => {
+      if (err) reject(err);
+      else if(!product.quantity) resolve(this.lastID);
+      else {
+        const sql = "INSERT INTO basket VALUES ((SELECT MAX(id)+1 FROM basket), ?, ?, ?)";
+        db.all(sql, [userId, product.product_id, product.quantity], (err) => {
+          if (err) reject(err);
+          else resolve(this.lastID);
+        });
+      }
+    });
+  });
+};
+
+const deleteAllBasket = userId => {
+  return new Promise((resolve, reject) => {
+    const sql1 = "DELETE FROM basket WHERE user_id = ?";
+    db.all(sql1, [userId], (err) => {
+      if (err) reject(err);
+      else if(!product.quantity) resolve(this.lastID);
+      const sql = "INSERT INTO basket VALUES ((SELECT MAX(id)+1 FROM basket), ?, ?, ?)";
+      db.all(sql, [userId, product.product_id, product.quantity], (err) => {
+        if (err) reject(err);
+        else resolve(this.lastID);
+      });
+    });
+  });
+};
+
 exports.execApi = (app, passport, isLoggedIn) => {
+  
   // GET /api/products
   app.get("/api/products", async (req, res) => {
     try {
@@ -107,4 +140,33 @@ exports.execApi = (app, passport, isLoggedIn) => {
       res.status(500).end();
     }
   });
+
+  // POST /api/basketProduct
+  app.post("/api/basketProduct", isLoggedIn, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    try {
+      await updateBasketElement(req.body, req.user.id);
+      res.status(201).end();
+    } catch (err) {
+      res.status(503).json({ error: err });
+    }
+  });
+
+  // DELETE /api/basketProduct
+  app.delete("/api/basketProduct", isLoggedIn, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    try {
+      await deleteAllBasket(req.user.id);
+      res.status(201).end();
+    } catch (err) {
+      res.status(503).json({ error: err });
+    }
+  });
+
 };
