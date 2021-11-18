@@ -1,5 +1,7 @@
 'use strict';
 
+const nodemailer = require('nodemailer');
+
 exports.filter_args = (default_, ...sources) => {
 
     if (!this.isObject(default_))
@@ -279,4 +281,50 @@ exports.runQuerySQL = async (db, sql, values, res = false) => {
 exports.validateEmail = (email) => {
     const regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return regex.test(email);
+}
+
+exports.containsHTML = (str) => { return /<[a-z][\s\S]*>/i.test(str) };
+
+exports.isNumber = (i) => { return typeof i === 'number' || /^\d+$/.test(i); }
+
+exports.sendMail = async (to, body, subject) => {
+
+    if (!to || !body)
+        return false;
+
+    if (!subject)
+        subject = 'SPG notification';
+
+    return new Promise((resolve) => {
+
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            auth: {
+                user: 'spgteamp10@gmail.com',
+                pass: 'SE2021SPGP10!',
+            },
+        });
+
+        let mailOptions = {
+            from: '"SPG-10" <spgteamp10@gmail.com>',
+            to: to,
+            subject: subject,
+        };
+
+        mailOptions[this.containsHTML(body) ? 'html' : 'text'] = body;
+
+        transporter.verify().then(() => {
+            transporter.sendMail(mailOptions).then((info) => {
+                resolve(info);
+            }).catch((e) => {
+                console.log(e)
+                resolve(false);
+            });
+        }).catch((e) => {
+            console.log(e)
+            resolve(false);
+        });
+    })
+
 }
