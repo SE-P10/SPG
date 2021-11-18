@@ -71,13 +71,6 @@ const getOrders = async (status = '') => {
     if (orders && orders.length > 0) {
         orders = Promise.all(orders.map(async (order) => {
 
-            console.log(await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
-                id: 0,
-                username: '',
-                email: '',
-                name: '',
-                surname: ''
-            }, null, true))
             return {
                 ...order,
                 user: await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
@@ -189,13 +182,13 @@ const handleOrder = async (orderRAW, status = '') => {
 
             db.serialize(async () => {
 
-                db.run("BEGIN TRANSACTION;");
-
                 // get original order to prevent some malicious actions
                 let order = await getOrder(newOrder.id);
 
                 if (!order || !order.id)
                     return reject('Is not a valid order, wrong orderID');
+
+                db.run("BEGIN TRANSACTION;");
 
                 let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
 
@@ -508,7 +501,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
             let status = await processOrder(0, req.params.order_id, req.body);
 
             if (status)
-                res.status(201).end();
+                res.status(201).json(status).end();
             else
                 res.status(400).json({ error: 'Unable to update the order' });
 
@@ -536,7 +529,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
             let status = await processOrder(req.params.user_id, 0, req.body);
 
             if (status)
-                res.status(201).end();
+                res.status(201).json(status).end();
             else
                 res.status(400).json({ error: 'Unable to insert a new order' });
 
