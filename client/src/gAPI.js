@@ -9,8 +9,6 @@ async function getProducts() {
     }
 }
 
-
-
 async function addClient(newClient) {
     return new Promise((resolve, reject) => {
 		fetch('/api/newClient', {
@@ -42,15 +40,46 @@ async function getWalletByMail(mail) {
     }
 }
 
-//async function insertProductInBasket(object)  //mettere controllo se prodotto già c'è o meno
-// object {product_id : , quantity :  } se in Basket c'è gia questo prodotto per questo utente alloda Update o delete (in base a quantity) altrimenti insert
+async function insertProductInBasket(product) { //mettere controllo se prodotto già c'è o meno
+	return new Promise((resolve, reject) => {
+		fetch('/api/basketProduct', {
+		  	method: 'POST',
+		  	headers: {'Content-Type': 'application/json',},
+			body: JSON.stringify(product)
+		}).then((response) => {
+			if (response.ok) {
+				resolve(null);
+			} else {
+				response.json()
+					.then((message) => { reject(message); }) // error message in the response body
+					.catch(() => { reject({ error: "Impossible to read server response." }) }); // something else
+			}
+		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) }); // connection errors
+	});
+}
 
-//async function deleteAllBasket() //l'id dello user te lo prendi tu
+async function deleteAllBasket() {
+	return new Promise((resolve, reject) => {
+		fetch('/api/basketProduct', {
+		  method: 'DELETE',
+		}).then((response) => {
+		  if (response.ok) {
+			resolve(null);
+		  } else {
+			response.json()
+			  .then((message) => { reject(message); }) // error message in the response body
+			  .catch(() => { reject({ error: "Cannot parse server response." }) }); // something else
+			}
+		}).catch(() => { reject({ error: "Cannot communicate with the server." }) }); // connection errors
+	  });
+}
 
 const gAPI = {
     getProducts,
 	addClient,
-	getWalletByMail
+	getWalletByMail,
+	deleteAllBasket,
+	insertProductInBasket
 }
 
 export default gAPI;
