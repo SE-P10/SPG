@@ -19,6 +19,16 @@ import {
       const fillTables = async () => {
         const productsTmp = await gAPI.getProducts();
         setProducts(productsTmp);
+        const farmersTmp = productsTmp.map(t => t.farmer).filter(function(item,pos){
+          return productsTmp.map(t => t.farmer).indexOf(item) == pos;
+  
+        });
+        setFarmers(farmersTmp)
+        const typesTmp = productsTmp.map(t => t.name).filter(function(item,pos){
+          return productsTmp.map(t => t.name).indexOf(item) == pos;
+  
+        });
+        setType(typesTmp) 
         //Chiamare API che prende backet
         
       };
@@ -50,6 +60,12 @@ import {
     const [errorMessage, setErrorMessage] = useState("");
     const [products, setProducts] = useState([]);
     const [orderProduct, setOrderProduct] = useState([]);
+    const [type,setType] = useState([])
+    const [farmers,setFarmers] = useState([])
+    const [viewFilter,setViewFilter] = useState(false);
+    const [categorize,setCategorize] = useState(1) //0 per prodotti 1 per farmer
+    const [filterCategorize,setFilterCategorize] = useState(undefined); //if farmer o tipo prodotto
+    
   
     
 
@@ -82,12 +98,34 @@ import {
           ) : (
             ""
           )}
-          <Form>
+
+        <Col><Button variant="primary" onClick={() => {setCategorize(0);setFilterCategorize(undefined);setViewFilter(true)}}> Show for type </Button>{" "}
+        <Button variant="primary" onClick={() => {setCategorize(1);setFilterCategorize(undefined);setViewFilter(true)}}> Show for famer </Button></Col>
+
+
+          { categorize === 0 && viewFilter === true?  
+         <div>{type.map((t) => ( <Row>
+          <Col>{t}</Col>
+          <Col><Button variant="primary" onClick={() => {setFilterCategorize(t);setViewFilter(false);}}>select</Button></Col>
+        </Row>))}
+        </div>
+          :
+          <div>{ categorize == 1 && viewFilter === true?  <div>{farmers.map((t) => ( <Row>
+            <Col>{t}</Col>
+            <Col><Button variant="primary" onClick={() => {setFilterCategorize(t);setViewFilter(false);}}>select</Button></Col>
+          </Row>))}
+          </div> : ""}</div>
+
+
+          }
+
+
+          {filterCategorize != undefined ?<Form>
             
   
             <h3 className='thirdColor'> List of our products: </h3>
             <Col className='below list'>
-              {products.map((p) => (
+              {products.filter(t => {return categorize === 0 ? t.name === filterCategorize : t.farmer === filterCategorize}).map((p) => (
                 <Row className='below'>
                   <Col>{p.name} </Col>
                   <Col>{p.price} €</Col>
@@ -165,7 +203,7 @@ import {
               onClick={(ev) => handleSubmit(ev, props)}>
               Issue Order
             </Button>
-          </Form>
+          </Form> : ""}
         </Container>
       </>
     );

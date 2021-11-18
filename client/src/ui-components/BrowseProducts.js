@@ -7,6 +7,9 @@ import "../css/custom.css";
 function BrowserProducts(props) {
   const [products, setProducts] = useState([]);
 
+
+  
+
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
