@@ -7,6 +7,7 @@ import {
   Dropdown,
   DropdownButton,
   Container,
+  Image,
 } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -119,46 +120,54 @@ function NewOrder(props) {
 
           <h3 className='thirdColor'> List of our products: </h3>
           <Col className='below list'>
-            {products.map((p) => (
-              <Row className='below'>
-                <Col>{p.name} </Col>
-                <Col>{p.price} €</Col>
-                <Col>max quantity : {p.quantity}</Col>
-                <Form.Group>
-                  {" "}
-                  <Form.Check
-                    inline
-                    onClick={() => selectProduct(p.id)}></Form.Check>{" "}
-                  {selectedPs.indexOf(p.id) !== -1 ? (
-                    <>
-                      {" "}
-                      Q:
-                      <Form.Control
-                        inline
-                        onChange={(ev) => {
-                          setOrderProducts((old) => {
-                            const list = old.map((item) => {
-                              if (item.product_id === p.id)
-                                return {
-                                  product_id: p.id,
-                                  quantity: parseInt(ev.target.value),
-                                };
-                              else return item;
+            {products
+              .sort((a, b) => (a.name > b.name ? 1 : -1))
+              .map((p) => (
+                <Row className='below'>
+                  <Col>
+                    {" "}
+                    <Image
+                      src={"./img/" + p.name + ".jpeg"}
+                      className='ph-prev'
+                    />{" "}
+                  </Col>
+                  <Col>{p.name} </Col>
+                  <Col>{p.price} €</Col>
+                  <Col>max quantity : {p.quantity}</Col>
+                  <Form.Group>
+                    {" "}
+                    <Form.Check
+                      inline
+                      onClick={() => selectProduct(p.id)}></Form.Check>{" "}
+                    {selectedPs.indexOf(p.id) !== -1 ? (
+                      <>
+                        {" "}
+                        Q:
+                        <Form.Control
+                          inline
+                          onChange={(ev) => {
+                            setOrderProducts((old) => {
+                              const list = old.map((item) => {
+                                if (item.product_id === p.id)
+                                  return {
+                                    product_id: p.id,
+                                    quantity: parseInt(ev.target.value),
+                                  };
+                                else return item;
+                              });
+                              return list;
                             });
-                            return list;
-                          });
-                        }}
-                        id={p.id}
-                        type='number'
-                        size='sm'
-                        max={p.quantity}
-                        min='0'></Form.Control>{" "}
-                    </>
-                  ) : null}
-                </Form.Group>
-                
-              </Row>
-            ))}
+                          }}
+                          id={p.id}
+                          type='number'
+                          size='sm'
+                          max={p.quantity}
+                          min='0'></Form.Control>{" "}
+                      </>
+                    ) : null}
+                  </Form.Group>
+                </Row>
+              ))}
           </Col>
 
           <Button

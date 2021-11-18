@@ -1,4 +1,4 @@
-import { Row, Col, Container } from "react-bootstrap";
+import { Row, Col, Container, Image } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
 import gAPI from "./../gAPI";
@@ -13,7 +13,7 @@ function BrowserProducts(props) {
       setProducts(productsTmp);
     };
 
-    fillTables().catch((err) =>  setProducts([]));
+    fillTables().catch((err) => setProducts([]));
   }, []);
 
   return (
@@ -24,6 +24,7 @@ function BrowserProducts(props) {
         </Row>
 
         <Row>
+          <Col> </Col>
           <Col>
             {" "}
             <h4> Name </h4>
@@ -36,13 +37,22 @@ function BrowserProducts(props) {
           </Col>
         </Row>
         <Container className='list'>
-          {products.map((p) => (
-            <Row className='below cont'>
-              <Col> {p.name}</Col>
-              <Col> {p.quantity}</Col>
-              <Col>{p.price} €</Col>
-            </Row>
-          ))}
+          {products
+            .sort((a, b) => (a.name > b.name ? 1 : -1))
+            .map((p) => (
+              <Row className='below cont'>
+                <Col>
+                  {" "}
+                  <Image
+                    src={"./img/" + p.name + ".jpeg"}
+                    className='ph-prev'
+                  />{" "}
+                </Col>
+                <Col> {p.name}</Col>
+                <Col> {p.quantity}</Col>
+                <Col>{p.price} €/Kg</Col>
+              </Row>
+            ))}
         </Container>
       </Container>
     </>
