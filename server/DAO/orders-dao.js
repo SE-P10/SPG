@@ -1,14 +1,14 @@
 'use strict';
 
-const AF_DEBUG = true;
+const AF_DEBUG = false;
 const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const { validationResult } = require("express-validator");
 
-const db = require("./db");
-const { getUserMeta, updateUserMeta } = require("./user-dao");
-const { validateEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB } = require("./utility");
+const db = require("../db");
+const { getUserMeta, updateUserMeta, getUserById } = require("./user-dao");
+const { sendMail, validateEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber } = require("../utility");
 
 const getOrder = async (orderID) => {
 
@@ -45,7 +45,7 @@ const getOrder = async (orderID) => {
 
 const getOrders = async (status = '') => {
 
-    if (typeof status === 'number' || /^\d+$/.test(status))
+    if (isNumber(status))
         return getOrder(status);
 
     let sql = 'SELECT * FROM orders',
@@ -205,6 +205,10 @@ const handleOrder = async (orderRAW, status = '') => {
 
                             if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
                                 reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
+                            }
+                            else {
+                                let user = getUserById(order.user_id);
+                                await sendMail(user.email, "SPG notification", "You orders is pending due to insufficient money. top-up your wallet!");
                             }
 
                             break;
