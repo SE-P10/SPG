@@ -1,9 +1,6 @@
-import { Alert, Form, Row, Col, Container } from "react-bootstrap";
+import { Alert, Row, Col, Container } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import { SearchComponent } from "./SearchComponent";
-import API from "./../API"
 import AFApi from "../api/a-API";
-import gAPI from "../gAPI";
 import "../css/custom.css";
 
 function PendingOrders(props) {
@@ -12,13 +9,13 @@ function PendingOrders(props) {
 
   useEffect(() => {
     const fillTables = async () => {
-      const ordersTmp = await AFApi.getPendingOrders('pending');
+      const ordersTmp = await AFApi.getPendingOrders();
       setOrders(ordersTmp);
     };
 
     fillTables();
   }, []);
-  
+
 
   return (
     <Container className='cont'>
@@ -34,7 +31,7 @@ function PendingOrders(props) {
       ) : (
         ""
       )}
-      
+
 
       <Col>
         <Row className='justify-content-center'>
