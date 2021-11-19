@@ -14,13 +14,14 @@ COPY ./client .
 WORKDIR /app
 COPY ./start.sh .
 
-# WORKDIR /app/server
-# RUN npm ci --silent
+WORKDIR /app/server
+RUN npm ci --silent
 
-# WORKDIR /app/client
-# RUN npm ci --silent
+WORKDIR /app/client
+RUN npm ci --silent
 
 EXPOSE 3000 3001
 
 WORKDIR /app
-# CMD ["./start.sh"]
+CMD ["./start.sh"]
+ENTRYPOINT [ "/bin/bash" ]

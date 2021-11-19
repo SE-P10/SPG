@@ -1,10 +1,9 @@
 #!/bin/bash
-
-apt-get install -y npm
-
+echo "Running Client"
 cd /app/server
 node server.js &
 
+echo "Running Client"
 cd /app/client
 npm start &
 
