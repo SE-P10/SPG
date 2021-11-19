@@ -1,9 +1,9 @@
-#!/bin/bash
-echo "Running Client"
+#!/bin/sh
+echo "Starting Server"
 cd /app/server
 node server.js &
 
-echo "Running Client"
+echo "Strarting Client"
 cd /app/client
 npm start
 

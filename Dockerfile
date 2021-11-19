@@ -1,9 +1,10 @@
 # FROM node:lts
-FROM ubuntu
+FROM alpine as base
 
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y nodejs
-RUN apt-get install -y npm
+RUN apk update && apk upgrade
+RUN apk add nodejs
+RUN apk add npm
+RUN apk add bash
 
 WORKDIR /app/server
 COPY ./server .
@@ -14,13 +15,22 @@ COPY ./client .
 WORKDIR /app
 COPY ./start.sh .
 
-WORKDIR /app/server
-RUN npm ci --silent
 
+#FROM base as production
+#ENV NODE_ENV=production 
+WORKDIR /app/server
+RUN npm ci --silent --production
 WORKDIR /app/client
-RUN npm ci --silent
+RUN npm ci --silent --production
+
+#FROM base as dev
+#ENV NODE_ENV=development
+#WORKDIR /app/server
+#RUN npm install -g nodemon --silent && npm ci --silent
+#WORKDIR /app/client
+#RUN npm ci --silent
 
 EXPOSE 3000 3001
 
 WORKDIR /app
-CMD ["./start.sh"]
+CMD ["sh", "start.sh"]
