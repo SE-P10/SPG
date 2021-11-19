@@ -8,10 +8,9 @@ const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 
 const gDao = require("./g-dao");
-const AFDao = require("./AFDao");
-const userDao = require("./user-dao");
+const userDao = require("./dao/user-dao");
 const walletDao = require("./wallet-dao");
-const ordersDao = require('./orders-dao.js');
+const ordersDao = require('./dao/orders-dao.js');
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -76,7 +75,7 @@ app.use(passport.session());
 
 // API implemented in module gAPI
 gDao.execApi(app, passport, isLoggedIn);
-AFDao.execApi(app, passport, isLoggedIn);
+ordersDao.execApi(app, passport, isLoggedIn);
 
 /*** USER APIs ***/
 
@@ -151,20 +150,6 @@ app.post("/api/wallet/update/",
     }
   }
 );
-
-// GET /orders
-// get all the orders
-app.get("/api/orders/:client_email", isLoggedIn, (req, res) => {
-  try {
-    ordersDao.getOrders(req.params.client_email).then((orders) => {
-      res.status(200).json(orders);
-    }).catch((err) => {
-      res.status(503).json({});
-    });
-  } catch (err) {
-    res.status(500).json(false);
-  }
-});
 
 app.get("/api/users/:client_email", isLoggedIn, (req, res) => {
   try {

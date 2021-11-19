@@ -1,10 +1,10 @@
 "use strict";
 /* Data Access Object (DAO) module for accessing users */
 
-const db = require("./db");
+const db = require("../db");
 const bcrypt = require("bcrypt");
 
-const { runQuerySQL, getQuerySQL } = require("./utility");
+const { runQuerySQL, getQuerySQL } = require("../utility");
 
 exports.getUserById = (id) => {
   return new Promise((resolve, reject) => {
