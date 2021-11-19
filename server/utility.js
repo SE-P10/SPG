@@ -1,6 +1,19 @@
 'use strict';
 
 const nodemailer = require('nodemailer');
+const fs = require('fs')
+
+
+exports.file_exist = (name) => {
+    try {
+        if (fs.existsSync(path)) {
+            return true;
+        }
+    } catch (err) {
+        console.log(err)
+    }
+    return false;
+}
 
 exports.filter_args = (default_, ...sources) => {
 
@@ -276,6 +289,11 @@ exports.runQuerySQL = async (db, sql, values, res = false) => {
             }
         });
     })
+}
+
+exports.dbOnTransaction = async (db) => {
+
+    return this.file_exist('database.db-journal')
 }
 
 exports.validateEmail = (email) => {
