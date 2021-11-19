@@ -44,6 +44,20 @@ function ShopEmployee(props) {
 
   return (
     <>
+      {action !== 0 ? (
+        <>
+          <Button
+            className='spg-button below back-button'
+            onClick={() => {
+              setAction(0);
+            }}>
+            {" "}
+            {backIcon}{" "}
+          </Button>
+        </>
+      ) : (
+        ""
+      )}{" "}
       <Container className='below '>
         {message ? (
           <Alert variant='success' onClose={() => setMessage("")} dismissible>
@@ -54,27 +68,62 @@ function ShopEmployee(props) {
           ""
         )}
 
-        <Row className=' below'>
+        <Row>
           <Row>
-            {action !== 0 ? (
-              <>
-                <Button
-                  variant='primary'
-                  className='spg-button below'
-                  onClick={() => {
-                    setAction(0);
-                  }}>
-                  {" "}
-                  {backIcon}{" "}
-                </Button>
-              </>
-            ) : (
-              ""
-            )}{" "}
             {action === 1 ? (
               <>
                 {" "}
-                <h1 className='ml-auto'> Register a new client </h1>{" "}
+                <Col md='auto'>
+                  <h1 className='mx-auto'> Register a new client </h1>{" "}
+                </Col>
+              </>
+            ) : null}{" "}
+            {action === 2 ? (
+              <>
+                {" "}
+                <Col md='auto'>
+                  <h1 className='mx-auto'> Browse Products </h1>{" "}
+                </Col>
+              </>
+            ) : null}{" "}
+            {action === 3 ? (
+              <>
+                {" "}
+                <Col md='auto'>
+                  <h1 className='mx-auto'> Top Up a Wallet </h1>{" "}
+                </Col>
+              </>
+            ) : null}{" "}
+            {action === 4 ? (
+              <>
+                {" "}
+                <Col md='auto'>
+                  <h1 className='mx-auto'> New order </h1>{" "}
+                </Col>
+              </>
+            ) : null}{" "}
+            {action === 5 ? (
+              <>
+                {" "}
+                <Col md='auto'>
+                  <h1 className='mx-auto'> Hand Out </h1>{" "}
+                </Col>
+              </>
+            ) : null}{" "}
+            {action === 6 ? (
+              <>
+                {" "}
+                <Col md='auto'>
+                  <h1 className='mx-auto'> Check Orders </h1>{" "}
+                </Col>
+              </>
+            ) : null}{" "}
+            {action === 7 ? (
+              <>
+                {" "}
+                <Col md='auto'>
+                  <h1 className='mx-auto'> Pending Orders </h1>{" "}
+                </Col>
               </>
             ) : null}{" "}
           </Row>

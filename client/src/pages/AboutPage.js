@@ -7,7 +7,7 @@ function AboutPage(props) {
     <>
       {" "}
       <Container className='text-dark below'>
-        <Row className='justify-content-center'>
+        <Row className='justify-content-center '>
           <h1>What is SPG?</h1>
         </Row>
         <Row>
