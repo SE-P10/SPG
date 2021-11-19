@@ -129,7 +129,7 @@ exports.removeEmpty = (item, default_ = null, strict = false) => {
                 });
 
             }
-        } else if (strict ? this.booleanize(item) : !!item) {
+        } else if (strict ? this.booleanize(item) : item !== false) {
             res = item;
         }
     }
@@ -346,3 +346,28 @@ exports.sendMail = async (to, body, subject) => {
     })
 
 }
+
+exports.debugLog = (...log) => {
+
+    const STACK_LINE_REGEX = /(\d+):(\d+)\)?$/;
+
+    let err;
+
+    try {
+        throw new Error();
+    } catch (error) {
+        err = error;
+
+    }
+
+    try {
+        const stacks = err.stack.split('\n');
+        const [offset, line] = STACK_LINE_REGEX.exec(stacks[2]);
+
+        console.log(line + ':', ...log);
+    } catch (err) {
+        console.log(...log);
+    }
+
+}
+
