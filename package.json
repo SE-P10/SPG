@@ -2,7 +2,6 @@
   "name": "spg",
   "version": "1.0.0",
   "description": "Solidarity Purchasing Group",
-  "main": "index.js",
   "dependencies": {
     "pg": "^8.7.1"
   },
@@ -11,7 +10,8 @@
     "@cypress/instrument-cra": "^1.0.0",
     "@testing-library/cypress": "^8.0.2",
     "babel-plugin-istanbul": "^6.1.1",
-    "cypress": "^9.0.0"
+    "cypress": "^9.0.0",
+    "nyc": "^15.1.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
