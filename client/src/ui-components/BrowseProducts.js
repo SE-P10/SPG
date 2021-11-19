@@ -36,11 +36,11 @@ function BrowserProducts(props) {
                 .sort((a, b) => (a.name > b.name ? 1 : -1))
                 .map((p) => (
                   <Col className='below p-cont mr-3 '>
-                    <Row className='mx-auto'>
+                    <Row className=' justify-content-center'>
                       {" "}
                       <Image
                         src={"./img/" + p.name + ".jpeg"}
-                        className='ph-prev'
+                        className='ph-prev justify-content-center'
                       />{" "}
                     </Row>
                     <Row className='justify-content-center'> {p.name}</Row>
