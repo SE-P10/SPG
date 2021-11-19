@@ -1,20 +1,26 @@
-FROM node
+# FROM node:lts
+FROM ubuntu
 
-WORKDIR /app
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y nodejs
+RUN apt-get install -y npm
 
-# RUN npm ci --silent
-
-COPY ./client .
+WORKDIR /app/server
 COPY ./server .
 
-# WORKDIR /app/client
-# RUN npm install --silent
+WORKDIR /app/client
+COPY ./client .
+
+WORKDIR /app
+COPY ./start.sh .
 
 # WORKDIR /app/server
-# RUN npm install --silent
+# RUN npm ci --silent
 
 # WORKDIR /app/client
-# RUN npm start &
+# RUN npm ci --silent
 
-# WORKDIR /app/server
-# RUN node ./server.js &
+EXPOSE 3000 3001
+
+WORKDIR /app
+# CMD ["./start.sh"]
