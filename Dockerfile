@@ -24,4 +24,3 @@ EXPOSE 3000 3001
 
 WORKDIR /app
 CMD ["./start.sh"]
-ENTRYPOINT [ "/bin/bash" ]

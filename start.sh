@@ -5,5 +5,5 @@ node server.js &
 
 echo "Running Client"
 cd /app/client
-npm start &
+npm start
 
