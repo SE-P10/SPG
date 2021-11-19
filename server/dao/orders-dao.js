@@ -1,6 +1,6 @@
 'use strict';
 
-const AF_DEBUG = false;
+const AF_DEBUG = true;
 const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 

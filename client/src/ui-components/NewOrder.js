@@ -7,6 +7,7 @@ import {
   Dropdown,
   DropdownButton,
   Container,
+  Image
 } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -163,7 +164,7 @@ function NewOrder(props) {
 
           <h3 className='thirdColor'> List of our products: </h3>
           <Col className='below list'>
-            {products.filter(t => {return categorize === 0 ? t.name === filterCategorize : t.farmer === filterCategorize})..sort((a, b) => (a.name > b.name ? 1 : -1)).map((p) => (
+            {products.filter(t => {return categorize === 0 ? t.name === filterCategorize : t.farmer === filterCategorize}).sort((a, b) => (a.name > b.name ? 1 : -1)).map((p) => (
               <Row className='below'>
                 <Col>
                 {" "}<Image src={"./img/" + p.name + ".jpeg"}

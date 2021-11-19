@@ -13,6 +13,7 @@ import {
   import "../css/custom.css";
   import AFApi from "../api/a-API";
   import gAPI from "../gAPI";
+import API from "../API";
   
   function ClientOrder(props) {
     useEffect(() => {
@@ -48,8 +49,17 @@ import {
         }
   
         if (orderOk) {
-          
+          API.deleteAllBasket();
+
             //Chiamare API , moemntanemtnate stampare l'ordine
+            API.insertOrder(
+              props.user.id,
+              orderProduct.filter((t) => t.quantity !== 0)
+            )
+              .then(() => propsN.addMessage("Request sent correctly!"))
+              .catch((err) => {
+                setErrorMessage("Server error during insert order.");
+              });
 
             propsN.addMessage("Request sent correctly!")
             propsN.changeAction(0);
@@ -77,7 +87,6 @@ import {
             <h2>Basket</h2>
         </Row>
         
-            {console.log(orderProduct)}
             {orderProduct.filter(t => t.quantity !== 0 && t.confirmed == true).map(p => 
                 <Row>product : {p.name} quantity : {p.quantity} </Row>
                 )
@@ -136,7 +145,8 @@ import {
                       (ev) => {
                           if (orderProduct.filter(t => t.product_id === p.id).length === 0 || orderProduct.filter(t => t.product_id === p.id)[0].quantity > p.quantity || orderProduct.filter(t => t.product_id === p.id)[0].quantity <= 0  ) setErrorMessage("Wrong quantity")
                           else {
-                              //chiamare API
+                            console.log(orderProduct.filter(t => t.product_id === p.id).map(t => ({product_id : t.product_id , quantity : t.quantity}))[0])
+                            API.insertProductInBasket(orderProduct.filter(t => t.product_id === p.id).map(t => ({product_id : t.product_id , quantity : t.quantity}))[0])
                             setOrderProduct( (old) => {
                                 const list = old.map( (item) => {
                                     if (item.product_id === p.id) return {product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name};
@@ -149,11 +159,11 @@ import {
                       }
                   }  variant="outline-secondary">ADD</Button> : <Button  onClick={
                     (ev) => {
-                        
+                      API.insertProductInBasket(orderProduct.filter(t => t.product_id === p.id).map(t => ({product_id : t.product_id , quantity : 0}))[0])
+
                           setOrderProduct( (old) => {
                               return old.filter(t => t.product_id !== p.id);
-                              //chiamare API
-                          })
+                            })
 
                         }
                     

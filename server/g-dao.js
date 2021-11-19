@@ -79,8 +79,8 @@ const updateBasketElement = (product, userId) => {
     const sql1 = "DELETE FROM basket WHERE user_id = ? AND product_id = ?";
     db.all(sql1, [userId, product.product_id], (err) => {
       if (err) reject(err);
-      else if(!product.quantity) resolve(this.lastID);
-      else {
+      else if(product.quantity == 0) resolve(this.lastID);
+      else {console.log(product.quantity)
         const sql = "INSERT INTO basket VALUES ((SELECT MAX(id)+1 FROM basket), ?, ?, ?)";
         db.all(sql, [userId, product.product_id, product.quantity], (err) => {
           if (err) reject(err);
@@ -88,6 +88,7 @@ const updateBasketElement = (product, userId) => {
         });
       }
     });
+    
   });
 };
 
@@ -96,12 +97,7 @@ const deleteAllBasket = userId => {
     const sql1 = "DELETE FROM basket WHERE user_id = ?";
     db.all(sql1, [userId], (err) => {
       if (err) reject(err);
-      else if(!product.quantity) resolve(this.lastID);
-      const sql = "INSERT INTO basket VALUES ((SELECT MAX(id)+1 FROM basket), ?, ?, ?)";
-      db.all(sql, [userId, product.product_id, product.quantity], (err) => {
-        if (err) reject(err);
-        else resolve(this.lastID);
-      });
+      else resolve(this.lastID);
     });
   });
 };
