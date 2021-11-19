@@ -53,10 +53,7 @@ function RegistrationForm(props) {
 
   return (
     <>
-      <Container className='justify-content-center cont'>
-        <Row className='justify-content-center'>
-          <h2>Register a new Client</h2>
-        </Row>
+      <Container className='justify-content-center cont below'>
         {errorMessage ? (
           <Alert
             variant='danger'

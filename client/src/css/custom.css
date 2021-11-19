@@ -4,9 +4,23 @@
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
   font-weight: bold !important;
   height: 100px !important;
+  width: 100%;
 }
 html {
   scroll-behavior: smooth;
+}
+
+.text-white {
+  color: white !important;
+}
+
+.text-black {
+  color: black !important;
+}
+
+#navbarScrollingDropdown {
+  color: white !important;
+  font-weight: bold;
 }
 
 body {
@@ -23,11 +37,12 @@ body {
 .ph-prev {
   height: 200px;
   width: 200px;
+  margin-top: 20px;
 }
 
 .list {
   width: 200px;
-  height: 600px;
+  height: 800px;
   overflow-y: scroll;
 }
 
@@ -35,6 +50,14 @@ body {
   background-color: #f5f9ee;
   margin-bottom: 20px;
   border-radius: 10px !important;
+}
+
+.p-cont {
+  background-color: white;
+
+  width: 100px;
+  height: 350px;
+  border-radius: 5px;
 }
 
 .mainColor {
@@ -76,9 +99,16 @@ body {
   font-size: 28px !important;
   transition-duration: 0.4s;
   margin-bottom: 10px;
+  height: 200px;
+  width: 300px;
 }
 
 .se-button:hover {
   background-color: none !important; /* Green */
+  color: #f7aa00 !important;
+}
+
+.spg-button:hover {
+  background-color: #009378 !important;
   color: #f7aa00 !important;
 }

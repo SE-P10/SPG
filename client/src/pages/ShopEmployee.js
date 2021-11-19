@@ -11,7 +11,16 @@ import "../css/custom.css";
 import { PendingOrders } from "../ui-components/PendingOrders.js";
 import AFApi from "../api/a-API";
 import gAPI from "../gAPI";
-
+import {
+  registerIcon,
+  newIcon,
+  handOutIcon,
+  pigIcon,
+  browseIcon,
+  checkIcon,
+  pendingIcon,
+  backIcon,
+} from "../ui-components/Icons.js";
 
 function ShopEmployee(props) {
   const [message, setMessage] = useState("");
@@ -32,18 +41,10 @@ function ShopEmployee(props) {
     5 = HandOut
     6 = Check Orders 
     7 = Show pending orders*/
-    
 
   return (
     <>
-      <Container className='below'>
-        <Row className=' cont below justify-content-center'>
-          {" "}
-          <h2> ShopEmployee personal page </h2>{" "}
-        </Row>
-        <Row> 
-        {action !== 0 ?  <Button variant="primary" onClick={() => {setAction(0)}}> Back to Menu </Button> : ""}
-        </Row>
+      <Container className='below '>
         {message ? (
           <Alert variant='success' onClose={() => setMessage("")} dismissible>
             {" "}
@@ -53,93 +54,164 @@ function ShopEmployee(props) {
           ""
         )}
 
-        <Row className='secondColor justify-content-center below'>
+        <Row className=' below'>
+          <Row>
+            {action !== 0 ? (
+              <>
+                <Button
+                  variant='primary'
+                  className='spg-button below'
+                  onClick={() => {
+                    setAction(0);
+                  }}>
+                  {" "}
+                  {backIcon}{" "}
+                </Button>
+              </>
+            ) : (
+              ""
+            )}{" "}
+            {action === 1 ? (
+              <>
+                {" "}
+                <h1 className='ml-auto'> Register a new client </h1>{" "}
+              </>
+            ) : null}{" "}
+          </Row>
           <Col>
-          { action === 0 ?  
-            <Row className='secondColor justify-content-center below'>
-             
-              <Button
-                className='se-button btn-block'
-                onClick={() => {
-                  setAction(1);
-                }}>
-                Register a Client
-              </Button>
-         
-            </Row> : ""}
-            { action === 0 ?  
-            <Row className='secondColor justify-content-center below'>
-             
-
-              <Button
-                className='se-button btn-block'
-                onClick={() => {
-                  setAction(2);
-                }}>
-                Browse Products
-              </Button> 
-            </Row> : ""}
-            { action === 0 ?  
-            <Row className='secondColor justify-content-center below'>
-
-              <Button
-                className='se-button btn-block'
-                onClick={() => {
-                  setAction(7);
-                }}>
-                Pending orders
-              </Button> 
-            </Row> : ""}
-            { action === 0 ?  
-            <Row className='secondColor justify-content-center below'>
-
-              <Button
-                className='se-button btn-block'
-                onClick={() => {
-                  setAction(3);
-                }}>
-                TopUp a Wallet
-              </Button> 
-            </Row> : ""}
+            {action === 0 ? (
+              <Row className='secondColor justify-content-center below'>
+                <Button
+                  className='se-button '
+                  onClick={() => {
+                    setAction(1);
+                  }}>
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>
+                      {registerIcon}{" "}
+                    </Row>
+                    <Row className='justify-content-center'>
+                      {" "}
+                      Register client{" "}
+                    </Row>
+                  </Col>
+                </Button>
+              </Row>
+            ) : (
+              ""
+            )}
+            {action === 0 ? (
+              <Row className='secondColor justify-content-center below'>
+                <Button
+                  className='se-button '
+                  onClick={() => {
+                    setAction(2);
+                  }}>
+                  {" "}
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{browseIcon} </Row>
+                    <Row className='justify-content-center'>
+                      {" "}
+                      Browse Products{" "}
+                    </Row>
+                  </Col>
+                </Button>
+              </Row>
+            ) : (
+              ""
+            )}
           </Col>
-
+          <Col>
+            {action === 0 ? (
+              <Row className='secondColor justify-content-center below'>
+                <Button
+                  className='se-button'
+                  onClick={() => {
+                    setAction(7);
+                  }}>
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{pendingIcon} </Row>
+                    <Row className='justify-content-center'>
+                      {" "}
+                      Pending orders{" "}
+                    </Row>
+                  </Col>
+                </Button>
+              </Row>
+            ) : (
+              ""
+            )}
+            {action === 0 ? (
+              <Row className='secondColor justify-content-center below'>
+                <Button
+                  className='se-button'
+                  onClick={() => {
+                    setAction(3);
+                  }}>
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{pigIcon} </Row>
+                    <Row className='justify-content-center'>
+                      {" "}
+                      TopUp a Wallet{" "}
+                    </Row>
+                  </Col>
+                </Button>
+              </Row>
+            ) : (
+              ""
+            )}
+          </Col>
           <Col className='ml-2'>
-          { action === 0 ?  
-            <Row className='secondColor justify-content-center below'>
-
-              <Button
-                className='se-button btn-block'
-                onClick={() => {
-                  setAction(4);
-                }}>
-                New Order
-              </Button> 
-            </Row> : ""}
-            { action === 0 ?  
-            <Row className='secondColor justify-content-center below'>
-
-              <Button
-                className='se-button btn-block'
-                onClick={() => {
-                  setAction(5);
-                }}>
-                HandOut
-              </Button> 
-            </Row> : ""}
-            { action === 0 ?  
-            <Row className='secondColor justify-content-center below'>
-            
-
-              <Button
-                className='se-button btn-block'
-                onClick={() => {
-                  setAction(6);
-                }}>
-                Check Orders
-              </Button>
-              
-            </Row>
-            : ""}
+            {action === 0 ? (
+              <Row className='secondColor justify-content-center below'>
+                <Button
+                  className='se-button '
+                  onClick={() => {
+                    setAction(4);
+                  }}>
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{newIcon} </Row>
+                    <Row className='justify-content-center'> New Order </Row>
+                  </Col>
+                </Button>
+              </Row>
+            ) : (
+              ""
+            )}
+            {action === 0 ? (
+              <Row className='secondColor justify-content-center below'>
+                <Button
+                  className='se-button '
+                  onClick={() => {
+                    setAction(5);
+                  }}>
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{handOutIcon} </Row>
+                    <Row className='justify-content-center'> Hand Out </Row>
+                  </Col>
+                </Button>
+              </Row>
+            ) : (
+              ""
+            )}
+          </Col>{" "}
+          <Col>
+            {action === 0 ? (
+              <Row className='secondColor justify-content-center below'>
+                <Button
+                  className='se-button '
+                  onClick={() => {
+                    setAction(6);
+                  }}>
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{checkIcon} </Row>
+                    <Row className='justify-content-center'> Check Orders </Row>
+                  </Col>
+                </Button>
+              </Row>
+            ) : (
+              ""
+            )}
           </Col>
         </Row>
         <Row className='below'>
@@ -166,7 +238,10 @@ function ShopEmployee(props) {
             <NewOrder changeAction={changeAction} addMessage={addMessage} />
           ) : null}
           {action === 7 ? (
-            <PendingOrders changeAction={changeAction} addMessage={addMessage} />
+            <PendingOrders
+              changeAction={changeAction}
+              addMessage={addMessage}
+            />
           ) : null}
           {action === 5 ? (
             <HandOut changeAction={changeAction} addMessage={addMessage} />

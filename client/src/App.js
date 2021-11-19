@@ -4,6 +4,7 @@ import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployee";
 import { ClientPage } from "./pages/ClientPage";
 import { HomePage } from "./pages/HomePage";
+import { AboutPage } from "./pages/AboutPage";
 import { FarmerPage } from "./pages/FarmerPage";
 import {
   BrowserRouter as Router,
@@ -17,6 +18,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 import API from "./API";
+import { RegistrationForm } from "./ui-components/RegistrationForm";
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -26,9 +28,9 @@ const App = () => {
   useEffect(() => {
     //per non perdere utente loggato se aggiorno pagina, da qui viene l'errore della GET 401(unhautorized)
     const checkAuth = async () => {
-      const userTmp = await API.getUserInfo();
+      const user = await API.getUserInfo();
       setLoggedIn(true);
-      setUser(userTmp);
+      setUser(user);
     };
     checkAuth().catch((err) => console.log(err));
   }, []);
@@ -70,13 +72,8 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null ? (
-                  <>
-                    {" "}
-                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
-                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
-                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
-                  </>
+                {loggedIn && user !== null && user.role == 1 ? (
+                  <Redirect to='/shopemployee' />
                 ) : (
                   <LoginForm
                     closeMessage={closeMessage}
@@ -101,23 +98,33 @@ const App = () => {
 
         <Route
           exact
+          path='/signup'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex w-100'>
+              <RegistrationForm className='below' />
+            </Container>
+          )}
+        />
+        <Route
+          exact
+          path='/farmerpage'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <FarmerPage user={user} />
+            </Container>
+          )}
+        />
+        <Route
+          exact
           path='/personalpage'
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null ? (
-                  <>
-                    {" "}
-                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
-                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
-                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
-                  </>
+                {loggedIn && user !== null && user.role == 1 ? (
+                  <Redirect to='/shopemployee' />
                 ) : (
-                  <LoginForm
-                    closeMessage={closeMessage}
-                    message={message}
-                    login={doLogin}
-                  />
+                  <Redirect to='/' />
                 )}
               </Row>
             </Container>
@@ -126,22 +133,21 @@ const App = () => {
 
         <Route
           exact
-          path='/shopemployee'
+          path='/about'
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
-              {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <ShopEmployee user={user} />
+              <AboutPage user={user}></AboutPage>
             </Container>
           )}
         />
 
         <Route
           exact
-          path='/farmerpage'
+          path='/shopemployee'
           render={() => (
-            <Container fluid className='justify-content-center d-flex'>
+            <Container fluid className='d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <FarmerPage user={user} />
+              <ShopEmployee user={user} />
             </Container>
           )}
         />
