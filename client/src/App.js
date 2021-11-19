@@ -4,8 +4,9 @@ import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployee";
 import { ClientPage } from "./pages/ClientPage";
 import { HomePage } from "./pages/HomePage";
-import { AboutPage } from "./pages/AboutPage";
 import { FarmerPage } from "./pages/FarmerPage";
+import { AboutPage } from "./pages/AboutPage";
+import { RegistrationForm } from "./ui-components/RegistrationForm";
 import {
   BrowserRouter as Router,
   Route,
@@ -18,7 +19,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
 import API from "./API";
-import { RegistrationForm } from "./ui-components/RegistrationForm";
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -28,9 +28,9 @@ const App = () => {
   useEffect(() => {
     //per non perdere utente loggato se aggiorno pagina, da qui viene l'errore della GET 401(unhautorized)
     const checkAuth = async () => {
-      const user = await API.getUserInfo();
+      const userTmp = await API.getUserInfo();
       setLoggedIn(true);
-      setUser(user);
+      setUser(userTmp);
     };
     checkAuth().catch((err) => console.log(err));
   }, []);
@@ -72,8 +72,13 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null && user.role == 1 ? (
-                  <Redirect to='/shopemployee' />
+                {loggedIn && user !== null ? (
+                  <>
+                    {" "}
+                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
+                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
+                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
+                  </>
                 ) : (
                   <LoginForm
                     closeMessage={closeMessage}
@@ -98,33 +103,23 @@ const App = () => {
 
         <Route
           exact
-          path='/signup'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex w-100'>
-              <RegistrationForm className='below' />
-            </Container>
-          )}
-        />
-        <Route
-          exact
-          path='/farmerpage'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <FarmerPage user={user} />
-            </Container>
-          )}
-        />
-        <Route
-          exact
           path='/personalpage'
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null && user.role == 1 ? (
-                  <Redirect to='/shopemployee' />
+                {loggedIn && user !== null ? (
+                  <>
+                    {" "}
+                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
+                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
+                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
+                  </>
                 ) : (
-                  <Redirect to='/' />
+                  <LoginForm
+                    closeMessage={closeMessage}
+                    message={message}
+                    login={doLogin}
+                  />
                 )}
               </Row>
             </Container>
@@ -133,21 +128,31 @@ const App = () => {
 
         <Route
           exact
-          path='/about'
+          path='/shopemployee'
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
-              <AboutPage user={user}></AboutPage>
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <ShopEmployee user={user} />
+            </Container>
+          )}
+        />
+        <Route
+          exact
+          path='/signup'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex w-100'>
+              <RegistrationForm className='below' />
             </Container>
           )}
         />
 
         <Route
           exact
-          path='/shopemployee'
+          path='/farmerpage'
           render={() => (
-            <Container fluid className='d-flex'>
+            <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <ShopEmployee user={user} />
+              <FarmerPage user={user} />
             </Container>
           )}
         />
@@ -159,6 +164,17 @@ const App = () => {
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
               <ClientPage user={user} />
+            </Container>
+          )}
+        />
+
+        <Route
+          exact
+          path='/about'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <AboutPage user={user} />
             </Container>
           )}
         />

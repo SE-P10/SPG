@@ -16,6 +16,7 @@ html {
 
 .text-black {
   color: black !important;
+  font-weight: bold !important;
 }
 
 #navbarScrollingDropdown {
@@ -36,7 +37,7 @@ body {
 
 .ph-prev {
   height: 200px;
-  width: 200px;
+  width: 250px;
   margin-top: 20px;
 }
 

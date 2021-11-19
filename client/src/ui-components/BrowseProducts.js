@@ -39,6 +39,7 @@ function BrowserProducts(props) {
                   <Row className='justify-content-center'> {p.name}</Row>
                   <Row className='justify-content-center'> {p.quantity}</Row>
                   <Row className='justify-content-center'>{p.price} €/Kg</Row>
+                  <Row className='justify-content-center'>{p.farmer} </Row>
                 </Col>
               ))}
           </Row>

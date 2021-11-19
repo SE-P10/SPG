@@ -15,6 +15,12 @@ function MyNavbar(props) {
         </Link>
       </Nav.Item>
 
+      <Nav.Item>
+        <Link to={"/about"} className='ml-2 text-white'>
+          {" "}
+          About us
+        </Link>
+      </Nav.Item>
       {props.loggedIn ? (
         <>
           <NavDropdown
