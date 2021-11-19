@@ -163,8 +163,12 @@ function NewOrder(props) {
 
           <h3 className='thirdColor'> List of our products: </h3>
           <Col className='below list'>
-            {products.filter(t => {return categorize === 0 ? t.name === filterCategorize : t.farmer === filterCategorize}).map((p) => (
+            {products.filter(t => {return categorize === 0 ? t.name === filterCategorize : t.farmer === filterCategorize})..sort((a, b) => (a.name > b.name ? 1 : -1)).map((p) => (
               <Row className='below'>
+                <Col>
+                {" "}<Image src={"./img/" + p.name + ".jpeg"}
+                className="ph-prev"/>
+                 </Col>{" "}
                 <Col>{p.name} </Col>
                 <Col>{p.price} €</Col>
                 <Col>max quantity : {p.quantity}</Col>
