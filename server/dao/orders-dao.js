@@ -136,7 +136,7 @@ const updateProduct = async (productID, data) => {
     });
 }
 
-const handleOrder = async (orderRAW, status = '') => {
+const handleOrder = async (orderRAW, status = '', useDbTransaction = true) => {
 
     if (typeof orderRAW === 'number') {
 
@@ -163,6 +163,12 @@ const handleOrder = async (orderRAW, status = '') => {
     if (newOrder.price !== false)
         newOrder.price += '';
 
+    /*
+if (newOrder.status === '' && newOrder.price === '' && newOrder.pickup_place === '' && newOrder.pickup_time === false) {
+    return newOrder.id || 0;
+}
+*/
+
     // prepare update data 
     let orderFiltered = removeEmpty(filter_args({
         status: false,
@@ -180,51 +186,47 @@ const handleOrder = async (orderRAW, status = '') => {
 
         if (newOrder.id) {
 
-            db.serialize(async () => {
+            // get original order to prevent some malicious actions
+            let order = await getOrder(newOrder.id);
 
-                // get original order to prevent some malicious actions
-                let order = await getOrder(newOrder.id);
+            if (!order || newOrder.id !== order.id) {
+                return reject('Is not a valid order, wrong orderID');
+            }
 
-                if (!order || !order.id)
-                    return reject('Is not a valid order, wrong orderID');
+            let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
 
+            if (useDbTransaction) {
                 db.run("BEGIN TRANSACTION;");
+            }
 
-                let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
+            let reStatus = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? newOrder.id : 0;
 
-                let reStatus = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? newOrder.id : 0;
+            if (reStatus) {
 
-                if (reStatus) {
+                switch (newOrder.status) {
+                    case 'handout':
 
-                    switch (newOrder.status) {
-                        case 'handout':
+                        let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
 
-                            let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
+                        reStatus = 0;
 
-                            reStatus = 0;
+                        if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
+                            reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
+                        }
+                        else {
+                            let user = getUserById(order.user_id);
+                            await sendMail(user.email, "SPG notification", "You orders is pending due to insufficient money. top-up your wallet!");
+                        }
 
-                            if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
-                                reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
-                            }
-                            else {
-                                let user = getUserById(order.user_id);
-                                await sendMail(user.email, "SPG notification", "You orders is pending due to insufficient money. top-up your wallet!");
-                            }
-
-                            break;
-                    }
+                        break;
                 }
+            }
 
-                if (reStatus) {
-                    db.run("COMMIT;");
-                    resolve(newOrder.id);
-                }
-                else {
-                    db.run("ROLLBACK;");
-                    resolve(0);
-                }
+            if (useDbTransaction) {
+                db.run(reStatus ? "COMMIT;" : "ROLLBACK;");
+            }
 
-            });
+            resolve(reStatus ? newOrder.id : 0);
         }
         else {
 
@@ -319,7 +321,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
                             let res = await updateProduct(pID, { quantity: (orderedQuantity + availableQuantity - updateQuantity) });
 
-                            res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * (updateQuantity - orderedQuantity)) })
+                            res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * (updateQuantity - orderedQuantity)) }, '', false)
 
                             if (AF_DEBUG_PROCESS) {
                                 console.log("Updated product:", await getProduct(pID))
@@ -389,7 +391,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                         /**
                          * update product availability and order price
                         */
-                        after: async (row, insertedID) => {
+                        after: async (row, insertedID, statusCheck) => {
 
                             let pID = row[1],
                                 product = await getProduct(pID),
@@ -404,7 +406,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
                             let res = await updateProduct(pID, { quantity: (Number.parseFloat(product.quantity) - Number.parseFloat(row[2])) });
 
-                            res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * Number.parseFloat(row[2])) });
+                            res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * Number.parseFloat(row[2])) }, '', false);
 
                             if (!res) {
                                 if (AF_DEBUG) {
@@ -434,7 +436,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                         console.log("ERROR insert order :: not all products were processed correctly")
                     }
                     processedProducts = [];
-                    await handleOrder(orderID, 'error');
+                    await handleOrder(orderID, 'error', false);
                 }
             }
 
