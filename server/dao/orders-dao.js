@@ -1,14 +1,14 @@
 'use strict';
 
-const AF_DEBUG = true;
+const AF_DEBUG = false;
 const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const { validationResult } = require("express-validator");
 
-const db = require("./db");
-const { getUserMeta, updateUserMeta } = require("./user-dao");
-const { runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB } = require("./utility");
+const db = require("../db");
+const { getUserMeta, updateUserMeta, getUserById } = require("./user-dao");
+const { sendMail, validateEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber } = require("../utility");
 
 const getOrder = async (orderID) => {
 
@@ -30,9 +30,66 @@ const getOrder = async (orderID) => {
             product_id: '',
             quantity: 0
         })
+
+        order['user'] = await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
+            id: 0,
+            username: '',
+            email: '',
+            name: '',
+            surname: ''
+        })
     }
 
     return order;
+}
+
+const getOrders = async (status = '') => {
+
+    if (isNumber(status))
+        return getOrder(status);
+
+    let sql = 'SELECT * FROM orders',
+        values = [];
+
+    if (status) {
+        if (validateEmail(status))
+            sql += " WHERE user_id = (SELECT id FROM users WHERE email = ?);"
+        else
+            sql += " WHERE status = ?;"
+        values.push(status)
+    }
+
+    let orders = await getQuerySQL(db, sql, values, {
+        id: 0,
+        user_id: 0,
+        status: '',
+        price: 0,
+        pickup_time: '',
+        pickup_place: ''
+    }, null);
+
+    if (orders && orders.length > 0) {
+        orders = Promise.all(orders.map(async (order) => {
+
+            return {
+                ...order,
+                user: await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
+                    id: 0,
+                    username: '',
+                    email: '',
+                    name: '',
+                    surname: ''
+                }, null, true),
+                products: await getQuerySQL(db, "SELECT * FROM order_product where order_id = ?", [order.id], {
+                    order_id: 0,
+                    product_id: '',
+                    quantity: 0
+                })
+            }
+        }))
+    }
+
+    return orders;
 }
 
 const getOrderProduct = async (orderID, productID) => {
@@ -125,36 +182,48 @@ const handleOrder = async (orderRAW, status = '') => {
 
             db.serialize(async () => {
 
-                db.run("BEGIN TRANSACTION;");
+                // get original order to prevent some malicious actions
+                let order = await getOrder(newOrder.id);
 
-                if (!await existValueInDB(db, 'orders', { id: newOrder.id }))
+                if (!order || !order.id)
                     return reject('Is not a valid order, wrong orderID');
+
+                db.run("BEGIN TRANSACTION;");
 
                 let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
 
-                let res = await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true) ? newOrder.id : 0;
+                let reStatus = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? newOrder.id : 0;
 
+                if (reStatus) {
 
-                if (newOrder.status === 'handout') {
+                    switch (newOrder.status) {
+                        case 'handout':
 
-                    // get the order from database to be sure for price
-                    let order = getOrder(newOrder.id),
-                        wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
+                            let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
 
-                    if (res && Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
-                        res = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
-                    }
-                    else {
-                        res = 0;
+                            reStatus = 0;
+
+                            if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
+                                reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
+                            }
+                            else {
+                                let user = getUserById(order.user_id);
+                                await sendMail(user.email, "SPG notification", "You orders is pending due to insufficient money. top-up your wallet!");
+                            }
+
+                            break;
                     }
                 }
 
-                if (res)
+                if (reStatus) {
                     db.run("COMMIT;");
-                else
+                    resolve(newOrder.id);
+                }
+                else {
                     db.run("ROLLBACK;");
+                    resolve(0);
+                }
 
-                resolve(res);
             });
         }
         else {
@@ -403,15 +472,20 @@ const processOrder = async (userID, orderID, data = {}) => {
     /**
      * Insert / Update a product list [{"id": "quantity"}, ...]
     */
-    if (orderID && isArray(products) && products.length > 0) {
+    if (orderID) {
 
-        let processed = await handleOrderProducts(orderID, products, updatingOrder);
+        if (isArray(products) && products.length > 0) {
 
-        if (AF_DEBUG_PROCESS) {
-            console.log("Processed products:", processed)
+            let processed = await handleOrderProducts(orderID, products, updatingOrder);
+
+            if (AF_DEBUG_PROCESS) {
+                console.log("Processed products:", processed)
+            }
+
+            return processed;
         }
 
-        return processed;
+        return orderID;
     }
 
     return 0;
@@ -431,9 +505,9 @@ exports.execApi = (app, passport, isLoggedIn) => {
             let status = await processOrder(0, req.params.order_id, req.body);
 
             if (status)
-                res.status(201).end();
+                res.status(201).json(status).end();
             else
-                res.status(400).json({ error: 'Bad request' });
+                res.status(400).json({ error: 'Unable to update the order' });
 
         } catch (err) {
             res.status(503).json({ error: err });
@@ -459,9 +533,31 @@ exports.execApi = (app, passport, isLoggedIn) => {
             let status = await processOrder(req.params.user_id, 0, req.body);
 
             if (status)
-                res.status(201).end();
+                res.status(201).json(status).end();
             else
-                res.status(400).json({ error: 'Bad request' });
+                res.status(400).json({ error: 'Unable to insert a new order' });
+
+        } catch (err) {
+            console.log(err)
+            res.status(503).json({ error: err });
+        }
+    });
+
+    // GET order / orders /api/orders/:order_id
+    app.get('/api/orders/:filter?', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        }
+
+        try {
+            let status = await getOrders(req.params.filter);
+
+            if (status)
+                res.status(200).json(status).end();
+            else
+                res.status(400).json({ error: 'Unable to get orders' });
 
         } catch (err) {
             console.log(err)
