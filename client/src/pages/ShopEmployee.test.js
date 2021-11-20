@@ -22,6 +22,18 @@ it('ShopEmployee renders buttons', () => {
     expect(screen.getByText('TopUp a Wallet')).toBeInTheDocument();
     expect(screen.getByText('New Order')).toBeInTheDocument();
     expect(screen.getByText('HandOut')).toBeInTheDocument();
-   // expect(screen.getByText('Check Order')).toBeInTheDocument();
+    expect(screen.getByText('Check Orders')).toBeInTheDocument();
+
+});
+
+it('Each button should be enabled', () => {
+  render(<ShopEmployee />);
+  expect(screen.getByText('ShopEmployee personal page')).toBeEnabled();
+  expect(screen.getByText('Register a Client')).toBeEnabled();
+  expect(screen.getByText('Browse Products')).toBeEnabled();
+  expect(screen.getByText('TopUp a Wallet')).toBeEnabled();
+  expect(screen.getByText('New Order')).toBeEnabled();
+  expect(screen.getByText('HandOut')).toBeEnabled();
+  expect(screen.getByText('Check Orders')).toBeEnabled();
 
 });
