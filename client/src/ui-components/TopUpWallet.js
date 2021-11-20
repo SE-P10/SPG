@@ -76,7 +76,9 @@ function TopUpWallet(props) {
                 defaultValue={0}
                 min={0}
                 type='number'
-                onChange={(ev) => setRechargeAmount(ev.target.value)}
+                onChange={(ev) => {
+                  if ((parseInt(ev.target.value)) < 0) setErrorMessage("negative number")
+                  else setRechargeAmount(ev.target.value)}}
               />{" "}
               <Button onClick={rechargeWallet} className='spg-button below'>
                 {" "}
