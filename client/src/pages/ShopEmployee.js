@@ -127,7 +127,7 @@ function ShopEmployee(props) {
               </>
             ) : null}{" "}
           </Row>
-          <Col>
+          <Col className='ml-4'>
             {action === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
@@ -210,7 +210,7 @@ function ShopEmployee(props) {
               ""
             )}
           </Col>
-          <Col className='ml-2'>
+          <Col>
             {action === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button

@@ -7,6 +7,8 @@ import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
+import { Dimensions } from "react-native";
+
 import {
   BrowserRouter as Router,
   Route,
@@ -64,7 +66,6 @@ const App = () => {
         loggedIn={loggedIn}
         closeMessage={closeMessage}
       />
-
       <Switch>
         <Route
           exact

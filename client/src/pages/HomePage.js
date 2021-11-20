@@ -6,7 +6,7 @@ function HomePage(props) {
     <>
       <Container className='justify-content-center'>
         <Row className='below'>
-          <Carousel>
+          <Carousel lassName='below'>
             <Carousel.Item>
               <img
                 className='d-block w-100 '
