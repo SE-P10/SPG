@@ -7,11 +7,11 @@ const { check, validationResult, body } = require("express-validator"); // valid
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 
-const gDao = require("./g-dao");
+const gDao = require("./dao/products-dao");
 const userDao = require("./dao/user-dao");
-const walletDao = require("./wallet-dao");
+const walletDao = require("./dao/wallet-dao");
 const ordersDao = require('./dao/orders-dao.js');
-const farmerDao = require('./dao/farmer.js');
+const farmerDao = require('./dao/farmer-dao.js');
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
