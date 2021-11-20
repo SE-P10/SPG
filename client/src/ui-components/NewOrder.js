@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
 import AFApi from "../api/a-API";
-import gAPI from "../gAPI";
+import gAPI from "../api/gAPI";
 
 function NewOrder(props) {
   useEffect(() => {

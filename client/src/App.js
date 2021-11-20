@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { Container, Row, Col, Alert } from "react-bootstrap";
 import { LoginForm } from "./pages/Login";
-import { ShopEmployee } from "./pages/ShopEmployee";
+import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";
 import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
@@ -14,7 +14,7 @@ import {
 import MyNavbar from "./ui-components/MyNavbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
+import "./css/App.css";
 
 import API from "./API";
 

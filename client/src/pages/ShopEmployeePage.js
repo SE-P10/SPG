@@ -1,16 +1,16 @@
 import { Container, Row, Col, ListGroup, Button, Alert } from "react-bootstrap";
 import { Card } from "react-bootstrap";
 import { useState } from "react";
-import { HandOut } from "../ui-components/HandOut.js";
+import { HandOut } from "../shopEmployee-component/HandOut";
 import { CheckOrders } from "../ui-components/CheckOrders";
 import { NewOrder } from "../ui-components/NewOrder";
-import { TopUpWallet } from "../ui-components/TopUpWallet.js";
+import { TopUpWallet } from "../shopEmployee-component/TopUpWallet.js";
 import { RegistrationForm } from "../ui-components/RegistrationForm";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
 import "../css/custom.css";
-import { PendingOrders } from "../ui-components/PendingOrders.js";
+import { PendingOrders } from "../shopEmployee-component/PendingOrders.js";
 import AFApi from "../api/a-API";
-import gAPI from "../gAPI";
+import gAPI from "../api/gAPI";
 
 
 function ShopEmployee(props) {

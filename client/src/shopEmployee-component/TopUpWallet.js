@@ -1,5 +1,5 @@
 import { Container, Row, Form, Button, Alert } from "react-bootstrap";
-import { SearchComponent } from "./SearchComponent";
+import { SearchComponent } from "../ui-components/SearchComponent";
 import { useState } from "react";
 import API from "../API";
 import "../css/custom.css";

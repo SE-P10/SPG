@@ -1,4 +1,4 @@
-import gApi from "./gAPI.js"
+import gApi from "./api/gAPI.js"
 import AFApi from "./api/a-API.js"
 import farmerAPI from './api/farmer.js'
 

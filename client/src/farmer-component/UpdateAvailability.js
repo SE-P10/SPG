@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import "../css/custom.css";
 import farmerAPI from "./../api/farmer"
 import AFApi from "../api/a-API";
-import gAPI from "../gAPI";
+import gAPI from "../api/gAPI";
 
 function UpdateAvailability(props) {
   useEffect(() => {

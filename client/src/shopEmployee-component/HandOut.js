@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Container, Row, Alert, Col, Button } from "react-bootstrap";
-import { SearchComponent } from "./SearchComponent";
+import { SearchComponent } from "../ui-components/SearchComponent";
 import { useEffect } from "react";
 
-import API from "./../API"
+import API from "../API"
 import "../css/custom.css";
 import AFApi from "../api/a-API";
 
