@@ -9,7 +9,7 @@ const doLoginStub = () => {
     
 }
 const closeMessageStub = () => {
-    message = ""
+
 }
 
 const setup = () => {
