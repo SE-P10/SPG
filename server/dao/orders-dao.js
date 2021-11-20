@@ -136,7 +136,11 @@ const updateProduct = async (productID, data) => {
     });
 }
 
+
 const handleOrderActions = async (order, action) => {
+    //                                        | delivering |
+    // booked -> confirmed (by the farmer) -> |            | -> delivered
+    //                                        |   pending  |
 
     let reStatus = order.id;
 
@@ -145,9 +149,6 @@ const handleOrderActions = async (order, action) => {
         case 'handout':
 
             let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
-            //                                        | delivering |
-            // booked -> confirmed (by the farmer) -> |            | -> delivered
-            //                                        | pending    |
 
             if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
                 reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
