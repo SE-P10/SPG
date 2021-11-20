@@ -28,7 +28,7 @@
 
 - `AboutPage` (in `AboutPage.js`): it contains the main informations about what SPG is and how it was born, with related pictures.
 - `ClientPage` (in `ClientPage.js`): it contains the list of the actions a client can perform. Each client can see all the products available and their details (price, farmer, category) and he can issue a new order.
-- `ShopEmployee` (in `MemeList.js`): it contains the list of the actions a shop employee can perform. Each shop employee can see register a new client, browse the products, check the orders, hand out an order, top up a wallet and issue a new order.
+- `ShopEmployee` (in `ShopEmployee.js`): it contains the list of the actions a shop employee can perform. Each shop employee can see register a new client, browse the products, check the orders, hand out an order, top up a wallet and issue a new order.
 - `FarmerPage` (in `FarmerPage.js`): it contains the list of the actions a farmer can perform. Each farmer can update the quantity availability of each product he decides to sell.
 
 ## [Database structure](./Documentation/databe_structure.md)
