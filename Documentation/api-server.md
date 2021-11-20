@@ -70,7 +70,7 @@ http://localhost:3001/api/products
   "quantity": 10,
   "price": 5,
   "name": "product name",
-  "Farmer": "farmer name" + " " + "farmer surname"
+  "Farmer": "farmerName farmerSurname"
 }
 ```
 
