@@ -16,9 +16,9 @@ exports.getUserById = (id) => {
         // by default, the local strategy looks for "username": not to create confusion in server.js, we can create an object with that property
         const user = {
           id: row.id,
-          email: row.email,
           name: row.name,
           role: row.role,
+          email: row.email
         };
         resolve(user);
       }
