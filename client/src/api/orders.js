@@ -122,26 +122,12 @@ async function insertOrder(userID, products = [], order_details = {}) {
 	return parseResponse(await handleOrderAction(userID, products, order_details, 'POST'))
 }
 
-/**
- * 
- * @param {*} email 
- * @returns 
- */
-async function getUserId(email) {
-	const response = await fetch('api/users/' + email);
-	const respondeBody = await response.json();
-	if (response.ok) {
-		return respondeBody;
-	}
-	else throw respondeBody;
-}
 
-const AFApi = {
+const ordersApi = {
 	insertOrder,
 	handOutOrder,
 	getPendingOrders,
-	getOrders,
-	getUserId
+	getOrders
 }
 
-export default AFApi;
+export default ordersApi;

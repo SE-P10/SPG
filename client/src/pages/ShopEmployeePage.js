@@ -9,7 +9,6 @@ import { RegistrationForm } from "../ui-components/RegistrationForm";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
 import "../css/custom.css";
 import { PendingOrders } from "../shopEmployee-component/PendingOrders.js";
-import AFApi from "../api/a-API";
 import gAPI from "../api/gAPI";
 
 
