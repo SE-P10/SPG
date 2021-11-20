@@ -11,6 +11,7 @@ const gDao = require("./g-dao");
 const userDao = require("./dao/user-dao");
 const walletDao = require("./wallet-dao");
 const ordersDao = require('./dao/orders-dao.js');
+const farmerDao = require('./dao/farmer.js');
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -162,6 +163,42 @@ app.get("/api/users/:client_email", isLoggedIn, (req, res) => {
     res.status(500).json(false);
   }
 });
+
+// GET /api/products/farmer/:farmer_id
+// get all the products of a farmer
+app.get("/api/products/farmer/:farmer_id",
+  isLoggedIn,
+  (req, res) => {
+    try {
+      farmerDao.getProducts(req.params.farmer_id).then((products) => {
+        res.status(200).json(products);
+      }).catch((err) => {
+        res.status(503).json({});
+      })
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  })
+
+// POST /wallet/update/
+// parameters product_id, amount
+// update the value of the product to the new value
+app.put("/api/farmer/products/update/:product_id/:quantity/:farmer_id",
+  [check(['farmer_id']).isInt()],
+  async (req,res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()){
+      return res.status(422).end()
+    }
+    try{
+      await farmerDao.updateProducts(req.params.farmer_id,req.params.product_id,req.params.quantity)
+      res.status(200).end();
+
+    }catch(err){
+      res.status(503).end()
+    }
+  }
+);
 
 /*** Other express-related instructions ***/
 
