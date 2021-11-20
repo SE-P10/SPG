@@ -1,8 +1,8 @@
-# SPG
+# SPG - Solidarity Purchasing Group
 
-Solidarity Purchasing Group
+## TEAM P10
 
-## TEAM MEMBERS
+### MEMBERS
 
 | NAME               | ID      |
 | ------------------ | ------- |
@@ -37,3 +37,11 @@ Solidarity Purchasing Group
 
 - [API Server](./Documentation/api-server.md)
 - [API Client](./Documentation/api-client.md)
+
+## Users Credentials
+
+Email, Password, Role
+
+- john.doe@demo01.it, password, [shop employee]
+- mariorossi@demo.it, password, [client]
+- paolobianchi@demo.it, password, [farmer]
