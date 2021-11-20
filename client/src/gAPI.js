@@ -74,12 +74,25 @@ async function deleteAllBasket() {
 	  });
 }
 
+async function getBasketProducts() {
+    // call: GET /api/products
+    const response = await fetch('/api/basketProduct');
+    const productsJson = await response.json();
+    if (response.ok) {
+      	return productsJson.map(p => ({ id: p.id, quantity: p.quantity, price: p.price, name: p.name, farmer: p.farmer }));
+    } else {
+      	throw productsJson;  // an object with the error coming from the server
+    }
+}
+
+
 const gAPI = {
     getProducts,
 	addClient,
 	getWalletByMail,
 	deleteAllBasket,
-	insertProductInBasket
+	insertProductInBasket,
+	getBasketProducts
 }
 
 export default gAPI;

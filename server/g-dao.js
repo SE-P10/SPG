@@ -83,7 +83,7 @@ const updateBasketElement = (product, userId) => {
       else {console.log(product.quantity)
         const sql = "INSERT INTO basket VALUES ((SELECT MAX(id)+1 FROM basket), ?, ?, ?)";
         db.all(sql, [userId, product.product_id, product.quantity], (err) => {
-          if (err) reject(err);
+          if (err){console.log(err); reject(err);}
           else resolve(this.lastID);
         });
       }
@@ -98,6 +98,25 @@ const deleteAllBasket = userId => {
     db.all(sql1, [userId], (err) => {
       if (err) reject(err);
       else resolve(this.lastID);
+    });
+  });
+};
+
+const listProductsBasket = (userId) => {
+  return new Promise((resolve, reject) => {
+    const sql = "select p.id AS idP, b.quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_detalis pd, basket b where p.farmer_id = u.id and p.details_id = pd.id and p.id = b.product_id and b.user_id = ?";
+    db.all(sql, [userId], (err, rows) => {
+      if (err) reject(err);
+      else {
+        const Products = rows.map((p) => ({
+          id: p.idP,
+          quantity: p.quantity,
+          price: p.price,
+          name: p.product,
+          Farmer: p.farmer + " " + p.surname
+        }));
+        resolve(Products);
+      }
     });
   });
 };
@@ -163,6 +182,16 @@ exports.execApi = (app, passport, isLoggedIn) => {
       res.status(201).end();
     } catch (err) {
       res.status(503).json({ error: err });
+    }
+  });
+
+   // GET /api/basketProduct
+   app.get("/api/basketProduct", isLoggedIn, async (req, res) => {
+    try {
+      const Products = await listProductsBasket(req.user.id);
+      res.json(Products);
+    } catch (err) {
+      res.status(500).end();
     }
   });
 
