@@ -145,16 +145,17 @@ const handleOrderActions = async (order, action) => {
         case 'handout':
 
             let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
-            //al momento lo lasciamo cosi , quando avremo la conferma dei prodotti da parte del farmer , inseriremo un nuovo stato 'deliveryng' ed è li che faremo decremento
-            //l'ordine passa in delyvering se una volta confermarto dal famer, l'utente che ha fatto ordine ha soldi abbastanza , altrimenti va in pending
+            //                                        | delivering |
+            // booked -> confirmed (by the farmer) -> |            | -> delivered
+            //                                        | pending    |
+
             if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
                 reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
             }
             else {
                 reStatus = 0;
-                let user = await  getUserById(order.user_id);
-                console.log(user)
-                await sendMail(user.email, "SPG notification", "You orders is pending due to insufficient money. top-up your wallet!");
+                let user = await getUserById(order.user_id);
+                await sendMail(user.email, "You orders is pending due to insufficient money. top-up your wallet!");
             }
 
             if (!reStatus) {
