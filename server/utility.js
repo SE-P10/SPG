@@ -307,8 +307,7 @@ exports.isNumber = (i) => { return typeof i === 'number' || /^\d+$/.test(i); }
 
 exports.sendMail = async (to, body, subject) => {
 
-    if (!to || !body)
-        return false;
+    
 
     if (!subject)
         subject = 'SPG notification';
