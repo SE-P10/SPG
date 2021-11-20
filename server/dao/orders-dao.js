@@ -8,7 +8,7 @@ const { validationResult } = require("express-validator");
 
 const db = require("../db");
 const { getUserMeta, updateUserMeta, getUserById } = require("./user-dao");
-const { sendMail, validateEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber, debugLog } = require("../utility");
+const { sendMail, isEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber, debugLog } = require("../utility");
 
 const getOrder = async (orderID) => {
 
@@ -52,7 +52,7 @@ const getOrders = async (status = '') => {
         values = [];
 
     if (status) {
-        if (validateEmail(status))
+        if (isEmail(status))
             sql += " WHERE user_id = (SELECT id FROM users WHERE email = ?);"
         else
             sql += " WHERE status = ?;"
