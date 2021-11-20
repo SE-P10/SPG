@@ -7,6 +7,7 @@ const AF_DEBUG_PROCESS = AF_DEBUG;
 const { validationResult } = require("express-validator");
 
 const db = require("./db");
+const { getUserMeta, updateUserMeta } = require("./user-dao");
 const { runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB } = require("./utility");
 
 const getOrder = async (orderID) => {
@@ -92,7 +93,7 @@ const handleOrder = async (orderRAW, status = '') => {
         orderRAW = { id: orderRAW };
     }
 
-    let order = filter_args({
+    let newOrder = filter_args({
         id: 0,
         user_id: false,
         status: status,
@@ -102,8 +103,8 @@ const handleOrder = async (orderRAW, status = '') => {
     }, orderRAW || {});
 
     // trick to make 0 integer passed through removeEmpty
-    if (order.price !== false)
-        order.price += '';
+    if (newOrder.price !== false)
+        newOrder.price += '';
 
     // prepare update data 
     let orderFiltered = removeEmpty(filter_args({
@@ -111,32 +112,59 @@ const handleOrder = async (orderRAW, status = '') => {
         price: false,
         pickup_time: false,
         pickup_place: false
-    }, order), {});
+    }, newOrder), {});
 
     // prevent empty insert/update 
     if (Object.keys(orderFiltered).length < 1) {
-        return order.id || 0;
+        return newOrder.id || 0;
     }
 
     return new Promise(async (resolve, reject) => {
 
-        if (order.id) {
+        if (newOrder.id) {
 
-            if (!await existValueInDB(db, 'orders', { id: order.id }))
-                return reject('Is not a valid order, wrong orderID');
+            db.serialize(async () => {
 
-            let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: order.id });
+                db.run("BEGIN TRANSACTION;");
 
-            resolve(await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true) ? order.id : 0);
+                if (!await existValueInDB(db, 'orders', { id: newOrder.id }))
+                    return reject('Is not a valid order, wrong orderID');
+
+                let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
+
+                let res = await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true) ? newOrder.id : 0;
+
+
+                if (newOrder.status === 'handout') {
+
+                    // get the order from database to be sure for price
+                    let order = getOrder(newOrder.id),
+                        wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
+
+                    if (res && Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
+                        res = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
+                    }
+                    else {
+                        res = 0;
+                    }
+                }
+
+                if (res)
+                    db.run("COMMIT;");
+                else
+                    db.run("ROLLBACK;");
+
+                resolve(res);
+            });
         }
         else {
 
-            if (!order.user_id || (!AF_ALLOW_DIRTY && !await existValueInDB(db, 'users', { id: order.user_id, role: '0' })))
+            if (!newOrder.user_id || (!AF_ALLOW_DIRTY && !await existValueInDB(db, 'users', { id: newOrder.user_id, role: '0' })))
                 return reject('Is not a valid order, wrong userID');
 
             let sql = 'INSERT INTO orders (user_id, status, price, pickup_time, pickup_place) VALUES(?, ?, ?, ?, ?)';
 
-            resolve(await runQuerySQL(db, sql, [order.user_id, order.status || 'booked', order.price, order.pickup_time, order.pickup_place], true));
+            resolve(await runQuerySQL(db, sql, [newOrder.user_id, newOrder.status || 'booked', newOrder.price, newOrder.pickup_time, newOrder.pickup_place], true));
         }
     })
 }
@@ -348,7 +376,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
     });
 }
 
-const handleOrderAction = async (userID, orderID, data = {}) => {
+const processOrder = async (userID, orderID, data = {}) => {
 
     let products = data.products || [];
 
@@ -400,7 +428,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
         }
 
         try {
-            let status = await handleOrderAction(0, req.params.order_id, req.body);
+            let status = await processOrder(0, req.params.order_id, req.body);
 
             if (status)
                 res.status(201).end();
@@ -428,7 +456,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
         }
 
         try {
-            let status = await handleOrderAction(req.params.user_id, 0, req.body);
+            let status = await processOrder(req.params.user_id, 0, req.body);
 
             if (status)
                 res.status(201).end();
