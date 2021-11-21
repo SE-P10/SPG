@@ -8,7 +8,6 @@ import { TopUpWallet } from "../shopEmployee-component/TopUpWallet.js";
 import { RegistrationForm } from "../ui-components/RegistrationForm";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
 import "../css/custom.css";
-import AFApi from "../api/a-API";
 import {
   registerIcon,
   newIcon,

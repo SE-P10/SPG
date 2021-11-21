@@ -67,10 +67,11 @@ function NewOrder(props) {
       }
 
       if (orderOk) {
-        ordersApi.insertOrder(
-          userId[0].id,
-          orderProduct.filter((t) => t.quantity !== 0)
-        )
+        ordersApi
+          .insertOrder(
+            userId[0].id,
+            orderProduct.filter((t) => t.quantity !== 0)
+          )
           .then(() => propsN.addMessage("Request sent correctly!"))
           .catch((err) => {
             setErrorMessage("Server error during insert order.");
@@ -127,44 +128,43 @@ function NewOrder(props) {
         )}
 
         <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
-            <Form.Label>Client mail</Form.Label>
-            <Form.Control
-              type='email'
-              onChange={(ev) => {
-                setMailInserted(ev.target.value);
-              }}
-            />
-          </Form.Group>
+          <Form.Label>Client mail</Form.Label>
+          <Form.Control
+            type='email'
+            onChange={(ev) => {
+              setMailInserted(ev.target.value);
+            }}
+          />
+        </Form.Group>
 
-        <Col><Button variant="primary" onClick={() => {setCategorize(0);setFilterCategorize(undefined);setViewFilter(true)}}> Show for type </Button>{" "}
-        <Button variant="primary" onClick={() => {setCategorize(1);setFilterCategorize(undefined);setViewFilter(true)}}> Show for famer </Button></Col>
+        <Col>
+          <Button
+            variant='primary'
+            onClick={() => {
+              setCategorize(0);
+              setFilterCategorize(undefined);
+              setViewFilter(true);
+            }}>
+            {" "}
+            Show for type{" "}
+          </Button>{" "}
+          <Button
+            variant='primary'
+            onClick={() => {
+              setCategorize(1);
+              setFilterCategorize(undefined);
+              setViewFilter(true);
+            }}>
+            {" "}
+            Show for famer{" "}
+          </Button>
+        </Col>
 
-
-          { categorize === 0 && viewFilter === true?  
-         <div>{type.map((t) => ( <Row>
-          <Col>{t}</Col>
-          <Col><Button variant="primary" onClick={() => {setFilterCategorize(t);setViewFilter(false);}}>select</Button></Col>
-        </Row>))}
-        </div>
-          :
-          <div>{ categorize == 1 && viewFilter === true?  <div>{farmers.map((t) => ( <Row>
-            <Col>{t}</Col>
-            <Col><Button variant="primary" onClick={() => {setFilterCategorize(t);setViewFilter(false);}}>select</Button></Col>
-          </Row>))}
-          </div> : ""}</div>
-
-
-          }
-
-        
-        
-        {filterCategorize != undefined ? <Form>
-          
-
-          <h3 className='thirdColor'> List of our products: </h3>
-          <Col className='below list'>
-            {products.filter(t => {return categorize === 0 ? t.name === filterCategorize : t.farmer === filterCategorize}).sort((a, b) => (a.name > b.name ? 1 : -1)).map((p) => (
-              <Row className='below'>
+        {categorize === 0 && viewFilter === true ? (
+          <div>
+            {type.map((t) => (
+              <Row>
+                <Col>{t}</Col>
                 <Col>
                   <Button
                     variant='primary'
