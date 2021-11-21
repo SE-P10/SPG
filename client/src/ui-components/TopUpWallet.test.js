@@ -3,7 +3,6 @@
 import React from 'react';
 import { rerender, waitFor, fireEvent, getByText, getByLabelText, getByRole, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
-import { act } from 'react-dom/test-utils';
 
 //import '@testing-library/jest-dom'; in setupTests.js
 import ReactDOM from 'react-dom';
@@ -21,8 +20,8 @@ const server = setupServer(
         // respond using a mocked JSON body
         return res(ctx.json({ wallet: 5 }))
     }),
-    // capture "POST /api/wallet/update/" requests
-    rest.post('/api/wallet/update/100', (req, res, ctx) => {
+    // capture "POST /api/wallet/update/" requests -> Non ci sono parametri, se voglio far finta che vada bene la sovrascrivo
+    rest.post('/api/wallet/update/', (req, res, ctx) => {
         // respond using a mocked JSON body
         return res(ctx.status(500))
     }),
@@ -46,7 +45,7 @@ afterAll(() => server.close())
 
 //JEST
 //Smoke Test -> The “smoke test” checks that a component renders without throwing (This test renders App with its children)
-it('RegistrationForm should renders without crashing', () => {
+it('RegistrationForm shoulds render without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(<TopUpWallet />, div);
 });
@@ -210,6 +209,8 @@ it("Recharge should be enabled only with number,positive and grater than 0", asy
 
     //Check with 0
     userEvent.type(screen.getByRole('spinbutton'), 0)
+    expect(screen.getByRole('spinbutton')).toHaveValue(0);
+
     fireEvent.click(screen.getByText('Recharge the wallet'))
 
     await waitFor(() => {
@@ -218,7 +219,8 @@ it("Recharge should be enabled only with number,positive and grater than 0", asy
     expect(screen.getByRole("alert")).toHaveTextContent("The amount must be greater than 0.");
     fireEvent.click(screen.getByText('Close alert'))
     //Check with negative
-    userEvent.type(screen.getByRole('spinbutton','{downarrow}'))
+    fireEvent.change(screen.getByRole('spinbutton'), {target: {value: '-100'}})
+    expect(screen.getByRole('spinbutton')).toHaveValue(-100);
     fireEvent.click(screen.getByText('Recharge the wallet'))
     
     await waitFor(() => {
@@ -249,6 +251,7 @@ it("Alert should pop up if the recharge is not completed", async () => {
 
     userEvent.clear(screen.getByRole('spinbutton'))
     fireEvent.change(screen.getByRole('spinbutton'), {target: {value: '100'}})
+    expect(screen.getByRole('spinbutton')).toHaveValue(100);
 
     fireEvent.click(screen.getByText('Recharge the wallet'))
     
