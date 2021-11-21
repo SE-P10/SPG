@@ -1,5 +1,12 @@
 # API Client
 
+## API.getOrders(filter = '')
+
+* Description: get orders matching filter
+* Request params: filter (**email** or **order status** or **orderID**)
+* return: **{ id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}**
+
+
 ## API.updateOrder(orderID, products = [])
 
 * Description: update products of an order
