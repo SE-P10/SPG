@@ -4,6 +4,7 @@ import { useState } from "react";
 import API from "../API";
 import "../css/custom.css";
 
+
 function TopUpWallet(props) {
   const [walletValue, setWalletValue] = useState(null);
   const [rechargeAmount, setRechargeAmount] = useState(0);
@@ -19,7 +20,7 @@ function TopUpWallet(props) {
         setWalletValue(walletValueN);
       })
       .catch((e) => {
-        setErrorMessage("No user found.");
+        setErrorMessage("No user found."+emailValue);
         setWalletValue(null);
       });
   };
