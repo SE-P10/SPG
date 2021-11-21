@@ -82,6 +82,7 @@ function ClientPage(props) {
             ) : null}
             {action === 2 ? (
               <ClientOrder
+                user={props.user}
                 changeAction={changeAction}
                 addMessage={addMessage}
               />

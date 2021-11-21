@@ -18,6 +18,7 @@ exports.getUserById = (id) => {
           id: row.id,
           name: row.name,
           role: row.role,
+          email: row.email
         };
         resolve(user);
       }

@@ -8,7 +8,7 @@ const { validationResult } = require("express-validator");
 
 const db = require("../db");
 const { getUserMeta, updateUserMeta, getUserById } = require("./user-dao");
-const { sendMail, validateEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber } = require("../utility");
+const { sendMail, isEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber, debugLog } = require("../utility");
 
 const getOrder = async (orderID) => {
 
@@ -52,7 +52,7 @@ const getOrders = async (status = '') => {
         values = [];
 
     if (status) {
-        if (validateEmail(status))
+        if (isEmail(status))
             sql += " WHERE user_id = (SELECT id FROM users WHERE email = ?);"
         else
             sql += " WHERE status = ?;"
@@ -127,7 +127,7 @@ const updateProduct = async (productID, data) => {
     return new Promise((resolve, reject) => {
         db.run(dinoSQL.sql, [...dinoSQL.values], function (err) {
             if (err) {
-                console.log(err)
+                debugLog(err)
                 reject("Db error")
             }
             resolve(this.changes ? productID : 0);
@@ -136,106 +136,130 @@ const updateProduct = async (productID, data) => {
     });
 }
 
+
+const handleOrderActions = async (order, action) => {
+    //                                        | delivering |
+    // booked -> confirmed (by the farmer) -> |            | -> delivered
+    //                                        |   pending  |
+
+    let reStatus = order.id;
+
+    switch (action) {
+
+        case 'handout':
+
+            let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
+
+            if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
+                reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
+            }
+            else {
+                reStatus = 0;
+                let user = await getUserById(order.user_id);
+                await sendMail(user.email, "You orders is pending due to insufficient money. top-up your wallet!");
+            }
+
+            if (!reStatus) {
+
+                let dinoSQL = dynamicSQL("UPDATE orders SET", { status: 'pending' }, { id: order.id });
+
+                await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true);
+            }
+
+            break;
+    }
+
+    return reStatus;
+}
+
 const handleOrder = async (orderRAW, status = '') => {
 
-    if (typeof orderRAW === 'number') {
+    if (isNumber(orderRAW)) {
 
         if (!status) {
             /**
              * return orderID if exist otherwise 0, nothing to update here
-            */
+             */
             return existValueInDB(db, 'orders', { id: orderRAW }, 0);
         }
 
         orderRAW = { id: orderRAW };
     }
 
-    let newOrder = filter_args({
-        id: 0,
-        user_id: false,
-        status: status,
-        price: false,
-        pickup_time: '',
-        pickup_place: ''
-    }, orderRAW || {});
+    orderRAW = orderRAW || { id: 0 }
 
-    // trick to make 0 integer passed through removeEmpty
-    if (newOrder.price !== false)
-        newOrder.price += '';
-
-    // prepare update data 
-    let orderFiltered = removeEmpty(filter_args({
-        status: false,
-        price: false,
-        pickup_time: false,
-        pickup_place: false
-    }, newOrder), {});
-
-    // prevent empty insert/update 
-    if (Object.keys(orderFiltered).length < 1) {
-        return newOrder.id || 0;
+    if (status) {
+        orderRAW['status'] = status;
     }
 
-    return new Promise(async (resolve, reject) => {
+    if (orderRAW.id) {
 
-        if (newOrder.id) {
+        // get original order to prevent some malicious actions
+        let order = await getOrder(orderRAW.id);
 
-            db.serialize(async () => {
+        if (!order) {
 
-                // get original order to prevent some malicious actions
-                let order = await getOrder(newOrder.id);
+            if (AF_DEBUG) {
+                debugLog('Is not a valid order, wrong orderID', orderRAW.id);
+            }
 
-                if (!order || !order.id)
-                    return reject('Is not a valid order, wrong orderID');
-
-                db.run("BEGIN TRANSACTION;");
-
-                let dinoSQL = dynamicSQL("UPDATE orders SET", orderFiltered, { id: newOrder.id });
-
-                let reStatus = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? newOrder.id : 0;
-
-                if (reStatus) {
-
-                    switch (newOrder.status) {
-                        case 'handout':
-
-                            let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
-
-                            reStatus = 0;
-
-                            if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
-                                reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
-                            }
-                            else {
-                                let user = getUserById(order.user_id);
-                                await sendMail(user.email, "SPG notification", "You orders is pending due to insufficient money. top-up your wallet!");
-                            }
-
-                            break;
-                    }
-                }
-
-                if (reStatus) {
-                    db.run("COMMIT;");
-                    resolve(newOrder.id);
-                }
-                else {
-                    db.run("ROLLBACK;");
-                    resolve(0);
-                }
-
-            });
+            return 0;
         }
-        else {
 
-            if (!newOrder.user_id || (!AF_ALLOW_DIRTY && !await existValueInDB(db, 'users', { id: newOrder.user_id, role: '0' })))
-                return reject('Is not a valid order, wrong userID');
+        let updateOrder = removeEmpty(filter_args({
+            status: false,
+            price: false,
+            pickup_time: false,
+            pickup_place: false
+        }, orderRAW), {});
 
-            let sql = 'INSERT INTO orders (user_id, status, price, pickup_time, pickup_place) VALUES(?, ?, ?, ?, ?)';
-
-            resolve(await runQuerySQL(db, sql, [newOrder.user_id, newOrder.status || 'booked', newOrder.price, newOrder.pickup_time, newOrder.pickup_place], true));
+        // prevent empty insert/update 
+        if (Object.keys(updateOrder).length < 1) {
+            return orderRAW.id;
         }
-    })
+
+        /**
+         * process order actions, default return orderID
+         */
+        let reStatus = handleOrderActions(order, updateOrder.status);
+
+        if (reStatus) {
+            /***
+             * if every action performed up to now are ok let's update the order
+             */
+            let dinoSQL = dynamicSQL("UPDATE orders SET", updateOrder, { id: orderRAW.id });
+
+            reStatus = (await runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true)) ? orderRAW.id : 0;
+        }
+
+        return (reStatus ? orderRAW.id : 0);
+    }
+    else {
+
+        let newOrder = filter_args({
+            user_id: 0,
+            status: 'booked',
+            pickup_time: '',
+            pickup_place: ''
+        }, orderRAW);
+
+        if (!newOrder.user_id || (!AF_ALLOW_DIRTY && !await existValueInDB(db, 'users', { id: newOrder.user_id, role: '0' }))) {
+
+            if (AF_DEBUG) {
+                debugLog('Is not a valid order, wrong userID for:', newOrder);
+            }
+
+            return 0;
+        }
+
+        if (AF_DEBUG_PROCESS) {
+            debugLog("Inserting order:", newOrder)
+        }
+
+        let sql = 'INSERT INTO orders (user_id, status, price, pickup_time, pickup_place) VALUES(?, ?, ?, ?, ?)';
+
+        return runQuerySQL(db, sql, [newOrder.user_id, newOrder.status, 0, newOrder.pickup_time, newOrder.pickup_place], true);
+    }
 }
 
 const handleOrderProducts = async (orderID, products, updatingOrder = false) => {
@@ -275,19 +299,19 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
                             if (!orderID || !product || quantity < 0) {
                                 if (AF_DEBUG) {
-                                    console.log("Invalid order/product:", orderID, product)
+                                    debugLog("Invalid order/product:", orderID, product)
                                 }
                                 return false;
                             }
 
                             if (AF_DEBUG_PROCESS) {
-                                console.log("Updating product:", orderedProduct, row)
+                                debugLog("Updating product:", orderedProduct, row)
                             }
 
                             if ((Number.parseFloat(orderedProduct.quantity) + Number.parseFloat(product.quantity)) < Number.parseFloat(quantity)) {
 
                                 if (AF_DEBUG) {
-                                    console.log("Product quantity error:", orderedProduct, Number.parseFloat(orderedProduct.quantity) + Number.parseFloat(quantity))
+                                    debugLog("Product quantity error:", orderedProduct, Number.parseFloat(orderedProduct.quantity) + Number.parseFloat(quantity))
                                 }
 
                                 return false;
@@ -312,7 +336,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
                             if (!product || !order) {
                                 if (AF_DEBUG) {
-                                    console.log("Error with product/order:", product, order)
+                                    debugLog("Error with product/order:", product, order)
                                 }
                                 return false;
                             }
@@ -322,13 +346,13 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                             res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * (updateQuantity - orderedQuantity)) })
 
                             if (AF_DEBUG_PROCESS) {
-                                console.log("Updated product:", await getProduct(pID))
-                                console.log("Updated order:", await getOrder(orderID))
+                                debugLog("Updated product:", await getProduct(pID))
+                                debugLog("Updated order:", await getOrder(orderID))
                             }
 
                             if (!res) {
                                 if (AF_DEBUG) {
-                                    console.log("Product update error:", await getOrderProduct(orderID, pID))
+                                    debugLog("Product update error:", await getOrderProduct(orderID, pID))
                                 }
                                 return false;
                             }
@@ -339,7 +363,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                 }
                 catch (err) {
                     if (AF_DEBUG) {
-                        console.log("ERROR updating order ::", err)
+                        debugLog("ERROR updating order ::", err)
                     }
                     processedProducts = [];
                 }
@@ -368,18 +392,18 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
                             if (!orderID || !product || quantity < 0) {
                                 if (AF_DEBUG) {
-                                    console.log("Invalid order/product:", orderID, pID, product)
+                                    debugLog("Invalid order/product:", orderID, pID, product)
                                 }
                                 return false;
                             }
 
                             if (AF_DEBUG_PROCESS) {
-                                console.log("Inserting product order:", product, row)
+                                debugLog("Inserting product order:", product, row)
                             }
 
                             if (Number.parseFloat(product.quantity) < Number.parseFloat(quantity)) {
                                 if (AF_DEBUG) {
-                                    console.log("Inserting product error:", product, quantity)
+                                    debugLog("Inserting product error:", product, quantity)
                                 }
                                 return false;
                             }
@@ -389,7 +413,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                         /**
                          * update product availability and order price
                         */
-                        after: async (row, insertedID) => {
+                        after: async (row, insertedID, statusCheck) => {
 
                             let pID = row[1],
                                 product = await getProduct(pID),
@@ -397,7 +421,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
                             if (!order || !product) {
                                 if (AF_DEBUG) {
-                                    console.log("Invalid order/product:", order, product)
+                                    debugLog("Invalid order/product:", order, product)
                                 }
                                 return false;
                             }
@@ -408,14 +432,14 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
                             if (!res) {
                                 if (AF_DEBUG) {
-                                    console.log("Product quantity update error:", product)
+                                    debugLog("Product quantity update error:", product)
                                 }
                                 return false;
                             }
 
                             if (AF_DEBUG_PROCESS) {
                                 order = await getOrder(orderID);
-                                console.log("updated order:", order)
+                                debugLog("updated order:", order)
                             }
 
                             return true;
@@ -424,14 +448,14 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                 }
                 catch (err) {
                     if (AF_DEBUG) {
-                        console.log("ERROR insert order :: ", err)
+                        debugLog("ERROR insert order :: ", err)
                     }
                     processedProducts = [];
                 }
 
                 if (processedProducts.length !== insertProducts.length) {
                     if (AF_DEBUG) {
-                        console.log("ERROR insert order :: not all products were processed correctly")
+                        debugLog("ERROR insert order :: not all products were processed correctly")
                     }
                     processedProducts = [];
                     await handleOrder(orderID, 'error');
@@ -449,14 +473,11 @@ const processOrder = async (userID, orderID, data = {}) => {
 
     let products = data.products || [];
 
-    let order = filter_args({
+    let order = {
+        ...(data.order || {}),
         id: orderID,
-        user_id: userID,
-        status: orderID ? '' : 'booked',
-        //price: 0, removed to fix possible problems with frontend
-        pickup_time: '',
-        pickup_place: ''
-    }, data.order || {});
+        user_id: userID
+    };
 
     let updatingOrder = orderID || false;
 
@@ -466,7 +487,7 @@ const processOrder = async (userID, orderID, data = {}) => {
     orderID = await handleOrder(order);
 
     if (AF_DEBUG_PROCESS) {
-        console.log("orderID: " + orderID)
+        debugLog("orderID: " + orderID)
     }
 
     /**
@@ -479,7 +500,7 @@ const processOrder = async (userID, orderID, data = {}) => {
             let processed = await handleOrderProducts(orderID, products, updatingOrder);
 
             if (AF_DEBUG_PROCESS) {
-                console.log("Processed products:", processed)
+                debugLog("Processed products:", processed)
             }
 
             return processed;
@@ -493,13 +514,24 @@ const processOrder = async (userID, orderID, data = {}) => {
 
 exports.execApi = (app, passport, isLoggedIn) => {
 
+    function thereIsError(req, res, action = '') {
+
+        if (AF_DEBUG) { console.log("\nProcessing " + action + " orders API ") }
+
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            res.status(422).json({ errors: errors.array() });
+            return true;
+        }
+
+        return false
+    }
+
     // update existing order POST /api/orders/:user_id/:order_id
     app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array() });
-        }
+        if (thereIsError(req, res, 'update')) { return };
 
         try {
             let status = await processOrder(0, req.params.order_id, req.body);
@@ -517,10 +549,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     // insert a new POST /api/orders/:user_id
     app.post('/api/orders/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array() });
-        }
+        if (thereIsError(req, res, 'insert')) { return };
 
         let user = await existValueInDB(db, 'users', { id: req.params.user_id });
 
@@ -538,7 +567,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
                 res.status(400).json({ error: 'Unable to insert a new order' });
 
         } catch (err) {
-            console.log(err)
+            debugLog(err)
             res.status(503).json({ error: err });
         }
     });
@@ -546,10 +575,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     // GET order / orders /api/orders/:order_id
     app.get('/api/orders/:filter?', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array() });
-        }
+        if (thereIsError(req, res, 'get')) { return };
 
         try {
             let status = await getOrders(req.params.filter);
@@ -560,7 +586,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
                 res.status(400).json({ error: 'Unable to get orders' });
 
         } catch (err) {
-            console.log(err)
+            debugLog(err)
             res.status(503).json({ error: err });
         }
     });

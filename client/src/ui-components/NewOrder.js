@@ -12,8 +12,9 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import AFApi from "../api/a-API";
-import gAPI from "../gAPI";
+import gAPI from "../api/gAPI";
+import ordersApi from "../api/orders";
+import userAPI from "../api/user";
 
 function NewOrder(props) {
   useEffect(() => {
@@ -38,7 +39,7 @@ function NewOrder(props) {
   }, []);
 
   const handleSubmit = async (event, propsN) => {
-    let userId = await AFApi.getUserId(mailInserted);
+    let userId = await userAPI.getUserId(mailInserted);
     if (userId.length === 0) setErrorMessage("Invalid user");
     else if (userId[0].role != 0) setErrorMessage("Invalid user");
     else {
@@ -66,7 +67,7 @@ function NewOrder(props) {
       }
 
       if (orderOk) {
-        AFApi.insertOrder(
+        ordersApi.insertOrder(
           userId[0].id,
           orderProduct.filter((t) => t.quantity !== 0)
         )
@@ -126,43 +127,44 @@ function NewOrder(props) {
         )}
 
         <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
-          <Form.Label>Client mail</Form.Label>
-          <Form.Control
-            type='email'
-            onChange={(ev) => {
-              setMailInserted(ev.target.value);
-            }}
-          />
-        </Form.Group>
+            <Form.Label>Client mail</Form.Label>
+            <Form.Control
+              type='email'
+              onChange={(ev) => {
+                setMailInserted(ev.target.value);
+              }}
+            />
+          </Form.Group>
 
-        <Col>
-          <Button
-            variant='primary'
-            onClick={() => {
-              setCategorize(0);
-              setFilterCategorize(undefined);
-              setViewFilter(true);
-            }}>
-            {" "}
-            Show for type{" "}
-          </Button>{" "}
-          <Button
-            variant='primary'
-            onClick={() => {
-              setCategorize(1);
-              setFilterCategorize(undefined);
-              setViewFilter(true);
-            }}>
-            {" "}
-            Show for famer{" "}
-          </Button>
-        </Col>
+        <Col><Button variant="primary" onClick={() => {setCategorize(0);setFilterCategorize(undefined);setViewFilter(true)}}> Show for type </Button>{" "}
+        <Button variant="primary" onClick={() => {setCategorize(1);setFilterCategorize(undefined);setViewFilter(true)}}> Show for famer </Button></Col>
 
-        {categorize === 0 && viewFilter === true ? (
-          <div>
-            {type.map((t) => (
-              <Row>
-                <Col>{t}</Col>
+
+          { categorize === 0 && viewFilter === true?  
+         <div>{type.map((t) => ( <Row>
+          <Col>{t}</Col>
+          <Col><Button variant="primary" onClick={() => {setFilterCategorize(t);setViewFilter(false);}}>select</Button></Col>
+        </Row>))}
+        </div>
+          :
+          <div>{ categorize == 1 && viewFilter === true?  <div>{farmers.map((t) => ( <Row>
+            <Col>{t}</Col>
+            <Col><Button variant="primary" onClick={() => {setFilterCategorize(t);setViewFilter(false);}}>select</Button></Col>
+          </Row>))}
+          </div> : ""}</div>
+
+
+          }
+
+        
+        
+        {filterCategorize != undefined ? <Form>
+          
+
+          <h3 className='thirdColor'> List of our products: </h3>
+          <Col className='below list'>
+            {products.filter(t => {return categorize === 0 ? t.name === filterCategorize : t.farmer === filterCategorize}).sort((a, b) => (a.name > b.name ? 1 : -1)).map((p) => (
+              <Row className='below'>
                 <Col>
                   <Button
                     variant='primary'

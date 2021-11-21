@@ -1,7 +1,7 @@
 import { Row, Col, Container, Image, Spinner } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
-import gAPI from "./../gAPI";
+import gAPI from "./../api/gAPI";
 import "../css/custom.css";
 
 function BrowserProducts(props) {
