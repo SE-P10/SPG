@@ -265,6 +265,7 @@ function ShopEmployee(props) {
         <Row className='below'>
           {action === 1 ? (
             <RegistrationForm
+              loggedIn={props.loggedIn}
               changeAction={changeAction}
               addMessage={addMessage}
             />

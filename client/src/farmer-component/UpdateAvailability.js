@@ -11,13 +11,12 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import farmerAPI from "./../api/farmer"
+import farmerAPI from "./../api/farmer";
 import gAPI from "../api/gAPI";
 
 function UpdateAvailability(props) {
   useEffect(() => {
     const fillTables = async () => {
-
       //const productsTmp = await gAPI.getProducts();
       //mettere questa chiamata API e togliere la precedwente
       const productsTmp = await farmerAPI.getFarmerProducts(props.user.id);
@@ -31,22 +30,24 @@ function UpdateAvailability(props) {
     //fare parseInt
     let orderOk = true;
 
-
     if (orderProduct.length === 0) {
       setErrorMessage("yuo have not updated any  items.");
       orderOk = false;
     }
 
     if (orderOk) {
-      for (let i of orderProduct){
-        let esito = await farmerAPI.updateFarmerProducts(i.product_id,i.quantity,props.user.id)
-        console.log(props.user.id)
+      for (let i of orderProduct) {
+        let esito = await farmerAPI.updateFarmerProducts(
+          i.product_id,
+          i.quantity,
+          props.user.id
+        );
+        console.log(props.user.id);
       }
-      propsN.addMessage("Request sent correctly!")
+      propsN.addMessage("Request sent correctly!");
 
       propsN.changeAction(0);
     }
-
   };
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -88,8 +89,6 @@ function UpdateAvailability(props) {
           ""
         )}
         <Form>
-
-
           <h3 className='thirdColor'> List of our products: </h3>
           <Col className='below list'>
             {products.map((p) => (
@@ -101,7 +100,6 @@ function UpdateAvailability(props) {
                   <Form.Check
                     inline
                     onClick={() => selectProduct(p.id)}></Form.Check>{" "}
-
                   {selectedPs.indexOf(p.id) !== -1 ? (
                     <>
                       {" "}
@@ -109,8 +107,10 @@ function UpdateAvailability(props) {
                       <Form.Control
                         inline
                         onChange={(ev) => {
-                          if (parseInt(ev.target.value) < 0) setErrorMessage("Negative quantity")
-                          else if (isNaN(parseInt(ev.target.value))) setErrorMessage("not a number")
+                          if (parseInt(ev.target.value) < 0)
+                            setErrorMessage("Negative quantity");
+                          else if (isNaN(parseInt(ev.target.value)))
+                            setErrorMessage("not a number");
                           else {
                             setOrderProducts((old) => {
                               const list = old.map((item) => {
@@ -126,18 +126,16 @@ function UpdateAvailability(props) {
                           }
                         }}
                         id={p.id}
-                        size='sm'
-                      ></Form.Control>{" "}
+                        size='sm'></Form.Control>{" "}
                     </>
                   ) : null}
                 </Form.Group>
-
               </Row>
             ))}
           </Col>
 
           <Button
-            className='se-button btn-block below'
+            className='se-button below'
             onClick={(ev) => handleSubmit(ev, props)}>
             Issue Order
           </Button>

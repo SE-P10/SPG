@@ -17,6 +17,18 @@ import ordersApi from "../api/orders";
 import userAPI from "../api/user";
 
 function NewOrder(props) {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [products, setProducts] = useState([]);
+
+  const [orderProduct, setOrderProducts] = useState([]);
+  const [mailInserted, setMailInserted] = useState(undefined);
+  const [selectedPs, setSelectPs] = useState([]);
+  const [categorize, setCategorize] = useState(1); //0 per prodotti 1 per farmer
+  const [filterCategorize, setFilterCategorize] = useState(undefined); //if farmer o tipo prodotto
+  const [type, setType] = useState([]);
+  const [farmers, setFarmers] = useState([]);
+  const [viewFilter, setViewFilter] = useState(false);
+
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
@@ -39,59 +51,50 @@ function NewOrder(props) {
   }, []);
 
   const handleSubmit = async (event, propsN) => {
-    let userId = await userAPI.getUserId(mailInserted);
-    if (userId.length === 0) setErrorMessage("Invalid user");
-    else if (userId[0].role != 0) setErrorMessage("Invalid user");
+    if (!mailInserted) setErrorMessage("You have to insert an email!");
     else {
-      //fare parseInt
-      let orderOk = true;
-      for (let elem of orderProduct) {
-        let quantityAvailable = products
-          .filter((t) => t.id === elem.product_id)
-          .map((t) => t.quantity);
-        if (quantityAvailable < elem.quantity) {
-          setErrorMessage(
-            "You are trying to order more than the quantity available"
-          );
+      let userId = await userAPI.getUserId(mailInserted);
+      if (userId.length === 0) setErrorMessage("Invalid user");
+      else if (userId[0].role != 0) setErrorMessage("Invalid user");
+      else {
+        //fare parseInt
+        let orderOk = true;
+        for (let elem of orderProduct) {
+          let quantityAvailable = products
+            .filter((t) => t.id === elem.product_id)
+            .map((t) => t.quantity);
+          if (quantityAvailable < elem.quantity) {
+            setErrorMessage(
+              "You are trying to order more than the quantity available"
+            );
+            orderOk = false;
+          }
+          if (elem.quantity <= 0) {
+            setErrorMessage("Quantity must be greater than 0");
+            orderOk = false;
+          }
+        }
+
+        if (orderProduct.length === 0) {
+          setErrorMessage("Can't issue an order without items.");
           orderOk = false;
         }
-        if (elem.quantity <= 0) {
-          setErrorMessage("Quantity must be greater than 0");
-          orderOk = false;
+
+        if (orderOk) {
+          ordersApi
+            .insertOrder(
+              userId[0].id,
+              orderProduct.filter((t) => t.quantity !== 0)
+            )
+            .then(() => propsN.addMessage("Request sent correctly!"))
+            .catch((err) => {
+              setErrorMessage("Server error during insert order.");
+            });
+          propsN.changeAction(0);
         }
-      }
-
-      if (orderProduct.length === 0) {
-        setErrorMessage("Can't issue an order without items.");
-        orderOk = false;
-      }
-
-      if (orderOk) {
-        ordersApi
-          .insertOrder(
-            userId[0].id,
-            orderProduct.filter((t) => t.quantity !== 0)
-          )
-          .then(() => propsN.addMessage("Request sent correctly!"))
-          .catch((err) => {
-            setErrorMessage("Server error during insert order.");
-          });
-        propsN.changeAction(0);
       }
     }
   };
-
-  const [errorMessage, setErrorMessage] = useState("");
-  const [products, setProducts] = useState([]);
-
-  const [orderProduct, setOrderProducts] = useState([]);
-  const [mailInserted, setMailInserted] = useState(undefined);
-  const [selectedPs, setSelectPs] = useState([]);
-  const [categorize, setCategorize] = useState(1); //0 per prodotti 1 per farmer
-  const [filterCategorize, setFilterCategorize] = useState(undefined); //if farmer o tipo prodotto
-  const [type, setType] = useState([]);
-  const [farmers, setFarmers] = useState([]);
-  const [viewFilter, setViewFilter] = useState(false);
 
   const selectProduct = (id) => {
     if (selectedPs.indexOf(id) == -1) {

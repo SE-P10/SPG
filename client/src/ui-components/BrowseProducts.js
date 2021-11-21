@@ -3,19 +3,26 @@ import { useState } from "react";
 import { useEffect } from "react";
 import gAPI from "./../api/gAPI";
 import "../css/custom.css";
+import ErrorToast from "./ErrorToast";
 
 function BrowserProducts(props) {
   const [products, setProducts] = useState([]);
   const [isProductsListLoading, setIsProductsListLoading] = useState(true);
+  const [serverErrorMessage, setServerErrorMessage] = useState(null);
 
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
+
       setIsProductsListLoading(false);
       setProducts(productsTmp);
+      setServerErrorMessage(null);
     };
 
-    fillTables().catch((err) => setProducts([]));
+    fillTables().catch((err) => {
+      setProducts([]);
+      setServerErrorMessage("Server error: couldn't load products list.");
+    });
   }, []);
 
   return (
@@ -24,6 +31,13 @@ function BrowserProducts(props) {
         <Row className='justify-content-center '>
           <h2> Available Products</h2>
         </Row>
+
+        <ErrorToast
+          errorMessage={serverErrorMessage}
+          autohide
+          show={serverErrorMessage !== null}
+          className='justify-content-center'
+          onClose={() => setServerErrorMessage(null)}></ErrorToast>
 
         <Container className='list'>
           {isProductsListLoading ? (

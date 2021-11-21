@@ -18,7 +18,7 @@ exports.getUserById = (id) => {
           id: row.id,
           name: row.name,
           role: row.role,
-          email: row.email
+          email: row.email,
         };
         resolve(user);
       }
@@ -28,19 +28,41 @@ exports.getUserById = (id) => {
 
 /**
  * @author sh1zen
-*/
+ */
 exports.updateUserMeta = async (userID, meta_key, meta_value) => {
-  return await runQuerySQL(db, "UPDATE users_meta SET meta_value = ? WHERE user_id = ? AND meta_key = ?", [meta_value, userID, meta_key], true);
-}
+  return await runQuerySQL(
+    db,
+    "UPDATE users_meta SET meta_value = ? WHERE user_id = ? AND meta_key = ?",
+    [meta_value, userID, meta_key],
+    true
+  );
+};
 
 /**
  * @author sh1zen
-*/
-exports.getUserMeta = async (userID, meta_key, single = false, failRes = false) => {
-  return (await getQuerySQL(db, "SELECT meta_value FROM users_meta WHERE user_id = ? AND meta_key = ?", [userID, meta_key], null, { meta_value: failRes }, single)).meta_value || failRes;
-}
+ */
+exports.getUserMeta = async (
+  userID,
+  meta_key,
+  single = false,
+  failRes = false
+) => {
+  return (
+    (
+      await getQuerySQL(
+        db,
+        "SELECT meta_value FROM users_meta WHERE user_id = ? AND meta_key = ?",
+        [userID, meta_key],
+        null,
+        { meta_value: failRes },
+        single
+      )
+    ).meta_value || failRes
+  );
+};
 
 exports.getUser = (username, password) => {
+  console.log(username + " " + password);
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM users WHERE email = ?";
     db.get(sql, [username], (err, row) => {
@@ -67,7 +89,7 @@ exports.getUser = (username, password) => {
 
 exports.getuserId = (client_email = null) => {
   return new Promise((resolve, reject) => {
-    let sql = "select * from users where users.email = ? "
+    let sql = "select * from users where users.email = ? ";
     db.all(sql, [client_email], (err, rows) => {
       if (err) {
         console.log(err);
@@ -77,11 +99,10 @@ exports.getuserId = (client_email = null) => {
 
       const orders = rows.map((user) => ({
         id: user.id,
-        role: user.role
-
+        role: user.role,
       }));
 
       resolve(orders);
     });
   });
-}
+};

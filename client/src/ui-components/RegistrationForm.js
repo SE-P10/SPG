@@ -6,7 +6,9 @@ import {
   Button,
   Alert,
   Card,
+  Modal,
 } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import { useState } from "react";
 import API from "../API";
 
@@ -18,8 +20,15 @@ function RegistrationForm(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const history = useHistory();
+  const [show, setShow] = useState(false);
 
-  const registrationSubmit = () => {
+  const handleModalClose = () => setShow(false);
+  const handleModalShow = () => setShow(true);
+
+  const registrationSubmit = (event) => {
+    event.preventDefault();
+
     if (name && surname && username && email && password && confirmPassword) {
       if (password === confirmPassword) {
         //Need to call the API to insert into the DB
@@ -33,9 +42,15 @@ function RegistrationForm(props) {
         };
         API.addClient(newClient)
           .then((e) => {
-            props.addMessage("New client registered");
-            console.log("");
-            props.changeAction(0);
+            //if Employee calls add client
+            if (props.loggedIn) {
+              props.addMessage("New client registered");
+              props.changeAction(0);
+            }
+            //if unregisterd user calls add client
+            else {
+              setShow(true);
+            }
           })
           .catch((e) => {
             console.log(e.error);
@@ -51,9 +66,16 @@ function RegistrationForm(props) {
     }
   };
 
+  const goToLogin = () => {
+    history.push("/login");
+  };
+  const goToRoot = () => {
+    history.push("/");
+  };
+
   return (
     <>
-      <Container className='justify-content-center cont below'>
+      <Container className='justify-content-center below'>
         {errorMessage ? (
           <Alert
             variant='danger'
@@ -143,12 +165,26 @@ function RegistrationForm(props) {
             </Form>
           </Card.Body>
         </Card>
-
         <Row className='justify-content-center'>
           <Button className='spg-button below' onClick={registrationSubmit}>
             Register
           </Button>
         </Row>
+        <Modal show={show} onHide={handleModalClose}>
+          <Modal.Header>
+            <Modal.Title>Registration was successful</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Do you want to login,now?</Modal.Body>
+          <Modal.Footer>
+            <Button className='spg-button below' onClick={goToLogin}>
+              YES
+            </Button>
+            <Button className='below' variant='danger' onClick={goToRoot}>
+              NO
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        ;
       </Container>
     </>
   );

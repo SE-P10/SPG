@@ -133,7 +133,7 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <ShopEmployee user={user} />
+              <ShopEmployee user={user} loggedIn={loggedIn} />
             </Container>
           )}
         />
@@ -142,7 +142,12 @@ const App = () => {
           path='/signup'
           render={() => (
             <Container fluid className='justify-content-center d-flex w-100'>
-              <RegistrationForm className='below' />
+              <RegistrationForm
+                className='below'
+                loggedIn={loggedIn}
+                doLogin={doLogin}
+              />
+              )
             </Container>
           )}
         />

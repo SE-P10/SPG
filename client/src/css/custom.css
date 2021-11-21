@@ -119,3 +119,21 @@ body {
   height: 100px !important;
   width: 100px !important;
 }
+
+.font-about-us {
+  font-family: cursive !important;
+  font-weight: normal !important;
+  font-size: 25px !important;
+  color: black !important;
+  opacity: 0.9;
+  line-height: 28px;
+  background: white !important ;
+}
+
+.font-about-us-title {
+  font-family: Georgia, "Times New Roman", Times, serif !important;
+  font-size: 35px !important;
+  font-weight: bold !important;
+  color: darkcyan;
+  text-shadow: 2px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
