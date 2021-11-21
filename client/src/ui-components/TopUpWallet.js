@@ -20,7 +20,7 @@ function TopUpWallet(props) {
         setWalletValue(walletValueN);
       })
       .catch((e) => {
-        setErrorMessage("No user found."+emailValue);
+        setErrorMessage("No user found.");
         setWalletValue(null);
       });
   };
