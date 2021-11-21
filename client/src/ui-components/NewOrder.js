@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import "../css/custom.css";
 import gAPI from "../api/gAPI";
 import ordersApi from "../api/orders";
+import userAPI from "../api/user";
 
 function NewOrder(props) {
   useEffect(() => {
@@ -38,7 +39,7 @@ function NewOrder(props) {
   }, []);
 
   const handleSubmit = async (event, propsN) => {
-    let userId = await ordersApi.getUserId(mailInserted);
+    let userId = await userAPI.getUserId(mailInserted);
     if (userId.length === 0) setErrorMessage("Invalid user");
     else if (userId[0].role != 0) setErrorMessage("Invalid user");
     else {
