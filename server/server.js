@@ -6,6 +6,7 @@ const passport = require("passport");
 const { check, validationResult, body } = require("express-validator"); // validation middleware
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
+const dayjs = require("dayjs");
 
 const gDao = require("./dao/products-dao");
 const userDao = require("./dao/user-dao");
@@ -66,8 +67,15 @@ app.use(
     secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
     resave: false,
     saveUninitialized: false,
+    time: null
   })
 );
+
+function getTime() {
+  if(session.time)
+    return session.time;
+  return ({ weekDay: dayjs().format('dddd'), hour: Number(dayjs().format('H')) }); 
+}
 
 // init Passport to use sessions
 app.use(passport.initialize());
@@ -75,7 +83,7 @@ app.use(passport.session());
 
 
 // API implemented in module gAPI
-gDao.execApi(app, passport, isLoggedIn);
+gDao.execApi(app, passport, isLoggedIn, body);
 ordersDao.execApi(app, passport, isLoggedIn);
 
 /*** USER APIs ***/
@@ -126,6 +134,23 @@ app.get("/api/user/:id", (req, res) => {
     res.status(500).json(false);
   }
 });
+
+//PUT /api/debug/time/
+app.put("/api/debug/time/",
+  isLoggedIn,
+  [
+    body('hour').isNumeric(),
+  ],
+  function(req, res) {
+    if (!validationResult(req).isEmpty() || !['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'enddebug'].includes(req.body.weekDay.toLowerCase()))
+      return res.status(400).render('contact', { errors: "error in the parameters" });
+    if(req.user.role != 1)
+      res.status(404).json({ "result": 'Only the manager has access to this functionality!' });
+    if(req.body.weekDay === 'endDebug') session.time = null;
+    else session.time = req.body;
+    res.status(201).end();
+  }
+);
 
 // POST /wallet/update/
 // parameters client_email, amount
