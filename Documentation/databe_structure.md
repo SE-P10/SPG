@@ -1,3 +1,4 @@
+
 # DATABASE TABLES
 
 ![Database](./images/ERD.jpg)
@@ -62,6 +63,13 @@
 |price|INTEGER||
 |pickup_time|INTEGER||
 |pickup_place|INTEGER||
+**order status:**
+```
+                                       / delivering \
+booked -> confirmed (by the farmer) ->                -> delivered
+                                       \   pending  /
+```
+
 
 ## products
 |NAME|TYPE|DESCRIPTION|
@@ -77,6 +85,3 @@
 |---|---|---|
 |id|INTEGER||
 |name|TEXT||
-
-
-
