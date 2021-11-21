@@ -1,6 +1,6 @@
 import { Alert, Row, Col, Container } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import AFApi from "../api/a-API";
+import ordersApi from "../api/orders";
 import "../css/custom.css";
 
 function PendingOrders(props) {
@@ -9,7 +9,7 @@ function PendingOrders(props) {
 
   useEffect(() => {
     const fillTables = async () => {
-      const ordersTmp = await AFApi.getPendingOrders();
+      const ordersTmp = await ordersApi.getPendingOrders();
       setOrders(ordersTmp);
     };
 

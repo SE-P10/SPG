@@ -1,6 +1,19 @@
 'use strict';
 
 const nodemailer = require('nodemailer');
+const fs = require('fs')
+
+
+exports.file_exist = (name) => {
+    try {
+        if (fs.existsSync(path)) {
+            return true;
+        }
+    } catch (err) {
+        console.log(err)
+    }
+    return false;
+}
 
 exports.filter_args = (default_, ...sources) => {
 
@@ -116,7 +129,7 @@ exports.removeEmpty = (item, default_ = null, strict = false) => {
                 });
 
             }
-        } else if (strict ? this.booleanize(item) : !!item) {
+        } else if (strict ? this.booleanize(item) : item !== false) {
             res = item;
         }
     }
@@ -278,7 +291,12 @@ exports.runQuerySQL = async (db, sql, values, res = false) => {
     })
 }
 
-exports.validateEmail = (email) => {
+exports.dbOnTransaction = async (db) => {
+
+    return this.file_exist('database.db-journal')
+}
+
+exports.isEmail = (email) => {
     const regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return regex.test(email);
 }
@@ -289,9 +307,9 @@ exports.isNumber = (i) => { return typeof i === 'number' || /^\d+$/.test(i); }
 
 exports.sendMail = async (to, body, subject) => {
 
-    if (!to || !body)
+    if(!to || !body)
         return false;
-
+    
     if (!subject)
         subject = 'SPG notification';
 
@@ -328,3 +346,28 @@ exports.sendMail = async (to, body, subject) => {
     })
 
 }
+
+exports.debugLog = (...log) => {
+
+    const STACK_LINE_REGEX = /(\d+):(\d+)\)?$/;
+
+    let err;
+
+    try {
+        throw new Error();
+    } catch (error) {
+        err = error;
+
+    }
+
+    try {
+        const stacks = err.stack.split('\n');
+        const [offset, line] = STACK_LINE_REGEX.exec(stacks[2]);
+
+        console.log(line + ':', ...log);
+    } catch (err) {
+        console.log(...log);
+    }
+
+}
+

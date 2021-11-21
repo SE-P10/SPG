@@ -58,6 +58,26 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
 	});
 }
 
+async function parseResponse(response, type = 'boolnum', falseRes = false) {
+
+	response = await response;
+
+	switch (type) {
+
+		case 'boolnum':
+			if (typeof response === 'object')
+				response = falseRes;
+			break;
+
+		case 'array':
+			if (!response || !Array.isArray(response))
+				response = falseRes;
+			break;
+	}
+
+	return response;
+}
+
 /**
  * 
  * @param {*} filter 
@@ -65,7 +85,7 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
  */
 async function getOrders(filter) {
 
-	return (await handleOrderAction(filter, [], {}, 'GET')) || []
+	return parseResponse(await handleOrderAction(filter, [], {}, 'GET'), 'array', [])
 }
 
 /**
@@ -87,10 +107,7 @@ async function getPendingOrders() {
  */
 async function handOutOrder(orderID = 0) {
 
-	return handleOrderAction(orderID, [], {
-		id: orderID,
-		status: 'handout'
-	}, 'PUT')
+	return parseResponse(await handleOrderAction(orderID, [], { id: orderID, status: 'handout' }, 'PUT'))
 }
 /**
  * Frontend interface API
@@ -102,29 +119,15 @@ async function handOutOrder(orderID = 0) {
  */
 async function insertOrder(userID, products = [], order_details = {}) {
 
-	return handleOrderAction(userID, products, order_details, 'POST')
+	return parseResponse(await handleOrderAction(userID, products, order_details, 'POST'))
 }
 
-/**
- * 
- * @param {*} email 
- * @returns 
- */
-async function getUserId(email) {
-	const response = await fetch('api/users/' + email);
-	const respondeBody = await response.json();
-	if (response.ok) {
-		return respondeBody;
-	}
-	else throw respondeBody;
-}
 
-const AFApi = {
+const ordersApi = {
 	insertOrder,
 	handOutOrder,
 	getPendingOrders,
-	getOrders,
-	getUserId
+	getOrders
 }
 
-export default AFApi;
+export default ordersApi;

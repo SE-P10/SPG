@@ -1,6 +1,8 @@
-import gApi from "./gAPI.js"
-import AFApi from "./api/a-API.js"
-import farmerAPI from './api/farmer-API.js'
+
+import gApi from "./api/gAPI.js"
+import ordersApi from './api/orders.js'
+import farmerAPI from './api/farmer.js'
+import userAPI from "./api/user.js";
 
 
 function getJson(httpResponsePromise) {
@@ -98,9 +100,10 @@ async function updateWallet(amount, client_email) {
 }
 
 const API = {
-  ...AFApi,
+  ...ordersApi,
   ...gApi,
   ...farmerAPI,
+  ...userAPI,
   logIn,
   logOut,
   getUserInfo,

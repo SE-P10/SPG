@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Container, Row, Alert, Col, Button } from "react-bootstrap";
-import { SearchComponent } from "./SearchComponent";
+import { SearchComponent } from "../ui-components/SearchComponent";
 import { useEffect } from "react";
 
-import API from "./../API"
+import API from "../API"
 import "../css/custom.css";
-import AFApi from "../api/a-API";
+import ordersApi from "../api/orders";
 
 function HandOut(props) {
   const [orders, setOrders] = useState([]);
@@ -14,10 +14,10 @@ function HandOut(props) {
 
   const handOutOrder = async (orderId) => {
     //API.handOutOrder(orderId)
-    let esito = await AFApi.handOutOrder(orderId)
+    let esito = await ordersApi.handOutOrder(orderId)
     if (esito) props.addMessage("Order hands out correctly!")
     else setErrorMessage("Problem with the server")
-    //AFApi.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'}).then( () => props.addMessage("Order hands out correctly!")).catch((err) =>  setErrorMessage("Problem with the server") )
+    //ordersApi.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'}).then( () => props.addMessage("Order hands out correctly!")).catch((err) =>  setErrorMessage("Problem with the server") )
     
 
     props.changeAction(0);

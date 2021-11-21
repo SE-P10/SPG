@@ -12,8 +12,9 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import AFApi from "../api/a-API";
-import gAPI from "../gAPI";
+import gAPI from "../api/gAPI";
+import ordersApi from "../api/orders";
+import userAPI from "../api/user";
 
 function NewOrder(props) {
   useEffect(() => {
@@ -38,7 +39,7 @@ function NewOrder(props) {
   }, []);
 
   const handleSubmit = async (event, propsN) => {
-    let userId = await AFApi.getUserId(mailInserted);
+    let userId = await userAPI.getUserId(mailInserted);
     if (userId.length === 0) setErrorMessage("Invalid user");
     else if (userId[0].role != 0) setErrorMessage("Invalid user");
     else {
@@ -66,7 +67,7 @@ function NewOrder(props) {
       }
 
       if (orderOk) {
-        AFApi.insertOrder(
+        ordersApi.insertOrder(
           userId[0].id,
           orderProduct.filter((t) => t.quantity !== 0)
         )
