@@ -55,7 +55,7 @@ it("Each field should be in the document and free of text", () => {
 
 //HOW TO TEST A COMPONENT WITH USEEFFECT
 
-it("Products should be shown after search", async () => {
+it("Products should be shown", async () => {
 
     render(<BrowserProducts />);
 
