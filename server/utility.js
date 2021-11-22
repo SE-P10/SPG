@@ -1,5 +1,8 @@
 'use strict';
 
+const nodemailer = require('nodemailer');
+const fs = require('fs')
+
 exports.filter_args = (default_, ...sources) => {
 
     if (!this.isObject(default_))
@@ -114,7 +117,7 @@ exports.removeEmpty = (item, default_ = null, strict = false) => {
                 });
 
             }
-        } else if (strict ? this.booleanize(item) : !!item) {
+        } else if (strict ? this.booleanize(item) : item !== false) {
             res = item;
         }
     }
@@ -274,4 +277,95 @@ exports.runQuerySQL = async (db, sql, values, res = false) => {
             }
         });
     })
+}
+
+exports.dbOnTransaction = async (db) => {
+
+    return this.file_exist('database.db-journal')
+}
+
+exports.isEmail = (email) => {
+    return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+}
+
+exports.containsHTML = (str) => { return /<[a-z][\s\S]*>/i.test(str) };
+
+exports.isNumber = (i) => { return typeof i === 'number' || /^\d+$/.test(i); }
+
+exports.sendMail = async (to, body, subject) => {
+
+    if (!to || !body)
+        return false;
+
+    if (!subject)
+        subject = 'SPG notification';
+
+    return new Promise((resolve) => {
+
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            auth: {
+                user: 'spgteamp10@gmail.com',
+                pass: 'SE2021SPGP10!',
+            },
+        });
+
+        let mailOptions = {
+            from: '"SPG-10" <spgteamp10@gmail.com>',
+            to: to,
+            subject: subject,
+        };
+
+        mailOptions[this.containsHTML(body) ? 'html' : 'text'] = body;
+
+        transporter.verify().then(() => {
+            transporter.sendMail(mailOptions).then((info) => {
+                resolve(info);
+            }).catch((e) => {
+                console.log(e)
+                resolve(false);
+            });
+        }).catch((e) => {
+            console.log(e)
+            resolve(false);
+        });
+    })
+
+}
+
+exports.debugLog = (...log) => {
+
+    const STACK_LINE_REGEX = /(\d+):(\d+)\)?$/;
+
+    let err;
+
+    try {
+        throw new Error();
+    } catch (error) {
+        err = error;
+
+    }
+
+    try {
+        const stacks = err.stack.split('\n');
+        const [offset, line] = STACK_LINE_REGEX.exec(stacks[2]);
+
+        console.log(line + ':', ...log);
+    } catch (err) {
+        console.log(...log);
+    }
+
+}
+
+exports.file_exist = (name) => {
+    try {
+        if (fs.existsSync(name)) {
+            return true;
+        }
+    } catch (err) {
+        console.log(err)
+    }
+
+    return false;
 }

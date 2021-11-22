@@ -18,6 +18,7 @@ function LoginForm(props) {
     if (username === "" || password === "") {
       //nessun vincolo sulla password
       valid = false;
+      setErrorMessage("Insert email and password to access.");
     }
 
     if (valid) {
@@ -26,9 +27,25 @@ function LoginForm(props) {
     }
   };
 
+  const closeErrorMessage = () => {
+    setErrorMessage("");
+  };
+
   return (
-    <Container className='below  cont'>
-      <Form>
+    <Container>
+      {errorMessage !== "" ? (
+        <Alert
+          className='justify-content-center'
+          variant='danger'
+          onClose={closeErrorMessage}
+          dismissible>
+          {" "}
+          {errorMessage}{" "}
+        </Alert>
+      ) : (
+        <></>
+      )}
+      <Form className='below  cont'>
         {props.message !== "" ? (
           <Alert
             className='justify-content-center'
@@ -51,7 +68,7 @@ function LoginForm(props) {
               <h2 className='navbar-link'> Log In </h2>
             </Row>
             <Form.Group controlId='username' className='mt-4'>
-              <Form.Label>Username</Form.Label>
+              <Form.Label>Email</Form.Label>
               <Form.Control
                 type='text'
                 value={username}

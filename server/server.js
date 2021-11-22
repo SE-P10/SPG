@@ -6,18 +6,19 @@ const passport = require("passport");
 const { check, validationResult, body } = require("express-validator"); // validation middleware
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
+const dayjs = require("dayjs");
 
-const gDao = require("./g-dao");
-const AFDao = require("./AFDao");
-const userDao = require("./user-dao");
-const walletDao = require("./wallet-dao");
-const ordersDao = require('./orders-dao.js');
+const gDao = require("./dao/products-dao");
+const userDao = require("./dao/user-dao");
+const walletDao = require("./dao/wallet-dao");
+const ordersDao = require("./dao/orders-dao.js");
+const farmerDao = require("./dao/farmer-dao.js");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
 passport.use(
-  new LocalStrategy(function(username, password, done) {
+  new LocalStrategy(function (username, password, done) {
     userDao.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, {
@@ -66,25 +67,30 @@ app.use(
     secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
     resave: false,
     saveUninitialized: false,
+    time: null
   })
 );
+
+function getTime() {
+  if(session.time)
+    return session.time;
+  return ({ weekDay: dayjs().format('dddd'), hour: Number(dayjs().format('H')) }); 
+}
 
 // init Passport to use sessions
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 // API implemented in module gAPI
-gDao.execApi(app, passport, isLoggedIn);
-AFDao.execApi(app, passport, isLoggedIn);
+gDao.execApi(app, passport, isLoggedIn, body);
+ordersDao.execApi(app, passport, isLoggedIn);
 
 /*** USER APIs ***/
 
 // Login --> POST /sessions
-app.post("/api/sessions", function(req, res, next) {
+app.post("/api/sessions", function (req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
-
     if (!user) {
       // display wrong login messages
       return res.status(401).json(info);
@@ -127,52 +133,78 @@ app.get("/api/user/:id", (req, res) => {
   }
 });
 
+//PUT /api/debug/time/
+app.put("/api/debug/time/",
+  isLoggedIn,
+  [
+    body('hour').isNumeric(),
+  ],
+  function(req, res) {
+    if (!validationResult(req).isEmpty() || !['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'enddebug'].includes(req.body.weekDay.toLowerCase()))
+      return res.status(400).render('contact', { errors: "error in the parameters" });
+    if(req.user.role != 1)
+      res.status(404).json({ "result": 'Only the manager has access to this functionality!' });
+    if(req.body.weekDay === 'endDebug') session.time = null;
+    else session.time = req.body;
+    res.status(201).end();
+  }
+);
+
 // POST /wallet/update/
 // parameters client_email, amount
 // up to the wallet the amount
-app.post("/api/wallet/update/",
-  [
-    body('client_email').isEmail(),
-    body('amount').isNumeric(),
-  ],
+app.post(
+  "/api/wallet/update/",
+  [body("client_email").isEmail(), body("amount").isNumeric()],
   isLoggedIn,
-  function(req, res) {
+  function (req, res) {
     if (!validationResult(req).isEmpty())
-      return res.status(400).render('contact', { errors: "error in the parameters" });
+      return res
+        .status(400)
+        .render("contact", { errors: "error in the parameters" });
     try {
-      walletDao.updateWallet(req.body.amount, req.body.client_email).then((res1) => {
-        res.status(200).json({ "result": res1 });
-      }).catch((err) => {
-        console.log(err);
-        res.status(503).json({ "result": err });
-      });
+      walletDao
+        .updateWallet(req.body.amount, req.body.client_email)
+        .then((res1) => {
+          res.status(200).json({ result: res1 });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(503).json({ result: err });
+        });
     } catch (err) {
       res.status(500).json(false);
     }
   }
 );
 
-// GET /orders
-// get all the orders
-app.get("/api/orders/:client_email", isLoggedIn, (req, res) => {
+app.get("/api/users/:client_email", isLoggedIn, (req, res) => {
   try {
-    ordersDao.getOrders(req.params.client_email).then((orders) => {
-      res.status(200).json(orders);
-    }).catch((err) => {
-      res.status(503).json({});
-    });
+    userDao
+      .getuserId(req.params.client_email)
+      .then((orders) => {
+        res.status(200).json(orders);
+      })
+      .catch((err) => {
+        res.status(503).json({});
+      });
   } catch (err) {
     res.status(500).json(false);
   }
 });
 
-app.get("/api/users/:client_email", isLoggedIn, (req, res) => {
+// GET /api/products/farmer/:farmer_id
+// get all the products of a farmer
+app.get("/api/products/farmer/:farmer_id", isLoggedIn, (req, res) => {
   try {
-    userDao.getuserId(req.params.client_email).then((orders) => {
-      res.status(200).json(orders);
-    }).catch((err) => {
-      res.status(503).json({});
-    });
+    farmerDao
+      .getProducts(req.params.farmer_id)
+      .then((products) => {
+        res.status(200).json(products);
+      })
+      .catch((err) => {
+        res.status(503).json({});
+      });
   } catch (err) {
     res.status(500).json(false);
   }
@@ -193,6 +225,29 @@ app.delete('/api/clients/:email', async function (req, res) {
     res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
   }
 });
+// POST /wallet/update/
+// parameters product_id, amount
+// update the value of the product to the new value
+app.put(
+  "/api/farmer/products/update/:product_id/:quantity/:farmer_id",
+  [check(["farmer_id"]).isInt()],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).end();
+    }
+    try {
+      await farmerDao.updateProducts(
+        req.params.farmer_id,
+        req.params.product_id,
+        req.params.quantity
+      );
+      res.status(200).end();
+    } catch (err) {
+      res.status(503).end();
+    }
+  }
+);
 
 /*** Other express-related instructions ***/
 
