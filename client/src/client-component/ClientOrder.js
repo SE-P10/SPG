@@ -494,9 +494,6 @@ function ClientOrder(props) {
                 <>
                   <Row>
                     {p.name} Q: {p.quantity}{" "}
-                    <Button className='spg-button  mx-auto below'>
-                      {deleteIcon}
-                    </Button>
                   </Row>
                 </>
               ))}{" "}
