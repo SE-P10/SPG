@@ -9,6 +9,7 @@ async function getProducts() {
     }
 }
 
+// The parameter is an object like email: {"new.user@demo.it", password: "password", username: "username", name: "name", surname: "surname"}
 async function addClient(newClient) {
     return new Promise((resolve, reject) => {
 		fetch('/api/newClient', {
@@ -29,6 +30,7 @@ async function addClient(newClient) {
 	});
 }
 
+// Return the wallet value of the user associated with the given mail 
 async function getWalletByMail(mail) {
     // call: GET /api/products
     const response = await fetch('/api/wallet/' + mail);
@@ -40,6 +42,7 @@ async function getWalletByMail(mail) {
     }
 }
 
+// The parameter is an object like { product_id: 5, quantity: 10 }
 async function insertProductInBasket(product) { //mettere controllo se prodotto già c'è o meno
 	return new Promise((resolve, reject) => {
 		fetch('/api/basketProduct', {
@@ -58,6 +61,7 @@ async function insertProductInBasket(product) { //mettere controllo se prodotto 
 	});
 }
 
+// Delete all the products in the basket of the user that called the API
 async function deleteAllBasket() {
 	return new Promise((resolve, reject) => {
 		fetch('/api/basketProduct', {
@@ -74,6 +78,7 @@ async function deleteAllBasket() {
 	  });
 }
 
+// Return all the products in the basket of the user that called the API
 async function getBasketProducts() {
     // call: GET /api/products
     const response = await fetch('/api/basketProduct');

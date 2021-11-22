@@ -1,6 +1,7 @@
 const db = require("./../db");
 const bcrypt = require("bcrypt");
 const { check, validationResult } = require("express-validator");
+const { isEmail } = require("../utility");
 
 const addClient = async (newClient) => {
   return new Promise((resolve, reject) => {
@@ -121,7 +122,7 @@ const listProductsBasket = (userId) => {
   });
 };
 
-exports.execApi = (app, passport, isLoggedIn) => {
+exports.execApi = (app, passport, isLoggedIn, body) => {
   
   // GET /api/products
   app.get("/api/products", async (req, res) => {
@@ -134,7 +135,14 @@ exports.execApi = (app, passport, isLoggedIn) => {
   });
 
   // POST /api/newClient
-  app.post("/api/newClient", isLoggedIn, async (req, res) => {
+  app.post("/api/newClient",
+  [
+    body('email').isEmail(),
+    body('password').isString(),
+    body('username').isString(),
+    body('name').isString(),
+    body('surname').isString(),
+  ], isLoggedIn, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -158,7 +166,11 @@ exports.execApi = (app, passport, isLoggedIn) => {
   });
 
   // POST /api/basketProduct
-  app.post("/api/basketProduct", isLoggedIn, async (req, res) => {
+  app.post("/api/basketProduct",
+  [
+    body('product_id').isNumeric(),
+    body('quantity').isNumeric(),
+  ], isLoggedIn, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
