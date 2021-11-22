@@ -127,7 +127,7 @@ const listProductsBasket = (userId) => {
   });
 };
 
-exports.execApi = (app, passport, isLoggedIn) => {
+exports.execApi = (app, passport, isLoggedIn, body) => {
   // GET /api/products
   app.get("/api/products", async (req, res) => {
     try {
@@ -141,14 +141,13 @@ exports.execApi = (app, passport, isLoggedIn) => {
   // POST /api/newClient
   app.post(
     "/api/newClient",
-    [
+    /* [
       body("email").isEmail(),
       body("password").isString(),
       body("username").isString(),
       body("name").isString(),
       body("surname").isString(),
-    ],
-    isLoggedIn,
+    ], */
     async (req, res) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
