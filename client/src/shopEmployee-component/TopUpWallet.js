@@ -1,4 +1,4 @@
-import { Container, Row, Form, Button, Alert } from "react-bootstrap";
+import { Container, Row, Form, Button, Alert, Spinner } from "react-bootstrap";
 import { SearchComponent } from "../ui-components/SearchComponent";
 import { useState } from "react";
 import API from "../API";
@@ -9,19 +9,23 @@ function TopUpWallet(props) {
   const [rechargeAmount, setRechargeAmount] = useState(0);
   const [email, setEmail] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-
+  const [isWalletLoading, setIsWalletLoading] = useState(true);
   const handleSearch = (emailValue) => {
     console.log("valore email " + emailValue);
-    setEmail(() => emailValue);
-    API.getWalletByMail(emailValue)
-      .then((walletValueN) => {
-        setErrorMessage("");
-        setWalletValue(walletValueN);
-      })
-      .catch((e) => {
-        setErrorMessage("No user found.");
-        setWalletValue(null);
-      });
+
+    if (!emailValue) setErrorMessage("You have to insert an email!");
+    else {
+      setEmail(() => emailValue);
+      API.getWalletByMail(emailValue)
+        .then((walletValueN) => {
+          setErrorMessage("");
+          setWalletValue(walletValueN);
+        })
+        .catch((e) => {
+          setErrorMessage("No user found.");
+          setWalletValue(null);
+        });
+    }
   };
 
   const rechargeWallet = () => {
@@ -64,27 +68,38 @@ function TopUpWallet(props) {
         {walletValue ? (
           <>
             {" "}
-            <Row className='justify-content-center below'>
-              {" "}
-              <h2> Your Wallet</h2>{" "}
-            </Row>
-            <Form onSubmit={rechargeWallet}>
-              <Form.Label> Actual Balance: </Form.Label>
-              <Form.Control disabled type='text' value={walletValue} />{" "}
-              <Form.Label> Recharge: </Form.Label>
-              <Form.Control
-                defaultValue={0}
-                min={0}
-                type='number'
-                onChange={(ev) => {
-                  if ((parseInt(ev.target.value)) < 0) setErrorMessage("negative number")
-                  else setRechargeAmount(ev.target.value)}}
-              />{" "}
-              <Button onClick={rechargeWallet} className='spg-button below'>
+            {isWalletLoading ? (
+              <>
                 {" "}
-                Recharge the wallet
-              </Button>
-            </Form>
+                <Row className='justify-content-center below'>
+                  {" "}
+                  <h2> Your Wallet</h2>{" "}
+                </Row>
+                <Form onSubmit={rechargeWallet}>
+                  <Form.Label> Actual Balance: </Form.Label>
+                  <Form.Control disabled type='text' value={walletValue} />{" "}
+                  <Form.Label> Recharge: </Form.Label>
+                  <Form.Control
+                    defaultValue={0}
+                    min={0}
+                    type='number'
+                    onChange={(ev) => {
+                      if (parseInt(ev.target.value) < 0)
+                        setErrorMessage("negative number");
+                      else setRechargeAmount(ev.target.value);
+                    }}
+                  />{" "}
+                  <Button onClick={rechargeWallet} className='spg-button below'>
+                    {" "}
+                    Recharge the wallet
+                  </Button>
+                </Form>
+              </>
+            ) : (
+              <Container>
+                <Spinner animation='border' variant='success'></Spinner>
+              </Container>
+            )}{" "}
           </>
         ) : (
           <></>

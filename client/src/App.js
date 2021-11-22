@@ -5,6 +5,10 @@ import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";
 import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
+import { AboutPage } from "./pages/AboutPage";
+import { RegistrationForm } from "./ui-components/RegistrationForm";
+import { Dimensions } from "react-native";
+
 import {
   BrowserRouter as Router,
   Route,
@@ -62,7 +66,6 @@ const App = () => {
         loggedIn={loggedIn}
         closeMessage={closeMessage}
       />
-
       <Switch>
         <Route
           exact
@@ -130,7 +133,21 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <ShopEmployee user={user} />
+              <ShopEmployee user={user} loggedIn={loggedIn} />
+            </Container>
+          )}
+        />
+        <Route
+          exact
+          path='/signup'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex w-100'>
+              <RegistrationForm
+                className='below'
+                loggedIn={loggedIn}
+                doLogin={doLogin}
+              />
+              )
             </Container>
           )}
         />
@@ -153,6 +170,17 @@ const App = () => {
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
               <ClientPage user={user} />
+            </Container>
+          )}
+        />
+
+        <Route
+          exact
+          path='/about'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <AboutPage user={user} />
             </Container>
           )}
         />

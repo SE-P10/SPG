@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
 import gAPI from "../api/gAPI";
+import { updateIcon, backIcon } from "../ui-components/Icons";
 
 import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
 
@@ -31,60 +32,71 @@ function FarmerPage(props) {
     1 = Update Availability
     */
 
-    return (
-      <>
-        <Container className='below'>
-          <Row className=' cont below justify-content-center'>
+  return (
+    <>
+      {action !== 0 ? (
+        <>
+          <Button
+            className='spg-button below back-button'
+            onClick={() => {
+              setAction(0);
+            }}>
             {" "}
-            <h2> {props.user.name} farmer personal page </h2>{" "}
-          </Row>
-          {message ? (
-            <Alert variant='success' onClose={() => setMessage("")} dismissible>
-              {" "}
-              {message}{" "}
-            </Alert>
-          ) : (
-            ""
-          )}
-  
-          <Row className='secondColor justify-content-center below'>
-            <Col>
+            {backIcon}{" "}
+          </Button>
+        </>
+      ) : (
+        ""
+      )}{" "}
+      <Container className='below'>
+        <Row className=' cont below justify-content-center'>
+          {" "}
+          <h2> {props.user.name} farmer personal page </h2>{" "}
+        </Row>
+        {message ? (
+          <Alert variant='success' onClose={() => setMessage("")} dismissible>
+            {" "}
+            {message}{" "}
+          </Alert>
+        ) : (
+          ""
+        )}
 
-              {action === 0 ? 
-              <Row className='secondColor justify-content-center below'>
+        <Row className=' justify-content-center below'>
+          <Col>
+            {action === 0 ? (
+              <Row className=' justify-content-center below'>
                 <Button
-                  className='se-button btn-block'
+                  className='se-button '
                   onClick={() => {
                     setAction(1);
                   }}>
-                  Update Product Availability
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{updateIcon} </Row>
+                    <Row className='justify-content-center'>
+                      {" "}
+                      Update Products Availability{" "}
+                    </Row>
+                  </Col>
                 </Button>
               </Row>
-              : ""}
-
-
-                
-
-              </Col>
-
-                
-
-
-         </Row>
-          <Row className='below'>
-            {action === 1 ? (
-              <UpdateAvailability
-                changeAction={changeAction}
-                addMessage={addMessage}
-                user={props.user}
-              />
-            ) : null}
-            
-            
-          </Row>
-        </Container>
-      </>
-    );
+            ) : (
+              ""
+            )}
+          </Col>
+        </Row>
+        <Row className='below'>
+          {action === 1 ? (
+            <UpdateAvailability
+              changeAction={changeAction}
+              addMessage={addMessage}
+              user={props.user}
+            />
+          ) : null}
+        </Row>
+      </Container>
+    </>
+  );
 }
 
 export { FarmerPage };

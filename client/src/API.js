@@ -1,9 +1,7 @@
-
-import gApi from "./api/gAPI.js"
-import ordersApi from './api/orders.js'
-import farmerAPI from './api/farmer.js'
+import gApi from "./api/gAPI.js";
+import ordersApi from "./api/orders.js";
+import farmerAPI from "./api/farmer.js";
 import userAPI from "./api/user.js";
-
 
 function getJson(httpResponsePromise) {
   return new Promise((resolve, reject) => {
@@ -87,7 +85,7 @@ async function getOrders(client_email) {
   if (response.ok) {
     return await response.json();
   } else {
-    return {};
+    throw response.json();
   }
 }
 
