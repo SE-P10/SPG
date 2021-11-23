@@ -248,6 +248,13 @@ function ClientOrder(props) {
                     t.farmer == filterFarmer &&
                     t.name.toLowerCase().includes(searchValue.toLowerCase())
                   );
+
+                if (filterType !== "Type" && filterFarmer !== "Farmer")
+                  return (
+                    t.farmer == filterFarmer &&
+                    t.name == filterType &&
+                    t.name.toLowerCase().includes(searchValue.toLowerCase())
+                  );
               })
               .map((p) => (
                 <Row className='below'>
