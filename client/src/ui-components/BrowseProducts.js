@@ -4,11 +4,25 @@ import { useEffect } from "react";
 import gAPI from "./../api/gAPI";
 import "../css/custom.css";
 import ErrorToast from "./ErrorToast";
+import SearchForm from "./SearchForm";
 
 function BrowserProducts(props) {
   const [products, setProducts] = useState([]);
   const [isProductsListLoading, setIsProductsListLoading] = useState(true);
   const [serverErrorMessage, setServerErrorMessage] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filterOn, setFilterOn] = useState(false);
+
+  const handleSearchSubmit = () => {
+    if (searchValue === "") setFilterOn(false);
+    setFilterOn(true);
+    setFilteredProducts(
+      products.filter((p) =>
+        p.name.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    );
+  };
 
   useEffect(() => {
     const fillTables = async () => {
@@ -45,25 +59,42 @@ function BrowserProducts(props) {
               <Spinner animation='border' variant='success'></Spinner>
             </Container>
           ) : (
-            <Row>
-              {products
-                .sort((a, b) => (a.name > b.name ? 1 : -1))
-                .map((p) => (
-                  <Col className='below p-cont mr-3 '>
-                    <Row className=' justify-content-center'>
-                      {" "}
-                      <Image
-                        src={"./img/" + p.name + ".jpeg"}
-                        className='ph-prev justify-content-center'
-                      />{" "}
-                    </Row>
-                    <Row className='justify-content-center'> {p.name}</Row>
-                    <Row className='justify-content-center'> {p.quantity}</Row>
-                    <Row className='justify-content-center'>{p.price} €/Kg</Row>
-                    <Row className='justify-content-center'>{p.farmer} </Row>
-                  </Col>
-                ))}
-            </Row>
+            <>
+              {" "}
+              <Row>
+                <SearchForm
+                  setSearchValue={setSearchValue}
+                  onSearchSubmit={handleSearchSubmit}
+                />
+              </Row>
+              <Row>
+                {products
+                  .sort((a, b) => (a.name > b.name ? 1 : -1))
+                  .filter((p) =>
+                    p.name.toLowerCase().includes(searchValue.toLowerCase())
+                  )
+                  .map((p) => (
+                    <Col className='below p-cont mr-3 '>
+                      <Row className=' justify-content-center'>
+                        {" "}
+                        <Image
+                          src={"./img/" + p.name + ".jpeg"}
+                          className='ph-prev justify-content-center'
+                        />{" "}
+                      </Row>
+                      <Row className='justify-content-center'> {p.name}</Row>
+                      <Row className='justify-content-center'>
+                        {" "}
+                        {p.quantity}
+                      </Row>
+                      <Row className='justify-content-center'>
+                        {p.price} €/Kg
+                      </Row>
+                      <Row className='justify-content-center'>{p.farmer} </Row>
+                    </Col>
+                  ))}
+              </Row>
+            </>
           )}
         </Container>
       </Container>
