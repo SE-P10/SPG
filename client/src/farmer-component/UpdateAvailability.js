@@ -105,10 +105,11 @@ function UpdateAvailability(props) {
                       {" "}
                       Q:
                       <Form.Control
+                        type='number'
                         inline
                         onChange={(ev) => {
-                          if (parseInt(ev.target.value) < 0)
-                            setErrorMessage("Negative quantity");
+                          if (parseInt(ev.target.value) <= 0)
+                            setErrorMessage("Negative or zero quantity");
                           else if (isNaN(parseInt(ev.target.value)))
                             setErrorMessage("not a number");
                           else {
