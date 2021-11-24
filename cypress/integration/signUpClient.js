@@ -1,35 +1,21 @@
 describe('signUp_Client', () => {
 
-    before(() => {
-        //runs once before all tests in the block -> Add new Client
-        //Go to Login Page
-        //cy.visit('http://localhost:3000');
-        //cy.findByRole('link', { name: /Sign up  /i }).click();
-
-    })
 
     beforeEach(() => {
         // runs before each test in the block
+        
+        //Clear DB (it is allowed only before the tests) -> All quantity are equal to 100, wallet the same and there are two user
+        cy.request('DELETE', 'http://localhost:3001/api/test/restoretables/')
+        
         //Go to Login Page
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /Sign up/i }).click();
 
-    })
-
-    afterEach(() => {
-
-    })
-
-    after(() => {
-
-        //clear Db
-        //cy.request('DELETE', 'http://localhost:3001/api/clients/michelebasilico@gmail.com')
-        //cy.request('DELETE', 'http://localhost:3001/api/clients/michele@gmail.com')
 
     })
 
 
-    it('a new client should fill each field before to sign up  ', () => {
+    it('a new client should fill in each field before to sign up', () => {
 
         //Insert the Client Info without name
         //cy.findByRole('formGridName').contains().type('Michele')
@@ -156,7 +142,7 @@ describe('signUp_Client', () => {
 
     })
 
-    it('a new client should not be able to sign up entering two different password  ', () => {
+    it('a new client should not be able to sign up entering two different password', () => {
 
         //Insert the Client Info without name
         cy.get('#formGridName').type('Michele')
