@@ -13,6 +13,7 @@ const userDao = require("./dao/user-dao");
 const walletDao = require("./dao/wallet-dao");
 const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
+const testDao = require("./test-dao/test-dao.js")
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -251,6 +252,21 @@ app.put(
 
 /*** Other express-related instructions ***/
 
+/*** API used just for the test enviroment***/
+app.delete('/api/test/restoretables/', async function (req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  try {
+    await testDao.restoreUsersTable();
+    await testDao.restoreProductsTable();
+    res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
+  }
+});
 // Activate the server
 app.listen(port, () => {
   console.log(`react-score-server-mini listening at http://localhost:${port}`);
