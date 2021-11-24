@@ -74,7 +74,7 @@ function BrowserProducts(props) {
                     p.name.toLowerCase().includes(searchValue.toLowerCase())
                   )
                   .map((p) => (
-                    <Col className='below p-cont mr-3 '>
+                    <Col className='below over p-cont mr-3 '>
                       <Row className=' justify-content-center'>
                         {" "}
                         <Image

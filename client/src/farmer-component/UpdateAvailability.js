@@ -90,9 +90,9 @@ function UpdateAvailability(props) {
         )}
         <Form>
           <h3 className='thirdColor'> List of our products: </h3>
-          <Col className='below list'>
+          <Col className='below list over'>
             {products.map((p) => (
-              <Row className='below'>
+              <Row className='over'>
                 <Col>{p.name} </Col>
                 <Col>Actual quantity : {p.quantity} </Col>
                 <Form.Group>
@@ -135,7 +135,7 @@ function UpdateAvailability(props) {
           </Col>
 
           <Button
-            className='se-button below'
+            className='se-button btn-block fixed-height below'
             onClick={(ev) => handleSubmit(ev, props)}>
             Issue Order
           </Button>

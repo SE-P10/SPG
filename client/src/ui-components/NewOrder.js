@@ -140,9 +140,9 @@ function NewOrder(props) {
           />
         </Form.Group>
 
-        <Col>
+        <Col className='below over'>
           <Button
-            variant='primary'
+            className='spg-button'
             onClick={() => {
               setCategorize(0);
               setFilterCategorize(undefined);
@@ -152,7 +152,7 @@ function NewOrder(props) {
             Show for type{" "}
           </Button>{" "}
           <Button
-            variant='primary'
+            className='spg-button'
             onClick={() => {
               setCategorize(1);
               setFilterCategorize(undefined);
@@ -170,7 +170,7 @@ function NewOrder(props) {
                 <Col>{t}</Col>
                 <Col>
                   <Button
-                    variant='primary'
+                    className='spg-button'
                     onClick={() => {
                       setFilterCategorize(t);
                       setViewFilter(false);
@@ -190,7 +190,7 @@ function NewOrder(props) {
                     <Col>{t}</Col>
                     <Col>
                       <Button
-                        variant='primary'
+                        className='spg-button'
                         onClick={() => {
                           setFilterCategorize(t);
                           setViewFilter(false);
@@ -210,7 +210,7 @@ function NewOrder(props) {
         {filterCategorize != undefined ? (
           <Form>
             <h3 className='thirdColor'> List of our products: </h3>
-            <Col className='below list'>
+            <Col className='below over list'>
               {products
                 .filter((t) => {
                   return categorize === 0
@@ -219,7 +219,7 @@ function NewOrder(props) {
                 })
                 .sort((a, b) => (a.name > b.name ? 1 : -1))
                 .map((p) => (
-                  <Row className='below'>
+                  <Row className='over below'>
                     <Col>
                       {" "}
                       <Image
@@ -268,7 +268,7 @@ function NewOrder(props) {
             </Col>
 
             <Button
-              className='se-button btn-block below'
+              className='se-button btn-block fixed-height below'
               onClick={(ev) => handleSubmit(ev, props)}>
               Issue Order
             </Button>
