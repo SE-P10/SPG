@@ -386,12 +386,6 @@ function ClientOrder(props) {
                 </Row>
               ))}
           </Col>
-
-          <Button
-            className='se-button btn-block below'
-            onClick={(ev) => handleSubmit(ev, props)}>
-            Issue Order
-          </Button>
         </Form>
       </Col>
       <Col sm={4} className='ml-3'>
