@@ -29,7 +29,7 @@ function UpdateAvailability(props) {
   const handleSubmit = async (event, propsN) => {
     //fare parseInt
     let orderOk = true;
-
+    console.log(orderProduct.length)
     if (orderProduct.length === 0) {
       setErrorMessage("yuo have not updated any  items.");
       orderOk = false;
@@ -42,7 +42,6 @@ function UpdateAvailability(props) {
           i.quantity,
           props.user.id
         );
-        console.log(props.user.id);
       }
       propsN.addMessage("Request sent correctly!");
 
