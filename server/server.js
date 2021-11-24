@@ -261,6 +261,8 @@ app.delete('/api/test/restoretables/', async function (req, res) {
   try {
     await testDao.restoreUsersTable();
     await testDao.restoreProductsTable();
+    await testDao.restoreUsersMetaTable();
+    await testDao.restoreUseraMetaValue();
     res.status(201).end();
   } catch (err) {
     console.log(err);

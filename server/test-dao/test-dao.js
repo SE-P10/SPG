@@ -11,10 +11,33 @@ exports.restoreUsersTable = async () => {
     });
   };
 
+  exports.restoreUsersMetaTable = async () => {
+    return new Promise((resolve, reject) => {
+      const sql1 = "DELETE FROM users_meta WHERE user_id > 5 AND meta_key = 'wallet'";
+      db.all(sql1, [], (err) => {
+        if (err) reject(err);
+        else resolve(this.lastID);
+      });
+    });
+  };
+
   exports.restoreProductsTable = async () => {
 
     return new Promise((resolve,reject) => {
       const sql = "UPDATE products SET quantity = 100";
+      db.run(sql,[],function(err){
+        if (err) {
+          reject(err);return;
+        }
+        resolve()
+      })
+    })
+  }
+
+  exports.restoreUseraMetaValue = async () => {
+
+    return new Promise((resolve,reject) => {
+      const sql = "UPDATE users_meta SET meta_value = 100 WHERE user_id < 6 AND meta_key = 'wallet' ";
       db.run(sql,[],function(err){
         if (err) {
           reject(err);return;
