@@ -18,6 +18,20 @@ import { filterIcon, basketIcon, deleteIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
 
 function ClientOrder(props) {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [products, setProducts] = useState([]);
+  const [orderProduct, setOrderProduct] = useState([]);
+  const [type, setType] = useState([]);
+  const [farmers, setFarmers] = useState([]);
+  const [viewFilter, setViewFilter] = useState(false);
+  const [categorize, setCategorize] = useState(1); //0 per prodotti 1 per farmer
+  const [filterType, setFilterType] = useState("Type"); //Type -> all types
+  const [filterFarmer, setFilterFarmer] = useState("Farmer"); // Farmer -> all farmers
+  const [isOrderProductDirty, setIsOrderProductDirty] = useState(true);
+
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
@@ -37,6 +51,7 @@ function ClientOrder(props) {
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
       const basketTmp = await API.getBasketProducts();
+
       setOrderProduct(
         basketTmp.map((t) => ({
           product_id: t.id,
@@ -75,19 +90,6 @@ function ClientOrder(props) {
       propsN.changeAction(0);
     }
   };
-
-  const [errorMessage, setErrorMessage] = useState("");
-  const [products, setProducts] = useState([]);
-  const [orderProduct, setOrderProduct] = useState([]);
-  const [type, setType] = useState([]);
-  const [farmers, setFarmers] = useState([]);
-  const [viewFilter, setViewFilter] = useState(false);
-  const [categorize, setCategorize] = useState(1); //0 per prodotti 1 per farmer
-  const [filterType, setFilterType] = useState("Type"); //Type -> all types
-  const [filterFarmer, setFilterFarmer] = useState("Farmer"); // Farmer -> all farmers
-
-  const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
 
   return (
     <>
@@ -234,19 +236,22 @@ function ClientOrder(props) {
                 if (filterType === "Type" && filterFarmer === "Farmer")
                   return (
                     true &&
-                    t.name.toLowerCase().includes(searchValue.toLowerCase())
+                    t.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+                    t.quantity > 0
                   );
 
                 if (filterType !== "Type" && filterFarmer === "Farmer")
                   return (
                     t.name == filterType &&
-                    t.name.toLowerCase().includes(searchValue.toLowerCase())
+                    t.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+                    t.quantity > 0
                   );
 
                 if (filterType == "Type" && filterFarmer !== "Farmer")
                   return (
                     t.farmer == filterFarmer &&
-                    t.name.toLowerCase().includes(searchValue.toLowerCase())
+                    t.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+                    t.quantity > 0
                   );
 
                 if (filterType !== "Type" && filterFarmer !== "Farmer")
@@ -401,6 +406,21 @@ function ClientOrder(props) {
                 <>
                   <Row>
                     {p.name} Q: {p.quantity}{" "}
+                    <Button
+                      onClick={(ev) => {
+                        API.insertProductInBasket({
+                          product_id: p.product_id,
+                          quantity: 0,
+                        }).then((e) => {
+                          setIsOrderProductDirty(true);
+                          setOrderProduct((old) => {
+                            return old.filter((t) => t.product_id !== p.id);
+                          });
+                        });
+                      }}
+                      variant='outline-secondary'>
+                      DELETE
+                    </Button>
                   </Row>
                 </>
               ))}{" "}
