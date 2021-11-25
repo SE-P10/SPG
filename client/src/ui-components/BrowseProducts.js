@@ -70,8 +70,11 @@ function BrowserProducts(props) {
               <Row>
                 {products
                   .sort((a, b) => (a.name > b.name ? 1 : -1))
-                  .filter((p) =>
-                    p.name.toLowerCase().includes(searchValue.toLowerCase())
+                  .filter(
+                    (p) =>
+                      p.name
+                        .toLowerCase()
+                        .includes(searchValue.toLowerCase()) && p.quantity > 0
                   )
                   .map((p) => (
                     <Col className='below over p-cont mr-3 '>
