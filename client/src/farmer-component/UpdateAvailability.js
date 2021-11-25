@@ -29,9 +29,9 @@ function UpdateAvailability(props) {
   const handleSubmit = async (event, propsN) => {
     //fare parseInt
     let orderOk = true;
-    console.log(orderProduct.length)
-    if (orderProduct.length === 0) {
-      setErrorMessage("yuo have not updated any  items.");
+    console.log(orderProduct)
+    if (orderProduct.length === 0)  {
+      setErrorMessage("you have not updated any  items.");
       orderOk = false;
     }
 
@@ -57,7 +57,7 @@ function UpdateAvailability(props) {
 
   const selectProduct = (id) => {
     if (selectedPs.indexOf(id) == -1) {
-      setOrderProducts((old) => [...old, { product_id: id, quantity: 1 }]);
+      setOrderProducts((old) => [...old, { product_id: id, quantity: 0 }]);
       setSelectPs((selectedPsn) => [...selectedPsn, id]);
     } else {
       setSelectPs((old) =>
@@ -104,6 +104,7 @@ function UpdateAvailability(props) {
                       {" "}
                       Q:
                       <Form.Control
+                        defaultValue={0}
                         type='number'
                         inline
                         onChange={(ev) => {
