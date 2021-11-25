@@ -32,6 +32,10 @@ function ClientOrder(props) {
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
+  const setIsOrderProductDirtyOk = () => {
+    setIsOrderProductDirty(true);
+  }
+
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
@@ -50,8 +54,7 @@ function ClientOrder(props) {
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      const basketTmp = await API.getBasketProducts();
-
+      const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
       setOrderProduct(
         basketTmp.map((t) => ({
           product_id: t.id,
@@ -60,10 +63,11 @@ function ClientOrder(props) {
           name: t.name,
         }))
       );
+      
     };
 
     fillTables();
-  }, []);
+  }, [isOrderProductDirty]);
 
   const handleSubmit = async (event, propsN) => {
     let orderOk = true;
@@ -412,7 +416,7 @@ function ClientOrder(props) {
                           product_id: p.product_id,
                           quantity: 0,
                         }).then((e) => {
-                          setIsOrderProductDirty(true);
+                          setIsOrderProductDirty(false);
                           setOrderProduct((old) => {
                             return old.filter((t) => t.product_id !== p.id);
                           });

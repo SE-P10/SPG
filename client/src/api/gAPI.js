@@ -79,11 +79,12 @@ async function deleteAllBasket() {
 }
 
 // Return all the products in the basket of the user that called the API
-async function getBasketProducts() {
+async function getBasketProducts(setDirtyFalse) {
     // call: GET /api/products
     const response = await fetch('/api/basketProduct');
     const productsJson = await response.json();
     if (response.ok) {
+		setDirtyFalse()
       	return productsJson.map(p => ({ id: p.id, quantity: p.quantity, price: p.price, name: p.name, farmer: p.farmer }));
     } else {
       	throw productsJson;  // an object with the error coming from the server
