@@ -8,7 +8,7 @@ import {
   DropdownButton,
   Container,
 } from "react-bootstrap";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
 import farmerAPI from "./../api/farmer";
@@ -35,6 +35,12 @@ function UpdateAvailability(props) {
       orderOk = false;
     }
 
+    let checkNoWrongQuantity = orderProduct.filter(t => t.quantity < 0 ).length;
+    if (checkNoWrongQuantity > 0) {
+      setErrorMessage("you have negative quantities.");
+      orderOk = false;
+    }
+
     if (orderOk) {
       for (let i of orderProduct) {
         let esito = await farmerAPI.updateFarmerProducts(
@@ -51,7 +57,7 @@ function UpdateAvailability(props) {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([]);
-
+  const [errorQuantity,setErrorQuantity] = useState(false);
   const [orderProduct, setOrderProducts] = useState([]);
   const [selectedPs, setSelectPs] = useState([]);
 
@@ -98,8 +104,11 @@ function UpdateAvailability(props) {
                   {" "}
                   <Form.Check
                     inline
-                    onClick={() => selectProduct(p.id)}></Form.Check>{" "}
-                  {selectedPs.indexOf(p.id) !== -1 ? (
+                    id="CheckBoxItem" 
+                    onClick={() => selectProduct(p.id)}>
+                    </Form.Check>
+                    {" "}
+                    {selectedPs.indexOf(p.id) !== -1 ? (
                     <>
                       {" "}
                       Q:
@@ -108,10 +117,38 @@ function UpdateAvailability(props) {
                         type='number'
                         inline
                         onChange={(ev) => {
-                          if (parseInt(ev.target.value) <= 0)
-                            setErrorMessage("Negative or zero quantity");
+                          if (parseInt(ev.target.value) < 0)
+                            {
+                              setErrorMessage("Wrong quantity");
+                              setOrderProducts((old) => {
+                                const list = old.map((item) => {
+                                  if (item.product_id === p.id)
+                                    return {
+                                      product_id: p.id,
+                                      quantity: parseInt(ev.target.value),
+                                    };
+                                  else return item;
+                                });
+                                return list;
+                              });
+                              
+                              
+                            }
                           else if (isNaN(parseInt(ev.target.value)))
-                            setErrorMessage("not a number");
+                            {
+                              setErrorMessage("Wrong quantity");
+                              setOrderProducts((old) => {
+                                const list = old.map((item) => {
+                                  if (item.product_id === p.id)
+                                    return {
+                                      product_id: p.id,
+                                      quantity: parseInt(ev.target.value),
+                                    };
+                                  else return item;
+                                });
+                                return list;
+                              });
+                            }
                           else {
                             setOrderProducts((old) => {
                               const list = old.map((item) => {
@@ -135,11 +172,11 @@ function UpdateAvailability(props) {
             ))}
           </Col>
 
-          <Button
+          {errorQuantity === false ?<Button
             className='se-button btn-block fixed-height below'
             onClick={(ev) => handleSubmit(ev, props)}>
             Issue Order
-          </Button>
+          </Button> : ""}
         </Form>
       </Container>
     </>
