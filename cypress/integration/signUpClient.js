@@ -1,6 +1,5 @@
 describe('signUp_Client', () => {
 
-
     beforeEach(() => {
         // runs before each test in the block
         
@@ -181,7 +180,7 @@ describe('signUp_Client', () => {
     it('a new client should be able to sign up entering correct info', () => {
 
         //Insert the Client Info without name
-        cy.get('#formGridName').contains().type('Michele')
+        cy.get('#formGridName').type('Michele')
         cy.get('#formGridSurname').type('Basilico')
         cy.get('#formGridUsername').type('Miki')
         cy.get('#formGridEmail').type('michele@gmail.com')
@@ -189,16 +188,49 @@ describe('signUp_Client', () => {
         cy.get('#formGridConfirmPassword').type('ciao')
         //Click register button
         cy.get('.spg-button').click()
+        //Popup is shown
+        cy.findByText(/registration was successful/i).should('exist')
+        //redirect to login
+        cy.get('.modal-footer > .spg-button').click()
+        cy.on("url:changed", (newUrl) => {
+            expect(newUrl).to.contain("login")
+          })
+        //check on the server
+
+    })
+
+    it('a new client should not be able to sign up entering an email already used ', () => {
+
+        //Registration n.1
+        //Insert the Client Info without name
+        cy.get('#formGridName').type('Luca')
+        cy.get('#formGridSurname').type('Modric')
+        cy.get('#formGridUsername').type('Luke')
+        cy.get('#formGridEmail').type('luke@gmail.it')
+        cy.get('#formGridPassword').type('ciao')
+        cy.get('#formGridConfirmPassword').type('ciao')
+        //Click register button
+        cy.get('.spg-button').click()
+        //Return to home
+        cy.get('.btn-danger').click()
+        
+        //Registration n.2
+        cy.findByRole('link', { name: /Sign up/i }).click();
+        //Insert the Client Info without name
+        cy.get('#formGridName').type('lucaFake')
+        cy.get('#formGridSurname').type('ModircFake')
+        cy.get('#formGridUsername').type('fake')
+        cy.get('#formGridEmail').type('luke@gmail.it')
+        cy.get('#formGridPassword').type('ciao2')
+        cy.get('#formGridConfirmPassword').type('ciao2')
+        //Click register button
+        cy.get('.spg-button').click()
         //ALert is shown
-        cy.findByRole('alert').should('include.text', 'New client registered')
+        cy.findByRole('alert').should('include.text', 'Email already in use!')
         //Close Alert
         cy.findByText(/×/i).click()
         //check on the server
 
-        //Logout
-        cy.get('#navbarScrollingDropdown').click()
-        cy.get('.dropdown-menu > :nth-child(2)').click()
-        cy.clearCookies()
     })
 
 })
