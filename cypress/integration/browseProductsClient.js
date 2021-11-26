@@ -1,18 +1,14 @@
-describe('viewProducts', () => {
+describe('signUp_Client', () => {
 
     before(() => {
-
+        // runs before each test in the block
         //Clear DB (it is allowed only before the tests) -> All quantity are equal to 100, wallet the same and there are two user
         cy.request('DELETE', 'http://localhost:3001/api/test/restoretables/')
-        //Go to Login Page
+
+        //Go to SignUp Page
         cy.visit('http://localhost:3000');
-        cy.findByRole('link', { name: /login/i }).click();
-        //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
-        cy.findByLabelText(/password/i).type('password');
-        cy.findByRole('button', { name: /login/i }).click();
-        //Click a button to add new Client
-        cy.findByRole('button', { name: /register client/i }).click();
+        cy.findByRole('link', { name: /Sign up/i }).click();
+
         //Iscrivo un client
         cy.get('#formGridName').type('Michele')
         cy.get('#formGridSurname').type('Basilico')
@@ -21,14 +17,13 @@ describe('viewProducts', () => {
         cy.get('#formGridPassword').type('ciao')
         cy.get('#formGridConfirmPassword').type('ciao')
         //Click register button
-        cy.get('.container > .justify-content-center > .spg-button').click()
-        //Logout
-        cy.get('#navbarScrollingDropdown').click()
-        cy.get(':nth-child(2) > .text-black > .bi').click()
-        cy.clearCookies()
+        cy.get('.spg-button').click()
+        //Popup is shown
+        cy.findByText(/registration was successful/i).should('exist')
         //redirect to login
-        cy.findByRole('link', { name: /login/i }).click();
-        //As a farmer update the zucchinis quantity
+        cy.get('.modal-footer > .spg-button').click()
+
+        //As a farmer update zucchini quantity
         cy.get('#username').type('paolobianchi@demo.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
@@ -54,23 +49,26 @@ describe('viewProducts', () => {
     })
 
     beforeEach(() => {
-        //User click on login button
+        // runs before each test in the block
+        //Clear DB (it is allowed only before the tests) -> All quantity are equal to 100, wallet the same and there are two user
+        //cy.request('DELETE', 'http://localhost:3001/api/test/restoretables/')
+        //Torno al menu utente
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
-        //Login
-        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
-        cy.findByLabelText(/password/i).type('password');
+        //Login as a client
+        cy.get('#username').type('michele@gmail.com');
+        cy.findByLabelText(/password/i).type('ciao');
         cy.findByRole('button', { name: /login/i }).click();
-        //Click on Browse Products
-        cy.findByRole('button', { name: /browse products/i }).click();
+        cy.get('#navbarScrollingDropdown').click()
+        cy.get(':nth-child(1) > .text-black > .bi').click()
+        //Vado sulla ricerca prodotti
+        cy.findByText(/browse products/i).click()
     })
-
-    it("a shop employee should view a products list", () => {
-        //User views a products list  -> TODO: Redo using a for cycle and prebuilded data
-        for (let i = 1; i <= 50; i++) {
-            cy.get('.list > :nth-child(2) > :nth-child(' + i + ')')
-                .should('exist')
-        }
+    afterEach(() => {
+        //Logout
+        cy.get('#navbarScrollingDropdown').click()
+        cy.get(':nth-child(2) > .text-black > .bi').click()
+        cy.clearCookies()
     })
 
     it('a client should be able to search a product', () => {
@@ -98,7 +96,7 @@ describe('viewProducts', () => {
 
     })
 
-    it('a shop Employee should be able to view the rigth quantity(After a farmer update)', () => {
+    it('a client should be able to view the rigth quantity(After a farmer update)', () => {
         //1 SEARCH
         //Search a product
         cy.get('#search').type('Zucchini')
@@ -106,5 +104,4 @@ describe('viewProducts', () => {
         cy.get('.list > :nth-child(2)').should('exist')
         cy.get('.list > :nth-child(2) > .below > :nth-child(3)').should('include.text', '150')
     })
-
 })
