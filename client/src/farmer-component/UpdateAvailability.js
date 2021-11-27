@@ -8,7 +8,7 @@ import {
   DropdownButton,
   Container,
 } from "react-bootstrap";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
 import farmerAPI from "./../api/farmer";
@@ -29,9 +29,15 @@ function UpdateAvailability(props) {
   const handleSubmit = async (event, propsN) => {
     //fare parseInt
     let orderOk = true;
+    console.log(orderProduct)
+    if (orderProduct.length === 0)  {
+      setErrorMessage("you have not updated any  items.");
+      orderOk = false;
+    }
 
-    if (orderProduct.length === 0) {
-      setErrorMessage("yuo have not updated any  items.");
+    let checkNoWrongQuantity = orderProduct.filter(t => t.quantity < 0 ).length;
+    if (checkNoWrongQuantity > 0) {
+      setErrorMessage("you have negative quantities.");
       orderOk = false;
     }
 
@@ -42,7 +48,6 @@ function UpdateAvailability(props) {
           i.quantity,
           props.user.id
         );
-        console.log(props.user.id);
       }
       propsN.addMessage("Request sent correctly!");
 
@@ -52,13 +57,13 @@ function UpdateAvailability(props) {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([]);
-
+  const [errorQuantity,setErrorQuantity] = useState(false);
   const [orderProduct, setOrderProducts] = useState([]);
   const [selectedPs, setSelectPs] = useState([]);
 
   const selectProduct = (id) => {
     if (selectedPs.indexOf(id) == -1) {
-      setOrderProducts((old) => [...old, { product_id: id, quantity: 1 }]);
+      setOrderProducts((old) => [...old, { product_id: id, quantity: 0 }]);
       setSelectPs((selectedPsn) => [...selectedPsn, id]);
     } else {
       setSelectPs((old) =>
@@ -90,27 +95,60 @@ function UpdateAvailability(props) {
         )}
         <Form>
           <h3 className='thirdColor'> List of our products: </h3>
-          <Col className='below list'>
+          <Col className='below list over'>
             {products.map((p) => (
-              <Row className='below'>
+              <Row className='over'>
                 <Col>{p.name} </Col>
                 <Col>Actual quantity : {p.quantity} </Col>
                 <Form.Group>
                   {" "}
                   <Form.Check
                     inline
-                    onClick={() => selectProduct(p.id)}></Form.Check>{" "}
-                  {selectedPs.indexOf(p.id) !== -1 ? (
+                    id="CheckBoxItem" 
+                    onClick={() => selectProduct(p.id)}>
+                    </Form.Check>
+                    {" "}
+                    {selectedPs.indexOf(p.id) !== -1 ? (
                     <>
                       {" "}
                       Q:
                       <Form.Control
+                        defaultValue={0}
+                        type='number'
                         inline
                         onChange={(ev) => {
                           if (parseInt(ev.target.value) < 0)
-                            setErrorMessage("Negative quantity");
+                            {
+                              setErrorMessage("Wrong quantity");
+                              setOrderProducts((old) => {
+                                const list = old.map((item) => {
+                                  if (item.product_id === p.id)
+                                    return {
+                                      product_id: p.id,
+                                      quantity: parseInt(ev.target.value),
+                                    };
+                                  else return item;
+                                });
+                                return list;
+                              });
+                              
+                              
+                            }
                           else if (isNaN(parseInt(ev.target.value)))
-                            setErrorMessage("not a number");
+                            {
+                              setErrorMessage("Wrong quantity");
+                              setOrderProducts((old) => {
+                                const list = old.map((item) => {
+                                  if (item.product_id === p.id)
+                                    return {
+                                      product_id: p.id,
+                                      quantity: parseInt(ev.target.value),
+                                    };
+                                  else return item;
+                                });
+                                return list;
+                              });
+                            }
                           else {
                             setOrderProducts((old) => {
                               const list = old.map((item) => {
@@ -134,11 +172,11 @@ function UpdateAvailability(props) {
             ))}
           </Col>
 
-          <Button
-            className='se-button below'
+          {errorQuantity === false ?<Button
+            className='se-button btn-block fixed-height below'
             onClick={(ev) => handleSubmit(ev, props)}>
             Issue Order
-          </Button>
+          </Button> : ""}
         </Form>
       </Container>
     </>

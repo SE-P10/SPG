@@ -89,7 +89,7 @@ function TopUpWallet(props) {
                       else setRechargeAmount(ev.target.value);
                     }}
                   />{" "}
-                  <Button onClick={rechargeWallet} className='spg-button below'>
+                  <Button onClick={rechargeWallet} className='spg-button over below'>
                     {" "}
                     Recharge the wallet
                   </Button>
