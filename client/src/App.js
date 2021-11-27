@@ -32,6 +32,7 @@ const App = () => {
     const checkAuth = async () => {
       const userTmp = await API.getUserInfo();
       setLoggedIn(true);
+      console.log(userTmp)
       setUser(userTmp);
     };
     checkAuth().catch((err) => console.log(err));
@@ -131,10 +132,12 @@ const App = () => {
           exact
           path='/shopemployee'
           render={() => (
+            <>
+            {user !== null && user.role ==  1 ? 
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
               <ShopEmployee user={user} loggedIn={loggedIn} />
-            </Container>
+            </Container> : <Redirect to="/login"/> }</>
           )}
         />
         <Route
@@ -156,10 +159,12 @@ const App = () => {
           exact
           path='/farmerpage'
           render={() => (
+            <>
+            {user !== null && user.role ==  2 ? 
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
               <FarmerPage user={user} />
-            </Container>
+            </Container> : <Redirect to="/login" /> }</>
           )}
         />
 
@@ -167,10 +172,11 @@ const App = () => {
           exact
           path='/clientpage'
           render={() => (
+            <> {user !== null && user.role ==  0 ? 
             <Container fluid className='justify-content-center d-flex'>
               {/* inserire controllo loggedIn e ruolo*/}{" "}
               <ClientPage user={user} />
-            </Container>
+            </Container> : <Redirect to="/login" /> }</>
           )}
         />
 
