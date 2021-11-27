@@ -16,6 +16,7 @@ import gAPI from "../api/gAPI";
 import API from "../API";
 import { filterIcon, basketIcon, deleteIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
+import userAPI from "../api/user";
 
 function ClientOrder(props) {
   const [errorMessage, setErrorMessage] = useState("");
@@ -28,13 +29,14 @@ function ClientOrder(props) {
   const [filterType, setFilterType] = useState("Type"); //Type -> all types
   const [filterFarmer, setFilterFarmer] = useState("Farmer"); // Farmer -> all farmers
   const [isOrderProductDirty, setIsOrderProductDirty] = useState(true);
+  const [mailInserted, setMailInserted] = useState(undefined);
 
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
   const setIsOrderProductDirtyOk = () => {
     setIsOrderProductDirty(true);
-  }
+  };
 
   useEffect(() => {
     const fillTables = async () => {
@@ -63,16 +65,33 @@ function ClientOrder(props) {
           name: t.name,
         }))
       );
-      
     };
 
     fillTables();
   }, [isOrderProductDirty]);
 
   const handleSubmit = async (event, propsN) => {
+    let userId;
     let orderOk = true;
 
-    if (orderProduct.length === 0) {
+    if (props.user.role == 1) {
+      if (!mailInserted) {
+        setErrorMessage("You have to insert an email!");
+        orderOk = false;
+      } else {
+        userId = await userAPI.getUserId(mailInserted);
+        if (userId.length === 0) {
+          setErrorMessage("Invalid user");
+          orderOk = false;
+        } else if (userId[0].role != 0) {
+          setErrorMessage("Invalid user");
+          orderOk = false;
+        }
+        if (orderOk) userId = userId[0].id;
+      }
+    } else userId = props.user.id;
+
+    if (orderOk && orderProduct.length === 0) {
       setErrorMessage("Can't issue an order without items.");
       orderOk = false;
     }
@@ -82,16 +101,20 @@ function ClientOrder(props) {
 
       //Chiamare API , moemntanemtnate stampare l'ordine
       API.insertOrder(
-        props.user.id,
+        userId,
         orderProduct.filter((t) => t.quantity !== 0)
       )
-        .then(() => propsN.addMessage("Request sent correctly!"))
+        .then(() => {
+          propsN.addMessage("Request sent correctly!");
+          console.log(orderProduct);
+          console.log(userId);
+          propsN.changeAction(0);
+        })
         .catch((err) => {
           setErrorMessage("Server error during insert order.");
+          console.log(orderProduct);
+          console.log(userId);
         });
-
-      propsN.addMessage("Request sent correctly!");
-      propsN.changeAction(0);
     }
   };
 
@@ -113,6 +136,18 @@ function ClientOrder(props) {
           ""
         )}
 
+        {props.user.role == 1 ? (
+          <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
+            <Form.Label>Client mail</Form.Label>
+            <Form.Control
+              type='email'
+              onChange={(ev) => {
+                setMailInserted(ev.target.value);
+              }}
+            />
+          </Form.Group>
+        ) : null}
+
         <Col sm={8}>
           <Row>
             <SearchForm
@@ -121,11 +156,13 @@ function ClientOrder(props) {
             />
           </Row>
           <Button
-            className='spg-button'
+            className='spg-button below'
             onClick={() => {
               if (showFilterMenu) {
                 setShowFilterMenu(false);
-                setCategorize(0);
+                setCategorize(2);
+                setFilterType("Type");
+                setFilterFarmer("Farmer");
                 setViewFilter(false);
               } else setShowFilterMenu(true);
             }}>
@@ -135,18 +172,6 @@ function ClientOrder(props) {
           {showFilterMenu ? (
             <>
               {" "}
-              <Button
-                className='spg-button'
-                onClick={() => {
-                  setCategorize(2);
-                  setFilterType("Type");
-                  setFilterFarmer("Farmer");
-
-                  setViewFilter(true);
-                }}>
-                {" "}
-                Show all{" "}
-              </Button>{" "}
               <Form className='below'>
                 <Form.Control
                   as='select'
@@ -430,7 +455,14 @@ function ClientOrder(props) {
               ))}{" "}
           </>
         ) : (
-          <> You basket is empty!</>
+          <>
+            {" "}
+            {props.user.role == 1 ? (
+              <>Client's basket is empty!</>
+            ) : (
+              <>Your basket is empty!</>
+            )}
+          </>
         )}
         <Row>
           <Button

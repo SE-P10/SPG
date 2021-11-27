@@ -5,7 +5,13 @@ import { useState } from "react";
 import { ClientOrder } from "../client-component/ClientOrder";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
 import "../css/custom.css";
-import { backIcon, newIcon, browseIcon } from "../ui-components/Icons.js";
+import { YourOrders } from "../client-component/YourOrders";
+import {
+  backIcon,
+  newIcon,
+  browseIcon,
+  checkIcon,
+} from "../ui-components/Icons.js";
 
 function ClientPage(props) {
   const [message, setMessage] = useState("");
@@ -20,7 +26,8 @@ function ClientPage(props) {
   /* Actions 
     0 = No actions (Home)
     1 = Browse products 
-    2 = NewOrder*/
+    2 = NewOrder
+    3 = Your orders */
 
   return (
     <>
@@ -55,38 +62,68 @@ function ClientPage(props) {
         <Row className='secondColor justify-content-center below'>
           <Col>
             {action === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button '
-                  onClick={() => {
-                    setAction(1);
-                  }}>
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>{browseIcon} </Row>
-                    <Row className='justify-content-center'>
-                      {" "}
-                      Browse Products{" "}
+              <>
+                {" "}
+                <Row>
+                  <Col>
+                    <Row className='secondColor justify-content-center below'>
+                      <Button
+                        className='se-button '
+                        onClick={() => {
+                          setAction(1);
+                        }}>
+                        <Col className='justify-content-center'>
+                          <Row className='justify-content-center'>
+                            {browseIcon}{" "}
+                          </Row>
+                          <Row className='justify-content-center'>
+                            {" "}
+                            Browse Products{" "}
+                          </Row>
+                        </Col>{" "}
+                      </Button>
                     </Row>
-                  </Col>{" "}
-                </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-
-            {action === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button '
-                  onClick={() => {
-                    setAction(2);
-                  }}>
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>{newIcon} </Row>
-                    <Row className='justify-content-center'> New Order </Row>
                   </Col>
-                </Button>
-              </Row>
+                  <Col>
+                    <Row className='secondColor justify-content-center below'>
+                      <Button
+                        className='se-button '
+                        onClick={() => {
+                          setAction(2);
+                        }}>
+                        <Col className='justify-content-center'>
+                          <Row className='justify-content-center'>
+                            {newIcon}{" "}
+                          </Row>
+                          <Row className='justify-content-center'>
+                            {" "}
+                            New Order{" "}
+                          </Row>
+                        </Col>
+                      </Button>
+                    </Row>
+                  </Col>
+                  <Col>
+                    <Row className='secondColor justify-content-center below'>
+                      <Button
+                        className='se-button '
+                        onClick={() => {
+                          setAction(3);
+                        }}>
+                        <Col className='justify-content-center'>
+                          <Row className='justify-content-center'>
+                            {checkIcon}{" "}
+                          </Row>
+                          <Row className='justify-content-center'>
+                            {" "}
+                            Your Orders{" "}
+                          </Row>
+                        </Col>
+                      </Button>
+                    </Row>{" "}
+                  </Col>
+                </Row>
+              </>
             ) : (
               ""
             )}
@@ -100,7 +137,16 @@ function ClientPage(props) {
             />
           ) : null}
           {action === 2 ? (
-            <ClientOrder
+            <>
+              <ClientOrder
+                user={props.user}
+                changeAction={changeAction}
+                addMessage={addMessage}
+              />{" "}
+            </>
+          ) : null}
+          {action === 3 ? (
+            <YourOrders
               user={props.user}
               changeAction={changeAction}
               addMessage={addMessage}
