@@ -34,7 +34,7 @@ exports.restoreUsersTable = async () => {
     })
   }
 
-  exports.restoreWalletsTable1 = async () => {
+  exports.restoreWalletsValue = async () => {
 
     return new Promise((resolve,reject) => {
       const sql = "UPDATE users_meta SET meta_value = 100";

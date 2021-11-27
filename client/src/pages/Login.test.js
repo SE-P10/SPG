@@ -6,23 +6,10 @@ import userEvent from '@testing-library/user-event'
 import ReactDOM from 'react-dom';
 
 const doLoginStub = () => {
-    
+
 }
 const closeMessageStub = () => {
 
-}
-
-const setup = () => {
-    const utils = render(<LoginForm message='' />)
-    const username = utils.getByLabelText('Username');
-    const password = utils.getByLabelText('Password');
-    const button = utils.getByRole('button');
-    return {
-        username,
-        password,
-        button,
-        ...utils,
-    }
 }
 
 //JEST
@@ -35,9 +22,9 @@ it('LoginForm renders without crashing', () => {
 
 
 //React Testing Library(to test components in isolation from the child components they render)
-it('Login renders username text', () => {
+it('Login renders email text', () => {
     render(<LoginForm message='' />);
-    expect(screen.getByText('Username')).toBeInTheDocument();
+    expect(screen.getByText('Email')).toBeInTheDocument();
 });
 it('Login renders password text', () => {
     render(<LoginForm message='' />);
@@ -45,34 +32,34 @@ it('Login renders password text', () => {
 });
 
 //
-it("Username and Password fields Should be in the document and free of text", () => {
-    const { input } = setup()
+it("email and Password fields Should be in the document and free of text", () => {
+    render(<LoginForm message='' />);
     //Mi assicuro che ci sia un elemento di ruolo textbox e button nel documento (possono essere verificati mandando la getbyrole senza parametro)
-    expect(username).toBeInTheDocument();
-    expect(password).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument();
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
     expect(screen.getByRole('button')).toBeInTheDocument();
-    expect(username).toHaveTextContent("");
-    expect(password).toHaveTextContent("");
+    expect(screen.getByRole('textbox', { name: /email/i })).toHaveTextContent("");
+    expect(screen.getByLabelText('Password')).toHaveTextContent("");
 
 });
 
 
-it("The entered username should be shown", () => {
-    const { input } = setup()
-    //Cambio il valore dell'input username
-    userEvent.type(username, 'john.doe@demo01.it');
+it("The entered email should be shown", () => {
+    const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
+    //Cambio il valore dell'input email
+    userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'john.doe@demo01.it');
     //Verifico che sia stato cambiato
-    expect(username).toHaveValue('john.doe@demo01.it')
+    expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue('john.doe@demo01.it')
 
 });
 
 //
 it("The entered password should be shown", () => {
-    const { input } = setup()
-    //Cambio il valore dell'input username
-    userEvent.type(password, 'password');
+    const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
+    //Cambio il valore dell'input email
+    userEvent.type(screen.getByLabelText('Password'), 'password');
     //Verifico che sia stato cambiato
-    expect(password).toHaveValue('password')
+    expect(screen.getByLabelText('Password')).toHaveValue('password')
 
 });
 
@@ -81,18 +68,18 @@ it("Login check with wrong data", async () => {
     //Dal momento che la setMessage viene cambiata da App, è esterna al componente Login e non è di interesse dello unit test
     //Quello che può essere testato è cosa succede nel momento in cui viene settato il message e quindi cosa viene reindirizzato quando
     //ho gia un message, per cui renderizzo solamente il componente con il msg passato
-    const utils = render(<LoginForm login={doLoginStub} message={{ msg: "Incorrect Username and Password", type: "danger" }} closeMessage={closeMessageStub} />)
+    const utils = render(<LoginForm login={doLoginStub} message={{ msg: "Incorrect email and Password", type: "danger" }} closeMessage={closeMessageStub} />)
     //Controllo l'alert, tenendo conto che è un evento asincrono
     await waitFor(() => screen.getByRole('alert'))
-    expect(screen.getByRole('alert')).toHaveTextContent('Incorrect Username and Password')
+    expect(screen.getByRole('alert')).toHaveTextContent('Incorrect email and Password')
 
 });
 
 it("Login should not be enabled without email", async () => {
 
     const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
-    //Scrivo solo lo username
-    userEvent.type(screen.getByText('Username'), 'Gianni@gmail.com');
+    //Scrivo solo lo email
+    userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'Gianni@gmail.com');
     expect(screen.getByRole('button')).toBeDisabled()
 
 });
@@ -101,7 +88,7 @@ it("Login should not be enabled without password", async () => {
 
     const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
     //Scrivo solo la password
-    userEvent.type(screen.getByText('Password'), 'password');
+    userEvent.type(screen.getByLabelText('Password'), 'password');
     expect(screen.getByRole('button')).toBeDisabled()
 
 });
@@ -110,7 +97,7 @@ it("Login should not be enabled without email and password", async () => {
 
     const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
     //Scrivo solo la password
-    userEvent.type(screen.getByText('Password'), 'password');
+    userEvent.type(screen.getByLabelText('Password'), 'password');
     expect(screen.getByRole('button')).toBeDisabled()
 
 });
@@ -119,9 +106,9 @@ it("Login should be enabled with email and password", async () => {
 
     const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
     //Scrivo la email
-    userEvent.type(screen.getByText('Username'), 'Gianni@gmail.com');
+    userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'Gianni@gmail.com');
     //Scrivo la password
-    userEvent.type(screen.getByText('Password'), 'password');
+    userEvent.type(screen.getByLabelText('Password'), 'password');
     expect(screen.getByRole('button')).toBeEnabled()
 
 });
@@ -157,7 +144,7 @@ it("Login check with right data",  async () => {
         render(<LoginForm login={login} />, container);
 
         //Inserisco correttamente i dati di Login
-        userEvent.type(screen.getByLabelText("Username"), 'john.doe@demo01.it');
+        userEvent.type(screen.getByLabelText("email"), 'john.doe@demo01.it');
         userEvent.type(screen.getByLabelText("Password"), '$2b$10$OMHdOZ.PATpbMoaDz5013edi5QCTEFgpRv7Vn8OyDHQNN/4KXUKdi');
         //To Fix: Button non funziona dal setup;
         userEvent.click(screen.getByRole('button'));

@@ -3,27 +3,30 @@ describe('enterNewClientOrder', () => {
     //TODO -> Clean every information added during the tests
 
     before(() => {
+        //Clear DB (it is allowed only before the tests) -> All quantity are equal to 100, wallet the same and there are two user
+        cy.request('DELETE', 'http://localhost:3001/api/test/restoretables/')
+
         //runs once before all tests in the block -> Add new Client
-        //Go to Login Page
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /username/i }).type('john.doe@demo01.it');
+        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add new Client
-        cy.findByRole('button', { name: /register a client/i }).click();
-        //Insert the Client Info
+        cy.findByRole('button', { name: /register client/i }).click();
+        //Iscrivo un client
         cy.get('#formGridName').type('Michele')
         cy.get('#formGridSurname').type('Basilico')
         cy.get('#formGridUsername').type('Miki')
-        cy.get('#formGridEmail').type('michelebasilico@gmail.com')
+        cy.get('#formGridEmail').type('michele@gmail.com')
         cy.get('#formGridPassword').type('ciao')
         cy.get('#formGridConfirmPassword').type('ciao')
         //Click register button
-        cy.get('.spg-button').click()
+        cy.get('.container > .justify-content-center > .spg-button').click()
         //Logout
-        cy.findByRole('link', { name: /logout/i }).click()
+        cy.get('#navbarScrollingDropdown').click()
+        cy.get(':nth-child(2) > .text-black > .bi').click()
         cy.clearCookies()
 
     })
