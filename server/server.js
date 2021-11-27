@@ -214,7 +214,7 @@ app.get("/api/products/farmer/:farmer_id", isLoggedIn, (req, res) => {
 // parameters product_id, amount
 // update the value of the product to the new value
 app.put(
-  "/api/farmer/products/update/:product_id/:quantity/:farmer_id",
+  "/api/farmer/products/update/:product_id/:quantity/:farmer_id/:price",
   [check(["farmer_id"]).isInt()],
   async (req, res) => {
     const errors = validationResult(req);
@@ -225,7 +225,8 @@ app.put(
       await farmerDao.updateProducts(
         req.params.farmer_id,
         req.params.product_id,
-        req.params.quantity
+        req.params.quantity,
+        req.params.price
       );
       res.status(200).end();
     } catch (err) {
