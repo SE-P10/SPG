@@ -13,10 +13,10 @@ async function getFarmerProducts(farmerID) {
     }
 }
 
-async function updateFarmerProducts(productID, newAmount,farmerId) {
+async function updateFarmerProducts(productID, newAmount,farmerId,price) {
 
   return new Promise((resolve, reject) => {
-    fetch('/api/farmer/products/update/'+productID+'/'+newAmount+'/'+farmerId+'/',
+    fetch('/api/farmer/products/update/'+productID+'/'+newAmount+'/'+farmerId+'/'+price+'/',
       {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', },
