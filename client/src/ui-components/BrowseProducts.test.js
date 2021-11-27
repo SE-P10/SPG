@@ -42,13 +42,15 @@ it('BrowserProducts renders without crashing', () => {
 
 //BASIC TEST
 
-it("Each field should be in the document and free of text", () => {
+it("Each field should be in the document and free of text", async () => {
     const utils = render(<BrowserProducts />)
 
     //Check column
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Quantity")).toBeInTheDocument();
-    expect(screen.getByText("Price")).toBeInTheDocument();
+    expect(screen.getByText("Available Products")).toBeInTheDocument();
+    await waitFor(() => {
+        screen.getByRole('searchbox', { name: /search for a product!/i })
+    })
+    expect(screen.getByRole('searchbox', { name: /search for a product!/i })).toBeInTheDocument();
 
 
 });
@@ -61,10 +63,7 @@ it("Products should be shown", async () => {
 
     await waitFor(() => {
         screen.getByText('banana')
-        screen.getByText('2.5 €')
-        screen.getByText('2')
     })
     expect(screen.queryByText('banana')).toBeInTheDocument();
-    expect(screen.queryByText('2.5 €')).toBeInTheDocument();
-    expect(screen.queryByText('2')).toBeInTheDocument();
+
 });

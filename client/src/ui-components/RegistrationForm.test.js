@@ -25,14 +25,14 @@ it("Each field should be in the document and free of text", () => {
     expect(screen.getByLabelText("Confirm Password")).toBeInTheDocument();
     //Check input
     expect(screen.getByPlaceholderText("Enter Name")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter Surname")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Surname")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter Username")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter Email")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Enter Password")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Confirm Password")).toBeInTheDocument();
     //Check input value
     expect(screen.getByPlaceholderText("Enter Name")).toHaveValue("");
-    expect(screen.getByPlaceholderText("Enter Surname")).toHaveValue("");
+    expect(screen.getByPlaceholderText("Surname")).toHaveValue("");
     expect(screen.getByPlaceholderText("Enter Username")).toHaveValue("");
     expect(screen.getByPlaceholderText("Enter Email")).toHaveValue("");
     expect(screen.getByPlaceholderText("Enter Password")).toHaveValue("");
