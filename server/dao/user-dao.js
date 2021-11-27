@@ -75,7 +75,7 @@ exports.getUser = (username, password) => {
           id: row.id,
           name: row.name,
           role: row.role,
-          email: row.email
+          email: row.email,
         };
 
         // check the hashes with an async call, given that the operation may be CPU-intensive (and we don't want to block the server)

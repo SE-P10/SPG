@@ -8,6 +8,7 @@ import {
   DropdownButton,
   Container,
   Image,
+  Spinner,
 } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -30,6 +31,7 @@ function ClientOrder(props) {
   const [filterFarmer, setFilterFarmer] = useState("Farmer"); // Farmer -> all farmers
   const [isOrderProductDirty, setIsOrderProductDirty] = useState(true);
   const [mailInserted, setMailInserted] = useState(undefined);
+  const [isProductListLoading, setIsProductListLoading] = useState(true);
 
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -42,6 +44,7 @@ function ClientOrder(props) {
     const fillTables = async () => {
       const productsTmp = await gAPI.getProducts();
       setProducts(productsTmp);
+      setIsProductListLoading(false);
       const farmersTmp = productsTmp
         .map((t) => t.farmer)
         .filter(function (item, pos) {
@@ -255,172 +258,183 @@ function ClientOrder(props) {
             )}
           </div>
         )}
+        {isProductListLoading ? (
+          <Container className='below'>
+            <Spinner animation='border' variant='success'></Spinner>
+          </Container>
+        ) : (
+          <Form>
+            <h3 className='thirdColor below'> List of our products: </h3>
+            <Col className='below list'>
+              {products
+                .sort((a, b) => (a.name > b.name ? 1 : -1))
+                .filter((t) => {
+                  if (filterType === "Type" && filterFarmer === "Farmer")
+                    return (
+                      true &&
+                      t.name
+                        .toLowerCase()
+                        .includes(searchValue.toLowerCase()) &&
+                      t.quantity > 0
+                    );
 
-        <Form>
-          <h3 className='thirdColor below'> List of our products: </h3>
-          <Col className='below list'>
-            {products
-              .sort((a, b) => (a.name > b.name ? 1 : -1))
-              .filter((t) => {
-                if (filterType === "Type" && filterFarmer === "Farmer")
-                  return (
-                    true &&
-                    t.name.toLowerCase().includes(searchValue.toLowerCase()) &&
-                    t.quantity > 0
-                  );
+                  if (filterType !== "Type" && filterFarmer === "Farmer")
+                    return (
+                      t.name == filterType &&
+                      t.name
+                        .toLowerCase()
+                        .includes(searchValue.toLowerCase()) &&
+                      t.quantity > 0
+                    );
 
-                if (filterType !== "Type" && filterFarmer === "Farmer")
-                  return (
-                    t.name == filterType &&
-                    t.name.toLowerCase().includes(searchValue.toLowerCase()) &&
-                    t.quantity > 0
-                  );
+                  if (filterType == "Type" && filterFarmer !== "Farmer")
+                    return (
+                      t.farmer == filterFarmer &&
+                      t.name
+                        .toLowerCase()
+                        .includes(searchValue.toLowerCase()) &&
+                      t.quantity > 0
+                    );
 
-                if (filterType == "Type" && filterFarmer !== "Farmer")
-                  return (
-                    t.farmer == filterFarmer &&
-                    t.name.toLowerCase().includes(searchValue.toLowerCase()) &&
-                    t.quantity > 0
-                  );
-
-                if (filterType !== "Type" && filterFarmer !== "Farmer")
-                  return (
-                    t.farmer == filterFarmer &&
-                    t.name == filterType &&
-                    t.name.toLowerCase().includes(searchValue.toLowerCase())
-                  );
-              })
-              .map((p) => (
-                <Row className='below'>
-                  <Image
-                    src={"./img/" + p.name + ".jpeg"}
-                    className='ph-prev justify-content-center'
-                  />{" "}
-                  <Col>{p.name} </Col>
-                  <Col>{p.price} €</Col>
-                  <Col>max quantity : {p.quantity}</Col>
-                  {orderProduct.filter(
-                    (t) => t.product_id === p.id && t.confirmed == true
-                  ).length === 0 ? (
-                    <Button
-                      onClick={(ev) => {
-                        if (
-                          orderProduct.filter((t) => t.product_id === p.id)
-                            .length === 0 ||
-                          orderProduct.filter((t) => t.product_id === p.id)[0]
-                            .quantity > p.quantity ||
-                          orderProduct.filter((t) => t.product_id === p.id)[0]
-                            .quantity <= 0
-                        )
-                          setErrorMessage("Wrong quantity");
-                        else {
-                          console.log(
-                            orderProduct
-                              .filter((t) => t.product_id === p.id)
-                              .map((t) => ({
-                                product_id: t.product_id,
-                                quantity: t.quantity,
-                              }))[0]
-                          );
+                  if (filterType !== "Type" && filterFarmer !== "Farmer")
+                    return (
+                      t.farmer == filterFarmer &&
+                      t.name == filterType &&
+                      t.name.toLowerCase().includes(searchValue.toLowerCase())
+                    );
+                })
+                .map((p) => (
+                  <Row className='below'>
+                    <Image
+                      src={"./img/" + p.name + ".jpeg"}
+                      className='ph-prev justify-content-center'
+                    />{" "}
+                    <Col>{p.name} </Col>
+                    <Col>{p.price} €</Col>
+                    <Col>max quantity : {p.quantity}</Col>
+                    {orderProduct.filter(
+                      (t) => t.product_id === p.id && t.confirmed == true
+                    ).length === 0 ? (
+                      <Button
+                        onClick={(ev) => {
+                          if (
+                            orderProduct.filter((t) => t.product_id === p.id)
+                              .length === 0 ||
+                            orderProduct.filter((t) => t.product_id === p.id)[0]
+                              .quantity > p.quantity ||
+                            orderProduct.filter((t) => t.product_id === p.id)[0]
+                              .quantity <= 0
+                          )
+                            setErrorMessage("Wrong quantity");
+                          else {
+                            console.log(
+                              orderProduct
+                                .filter((t) => t.product_id === p.id)
+                                .map((t) => ({
+                                  product_id: t.product_id,
+                                  quantity: t.quantity,
+                                }))[0]
+                            );
+                            API.insertProductInBasket(
+                              orderProduct
+                                .filter((t) => t.product_id === p.id)
+                                .map((t) => ({
+                                  product_id: t.product_id,
+                                  quantity: t.quantity,
+                                }))[0]
+                            );
+                            setOrderProduct((old) => {
+                              const list = old.map((item) => {
+                                if (item.product_id === p.id)
+                                  return {
+                                    product_id: p.id,
+                                    confirmed: true,
+                                    quantity: item.quantity,
+                                    name: p.name,
+                                  };
+                                else return item;
+                              });
+                              return list;
+                            });
+                          }
+                        }}
+                        variant='outline-secondary'>
+                        ADD
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={(ev) => {
                           API.insertProductInBasket(
                             orderProduct
                               .filter((t) => t.product_id === p.id)
                               .map((t) => ({
                                 product_id: t.product_id,
-                                quantity: t.quantity,
+                                quantity: 0,
                               }))[0]
                           );
-                          setOrderProduct((old) => {
-                            const list = old.map((item) => {
-                              if (item.product_id === p.id)
-                                return {
-                                  product_id: p.id,
-                                  confirmed: true,
-                                  quantity: item.quantity,
-                                  name: p.name,
-                                };
-                              else return item;
-                            });
-                            return list;
-                          });
-                        }
-                      }}
-                      variant='outline-secondary'>
-                      ADD
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={(ev) => {
-                        API.insertProductInBasket(
-                          orderProduct
-                            .filter((t) => t.product_id === p.id)
-                            .map((t) => ({
-                              product_id: t.product_id,
-                              quantity: 0,
-                            }))[0]
-                        );
 
-                        setOrderProduct((old) => {
-                          return old.filter((t) => t.product_id !== p.id);
-                        });
-                      }}
-                      variant='outline-secondary'>
-                      DELETE
-                    </Button>
-                  )}
-                  <Col>
-                    {orderProduct.filter(
-                      (t) => t.product_id === p.id && t.confirmed == true
-                    ).length === 0 ? (
-                      <Form.Group>
-                        <Form.Control
-                          onChange={(ev) => {
-                            if (isNaN(parseInt(ev.target.value)))
-                              setErrorMessage("not a number");
-                            else {
-                              if (
-                                orderProduct.filter(
-                                  (t) => t.product_id === p.id
-                                ).length !== 0
-                              ) {
-                                setOrderProduct((old) => {
-                                  const list = old.map((item) => {
-                                    if (item.product_id === p.id)
-                                      return {
-                                        product_id: p.id,
-                                        confirmed: item.confirmed,
-                                        quantity: parseInt(ev.target.value),
-                                        name: p.name,
-                                      };
-                                    else return item;
-                                  });
-                                  return list;
-                                });
-                              } else {
-                                setOrderProduct((old) => [
-                                  {
-                                    product_id: p.id,
-                                    confirmed: false,
-                                    quantity: parseInt(ev.target.value),
-                                    name: p.name,
-                                  },
-                                  ...old,
-                                ]);
-                              }
-                            }
-                          }}
-                          id={p.id}
-                          size='sm'
-                        />
-                      </Form.Group>
-                    ) : (
-                      ""
+                          setOrderProduct((old) => {
+                            return old.filter((t) => t.product_id !== p.id);
+                          });
+                        }}
+                        variant='outline-secondary'>
+                        DELETE
+                      </Button>
                     )}
-                  </Col>
-                </Row>
-              ))}
-          </Col>
-        </Form>
+                    <Col>
+                      {orderProduct.filter(
+                        (t) => t.product_id === p.id && t.confirmed == true
+                      ).length === 0 ? (
+                        <Form.Group>
+                          <Form.Control
+                            onChange={(ev) => {
+                              if (isNaN(parseInt(ev.target.value)))
+                                setErrorMessage("not a number");
+                              else {
+                                if (
+                                  orderProduct.filter(
+                                    (t) => t.product_id === p.id
+                                  ).length !== 0
+                                ) {
+                                  setOrderProduct((old) => {
+                                    const list = old.map((item) => {
+                                      if (item.product_id === p.id)
+                                        return {
+                                          product_id: p.id,
+                                          confirmed: item.confirmed,
+                                          quantity: parseInt(ev.target.value),
+                                          name: p.name,
+                                        };
+                                      else return item;
+                                    });
+                                    return list;
+                                  });
+                                } else {
+                                  setOrderProduct((old) => [
+                                    {
+                                      product_id: p.id,
+                                      confirmed: false,
+                                      quantity: parseInt(ev.target.value),
+                                      name: p.name,
+                                    },
+                                    ...old,
+                                  ]);
+                                }
+                              }
+                            }}
+                            id={p.id}
+                            size='sm'
+                          />
+                        </Form.Group>
+                      ) : (
+                        ""
+                      )}
+                    </Col>
+                  </Row>
+                ))}
+            </Col>
+          </Form>
+        )}
       </Col>
       <Col sm={4} className='ml-3'>
         <Row>

@@ -1,4 +1,12 @@
-import { Alert, Form, Row, Col, Button } from "react-bootstrap";
+import {
+  Alert,
+  Form,
+  Row,
+  Col,
+  Button,
+  Container,
+  Spinner,
+} from "react-bootstrap";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SearchComponent } from "../ui-components/SearchComponent";
@@ -10,10 +18,12 @@ function YourOrders(props) {
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [isOrderListDirty, setIsOrderListDirty] = useState(true);
+  const [isOrderListLoading, setIsProductListLoading] = useState(true);
 
   useEffect(() => {
     const fillOrders = async () => {
       let ordersTmp = await API.getOrders(props.user.email);
+      setIsProductListLoading(false);
       if (ordersTmp.length === 0) {
         setErrorMessage("No orders found for this user.");
       } else {
@@ -29,37 +39,45 @@ function YourOrders(props) {
     <>
       <Col className='cont'>
         <Row className='justify-content-center'>
-          {orders.length !== 0 ? (
-            <>
-              <Col>
-                <Row>
-                  {" "}
-                  <h3 className='thirdColor mx-auto'>
-                    {" "}
-                    List of your orders{" "}
-                  </h3>{" "}
-                </Row>
-                {orders.map((order) => (
-                  <Row className='over'>
-                    <Col> id : {order.id}</Col>
-                    <Col>price : {order.price}</Col>
-                    <Col>status : {order.status}</Col>
-                  </Row>
-                ))}{" "}
-              </Col>
-            </>
+          {isOrderListLoading ? (
+            <Container className='below'>
+              <Spinner animation='border' variant='success'></Spinner>
+            </Container>
           ) : (
             <>
-              <h3 className='below'>
-                {" "}
-                This space is empty! Purchaise a &ensp;
-                <Button
-                  className='spg-button'
-                  onClick={() => props.changeAction(2)}>
-                  {" "}
-                  New Order{" "}
-                </Button>
-              </h3>
+              {orders.length !== 0 ? (
+                <>
+                  <Col>
+                    <Row>
+                      {" "}
+                      <h3 className='thirdColor mx-auto'>
+                        {" "}
+                        List of your orders{" "}
+                      </h3>{" "}
+                    </Row>
+                    {orders.map((order) => (
+                      <Row className='over'>
+                        <Col> id : {order.id}</Col>
+                        <Col>price : {order.price}</Col>
+                        <Col>status : {order.status}</Col>
+                      </Row>
+                    ))}{" "}
+                  </Col>
+                </>
+              ) : (
+                <>
+                  <h3 className='below'>
+                    {" "}
+                    No orders found! Purchaise a &ensp;
+                    <Button
+                      className='spg-button'
+                      onClick={() => props.changeAction(2)}>
+                      {" "}
+                      New Order{" "}
+                    </Button>
+                  </h3>
+                </>
+              )}{" "}
             </>
           )}
         </Row>
