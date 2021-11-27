@@ -35,9 +35,9 @@ function UpdateAvailability(props) {
       orderOk = false;
     }
 
-    let checkNoWrongQuantity = orderProduct.filter(t => t.quantity < 0 ).length;
+    let checkNoWrongQuantity = orderProduct.filter(t => t.quantity < 0 || t.price < 0 ).length;
     if (checkNoWrongQuantity > 0) {
-      setErrorMessage("you have negative quantities.");
+      setErrorMessage("you have negative quantities and/or negative price.");
       orderOk = false;
     }
 
@@ -46,7 +46,8 @@ function UpdateAvailability(props) {
         let esito = await farmerAPI.updateFarmerProducts(
           i.product_id,
           i.quantity,
-          props.user.id
+          props.user.id,
+          i.price
         );
       }
       propsN.addMessage("Request sent correctly!");
@@ -63,7 +64,7 @@ function UpdateAvailability(props) {
 
   const selectProduct = (id) => {
     if (selectedPs.indexOf(id) == -1) {
-      setOrderProducts((old) => [...old, { product_id: id, quantity: 0 }]);
+      setOrderProducts((old) => [...old, { product_id: id, quantity: -1, price : -1 }]);
       setSelectPs((selectedPsn) => [...selectedPsn, id]);
     } else {
       setSelectPs((old) =>
@@ -117,7 +118,7 @@ function UpdateAvailability(props) {
                         type='number'
                         inline
                         onChange={(ev) => {
-                          if (parseInt(ev.target.value) < 0)
+                          if (isNaN(parseInt(ev.target.value)))
                             {
                               setErrorMessage("Wrong quantity");
                               setOrderProducts((old) => {
@@ -125,24 +126,8 @@ function UpdateAvailability(props) {
                                   if (item.product_id === p.id)
                                     return {
                                       product_id: p.id,
-                                      quantity: parseInt(ev.target.value),
-                                    };
-                                  else return item;
-                                });
-                                return list;
-                              });
-                              
-                              
-                            }
-                          else if (isNaN(parseInt(ev.target.value)))
-                            {
-                              setErrorMessage("Wrong quantity");
-                              setOrderProducts((old) => {
-                                const list = old.map((item) => {
-                                  if (item.product_id === p.id)
-                                    return {
-                                      product_id: p.id,
-                                      quantity: parseInt(ev.target.value),
+                                      quantity: -1,
+                                      price : item.price
                                     };
                                   else return item;
                                 });
@@ -156,6 +141,47 @@ function UpdateAvailability(props) {
                                   return {
                                     product_id: p.id,
                                     quantity: parseInt(ev.target.value),
+                                    price : item.price
+                                  };
+                                else return item;
+                              });
+                              return list;
+                            });
+                          }
+                        }}
+                        id={p.id}
+                        size='sm'></Form.Control>{" "}
+                      {" "}
+                      Price:
+                      <Form.Control
+                        defaultValue={0}
+                        type="number"
+                        inline
+                        onChange={(ev) => {
+                          if (isNaN(parseFloat(ev.target.value)))
+                            {
+                              setErrorMessage("Wrong price");
+                              setOrderProducts((old) => {
+                                const list = old.map((item) => {
+                                  if (item.product_id === p.id)
+                                    return {
+                                      product_id: p.id,
+                                      price: -1,
+                                      quantity : item.quantity
+                                    };
+                                  else return item;
+                                });
+                                return list;
+                              });
+                            }
+                          else {
+                            setOrderProducts((old) => {
+                              const list = old.map((item) => {
+                                if (item.product_id === p.id)
+                                  return {
+                                    product_id: p.id,
+                                    quantity: item.quantity,
+                                    price : parseFloat(ev.target.value)
                                   };
                                 else return item;
                               });

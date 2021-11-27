@@ -29,11 +29,11 @@ exports.getProducts = async (farmerID) => {
 //     }
 //   });
 // }
-exports.updateProducts = async (farmerID, productID, newAmount) => {
+exports.updateProducts = async (farmerID, productID, newAmount,price) => {
 
   return new Promise((resolve,reject) => {
-    const sql = "UPDATE products SET quantity = ? WHERE farmer_id = ? AND products.id = ?";
-    db.run(sql,[newAmount,farmerID,productID],function(err){
+    const sql = "UPDATE products SET quantity = ?, price = ? WHERE farmer_id = ? AND products.id = ?";
+    db.run(sql,[newAmount,price,farmerID,productID],function(err){
       if (err) {
         reject(err);return;
       }
