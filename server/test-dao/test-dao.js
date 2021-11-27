@@ -11,6 +11,16 @@ exports.restoreUsersTable = async () => {
     });
   };
 
+  exports.restoreUsersMetaTable = async () => {
+    return new Promise((resolve, reject) => {
+      const sql1 = "DELETE FROM users_meta WHERE user_id > 5 AND meta_key = 'wallet'";
+      db.all(sql1, [], (err) => {
+        if (err) reject(err);
+        else resolve(this.lastID);
+      });
+    });
+  };
+
   exports.restoreProductsTable = async () => {
 
     return new Promise((resolve,reject) => {
@@ -37,18 +47,6 @@ exports.restoreUsersTable = async () => {
     })
   }
 
-  exports.restoreWalletsTable2 = async () => {
-
-    return new Promise((resolve,reject) => {
-      const sql = "DELETE FROM users_meta WHERE user_id > 5 ";
-      db.run(sql,[],function(err){
-        if (err) {
-          reject(err);return;
-        }
-        resolve()
-      })
-    })
-  }
 
   exports.restoreOrdersTable = async () => {
 
@@ -63,23 +61,11 @@ exports.restoreUsersTable = async () => {
     })
   }
 
-  exports.restoreOrdersTable = async () => {
-
-    return new Promise((resolve,reject) => {
-      const sql = "DELETE FROM orders";
-      db.run(sql,[],function(err){
-        if (err) {
-          reject(err);return;
-        }
-        resolve()
-      })
-    })
-  }
 
   exports.restoreOrderProductTable = async () => {
 
     return new Promise((resolve,reject) => {
-      const sql = "DELETE FROM order_product";
+      const sql = "UPDATE users_meta SET meta_value = 100 WHERE user_id < 6 AND meta_key = 'wallet' ";
       db.run(sql,[],function(err){
         if (err) {
           reject(err);return;
