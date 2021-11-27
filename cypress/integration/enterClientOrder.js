@@ -37,29 +37,24 @@ describe('enterNewClientOrder', () => {
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /username/i }).type('john.doe@demo01.it');
+        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
-        //Click a button to add a new order
+        //Click a button to hand out a order
         cy.findByRole('button', { name: /new order/i }).click();
 
-    })
-    afterEach(() => {
-        //Logout
-        cy.findByRole('link', { name: /logout/i }).click()
-        cy.clearCookies()
-    })
-    after(() => {
-        //clear Db
-        cy.request('DELETE', 'http://localhost:3001/api/clients/michelebasilico@gmail.com')
-        //ToDO -> also clear order
     })
 
     it('a shopEmployee should be able to add a new order of a client (by entering not registered user) ', () => {
         //Insert the user mail
         cy.findByRole('textbox', { name: /client mail/i }).type("carletto@gmail.com")
-        //Check a product
-        cy.get(':nth-child(1) > .form-group > .form-check > .form-check-input').check();
+        //Check a product(type filter)
+        cy.get('.cont > .below > :nth-child(1)').click()
+        cy.get(':nth-child(1) > :nth-child(2) > .spg-button').click()
+        cy.get('.form-check-input').click()
+        cy.get('.over > .form-group')
+            .findByRole('spinbutton')
+            .type('{uparrow}').type('{uparrow}')
         //Add a quantity for the product -> Cypress works in the browser and the test cose is evaluated inside the browser.
         //Anything that is not accessible in Javascript is olso likely not accessible to Cypress. 
         //Using the up/down arrows of the number input is a browser implementation and would require native evente support for Cypress
@@ -68,15 +63,14 @@ describe('enterNewClientOrder', () => {
         //up/down arrow are clicked using the .trigger() command
         //cy.findByRole('spinbutton').clear().type('2').trigger('change');
         //We can also type the up/down press on keyboard
-        cy.findByRole('spinbutton').type('{uparrow}').type('{uparrow}')
+        
         //click issue order button
-        cy.findByRole('button', { name: /issue order/i }).click()
+        cy.get('.se-button').click()
         //Should be appear aler
         cy.findByRole('alert').should('include.text', 'User not registered')
         //Close Alert
         cy.findByText(/×/i).click()
         //ToDO -> Check on the server
-
 
     })
 
@@ -84,7 +78,7 @@ describe('enterNewClientOrder', () => {
         //Click a button to add a new order
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
-        cy.findByRole('textbox', { name: /client mail/i }).type("michelebasilico@gmail.com")
+        cy.findByRole('textbox', { name: /client mail/i }).type("michele@gmail.com")
         //click issue order button
         cy.findByRole('button', { name: /issue order/i }).click()
         //Should be appear alert

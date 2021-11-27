@@ -68,10 +68,11 @@ it("Login check with wrong data", async () => {
     //Dal momento che la setMessage viene cambiata da App, è esterna al componente Login e non è di interesse dello unit test
     //Quello che può essere testato è cosa succede nel momento in cui viene settato il message e quindi cosa viene reindirizzato quando
     //ho gia un message, per cui renderizzo solamente il componente con il msg passato
-    const utils = render(<LoginForm login={doLoginStub} message={{ msg: "Incorrect email and Password", type: "danger" }} closeMessage={closeMessageStub} />)
+    const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
     //Controllo l'alert, tenendo conto che è un evento asincrono
+    screen.getByRole('button', { name: /login/i }).click()
     await waitFor(() => screen.getByRole('alert'))
-    expect(screen.getByRole('alert')).toHaveTextContent('Incorrect email and Password')
+    expect(screen.getByRole('alert')).toHaveTextContent(/Insert email and password to access./i)
 
 });
 
@@ -80,7 +81,9 @@ it("Login should not be enabled without email", async () => {
     const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
     //Scrivo solo lo email
     userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'Gianni@gmail.com');
-    expect(screen.getByRole('button')).toBeDisabled()
+    screen.getByRole('button', { name: /login/i }).click()
+    await waitFor(() => screen.getByRole('alert'))
+    expect(screen.getByRole('alert')).toHaveTextContent('Insert email and password to access')
 
 });
 
@@ -89,7 +92,9 @@ it("Login should not be enabled without password", async () => {
     const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
     //Scrivo solo la password
     userEvent.type(screen.getByLabelText('Password'), 'password');
-    expect(screen.getByRole('button')).toBeDisabled()
+    screen.getByRole('button', { name: /login/i }).click()
+    await waitFor(() => screen.getByRole('alert'))
+    expect(screen.getByRole('alert')).toHaveTextContent('Insert email and password to access')
 
 });
 
@@ -98,25 +103,20 @@ it("Login should not be enabled without email and password", async () => {
     const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
     //Scrivo solo la password
     userEvent.type(screen.getByLabelText('Password'), 'password');
-    expect(screen.getByRole('button')).toBeDisabled()
+    screen.getByRole('button', { name: /login/i }).click()
+    await waitFor(() => screen.getByRole('alert'))
+    expect(screen.getByRole('alert')).toHaveTextContent('Insert email and password to access')
 
 });
 
-it("Login should be enabled with email and password", async () => {
+it("Login should not be enabled with wrong email and password", async () => {
 
-    const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
-    //Scrivo la email
-    userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'Gianni@gmail.com');
-    //Scrivo la password
-    userEvent.type(screen.getByLabelText('Password'), 'password');
-    expect(screen.getByRole('button')).toBeEnabled()
+    const utils = render(<LoginForm login={doLoginStub} message={{msg: "Incorrect email and password to access", type: 'danger'}} closeMessage={closeMessageStub} />)
+    //Scrivo email e password non presenti
+    await waitFor(() => screen.getByRole('alert'))
+    expect(screen.getByRole('alert')).toHaveTextContent('Incorrect email and password to access')
 
 });
-
-
-
-
-
 
 
 /*
