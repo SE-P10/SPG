@@ -35,7 +35,7 @@ function LoginForm(props) {
     <Container>
       {errorMessage !== "" ? (
         <Alert
-          className='justify-content-center'
+          className='justify-content-center below'
           variant='danger'
           onClose={closeErrorMessage}
           dismissible>
@@ -48,7 +48,7 @@ function LoginForm(props) {
       <Form className='below  cont'>
         {props.message !== "" ? (
           <Alert
-            className='justify-content-center'
+            className='justify-content-center below'
             variant={props.message.type}
             onClose={props.closeMessage}
             dismissible>
@@ -73,6 +73,7 @@ function LoginForm(props) {
                 type='text'
                 value={username}
                 onChange={(ev) => setUsername(ev.target.value)}
+                required
               />
             </Form.Group>
           </Col>

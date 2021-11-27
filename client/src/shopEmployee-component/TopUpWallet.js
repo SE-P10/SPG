@@ -11,7 +11,6 @@ function TopUpWallet(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [isWalletLoading, setIsWalletLoading] = useState(true);
   const handleSearch = (emailValue) => {
-    console.log("valore email " + emailValue);
 
     if (!emailValue) setErrorMessage("You have to insert an email!");
     else {
@@ -29,15 +28,20 @@ function TopUpWallet(props) {
   };
 
   const rechargeWallet = () => {
-    if (rechargeAmount === 0 || rechargeAmount < 0 || rechargeAmount === null) {
-      setErrorMessage("The amount must be greater than 0.");
-    } else {
+    let operationOk = true;
+    if (rechargeAmount === 0 || rechargeAmount < 0 || rechargeAmount === null  ) {
+       operationOk = false;
+    } 
+    
+    if (operationOk) {
       API.updateWallet(rechargeAmount, email).catch((e) => {
         console.log("Error recharging the wallet. " + e);
         setErrorMessage("Error recharging the wallet. " + e);
+        
       });
       props.addMessage("successfully recharged your wallet");
       props.changeAction(0);
+      
     }
   };
 
@@ -84,8 +88,8 @@ function TopUpWallet(props) {
                     min={0}
                     type='number'
                     onChange={(ev) => {
-                      if (parseInt(ev.target.value) < 0)
-                        setErrorMessage("negative number");
+                      if ( isNaN(parseInt(ev.target.value)) ||  parseInt(ev.target.value) < 0)
+                        {setErrorMessage("negative number");setRechargeAmount(-1);}
                       else setRechargeAmount(ev.target.value);
                     }}
                   />{" "}

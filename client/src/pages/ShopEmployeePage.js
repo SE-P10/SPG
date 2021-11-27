@@ -20,7 +20,7 @@ import {
 } from "../ui-components/Icons.js";
 import { PendingOrders } from "../shopEmployee-component/PendingOrders.js";
 import gAPI from "../api/gAPI";
-
+import { ClientOrder } from "../client-component/ClientOrder";
 function ShopEmployee(props) {
   const [message, setMessage] = useState("");
   const [action, setAction] = useState(0);
@@ -284,7 +284,11 @@ function ShopEmployee(props) {
             />
           ) : null}
           {action === 4 ? (
-            <NewOrder changeAction={changeAction} addMessage={addMessage} />
+            <ClientOrder
+              changeAction={changeAction}
+              addMessage={addMessage}
+              user={props.user}
+            />
           ) : null}
           {action === 7 ? (
             <PendingOrders
