@@ -137,10 +137,13 @@ const updateProduct = async (productID, data) => {
 }
 
 
+/**
+ * 
+ * @param {object} order 
+ * @param {string} action 
+ * @returns boolean
+ */
 const handleOrderActions = async (order, action) => {
-    //                                        | delivering |
-    // booked -> confirmed (by the farmer) -> |            | -> delivered
-    //                                        |   pending  |
 
     let reStatus = order.id;
 
@@ -243,6 +246,12 @@ const handleOrder = async (orderRAW, status = '') => {
             pickup_place: ''
         }, orderRAW);
 
+        let walletAmount = await getUserMeta(newOrder.user_id, 'wallet', true, 0);
+
+        if (Number.parseFloat(walletAmount) < Number.parseFloat(orderRAW.price || 0)) {
+            newOrder.status = 'pending';
+        }
+
         if (!newOrder.user_id || (!AF_ALLOW_DIRTY && !await existValueInDB(db, 'users', { id: newOrder.user_id, role: '0' }))) {
 
             if (AF_DEBUG) {
@@ -288,7 +297,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
                         /**
                          * check product availability
-                        */
+                         */
                         before: async (row) => {
 
                             let pID = row[2],
@@ -321,7 +330,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                         },
                         /**
                          * update product availability
-                        */
+                         */
                         after: async (row, insertedID, orderedProduct) => {
 
                             if (!orderedProduct)
@@ -480,6 +489,23 @@ const processOrder = async (userID, orderID, data = {}) => {
     };
 
     let updatingOrder = orderID || false;
+
+    if (products) {
+
+        order.price = await products.reduce(async (previousValue, item) => {
+
+            let pID = item.product_id || item.id || Object.keys(item)[0];
+            let quantity = item.quantity || item[pID];
+
+            let product = await getProduct(pID);
+
+            return (await previousValue) + (Number.parseFloat(quantity) * Number.parseFloat(product.price));
+        }, 0);
+
+        if (AF_DEBUG_PROCESS) {
+            debugLog("OrderPrice", order.price)
+        }
+    }
 
     /**
      * Insert / Update a order {id:...}
