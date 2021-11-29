@@ -40,13 +40,13 @@ function CheckOrders(props) {
       <Col>
         <Row className='justify-content-center'>
           {orders.length !== 0 ? (
-            <h3 className='thirdColor'> List of the pendind orders </h3>
+            <h3 className='thirdColor'> List of orders </h3>
           ) : (
             ""
           )}
         </Row>
         {orders.map((order) => (
-          <Row>
+          <Row className='over'>
             <Col> id : {order.id}</Col>
             <Col>price : {order.price}</Col>
             <Col>status : {order.status}</Col>
