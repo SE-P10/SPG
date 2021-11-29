@@ -22,9 +22,9 @@ import gAPI from "../api/gAPI";
 import { ClientOrder } from "../client-component/ClientOrder";
 function ShopEmployee(props) {
   const [message, setMessage] = useState("");
-  const [action, setAction] = useState(0);
+  const [actionS, setActionS] = useState(0);
   const changeAction = (actionN) => {
-    setAction(actionN);
+    setActionS(actionN);
   };
 
   const addMessage = (messageN) => {
@@ -33,12 +33,12 @@ function ShopEmployee(props) {
 
   return (
     <>
-      {action !== 0 ? (
+      {actionS !== 0 ? (
         <>
           <Button
             className='spg-button below back-button'
             onClick={() => {
-              setAction(0);
+              setActionS(0);
             }}>
             {" "}
             {backIcon}{" "}
@@ -59,7 +59,7 @@ function ShopEmployee(props) {
 
         <Row>
           <Row>
-            {action === 1 ? (
+            {actionS === 1 ? (
               <>
                 {" "}
                 <Col md='auto'>
@@ -67,7 +67,7 @@ function ShopEmployee(props) {
                 </Col>
               </>
             ) : null}{" "}
-            {action === 2 ? (
+            {actionS === 2 ? (
               <>
                 {" "}
                 <Col md='auto'>
@@ -75,7 +75,7 @@ function ShopEmployee(props) {
                 </Col>
               </>
             ) : null}{" "}
-            {action === 3 ? (
+            {actionS === 3 ? (
               <>
                 {" "}
                 <Col md='auto'>
@@ -83,7 +83,7 @@ function ShopEmployee(props) {
                 </Col>
               </>
             ) : null}{" "}
-            {action === 4 ? (
+            {actionS === 4 ? (
               <>
                 {" "}
                 <Col md='auto'>
@@ -91,7 +91,7 @@ function ShopEmployee(props) {
                 </Col>
               </>
             ) : null}{" "}
-            {action === 5 ? (
+            {actionS === 5 ? (
               <>
                 {" "}
                 <Col md='auto'>
@@ -99,7 +99,7 @@ function ShopEmployee(props) {
                 </Col>
               </>
             ) : null}{" "}
-            {action === 6 ? (
+            {actionS === 6 ? (
               <>
                 {" "}
                 <Col md='auto'>
@@ -107,7 +107,7 @@ function ShopEmployee(props) {
                 </Col>
               </>
             ) : null}{" "}
-            {action === 7 ? (
+            {actionS === 7 ? (
               <>
                 {" "}
                 <Col md='auto'>
@@ -117,12 +117,12 @@ function ShopEmployee(props) {
             ) : null}{" "}
           </Row>
           <Col className='ml-4'>
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(1);
+                    setActionS(1);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>
@@ -138,12 +138,12 @@ function ShopEmployee(props) {
             ) : (
               ""
             )}
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(2);
+                    setActionS(2);
                   }}>
                   {" "}
                   <Col className='justify-content-center'>
@@ -160,12 +160,12 @@ function ShopEmployee(props) {
             )}
           </Col>
           <Col>
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button'
                   onClick={() => {
-                    setAction(7);
+                    setActionS(7);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{pendingIcon} </Row>
@@ -179,12 +179,12 @@ function ShopEmployee(props) {
             ) : (
               ""
             )}
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button'
                   onClick={() => {
-                    setAction(3);
+                    setActionS(3);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{pigIcon} </Row>
@@ -200,12 +200,12 @@ function ShopEmployee(props) {
             )}
           </Col>
           <Col>
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(4);
+                    setActionS(4);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{newIcon} </Row>
@@ -216,12 +216,12 @@ function ShopEmployee(props) {
             ) : (
               ""
             )}
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(5);
+                    setActionS(5);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{handOutIcon} </Row>
@@ -234,12 +234,12 @@ function ShopEmployee(props) {
             )}
           </Col>{" "}
           <Col>
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(6);
+                    setActionS(6);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{checkIcon} </Row>
@@ -253,43 +253,43 @@ function ShopEmployee(props) {
           </Col>
         </Row>
         <Row className='below'>
-          {action === 1 ? (
+          {actionS === 1 ? (
             <RegistrationForm
               loggedIn={props.loggedIn}
               changeAction={changeAction}
               addMessage={addMessage}
             />
           ) : null}
-          {action === 2 ? (
+          {actionS === 2 ? (
             <BrowserProducts
               changeAction={changeAction}
               addMessage={addMessage}
             />
           ) : null}
-          {action === 3 ? (
+          {actionS === 3 ? (
             <TopUpWallet
               changeAction={changeAction}
               addMessage={addMessage}
               className='justify-content-center'
             />
           ) : null}
-          {action === 4 ? (
+          {actionS === 4 ? (
             <ClientOrder
               changeAction={changeAction}
               addMessage={addMessage}
               user={props.user}
             />
           ) : null}
-          {action === 7 ? (
+          {actionS === 7 ? (
             <PendingOrders
               changeAction={changeAction}
               addMessage={addMessage}
             />
           ) : null}
-          {action === 5 ? (
+          {actionS === 5 ? (
             <HandOut changeAction={changeAction} addMessage={addMessage} />
           ) : null}
-          {action === 6 ? (
+          {actionS === 6 ? (
             <CheckOrders changeAction={changeAction} addMessage={addMessage} />
           ) : null}
         </Row>
