@@ -29,7 +29,7 @@ function TopUpWallet(props) {
 
   const rechargeWallet = () => {
     let operationOk = true;
-    if (rechargeAmount === 0 || rechargeAmount < 0 || rechargeAmount === null  ) {
+    if (rechargeAmount === null  || rechargeAmount == 0 || rechargeAmount < 0 ) {
        operationOk = false;
     } 
     
@@ -42,6 +42,9 @@ function TopUpWallet(props) {
       props.addMessage("successfully recharged your wallet");
       props.changeAction(0);
       
+    }
+    else {
+      setErrorMessage("Wrong quantity")
     }
   };
 
@@ -88,8 +91,8 @@ function TopUpWallet(props) {
                     min={0}
                     type='number'
                     onChange={(ev) => {
-                      if ( isNaN(parseInt(ev.target.value)) ||  parseInt(ev.target.value) < 0)
-                        {setErrorMessage("negative number");setRechargeAmount(-1);}
+                      if ( isNaN(parseInt(ev.target.value)) ||  parseInt(ev.target.value) <= 0)
+                        {setErrorMessage("wrong amount");setRechargeAmount(-1);}
                       else setRechargeAmount(ev.target.value);
                     }}
                   />{" "}

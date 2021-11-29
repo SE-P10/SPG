@@ -94,7 +94,7 @@ function ClientOrder(props) {
       }
     } else userId = props.user.id;
 
-    if (orderOk && orderProduct.length === 0) {
+    if (orderOk && orderProduct.filter(t => t.confirmed == true).length === 0) {
       setErrorMessage("Can't issue an order without items.");
       orderOk = false;
     }
@@ -103,20 +103,18 @@ function ClientOrder(props) {
       API.deleteAllBasket();
 
       //Chiamare API , moemntanemtnate stampare l'ordine
+      let backetOrder = orderProduct.filter((t) => t.quantity !== 0 && t.confirmed === true)
+      console.log(backetOrder)
       API.insertOrder(
         userId,
-        orderProduct.filter((t) => t.quantity !== 0)
+        backetOrder
       )
         .then(() => {
           propsN.addMessage("Request sent correctly!");
-          console.log(orderProduct);
-          console.log(userId);
           propsN.changeAction(0);
         })
         .catch((err) => {
           setErrorMessage("Server error during insert order.");
-          console.log(orderProduct);
-          console.log(userId);
         });
     }
   };
@@ -179,7 +177,6 @@ function ClientOrder(props) {
                 <Form.Control
                   as='select'
                   onChange={(event) => {
-                    console.log(event.target.value);
                     setCategorize(0);
                     setViewFilter(true);
                     setFilterType(event.target.value);
@@ -199,7 +196,6 @@ function ClientOrder(props) {
                   onChange={(event) => {
                     setCategorize(1);
 
-                    console.log(event.target.value);
                     setFilterFarmer(event.target.value);
                     setViewFilter(false);
                   }}>
@@ -219,7 +215,6 @@ function ClientOrder(props) {
               <Form.Control
                 as='select'
                 onChange={(event) => {
-                  console.log(event.target.value);
                   setCategorize(0);
                   setViewFilter(true);
                   setFilterType(event.target.value);
@@ -242,7 +237,6 @@ function ClientOrder(props) {
                   <Form.Control
                     as='select'
                     onChange={(event) => {
-                      console.log(event.target.value);
                       setFilterFarmer(event.target.value);
                       setViewFilter(false);
                     }}>
@@ -327,14 +321,7 @@ function ClientOrder(props) {
                           )
                             setErrorMessage("Wrong quantity");
                           else {
-                            console.log(
-                              orderProduct
-                                .filter((t) => t.product_id === p.id)
-                                .map((t) => ({
-                                  product_id: t.product_id,
-                                  quantity: t.quantity,
-                                }))[0]
-                            );
+                            
                             API.insertProductInBasket(
                               orderProduct
                                 .filter((t) => t.product_id === p.id)
