@@ -18,28 +18,23 @@ import { updateIcon, backIcon } from "../ui-components/Icons";
 import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
 
 function FarmerPage(props) {
-  const [message, setMessage] = useState("");
-  const [action, setAction] = useState(0);
+  const [messageok, setMessageok] = useState("");
+  const [actionF, setActionF] = useState(0);
   const changeAction = (actionN) => {
-    setAction(actionN);
+    setActionF(actionN);
   };
 
-  const addMessage = (messageN) => {
-    setMessage(messageN);
+  const addMessage = (messageNew) => {
+    setMessageok(messageNew);
   };
-  /* Actions 
-    0 = No actions (Home)
-    1 = Update Availability
-    */
-
   return (
     <>
-      {action !== 0 ? (
+      {actionF !== 0 ? (
         <>
           <Button
             className='spg-button below back-button'
             onClick={() => {
-              setAction(0);
+              setActionF(0);
             }}>
             {" "}
             {backIcon}{" "}
@@ -53,10 +48,10 @@ function FarmerPage(props) {
           {" "}
           <h2> {props.user.name} farmer personal page </h2>{" "}
         </Row>
-        {message ? (
-          <Alert variant='success' onClose={() => setMessage("")} dismissible>
+        {messageok ? (
+          <Alert variant='success' onClose={() => setMessageok("")} dismissible>
             {" "}
-            {message}{" "}
+            {messageok}{" "}
           </Alert>
         ) : (
           ""
@@ -64,12 +59,12 @@ function FarmerPage(props) {
 
         <Row className=' justify-content-center below'>
           <Col>
-            {action === 0 ? (
+            {actionF === 0 ? (
               <Row className=' justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(1);
+                    setActionF(1);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{updateIcon} </Row>
@@ -86,7 +81,7 @@ function FarmerPage(props) {
           </Col>
         </Row>
         <Row className='below'>
-          {action === 1 ? (
+          {actionF === 1 ? (
             <UpdateAvailability
               changeAction={changeAction}
               addMessage={addMessage}
