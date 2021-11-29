@@ -67,9 +67,13 @@ describe('enterNewClientOrder', () => {
         cy.findByRole('alert').should('include.text', 'negative number')
         //click on recharge button
         cy.findByRole('button', { name: /recharge the wallet/i }).click()
-        //check the alert
-        cy.findByRole('alert').should('include.text', 'The amount must be greater than 0.')
-        //ToDO -> Check on the server
+        //check the URL does not change -> Non va bene perchè l'URL è comunque la stessa
+        /*cy.on("url:changed", (newUrl) => {
+            expect(newUrl).to.contain("login")
+          })
+        */
+       //
+       cy.findByText("TopUp a Client's Wallet").should('exist')
     })
 
     it('a shopEmployee should be able to top up a client wallet (by entering wrong input)', () => {
@@ -82,7 +86,7 @@ describe('enterNewClientOrder', () => {
         //click on 
         cy.findByRole('button', { name: /recharge the wallet/i }).click()
         //Check alert
-        cy.findByRole('alert').should('include.text', 'The amount must be greater than 0.')
+        cy.findByRole('alert').should('include.text', 'negative number')
     })
 
     it('a shopEmployee should be able to top up a client wallet (by entering 0)', () => {
@@ -95,11 +99,11 @@ describe('enterNewClientOrder', () => {
         //click on 
         cy.findByRole('button', { name: /recharge the wallet/i }).click()
         //Check alert
-        cy.findByRole('alert').should('include.text', 'The amount must be greater than 0.')
+        cy.findByRole('alert').should('include.text', 'negative number')
     })
 
-    //Funziona solo col db pulito
-    it('a shopEmployee should be able to top up a client wallet (by entering correct email)', () => {
+    //CONTROLLO NON ESEGUITO CON 0
+    it('a shopEmployee should not be able to top up a client wallet (by entering correct email)', () => {
         //Enter email
         cy.findByRole('textbox').type('michele@gmail.com')
         //Click on search button

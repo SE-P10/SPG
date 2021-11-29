@@ -37,8 +37,8 @@ describe('viewProducts', () => {
         //Add new zucchinis
         cy.get('.list > :nth-child(13)')
             .findByRole('checkbox').click()
-        cy.get('.list > :nth-child(13)')
-            .findByRole('spinbutton').type(150)
+        cy.get('.form-group > :nth-child(2)').clear().type(150)
+        cy.get('.form-group > :nth-child(3)').clear().type(0.9)
 
         //Click on issue order
         cy.findByRole('button', { name: /Issue Order/i }).click()

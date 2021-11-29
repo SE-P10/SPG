@@ -56,15 +56,6 @@ describe('enterNewClientOrder', () => {
         cy.findByRole('button', { name: /handout/i }).click();
 
     })
-    afterEach(() => {
-        //Logout
-        cy.findByRole('link', { name: /logout/i }).click()
-        cy.clearCookies()
-    })
-    after(() => {
-        //clear Db
-        cy.request('DELETE', 'http://localhost:3001/api/clients/michelebasilico@gmail.com')
-    })
 
     it('a shopEmployee should be able to view a right order price', () => {
         //Enter wrong email
