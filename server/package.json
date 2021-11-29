@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "DemoProject01-server",
+  "description": "SPG-server",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -16,6 +16,7 @@
     "express-session": "^1.17.2",
     "express-validator": "^6.13.0",
     "morgan": "^1.10.0",
+    "nodemailer": "^6.7.1",
     "nodemon": "^2.0.15",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
