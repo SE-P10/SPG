@@ -24,8 +24,35 @@ import { ClientOrder } from "../client-component/ClientOrder";
 function ShopEmployee(props) {
   const [message, setMessage] = useState("");
   const [actionS, setActionS] = useState(0);
+  const [actionName,setActionName] = useState("")
   const changeAction = (actionN) => {
     setActionS(actionN);
+    switch (actionN) {
+      case 1 :
+        setActionName("Register a new client")
+        break;
+      case 2 :
+          setActionName("Browse products")
+          break;
+      case 3 :
+            setActionName("Top Up wallet")
+            break;  
+      case 4 :
+              setActionName("New order")
+              break;
+      case 5 :
+            setActionName("Hand Out")
+             break;
+      case 6 :
+            setActionName("Check orders")
+            break;  
+      case 7 :
+              setActionName("pending orders")
+              break;       
+            
+      default :
+      setActionName("")
+    }
   };
 
   const addMessage = (messageN) => {
@@ -59,63 +86,10 @@ function ShopEmployee(props) {
         )}
 
         <Row>
-          <Row>
-            {actionS === 1 ? (
-              <>
-                {" "}
+          <Row>           
                 <Col md='auto'>
-                  <h1 className='mx-auto'> Register a new client </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {actionS === 2 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Browse Products </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {actionS === 3 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Top Up a Wallet </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {actionS === 4 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> New order </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {actionS === 5 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Hand Out </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {actionS === 6 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Check Orders </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {actionS === 7 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Pending Orders </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
+                  <h1 className='mx-auto'> {actionName} </h1>{" "}
+                </Col>              
           </Row>
           <Col className='ml-4'>
             {actionS === 0 ? (

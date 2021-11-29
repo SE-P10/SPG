@@ -147,7 +147,7 @@ function UpdateAvailability(props) {
                         type="number"
                         inline
                         onChange={(ev) => {
-                          let errorPrice = falseM
+                          let errorPrice = false
                           if (isNaN(parseFloat(ev.target.value)))
                             {
                               setErrorMessage("Wrong price");
@@ -170,7 +170,7 @@ function UpdateAvailability(props) {
                         id={p.id}
                         size='sm'></Form.Control>{" "}
                     </>
-                  ) : null}
+                  ) : ""}
                 </Form.Group>
               </Row>
             ))}
