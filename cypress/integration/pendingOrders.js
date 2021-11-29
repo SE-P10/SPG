@@ -1,4 +1,4 @@
-describe('signUp_Client', () => {
+describe('pendingOrders', () => {
 
     before(() => {
         //Clear DB (it is allowed only before the tests) -> All quantity are equal to 100, wallet the same and there are two user
@@ -27,18 +27,17 @@ describe('signUp_Client', () => {
         cy.findByRole('button', { name: /new order/i }).click();
         //Insert the user mail
         cy.findByRole('textbox', { name: /client mail/i }).type("michele@gmail.com")
-        //Select a product(Type filter)
-        cy.get('.cont > .below > :nth-child(1)').click()
         //Steak 3$
-        cy.get(':nth-child(7) > :nth-child(2) > .spg-button').click();
-        cy.get('.form-check-input').click()
-        //Aggiungo 100 elementi
-        cy.get('.over > .form-group')
-            .findByRole('spinbutton')
+        cy.get('#search').type('Steak')
+        cy.get('.below > .btn').click();
+        //Aggiungo 50 elementi
+        cy.get('.below > :nth-child(6)')
+            .findByRole('textbox')
             .clear()
-            .type(100)
+            .type('50')
+
         //click issue order button
-        cy.get('.se-button').click()
+        cy.get('.ml-3 > :nth-child(2) > .spg-button').click()
 
         //Product hand-out
         cy.get(':nth-child(4) > :nth-child(2) > .se-button').click()
@@ -72,10 +71,10 @@ describe('signUp_Client', () => {
         cy.get('.cont > :nth-child(2) > :nth-child(2) > :nth-child(2)').should('exist')
         cy.get('.cont > :nth-child(2) > :nth-child(2) > :nth-child(3)').should('exist')
 
-        //Check about id, price and status
-        cy.get('.cont > :nth-child(2) > :nth-child(2) > :nth-child(1)').should('include.text','id : 18')
-        cy.get('.cont > :nth-child(2) > :nth-child(2) > :nth-child(2)').should('include.text','price : 300')
-        cy.get('.cont > :nth-child(2) > :nth-child(2) > :nth-child(3)').should('include.text','status : pending')
+        //Check about id(ever change in the DB), price and status
+        //cy.get('.cont > :nth-child(2) > :nth-child(2) > :nth-child(1)').should('include.text', 'id : 27')
+        cy.get('.cont > :nth-child(2) > :nth-child(2) > :nth-child(2)').should('include.text', 'price : 150')
+        cy.get('.cont > :nth-child(2) > :nth-child(2) > :nth-child(3)').should('include.text', 'status : pending')
 
     })
 

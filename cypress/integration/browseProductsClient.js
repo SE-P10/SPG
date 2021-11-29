@@ -22,19 +22,18 @@ describe('signUp_Client', () => {
         cy.findByText(/registration was successful/i).should('exist')
         //redirect to login
         cy.get('.modal-footer > .spg-button').click()
-
-        //As a farmer update zucchini quantity
-        cy.get('#username').type('paolobianchi@demo.it');
+        //Login as a ShopEmployee
+        cy.findByRole('textbox', { name: /email/i }).type('paolobianchi@demo.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click on update button
         cy.findByRole('button', { name: /update products availability/i }).click()
-        //Add new zucchinis
+        //Add new zucchinies
         cy.get('.list > :nth-child(13)')
-            .findByRole('checkbox').click()
-        cy.get('.list > :nth-child(13)')
-            .findByRole('spinbutton').type(150)
-
+            .findByRole('checkbox')
+            .click()
+        cy.get('.form-group > :nth-child(2)').clear().type(150)
+        cy.get('.form-group > :nth-child(3)').clear().type(0.9)
         //Click on issue order
         cy.findByRole('button', { name: /Issue Order/i }).click()
         //Check alert

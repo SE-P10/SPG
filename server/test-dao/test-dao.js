@@ -34,24 +34,10 @@ exports.restoreUsersTable = async () => {
     })
   }
 
-  exports.restoreWalletsValue = async () => {
-
-    return new Promise((resolve,reject) => {
-      const sql = "UPDATE users_meta SET meta_value = 100";
-      db.run(sql,[],function(err){
-        if (err) {
-          reject(err);return;
-        }
-        resolve()
-      })
-    })
-  }
-
-
   exports.restoreOrdersTable = async () => {
 
     return new Promise((resolve,reject) => {
-      const sql = "DELETE FROM orders";
+      const sql = "DELETE FROM orders WHERE user_id > 5";
       db.run(sql,[],function(err){
         if (err) {
           reject(err);return;
@@ -65,7 +51,7 @@ exports.restoreUsersTable = async () => {
   exports.restoreOrderProductTable = async () => {
 
     return new Promise((resolve,reject) => {
-      const sql = "UPDATE users_meta SET meta_value = 100 WHERE user_id < 6 AND meta_key = 'wallet' ";
+      const sql = "DELETE FROM order_product WHERE order_id in ( SELECT op.order_id FROM order_product AS op LEFT JOIN orders AS o ON op.order_id = o.id WHERE o.user_id > 5 )";
       db.run(sql,[],function(err){
         if (err) {
           reject(err);return;
