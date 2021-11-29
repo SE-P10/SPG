@@ -52,28 +52,23 @@ function NewOrder(props) {
 
   const handleSubmitOrder = async (event, propsN) => {
     event.preventDefault();
-    if (!mailInserted) setErrorMessage("You have to insert an email!");
+    let orderOk = true;
+    if (!mailInserted) {setErrorMessage("You have to insert an email!");orderOk = false;}
     else {
       let userId = await userAPI.getUserId(mailInserted);
-      if (userId.length === 0) setErrorMessage("Invalid user");
-      else if (userId[0].role != 0) setErrorMessage("Invalid user");
-      else {
-        //fare parseInt
-        let orderOk = true;
-        for (let elem of orderProduct) {
+      if (userId.length === 0 || userId[0].role != 0){ setErrorMessage("Invalid user");orderOk = false;}
+    }
+       for (let elem of orderProduct) {
           let quantityAvailable = products
             .filter((t) => t.id === elem.product_id)
             .map((t) => t.quantity);
-          if (quantityAvailable < elem.quantity) {
+          if (quantityAvailable < elem.quantity || elem.quantity <= 0) {
             setErrorMessage(
-              "You are trying to order more than the quantity available"
+              "Wrong order"
             );
             orderOk = false;
           }
-          if (elem.quantity <= 0) {
-            setErrorMessage("Quantity must be greater than 0");
-            orderOk = false;
-          }
+          
         }
 
         if (orderProduct.length === 0) {
@@ -93,8 +88,8 @@ function NewOrder(props) {
             });
           propsN.changeAction(0);
         }
-      }
-    }
+      
+    
   };
 
   const selectProduct = (id) => {

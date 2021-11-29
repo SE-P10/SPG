@@ -74,6 +74,7 @@ function ClientOrder(props) {
   }, [isOrderProductDirty]);
 
   const handleSubmit = async (event, propsN) => {
+    event.preventDefault();
     let userId;
     let orderOk = true;
 
@@ -83,13 +84,10 @@ function ClientOrder(props) {
         orderOk = false;
       } else {
         userId = await userAPI.getUserId(mailInserted);
-        if (userId.length === 0) {
+        if (userId.length === 0 || userId[0].role != 0) {
           setErrorMessage("Invalid user");
           orderOk = false;
-        } else if (userId[0].role != 0) {
-          setErrorMessage("Invalid user");
-          orderOk = false;
-        }
+        } 
         if (orderOk) userId = userId[0].id;
       }
     } else userId = props.user.id;
@@ -104,7 +102,6 @@ function ClientOrder(props) {
 
       //Chiamare API , moemntanemtnate stampare l'ordine
       let backetOrder = orderProduct.filter((t) => t.quantity !== 0 && t.confirmed === true)
-      console.log(backetOrder)
       API.insertOrder(
         userId,
         backetOrder
@@ -153,7 +150,7 @@ function ClientOrder(props) {
           <Row>
             <SearchForm
               setSearchValue={setSearchValue}
-              onSearchSubmit={() => {}}
+              onSearchSubmit={() => {console.log("test")}}
             />
           </Row>
           <Button
