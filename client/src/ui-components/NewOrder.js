@@ -51,7 +51,7 @@ function NewOrder(props) {
   }, []);
 
   const handleSubmitOrder = async (event, propsN) => {
-    
+    event.preventDefault();
     if (!mailInserted) setErrorMessage("You have to insert an email!");
     else {
       let userId = await userAPI.getUserId(mailInserted);
