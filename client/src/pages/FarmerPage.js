@@ -18,20 +18,15 @@ import { updateIcon, backIcon } from "../ui-components/Icons";
 import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
 
 function FarmerPage(props) {
-  const [message, setMessage] = useState("");
+  const [messageok, setMessageok] = useState("");
   const [action, setAction] = useState(0);
   const changeAction = (actionN) => {
     setAction(actionN);
   };
 
-  const addMessage = (messageN) => {
-    setMessage(messageN);
+  const addMessage = (messageNew) => {
+    setMessageok(messageNew);
   };
-  /* Actions 
-    0 = No actions (Home)
-    1 = Update Availability
-    */
-
   return (
     <>
       {action !== 0 ? (
@@ -53,10 +48,10 @@ function FarmerPage(props) {
           {" "}
           <h2> {props.user.name} farmer personal page </h2>{" "}
         </Row>
-        {message ? (
-          <Alert variant='success' onClose={() => setMessage("")} dismissible>
+        {messageok ? (
+          <Alert variant='success' onClose={() => setMessageok("")} dismissible>
             {" "}
-            {message}{" "}
+            {messageok}{" "}
           </Alert>
         ) : (
           ""
