@@ -30,15 +30,6 @@ function ShopEmployee(props) {
   const addMessage = (messageN) => {
     setMessage(messageN);
   };
-  /* Actions 
-    0 = No actions (Home)
-    1 = Register New client 
-    2 = Browser Product 
-    3 = TopUp a Wallet
-    4 = New Order 
-    5 = HandOut
-    6 = Check Orders 
-    7 = Show pending orders*/
 
   return (
     <>
