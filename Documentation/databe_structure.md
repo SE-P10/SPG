@@ -17,6 +17,9 @@
 Role:<br>
 0 client
 1 shop employee
+2 farmer
+
+
 
 ## users_meta
 |NAME|TYPE|DESCRIPTION|

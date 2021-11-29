@@ -3,7 +3,6 @@ import { Card } from "react-bootstrap";
 import { useState } from "react";
 import { HandOut } from "../shopEmployee-component/HandOut";
 import { CheckOrders } from "../ui-components/CheckOrders";
-import { NewOrder } from "../ui-components/NewOrder";
 import { TopUpWallet } from "../shopEmployee-component/TopUpWallet.js";
 import { RegistrationForm } from "../ui-components/RegistrationForm";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
