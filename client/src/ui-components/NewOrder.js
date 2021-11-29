@@ -50,7 +50,8 @@ function NewOrder(props) {
     fillTables();
   }, []);
 
-  const handleSubmit = async (event, propsN) => {
+  const handleSubmitOrder = async (event, propsN) => {
+    
     if (!mailInserted) setErrorMessage("You have to insert an email!");
     else {
       let userId = await userAPI.getUserId(mailInserted);
@@ -269,7 +270,7 @@ function NewOrder(props) {
 
             <Button
               className='se-button btn-block fixed-height below'
-              onClick={(ev) => handleSubmit(ev, props)}>
+              onClick={(ev) => handleSubmitOrder(ev, props)}>
               Issue Order
             </Button>
           </Form>
