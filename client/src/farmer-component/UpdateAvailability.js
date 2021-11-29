@@ -118,36 +118,25 @@ function UpdateAvailability(props) {
                         type='number'
                         inline
                         onChange={(ev) => {
+                          let error = false
                           if (isNaN(parseInt(ev.target.value)))
                             {
                               setErrorMessage("Wrong quantity");
-                              setOrderProducts((old) => {
-                                const list = old.map((item) => {
-                                  if (item.product_id === p.id)
-                                    return {
-                                      product_id: p.id,
-                                      quantity: -1,
-                                      price : item.price
-                                    };
-                                  else return item;
-                                });
-                                return list;
-                              });
+                              error = true
                             }
-                          else {
                             setOrderProducts((old) => {
                               const list = old.map((item) => {
                                 if (item.product_id === p.id)
                                   return {
                                     product_id: p.id,
-                                    quantity: parseInt(ev.target.value),
+                                    quantity: error ? -1 :  parseInt(ev.target.value),
                                     price : item.price
                                   };
                                 else return item;
                               });
                               return list;
                             });
-                          }
+                          
                         }}
                         id={p.id}
                         size='sm'></Form.Control>{" "}
@@ -158,36 +147,25 @@ function UpdateAvailability(props) {
                         type="number"
                         inline
                         onChange={(ev) => {
+                          let errorPrice = falseM
                           if (isNaN(parseFloat(ev.target.value)))
                             {
                               setErrorMessage("Wrong price");
-                              setOrderProducts((old) => {
-                                const list = old.map((item) => {
-                                  if (item.product_id === p.id)
-                                    return {
-                                      product_id: p.id,
-                                      price: -1,
-                                      quantity : item.quantity
-                                    };
-                                  else return item;
-                                });
-                                return list;
-                              });
+                              errorPrice = true
                             }
-                          else {
                             setOrderProducts((old) => {
                               const list = old.map((item) => {
                                 if (item.product_id === p.id)
                                   return {
                                     product_id: p.id,
                                     quantity: item.quantity,
-                                    price : parseFloat(ev.target.value)
+                                    price : errorPrice ? -1 :  parseFloat(ev.target.value)
                                   };
                                 else return item;
                               });
                               return list;
                             });
-                          }
+                          
                         }}
                         id={p.id}
                         size='sm'></Form.Control>{" "}
