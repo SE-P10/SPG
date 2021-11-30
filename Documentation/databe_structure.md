@@ -1,39 +1,40 @@
+
 # DATABASE TABLES
 
-![Database](https://github.com/SE-P10/SPG/blob/master/Documentation/ERD.jpg?raw=true)
+![Database](./ERD.jpg)
 
 ## Users
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
 |email|TEXT||
 |password|TEXT||
 |username|TEXT||
-|role|TEXT||
+|role|TEXT|<ul><li>0 - client</li><li>1 - shop employee</li><li>2 - farmer</li></ul>|
 |name|TEXT||
 |surname|TEXT||
-|approved|INTEGER|default 0|
-
-Role:<br>
-0 client
-1 shop employee
+|approved|INTEGER| Indicate if the user it is approved or not0 (by default 0)|
 
 ## users_meta
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
 |user_id|INTEGER||
-|meta_key|TEXT||
-|meta_value|TEXT||
+|meta_key|TEXT|name of the meta Example: wallet|
+|meta_value|TEXT|value of the meta, Example wallet how much money in it|
 
 ## basket
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
-|user_id|INTEGER||
+|user_id|INTEGER|id of the basket's user|
 |product_id|INTEGER||
 
 ## farmer_payments
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
@@ -44,6 +45,7 @@ Role:<br>
 |price|INTEGER||
 
 ## farmer_products
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |user_id|INTEGER||
@@ -51,6 +53,7 @@ Role:<br>
 |estimated_quantity|INTEGER||
 
 ## order_product
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |order_id|INTEGER||
@@ -58,6 +61,7 @@ Role:<br>
 |quantity|INTEGER||
 
 ## orders
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
@@ -66,21 +70,26 @@ Role:<br>
 |price|INTEGER||
 |pickup_time|INTEGER||
 |pickup_place|INTEGER||
+**order status:**
+
+```
+                                       / delivering \
+booked -> confirmed (by the farmer) ->                -> delivered
+                                       \   pending  /
+```
 
 ## products
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
 |farmer_id|INTEGER||
 |details_id|INTEGER||
 |quantity|INTEGER||
-|name|TEXT||
 
 ## product_details
+
 |NAME|TYPE|DESCRIPTION|
 |---|---|---|
 |id|INTEGER||
 |name|TEXT||
-
-
-
