@@ -33,7 +33,7 @@
 
 ## [Database structure](./Documentation/databe_structure.md)
 
-## Users Credentials
+### Users Credentials
 
 Email, Password, Role
 
