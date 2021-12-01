@@ -7,7 +7,6 @@ import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
-import { Dimensions } from "react-native";
 
 import {
   BrowserRouter as Router,
@@ -38,6 +37,9 @@ const App = () => {
     checkAuth().catch((err) => console.log(err));
   }, []);
 
+
+  
+
   const doLogin = async (credentials) => {
     try {
       const user = await API.logIn(credentials);
@@ -55,6 +57,8 @@ const App = () => {
     setUser(null);
     setMessage("");
   };
+
+  
 
   const closeMessage = () => {
     setMessage("");
@@ -109,20 +113,26 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null ? (
-                  <>
-                    {" "}
-                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
-                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
-                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
-                  </>
-                ) : (
-                  <LoginForm
-                    closeMessage={closeMessage}
-                    message={message}
-                    login={doLogin}
-                  />
-                )}
+                {
+
+                    loggedIn && user !== null ? (
+                      <>
+                        {" "}
+                        {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
+                        {user.role == 0 ? <Redirect to='/clientpage' /> : null}
+                        {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
+                      </>
+                    ) : (
+                      <LoginForm
+                        closeMessage={closeMessage}
+                        message={message}
+                        login={doLogin}
+                      />
+                    )
+
+
+
+                }
               </Row>
             </Container>
           )}

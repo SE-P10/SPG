@@ -2,6 +2,7 @@ import gApi from "./api/gAPI.js";
 import ordersApi from "./api/orders.js";
 import farmerAPI from "./api/farmer.js";
 import userAPI from "./api/user.js";
+import testAPI from "./api/testAPI.js"
 
 function getJson(httpResponsePromise) {
   return new Promise((resolve, reject) => {
@@ -125,6 +126,7 @@ const API = {
   ...gApi,
   ...farmerAPI,
   ...userAPI,
+  ...testAPI,
   logIn,
   logOut,
   getUserInfo,

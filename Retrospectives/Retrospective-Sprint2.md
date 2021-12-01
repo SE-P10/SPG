@@ -14,7 +14,7 @@ Team P10 RETROSPECTIVE Sprint #1
 - Unit Tests passing
 - Code review completed
 - Working code present on VCS
-- No critical sonar code smells
+- No Blocker sonar code smells
 - No bugs on sonar
 - End-to-End tests performed
 

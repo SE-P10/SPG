@@ -33,15 +33,21 @@
 
 ## [Database structure](./Documentation/databe_structure.md)
 
-## API
-
-- [API Server](./Documentation/api-server.md)
-- [API Client](./Documentation/api-client.md)
-
-## Users Credentials
+### Users Credentials
 
 Email, Password, Role
 
 - john.doe@demo01.it, password, [shop employee]
 - mariorossi@demo.it, password, [client]
 - paolobianchi@demo.it, password, [farmer]
+
+
+## API
+
+- [API Server](./Documentation/api-server.md)
+- [API Client](./Documentation/api-client.md)
+
+
+## [Docker](./Documentation/Docker.md) 
+
+

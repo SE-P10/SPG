@@ -15,28 +15,23 @@ import {
 
 function ClientPage(props) {
   const [message, setMessage] = useState("");
-  const [action, setAction] = useState(0);
+  const [actionC, setActionC] = useState(0);
   const changeAction = (actionN) => {
-    setAction(actionN);
+    setActionC(actionN);
   };
 
   const addMessage = (messageN) => {
     setMessage(messageN);
   };
-  /* Actions 
-    0 = No actions (Home)
-    1 = Browse products 
-    2 = NewOrder
-    3 = Your orders */
 
   return (
     <>
-      {action !== 0 ? (
+      {actionC !== 0 ? (
         <>
           <Button
             className='spg-button below back-button'
             onClick={() => {
-              setAction(0);
+              setActionC(0);
             }}>
             {" "}
             {backIcon}{" "}
@@ -61,7 +56,7 @@ function ClientPage(props) {
 
         <Row className='secondColor justify-content-center below'>
           <Col>
-            {action === 0 ? (
+            {actionC === 0 ? (
               <>
                 {" "}
                 <Row>
@@ -70,7 +65,7 @@ function ClientPage(props) {
                       <Button
                         className='se-button '
                         onClick={() => {
-                          setAction(1);
+                          setActionC(1);
                         }}>
                         <Col className='justify-content-center'>
                           <Row className='justify-content-center'>
@@ -89,7 +84,7 @@ function ClientPage(props) {
                       <Button
                         className='se-button '
                         onClick={() => {
-                          setAction(2);
+                          setActionC(2);
                         }}>
                         <Col className='justify-content-center'>
                           <Row className='justify-content-center'>
@@ -108,7 +103,7 @@ function ClientPage(props) {
                       <Button
                         className='se-button '
                         onClick={() => {
-                          setAction(3);
+                          setActionC(3);
                         }}>
                         <Col className='justify-content-center'>
                           <Row className='justify-content-center'>
@@ -130,13 +125,13 @@ function ClientPage(props) {
           </Col>
         </Row>
         <Row className='below'>
-          {action === 1 ? (
+          {actionC === 1 ? (
             <BrowserProducts
               changeAction={changeAction}
               addMessage={addMessage}
             />
           ) : null}
-          {action === 2 ? (
+          {actionC === 2 ? (
             <>
               <ClientOrder
                 user={props.user}
@@ -145,7 +140,7 @@ function ClientPage(props) {
               />{" "}
             </>
           ) : null}
-          {action === 3 ? (
+          {actionC === 3 ? (
             <YourOrders
               user={props.user}
               changeAction={changeAction}

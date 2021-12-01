@@ -1,4 +1,11 @@
-# API Client
+## API Client
+
+#### API.getFarmerProducts(farmerID)
+  * Description: get all the products that a farmers decided to make avaible on
+    the application.
+  * Request params: farmerID, the id of the farmer 
+  * Return: a list of all the products, it is empty in case the there are no
+    products
 
 ## API.getOrders(filter = '')
 
@@ -60,20 +67,8 @@
 * Request params: none
 * Return: list of products **[ { id: 1, quantity: 10, price: 5, name: "product2 name", farmer: "farmer2 name" }, { id: 2, quantity: 4, price: 7, name: "product2 name", farmer: "farmer2 name" }, { ... }, ... ]**
 
+## API.setTime(newTime = {weekDay: "endDebug", hour: 0})
+
 * Description: Modifies the week of the day and the hour in the server for the current session
 * Request params: an object **{ weekDay: 'monday', hour: 5 }** when modifying the time, none when the debug operations end (deafult param is used)
 * Return: null (if everything is fine) or an error message (if somthing is wrong)
-
-## API.getFarmerProducts(farmerID)
-
-* Description: get all the products that a farmers decided to make avaible on
-  the application.
-* Request params: farmerID, the id of the farmer
-* Return: a list of all the products, it is empty in case the there are no
-  products
-
-## API.setTime(newTime = {weekDay: "endDebug", hour: 0})
-
-* Description: set the time in the server at the day of the week and hour specified in the parameter. If no parameter is passed, the debug   session ends and the time on the server comes back to the real one
-* Request params: it accepts no parameters or an object with two elements: a string representing the desired day of the week and an integer for the hour like **{weekDay: "monday", hour: 10}**
-* Return: the code 201, if everithing went fine, an error, if somthing is wrong
