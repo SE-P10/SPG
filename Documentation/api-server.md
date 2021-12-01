@@ -150,3 +150,19 @@ http://localhost:3001/api/basketProduct
   "Farmer": "farmerName farmerSurname"
 }
 ```
+
+### PUT /api/debug/time
+
+The user needs to be authenticated and a manager.
+Modifies the time in the server for the current session to the day of the week and hour specified in the body
+
+```url
+http://localhost:3001/api/debug/time
+```
+
+```json
+{
+  "weekDay": "monday",
+  "hour": 2
+}
+```
