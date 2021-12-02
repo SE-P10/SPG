@@ -44,7 +44,6 @@ async function getNotification(userID) {
 
     return await getQuerySQL(db, sql, [userID], {
         id: 0,
-        user_id: 0,
         text: '',
         seen: 0
     }, []);
