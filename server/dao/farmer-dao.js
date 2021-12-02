@@ -31,18 +31,19 @@ exports.getProducts = async (farmerID) => {
 // }
 exports.updateProducts = async (farmerID, productID, newAmount, price) => {
 
+
   let dinoSQL = dynamicSQL("UPDATE products SET", { quantity: newAmount, price: price }, { farmer_id: farmerID, id: productID });
 
   return runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true);
 
   /*
-    return new Promise((resolve,reject) => {
-      const sql = "UPDATE products SET quantity = ?, price = ? WHERE farmer_id = ? AND products.id = ?";
-      db.run(sql,[newAmount,price,,productID],function(err){
-        if (err) {
-          reject(err);return;
-        }
-        resolve()
-      })
-    })*/
+     return new Promise((resolve,reject) => {
+    const sql = "UPDATE products SET quantity = ?, price = ? WHERE farmer_id = ? AND products.id = ?";
+    db.run(sql,[newAmount,price,farmerID,productID],function(err){
+      if (err) {
+        reject(err);return;
+      }
+      resolve()
+    })
+  })*/
 }
