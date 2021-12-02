@@ -1,5 +1,5 @@
-import { Container, Row, Col, ListGroup, Button, Alert } from "react-bootstrap";
-import { Card } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert } from "react-bootstrap";
+
 import { useState } from "react";
 import { HandOut } from "../shopEmployee-component/HandOut";
 import { CheckOrders } from "../ui-components/CheckOrders";
@@ -18,36 +18,54 @@ import {
   backIcon,
 } from "../ui-components/Icons.js";
 import { PendingOrders } from "../shopEmployee-component/PendingOrders.js";
-import gAPI from "../api/gAPI";
 import { ClientOrder } from "../client-component/ClientOrder";
+
 function ShopEmployee(props) {
   const [message, setMessage] = useState("");
-  const [action, setAction] = useState(0);
+  const [actionS, setActionS] = useState(0);
+  const [actionName, setActionName] = useState("");
   const changeAction = (actionN) => {
-    setAction(actionN);
+    setActionS(actionN);
+    switch (actionN) {
+      case 1:
+        setActionName("Register a new client");
+        break;
+      case 2:
+        setActionName("Browse products");
+        break;
+      case 3:
+        setActionName("Top Up wallet");
+        break;
+      case 4:
+        setActionName("New order");
+        break;
+      case 5:
+        setActionName("Hand Out");
+        break;
+      case 6:
+        setActionName("Check orders");
+        break;
+      case 7:
+        setActionName("pending orders");
+        break;
+
+      default:
+        setActionName("");
+    }
   };
 
   const addMessage = (messageN) => {
     setMessage(messageN);
   };
-  /* Actions 
-    0 = No actions (Home)
-    1 = Register New client 
-    2 = Browser Product 
-    3 = TopUp a Wallet
-    4 = New Order 
-    5 = HandOut
-    6 = Check Orders 
-    7 = Show pending orders*/
 
   return (
     <>
-      {action !== 0 ? (
+      {actionS !== 0 ? (
         <>
           <Button
             className='spg-button below back-button'
             onClick={() => {
-              setAction(0);
+              setActionS(0);
             }}>
             {" "}
             {backIcon}{" "}
@@ -68,70 +86,17 @@ function ShopEmployee(props) {
 
         <Row>
           <Row>
-            {action === 1 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Register a new client </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {action === 2 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Browse Products </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {action === 3 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Top Up a Wallet </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {action === 4 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> New order </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {action === 5 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Hand Out </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {action === 6 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Check Orders </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
-            {action === 7 ? (
-              <>
-                {" "}
-                <Col md='auto'>
-                  <h1 className='mx-auto'> Pending Orders </h1>{" "}
-                </Col>
-              </>
-            ) : null}{" "}
+            <Col md='auto'>
+              <h1 className='mx-auto'> {actionName} </h1>{" "}
+            </Col>
           </Row>
           <Col className='ml-4'>
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(1);
+                    setActionS(1);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>
@@ -147,12 +112,12 @@ function ShopEmployee(props) {
             ) : (
               ""
             )}
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(2);
+                    setActionS(2);
                   }}>
                   {" "}
                   <Col className='justify-content-center'>
@@ -169,12 +134,12 @@ function ShopEmployee(props) {
             )}
           </Col>
           <Col>
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button'
                   onClick={() => {
-                    setAction(7);
+                    setActionS(7);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{pendingIcon} </Row>
@@ -188,12 +153,12 @@ function ShopEmployee(props) {
             ) : (
               ""
             )}
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button'
                   onClick={() => {
-                    setAction(3);
+                    setActionS(3);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{pigIcon} </Row>
@@ -209,12 +174,12 @@ function ShopEmployee(props) {
             )}
           </Col>
           <Col>
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(4);
+                    setActionS(4);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{newIcon} </Row>
@@ -225,12 +190,12 @@ function ShopEmployee(props) {
             ) : (
               ""
             )}
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(5);
+                    setActionS(5);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{handOutIcon} </Row>
@@ -243,12 +208,12 @@ function ShopEmployee(props) {
             )}
           </Col>{" "}
           <Col>
-            {action === 0 ? (
+            {actionS === 0 ? (
               <Row className='secondColor justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
-                    setAction(6);
+                    setActionS(6);
                   }}>
                   <Col className='justify-content-center'>
                     <Row className='justify-content-center'>{checkIcon} </Row>
@@ -262,43 +227,43 @@ function ShopEmployee(props) {
           </Col>
         </Row>
         <Row className='below'>
-          {action === 1 ? (
+          {actionS === 1 ? (
             <RegistrationForm
               loggedIn={props.loggedIn}
               changeAction={changeAction}
               addMessage={addMessage}
             />
           ) : null}
-          {action === 2 ? (
+          {actionS === 2 ? (
             <BrowserProducts
               changeAction={changeAction}
               addMessage={addMessage}
             />
           ) : null}
-          {action === 3 ? (
+          {actionS === 3 ? (
             <TopUpWallet
               changeAction={changeAction}
               addMessage={addMessage}
               className='justify-content-center'
             />
           ) : null}
-          {action === 4 ? (
+          {actionS === 4 ? (
             <ClientOrder
               changeAction={changeAction}
               addMessage={addMessage}
               user={props.user}
             />
           ) : null}
-          {action === 7 ? (
+          {actionS === 7 ? (
             <PendingOrders
               changeAction={changeAction}
               addMessage={addMessage}
             />
           ) : null}
-          {action === 5 ? (
+          {actionS === 5 ? (
             <HandOut changeAction={changeAction} addMessage={addMessage} />
           ) : null}
-          {action === 6 ? (
+          {actionS === 6 ? (
             <CheckOrders changeAction={changeAction} addMessage={addMessage} />
           ) : null}
         </Row>

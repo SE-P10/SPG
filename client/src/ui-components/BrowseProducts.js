@@ -11,18 +11,8 @@ function BrowserProducts(props) {
   const [isProductsListLoading, setIsProductsListLoading] = useState(true);
   const [serverErrorMessage, setServerErrorMessage] = useState(null);
   const [searchValue, setSearchValue] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [filterOn, setFilterOn] = useState(false);
 
-  const handleSearchSubmit = () => {
-    if (searchValue === "") setFilterOn(false);
-    setFilterOn(true);
-    setFilteredProducts(
-      products.filter((p) =>
-        p.name.toLowerCase().includes(searchValue.toLowerCase())
-      )
-    );
-  };
+  const handleSearchSubmit = () => {};
 
   useEffect(() => {
     const fillTables = async () => {

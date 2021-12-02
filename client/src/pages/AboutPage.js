@@ -1,5 +1,5 @@
-import { Container, Row, Col, ListGroup, Button, Image } from "react-bootstrap";
-import { Card } from "react-bootstrap";
+import { Container, Row, Image } from "react-bootstrap";
+
 import "../css/custom.css";
 
 function AboutPage(props) {

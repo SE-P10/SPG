@@ -1,5 +1,9 @@
 "use strict";
 
+const IS_DEBUG = false;
+const DEBUG_ALLOW_DIRTY = IS_DEBUG;
+const DEBUG_PROCESS = IS_DEBUG;
+
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
@@ -13,6 +17,9 @@ const userDao = require("./dao/user-dao");
 const walletDao = require("./dao/wallet-dao");
 const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
+const notificationDao = require("./dao/notification-dao.js");
+const testDao = require("./test-dao/test-dao.js");
+const { setNotification, debugLog } = require("./utility");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -72,9 +79,9 @@ app.use(
 );
 
 function getTime() {
-  if(session.time)
+  if (session.time)
     return session.time;
-  return ({ weekDay: dayjs().format('dddd'), hour: Number(dayjs().format('H')) }); 
+  return ({ weekDay: dayjs().format('dddd'), hour: Number(dayjs().format('H')) });
 }
 
 // init Passport to use sessions
@@ -84,6 +91,8 @@ app.use(passport.session());
 // API implemented in module gAPI
 gDao.execApi(app, passport, isLoggedIn, body);
 ordersDao.execApi(app, passport, isLoggedIn);
+notificationDao.execApi(app, passport, isLoggedIn);
+
 
 /*** USER APIs ***/
 
@@ -139,12 +148,12 @@ app.put("/api/debug/time/",
   [
     body('hour').isNumeric(),
   ],
-  function(req, res) {
+  function (req, res) {
     if (!validationResult(req).isEmpty() || !['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'enddebug'].includes(req.body.weekDay.toLowerCase()))
       return res.status(400).render('contact', { errors: "error in the parameters" });
-    if(req.user.role != 1)
+    if (req.user.role != 1)
       res.status(404).json({ "result": 'Only the manager has access to this functionality!' });
-    if(req.body.weekDay === 'endDebug') session.time = null;
+    if (req.body.weekDay === 'endDebug') session.time = null;
     else session.time = req.body;
     res.status(201).end();
   }
@@ -210,6 +219,21 @@ app.get("/api/products/farmer/:farmer_id", isLoggedIn, (req, res) => {
   }
 });
 
+// DELETE /api/clients/:email
+app.delete('/api/clients/:email', async function (req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  try {
+    await userDao.deleteUser(req.params.email);
+    res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
+  }
+});
+
 // POST /wallet/update/
 // parameters product_id, amount
 // update the value of the product to the new value
@@ -235,8 +259,25 @@ app.put(
   }
 );
 
-/*** Other express-related instructions ***/
+/*** API used just for the test enviroment***/
+app.delete('/api/test/restoretables/', async function (req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  try {
+    await testDao.restoreUsersTable();
+    await testDao.restoreProductsTable();
+    await testDao.restoreUsersMetaTable();
+    await testDao.restoreOrderProductTable();
+    await testDao.restoreOrdersTable();
 
+    res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
+  }
+});
 // Activate the server
 app.listen(port, () => {
   console.log(`react-score-server-mini listening at http://localhost:${port}`);

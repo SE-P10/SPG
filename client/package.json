@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.13.0",
+    "@testing-library/jest-dom": "^5.15.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "bootstrap": "^4.6.0",
     "dayjs": "^1.10.7",
     "enzyme": "^3.11.0",
+    "fetch-mock": "^9.11.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-icons": "^1.5.0",
@@ -20,10 +21,19 @@
   },
   "proxy": "http://localhost:3001",
   "scripts": {
-    "start": "react-scripts  start",
+    "start": "react-scripts -r @cypress/instrument-cra start start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "pretest": "rm -rf .nyc_output || cd .",
+    "posttest": "npm run report:combined",
+    "mkdir:reports": "mkdir reports || cd .",
+    "precopy:reports": "npm run mkdir:reports",
+    "copy:reports": "copy /Y cypress-coverage\\coverage-final.json reports\\from-cypress.json && copy coverage\\coverage-final.json reports\\from-jest.json",
+    "precombine:reports": "npm run copy:reports && mkdir .nyc_output || cd .",
+    "combine:reports": "npx nyc merge reports && move coverage.json .nyc_output/out.json",
+    "prereport:combined": "npm run combine:reports",
+    "report:combined": "npx nyc report --reporter lcov --reporter text --report-dir coverage"
   },
   "eslintConfig": {
     "extends": [
@@ -42,8 +52,15 @@
     "last 1 safari version"
   ],
   "devDependencies": {
+    "@cypress/code-coverage": "^3.9.11",
+    "@cypress/instrument-cra": "^1.4.0",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
+    "babel-plugin-istanbul": "^6.1.1",
+    "cypress": "^9.1.0",
     "enzyme-to-json": "^3.6.2",
+    "jest-sonar-reporter": "^2.0.0",
+    "msw": "^0.35.0",
+    "nyc": "^13.0.0",
     "react-test-renderer": "^17.0.2"
   },
   "browserslist": {
@@ -57,5 +74,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "nyc": {
+    "report-dir": "cypress-coverage"
   }
 }

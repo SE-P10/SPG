@@ -1,4 +1,4 @@
-import { Button, Nav, Navbar, NavDropdown, Container } from "react-bootstrap";
+import { Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { userIcon, plantIcon, logOutIcon } from "./Icons";
 import "../css/custom.css";
