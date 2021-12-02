@@ -9,26 +9,15 @@ const { getUserById } = require("./user-dao");
 const { debugLog, filter_args } = require("../utility");
 
 
-async function addNotification(userID, body, email = false) {
-
-    let notificationData = filter_args({
-        message: '',
-        object: ''
-    }, body);
+async function addNotification(userID, message, object, email = false) {
 
     let sql = 'INSERT INTO notification (user_id, message, object) VALUES(?, ?, ?)';
 
-    let status = await this.runQuerySQL(db, sql, [userID, notificationData.message, notificationData.object], true);
+    let status = await this.runQuerySQL(db, sql, [userID, message, object], true);
 
     if (status && email) {
 
-        let emailData = this.filter_args({
-            to: '',
-            body: notificationData.message,
-            subject: notificationData.object
-        }, email);
-
-        return this.sendMail(emailData.to, emailData.body, emailData.subject);
+        return this.sendMail(email, message, object);
     }
 
     return status;
@@ -69,7 +58,13 @@ exports.execApi = (app, passport, isLoggedIn) => {
         }
 
         try {
-            let status = await addNotification(user.id, req.body, { to: user.email });
+
+            let notifyData = filter_args({
+                message: '',
+                object: ''
+            }, req.body || {});
+
+            let status = await addNotification(user.id, notifyData.message, notifyData.object, user.email || false);
 
             if (status)
                 res.status(201).json(status).end();

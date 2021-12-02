@@ -15,7 +15,7 @@ const getOrder = async (orderID) => {
     if (!orderID)
         return null;
 
-    let order = await getQuerySQL(db, "SELECT * FROM orders where id = ?", [orderID], {
+    let order = await getQuerySQL(db, "SELECT * FROM orders WHERE id = ?", [orderID], {
         id: 0,
         user_id: 0,
         status: '',
@@ -25,13 +25,13 @@ const getOrder = async (orderID) => {
     }, null, true);
 
     if (order) {
-        order['products'] = await getQuerySQL(db, "SELECT * FROM order_product where order_id = ?", [orderID], {
+        order['products'] = await getQuerySQL(db, "SELECT * FROM order_product WHERE order_id = ?", [orderID], {
             order_id: 0,
             product_id: '',
             quantity: 0
         })
 
-        order['user'] = await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
+        order['user'] = await getQuerySQL(db, "SELECT * FROM users WHERE id = ?", [order.user_id], {
             id: 0,
             username: '',
             email: '',

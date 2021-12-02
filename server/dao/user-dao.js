@@ -9,37 +9,32 @@ const { runQuerySQL, getQuerySQL } = require("../utility");
 
 // delete an existing client
 exports.deleteUser = (userMail) => {
-	return new Promise((resolve, reject) => {
-		const sql = 'DELETE FROM users WHERE email = ?';
-		db.run(sql, [userMail], function (err) {
-			if (err) {
-				reject(err);
-				console.log(err)
-				return;
-			} else
-				resolve(null);
-		});
-	});
-}
-
-exports.getUserById = (id) => {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM users WHERE id = ?";
-    db.get(sql, [id], (err, row) => {
-      if (err) reject(err);
-      else if (row === undefined) resolve({ error: "User not found." });
-      else {
-        // by default, the local strategy looks for "username": not to create confusion in server.js, we can create an object with that property
-        const user = {
-          id: row.id,
-          name: row.name,
-          role: row.role,
-          email: row.email,
-        };
-        resolve(user);
-      }
+    const sql = 'DELETE FROM users WHERE email = ?';
+    db.run(sql, [userMail], function (err) {
+      if (err) {
+        reject(err);
+        console.log(err)
+        return;
+      } else
+        resolve(null);
     });
   });
+}
+
+exports.getUserById = async (id) => {
+
+  if (!id)
+    return null;
+
+  let user = await getQuerySQL(db, "SELECT * FROM users WHERE id = ?", [id], {
+    id: 0,
+    name: '',
+    role: 'client',
+    email: ''
+  }, null, true);
+
+  return user;
 };
 
 /**
@@ -126,5 +121,23 @@ exports.getuserId = (client_email = null) => {
 
 
 exports.execApi = (app, passport, isLoggedIn) => {
-  
+
+  app.get("/api/user/:id", async (req, res) => {
+
+    try {
+
+      let user = await this.getUserById(req.params.id);
+
+      if (user) {
+        res.status(200).json(user);
+      }
+      else {
+        res.status(503).json({});
+      }
+
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  });
+
 }

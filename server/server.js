@@ -88,8 +88,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // API implemented in module gAPI
+userDao.execApi(app, passport, isLoggedIn);
 gDao.execApi(app, passport, isLoggedIn, body);
 ordersDao.execApi(app, passport, isLoggedIn);
+
 notificationDao.execApi(app, passport, isLoggedIn);
 
 
@@ -126,20 +128,6 @@ app.get("/api/sessions/current", isLoggedIn, (req, res) => {
   res.status(200).json(req.user);
 });
 
-app.get("/api/user/:id", (req, res) => {
-  try {
-    userDao
-      .getUserById(req.params.id)
-      .then((user) => {
-        res.status(200).json(user);
-      })
-      .catch((err) => {
-        res.status(503).json({});
-      });
-  } catch (err) {
-    res.status(500).json(false);
-  }
-});
 
 //PUT /api/debug/time/
 app.put("/api/debug/time/",
