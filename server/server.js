@@ -19,7 +19,6 @@ const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
 const notificationDao = require("./dao/notification-dao.js");
 const testDao = require("./dao/test-dao.js");
-const { setNotification, debugLog } = require("./utility");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
