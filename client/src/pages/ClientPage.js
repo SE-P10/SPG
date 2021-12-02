@@ -11,6 +11,7 @@ import {
   browseIcon,
   checkIcon,
 } from "../ui-components/Icons.js";
+import { ClientNotifications } from "../client-component/ClientNotifications";
 
 function ClientPage(props) {
   const [message, setMessage] = useState("");
@@ -116,6 +117,25 @@ function ClientPage(props) {
                       </Button>
                     </Row>{" "}
                   </Col>
+                  <Col>
+                    <Row className='secondColor justify-content-center below'>
+                      <Button
+                        className='se-button '
+                        onClick={() => {
+                          setActionC(4);
+                        }}>
+                        <Col className='justify-content-center'>
+                          <Row className='justify-content-center'>
+                            {checkIcon}{" "}
+                          </Row>
+                          <Row className='justify-content-center'>
+                            {" "}
+                            Personal MailBox{" "}
+                          </Row>
+                        </Col>
+                      </Button>
+                    </Row>{" "}
+                  </Col>
                 </Row>
               </>
             ) : (
@@ -141,6 +161,13 @@ function ClientPage(props) {
           ) : null}
           {actionC === 3 ? (
             <YourOrders
+              user={props.user}
+              changeAction={changeAction}
+              addMessage={addMessage}
+            />
+          ) : null}
+          {actionC === 4 ? (
+            <ClientNotifications
               user={props.user}
               changeAction={changeAction}
               addMessage={addMessage}
