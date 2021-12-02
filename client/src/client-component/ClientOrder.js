@@ -87,12 +87,15 @@ function ClientOrder(props) {
         if (userId.length === 0 || userId[0].role != 0) {
           setErrorMessage("Invalid user");
           orderOk = false;
-        } 
+        }
         if (orderOk) userId = userId[0].id;
       }
     } else userId = props.user.id;
 
-    if (orderOk && orderProduct.filter(t => t.confirmed == true).length === 0) {
+    if (
+      orderOk &&
+      orderProduct.filter((t) => t.confirmed == true).length === 0
+    ) {
       setErrorMessage("Can't issue an order without items.");
       orderOk = false;
     }
@@ -101,11 +104,10 @@ function ClientOrder(props) {
       API.deleteAllBasket();
 
       //Chiamare API , moemntanemtnate stampare l'ordine
-      let backetOrder = orderProduct.filter((t) => t.quantity !== 0 && t.confirmed === true)
-      API.insertOrder(
-        userId,
-        backetOrder
-      )
+      let backetOrder = orderProduct.filter(
+        (t) => t.quantity !== 0 && t.confirmed === true
+      );
+      API.insertOrder(userId, backetOrder)
         .then(() => {
           propsN.addMessage("Request sent correctly!");
           propsN.changeAction(0);
@@ -150,7 +152,9 @@ function ClientOrder(props) {
           <Row>
             <SearchForm
               setSearchValue={setSearchValue}
-              onSearchSubmit={() => {console.log("test")}}
+              onSearchSubmit={() => {
+                console.log("test");
+              }}
             />
           </Row>
           <Button
@@ -318,7 +322,6 @@ function ClientOrder(props) {
                           )
                             setErrorMessage("Wrong quantity");
                           else {
-                            
                             API.insertProductInBasket(
                               orderProduct
                                 .filter((t) => t.product_id === p.id)
@@ -362,7 +365,7 @@ function ClientOrder(props) {
                           });
                         }}
                         variant='outline-secondary'>
-                        DELETE
+                        {deleteIcon}
                       </Button>
                     )}
                     <Col>
@@ -446,7 +449,7 @@ function ClientOrder(props) {
                         });
                       }}
                       variant='outline-secondary'>
-                      DELETE
+                      {deleteIcon}{" "}
                     </Button>
                   </Row>
                 </>

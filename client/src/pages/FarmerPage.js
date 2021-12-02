@@ -13,9 +13,10 @@ import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
 import gAPI from "../api/gAPI";
-import { updateIcon, backIcon } from "../ui-components/Icons";
+import { updateIcon, backIcon, confirmIcon } from "../ui-components/Icons";
 
 import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
+import { ConfirmProducts } from "../farmer-component/ConfirmProducts";
 
 function FarmerPage(props) {
   const [messageok, setMessageok] = useState("");
@@ -57,10 +58,10 @@ function FarmerPage(props) {
           ""
         )}
 
-        <Row className=' justify-content-center below'>
-          <Col>
-            {actionF === 0 ? (
-              <Row className=' justify-content-center below'>
+        <Row className='mx-auto below'>
+          {actionF === 0 ? (
+            <>
+              <Col className=' justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
@@ -74,11 +75,27 @@ function FarmerPage(props) {
                     </Row>
                   </Col>
                 </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-          </Col>
+              </Col>
+
+              <Col className=' justify-content-center below'>
+                <Button
+                  className='se-button '
+                  onClick={() => {
+                    setActionF(2);
+                  }}>
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{confirmIcon} </Row>
+                    <Row className='justify-content-center'>
+                      {" "}
+                      Confirm Products{" "}
+                    </Row>
+                  </Col>
+                </Button>
+              </Col>
+            </>
+          ) : (
+            ""
+          )}
         </Row>
         <Row className='below'>
           {actionF === 1 ? (
@@ -88,6 +105,8 @@ function FarmerPage(props) {
               user={props.user}
             />
           ) : null}
+
+          {actionF === 2 ? <ConfirmProducts /> : null}
         </Row>
       </Container>
     </>

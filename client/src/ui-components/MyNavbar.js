@@ -21,33 +21,27 @@ function MyNavbar(props) {
         </Link>
       </Nav.Item>
 
-      <Navbar.Toggle aria-controls='responsive-navbar-nav' className='mb-2' />
-      <Navbar.Collapse id='responsive-navbar-nav SGP-Navbar'>
+      <Navbar.Toggle aria-controls='responsive-navbar-nav' className='mb-2 ' />
+      <Navbar.Collapse id='responsive-navbar-nav '>
         {props.loggedIn ? (
           <>
-            <NavDropdown
-              title={userIcon}
-              id='navbarScrollingDropdown'
-              className='ml-auto mr-5 text-black'>
-              <NavDropdown.Item>
+            <Nav.Item className='ml-auto mr-3 mainColor'>
+              <Link to={"/personalpage"} className='text-white'>
                 {" "}
-                <Link to={"/personalpage"} className='text-black'>
-                  {" "}
-                  {userIcon}{" "}
-                </Link>{" "}
-              </NavDropdown.Item>
-              <NavDropdown.Item>
-                <Link
-                  to={"/"}
-                  className='text-black'
-                  onClick={() => {
-                    props.closeMessage();
-                    props.doLogOut();
-                  }}>
-                  {logOutIcon}{" "}
-                </Link>
-              </NavDropdown.Item>
-            </NavDropdown>
+                {userIcon}{" "}
+              </Link>{" "}
+            </Nav.Item>
+            <Nav.Item className=' mr-3 mainColor'>
+              <Link
+                to={"/"}
+                className='text-white'
+                onClick={() => {
+                  props.closeMessage();
+                  props.doLogOut();
+                }}>
+                {logOutIcon}{" "}
+              </Link>
+            </Nav.Item>
           </>
         ) : (
           <>

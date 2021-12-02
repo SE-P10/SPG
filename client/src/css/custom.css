@@ -32,10 +32,19 @@ body {
   height: 100%;
   width: 100%;
 }
-
 .ph-prev {
   height: 100px;
   width: 150px;
+  margin-top: 10px;
+  border-radius: 50%;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #009378;
+}
+
+.row-prev {
+  height: 40px;
+  width: 50px;
   margin-top: 10px;
   border-radius: 50%;
   border-style: solid;
@@ -109,7 +118,7 @@ body {
   width: 300px;
 }
 
-.fixed-height{
+.fixed-height {
   height: 100px !important;
 }
 .se-button:hover {
@@ -145,6 +154,6 @@ body {
   text-shadow: 2px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 }
 
-.checkbox{
+.checkbox {
   width: 2px;
 }
