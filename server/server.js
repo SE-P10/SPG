@@ -1,5 +1,9 @@
 "use strict";
 
+const IS_DEBUG = false;
+const DEBUG_ALLOW_DIRTY = IS_DEBUG;
+const DEBUG_PROCESS = IS_DEBUG;
+
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
@@ -13,7 +17,8 @@ const userDao = require("./dao/user-dao");
 const walletDao = require("./dao/wallet-dao");
 const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
-const testDao = require("./test-dao/test-dao.js")
+const testDao = require("./test-dao/test-dao.js");
+const { setNotification, debugLog } = require("./utility");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -73,9 +78,9 @@ app.use(
 );
 
 function getTime() {
-  if(session.time)
+  if (session.time)
     return session.time;
-  return ({ weekDay: dayjs().format('dddd'), hour: Number(dayjs().format('H')) }); 
+  return ({ weekDay: dayjs().format('dddd'), hour: Number(dayjs().format('H')) });
 }
 
 // init Passport to use sessions
@@ -140,12 +145,12 @@ app.put("/api/debug/time/",
   [
     body('hour').isNumeric(),
   ],
-  function(req, res) {
+  function (req, res) {
     if (!validationResult(req).isEmpty() || !['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'enddebug'].includes(req.body.weekDay.toLowerCase()))
       return res.status(400).render('contact', { errors: "error in the parameters" });
-    if(req.user.role != 1)
+    if (req.user.role != 1)
       res.status(404).json({ "result": 'Only the manager has access to this functionality!' });
-    if(req.body.weekDay === 'endDebug') session.time = null;
+    if (req.body.weekDay === 'endDebug') session.time = null;
     else session.time = req.body;
     res.status(201).end();
   }
@@ -226,6 +231,7 @@ app.delete('/api/clients/:email', async function (req, res) {
     res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
   }
 });
+
 // POST /wallet/update/
 // parameters product_id, amount
 // update the value of the product to the new value
@@ -251,7 +257,31 @@ app.put(
   }
 );
 
-/*** Other express-related instructions ***/
+// insert a new notification /api/notification/:user_id
+app.post('/api/notification/:user_id', DEBUG_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+
+  let user = await userDao.getUserById(req.params.user_id);
+
+  if (!user) {
+    res.status(501).json({ error: 'Invalid user ID' });
+    return;
+  }
+
+  try {
+    let status = await setNotification(db, user.id, req.body.text, { to: user.email });
+
+    if (status)
+      res.status(201).json(status).end();
+    else
+      res.status(400).json({ error: 'Unable to insert user notification' });
+
+  } catch (err) {
+    debugLog(err)
+    res.status(503).json({ error: err });
+  }
+
+});
+
 
 /*** API used just for the test enviroment***/
 app.delete('/api/test/restoretables/', async function (req, res) {
@@ -265,7 +295,7 @@ app.delete('/api/test/restoretables/', async function (req, res) {
     await testDao.restoreUsersMetaTable();
     await testDao.restoreOrderProductTable();
     await testDao.restoreOrdersTable();
-    
+
     res.status(201).end();
   } catch (err) {
     console.log(err);
