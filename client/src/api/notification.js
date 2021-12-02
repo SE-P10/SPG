@@ -2,7 +2,7 @@ import { handleFetch, parseResponse } from "./utility";
 
 /**
  *
- * @param {Number} filter userID
+ * @param {Number} userID
  * @returns {Array} [{id:0, message: '', object: '', seen:0}, ...]
  */
 async function getNotification(userID) {
@@ -15,7 +15,7 @@ async function getNotification(userID) {
 
 /**
  *
- * @param {Number} filter notificationID
+ * @param {Number} notificationID
  * @returns {Boolean} 
  */
 async function setSeenNotification(notificationID) {
