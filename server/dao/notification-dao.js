@@ -9,17 +9,17 @@ const { getUserById } = require("./user-dao");
 const { debugLog } = require("../utility");
 
 
-async function addNotification(userID, data, email = false) {
+async function addNotification(userID, text, email = false) {
 
-    let sql = 'INSERT INTO notification (user_id, data) VALUES(?, ?)';
+    let sql = 'INSERT INTO notification (user_id, text) VALUES(?, ?)';
 
-    let status = await this.runQuerySQL(db, sql, [userID, data], true);
+    let status = await this.runQuerySQL(db, sql, [userID, text], true);
 
     if (status && email) {
 
         email = this.filter_args({
             to: '',
-            body: data,
+            body: text,
             subject: ''
         }, email);
 
@@ -38,9 +38,22 @@ async function setNotification(notificationID) {
 }
 
 
+async function getNotification(userID) {
+
+    let sql = 'SELECT * FROM notifications WHERE user_id = ?';
+
+    return await getQuerySQL(db, sql, [userID], {
+        id: 0,
+        user_id: 0,
+        text: '',
+        seen: 0
+    }, []);
+}
+
+
 exports.execApi = (app, passport, isLoggedIn) => {
 
-    // insert a new notification /api/notification/:user_id
+    // insert a new notification /api/notification/:userID
     app.post('/api/notification/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
         let user = await getUserById(req.params.user_id);
@@ -74,12 +87,28 @@ exports.execApi = (app, passport, isLoggedIn) => {
             if (status)
                 res.status(201).json(status).end();
             else
-                res.status(400).json({ error: 'Unable to insert user notification' });
+                res.status(400).json({ error: 'Unable to update user notification' });
 
         } catch (err) {
             debugLog(err)
             res.status(503).json({ error: err });
         }
+    });
 
+    // get all user notification /api/notification/:userID
+    app.get('/api/notification/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+
+        try {
+            let status = await getNotification(req.params.id);
+
+            if (status)
+                res.status(201).json(status).end();
+            else
+                res.status(400).json({ error: 'Unable to get user notifications' });
+
+        } catch (err) {
+            debugLog(err)
+            res.status(503).json({ error: err });
+        }
     });
 }
