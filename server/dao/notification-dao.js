@@ -5,7 +5,7 @@ const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const db = require("../db");
-const { getUserMeta, updateUserMeta, getUserById } = require("./user-dao");
+const { getUserById } = require("./user-dao");
 const { debugLog, setNotification } = require("../utility");
 
 
