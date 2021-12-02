@@ -342,7 +342,7 @@ exports.setNotification = async (db, userID, data, email = false) => {
 
     let sql = 'INSERT INTO user_notification (user_id, data) VALUES(?, ?)';
 
-    let status = await runQuerySQL(db, sql, [userID, data], true);
+    let status = await this.runQuerySQL(db, sql, [userID, data], true);
 
     if (status && email) {
 
