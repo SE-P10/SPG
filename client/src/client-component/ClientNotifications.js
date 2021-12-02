@@ -1,4 +1,4 @@
-import { Row, Col, Container } from "react-bootstrap";
+import { Row, Col, Container, Button } from "react-bootstrap";
 import { useState } from "react";
 
 import { useEffect } from "react";
@@ -64,6 +64,7 @@ function ClientNotifications(props) {
                             pendingOrders.reduce((acc, curr) => acc + curr.price, 0) - userWallet :
                             'You have not to recharge your wallet'}
                         </h3>
+                        {(pendingOrders.reduce((acc, curr) => acc + curr.price, 0) - userWallet) > 0 ? <Button></Button> : null}
                     </Col>
                 </Row>
             </Container>
