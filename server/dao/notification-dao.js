@@ -65,7 +65,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
     });
 
-    // insert a new notification /api/notification/:user_id
+    // update a notification /api/notification/:notificationID
     app.put('/api/notification/:id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
         try {
