@@ -56,6 +56,7 @@ const getOrders = async (status = '') => {
             sql += " WHERE user_id = (SELECT id FROM users WHERE email = ?);"
         else
             sql += " WHERE status = ?;"
+
         values.push(status)
     }
 
@@ -136,6 +137,18 @@ const updateProduct = async (productID, data) => {
     });
 }
 
+const getRequestedProducts = async (farmerID) => {
+
+    if (!farmerID)
+        return null;
+
+    return getQuerySQL(db, "SELECT P.id, SUM(OP.quantity) AS quantity, P.price, PD.name FROM order_product AS OP, products AS P, products_details AS PD WHERE OP.product_id = PD.id AND P.details_id = PD.id AND P.farmer_id = ? AND OP.order_id IN (SELECT DISTINCT id FROM orders WHERE status IN ('booked', 'pending')) GROUP BY P.id, PD.name,P.price", [farmerID], {
+        id: 0,
+        quantity: 0,
+        price: 0,
+        name: ''
+    }, null)
+}
 
 /**
  * 
@@ -610,6 +623,25 @@ exports.execApi = (app, passport, isLoggedIn) => {
                 res.status(200).json(status).end();
             else
                 res.status(400).json({ error: 'Unable to get orders' });
+
+        } catch (err) {
+            debugLog(err)
+            res.status(503).json({ error: err });
+        }
+    });
+
+    // GET order / orders /api/orders/products/:farmerID
+    app.get('/api/orders/products/farmer/:farmerID', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+
+        if (thereIsError(req, res, 'get')) { return };
+
+        try {
+            let status = await getRequestedProducts(req.params.farmerID);
+
+            if (status)
+                res.status(200).json(status).end();
+            else
+                res.status(400).json({ error: 'Unable to get ordered products' });
 
         } catch (err) {
             debugLog(err)
