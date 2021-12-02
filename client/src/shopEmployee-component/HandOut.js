@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Container, Row, Alert, Col, Button } from "react-bootstrap";
 import { SearchComponent } from "../ui-components/SearchComponent";
-import { useEffect } from "react";
 
 import API from "../API";
 import "../css/custom.css";
@@ -10,7 +9,6 @@ import ordersApi from "../api/orders";
 function HandOut(props) {
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [mailInserted, setMailInserted] = useState("");
 
   const handOutOrder = async (orderId) => {
     //API.handOutOrder(orderId)
@@ -31,7 +29,6 @@ function HandOut(props) {
         .then((ordersTmp) => {
           if (ordersTmp.length === 0) setErrorMessage("No orders found");
           else {
-            setMailInserted(email);
             setOrders(ordersTmp);
             setErrorMessage("");
           }

@@ -1,22 +1,12 @@
-import {
-  Button,
-  Alert,
-  Form,
-  Row,
-  Col,
-  Dropdown,
-  DropdownButton,
-  Container,
-} from "react-bootstrap";
+import { Button, Alert, Form, Row, Col, Container } from "react-bootstrap";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
 import farmerAPI from "./../api/farmer";
-import gAPI from "../api/gAPI";
 
 function UpdateAvailability(props) {
   useEffect(() => {
-    const fillTables = async () => {
+    const fillTables = async (props) => {
       //const productsTmp = await gAPI.getProducts();
       //mettere questa chiamata API e togliere la precedwente
       const productsTmp = await farmerAPI.getFarmerProducts(props.user.id);
@@ -29,13 +19,15 @@ function UpdateAvailability(props) {
   const handleSubmit = async (event, propsN) => {
     //fare parseInt
     let orderOk = true;
-    console.log(orderProduct)
-    if (orderProduct.length === 0)  {
+    console.log(orderProduct);
+    if (orderProduct.length === 0) {
       setErrorMessage("you have not updated any  items.");
       orderOk = false;
     }
 
-    let checkNoWrongQuantity = orderProduct.filter(t => t.quantity < 0 || t.price < 0 ).length;
+    let checkNoWrongQuantity = orderProduct.filter(
+      (t) => t.quantity < 0 || t.price < 0
+    ).length;
     if (checkNoWrongQuantity > 0) {
       setErrorMessage("you have negative quantities and/or negative price.");
       orderOk = false;
@@ -49,6 +41,7 @@ function UpdateAvailability(props) {
           props.user.id,
           i.price
         );
+        if (!esito) console.log("error");
       }
       propsN.addMessage("Request sent correctly!");
 
@@ -58,18 +51,20 @@ function UpdateAvailability(props) {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([]);
-  const [errorQuantity,setErrorQuantity] = useState(false);
   const [orderProduct, setOrderProducts] = useState([]);
   const [selectedPs, setSelectPs] = useState([]);
 
   const selectProduct = (id) => {
-    if (selectedPs.indexOf(id) == -1) {
-      setOrderProducts((old) => [...old, { product_id: id, quantity: -1, price : -1 }]);
+    if (selectedPs.indexOf(id) === -1) {
+      setOrderProducts((old) => [
+        ...old,
+        { product_id: id, quantity: -1, price: -1 },
+      ]);
       setSelectPs((selectedPsn) => [...selectedPsn, id]);
     } else {
       setSelectPs((old) =>
         old.filter((p) => {
-          return p != id;
+          return p !== id;
         })
       );
 
@@ -105,11 +100,9 @@ function UpdateAvailability(props) {
                   {" "}
                   <Form.Check
                     inline
-                    id="CheckBoxItem" 
-                    onClick={() => selectProduct(p.id)}>
-                    </Form.Check>
-                    {" "}
-                    {selectedPs.indexOf(p.id) !== -1 ? (
+                    id='CheckBoxItem'
+                    onClick={() => selectProduct(p.id)}></Form.Check>{" "}
+                  {selectedPs.indexOf(p.id) !== -1 ? (
                     <>
                       {" "}
                       Q:
@@ -118,91 +111,70 @@ function UpdateAvailability(props) {
                         type='number'
                         inline
                         onChange={(ev) => {
-                          if (isNaN(parseInt(ev.target.value)))
-                            {
-                              setErrorMessage("Wrong quantity");
-                              setOrderProducts((old) => {
-                                const list = old.map((item) => {
-                                  if (item.product_id === p.id)
-                                    return {
-                                      product_id: p.id,
-                                      quantity: -1,
-                                      price : item.price
-                                    };
-                                  else return item;
-                                });
-                                return list;
-                              });
-                            }
-                          else {
-                            setOrderProducts((old) => {
-                              const list = old.map((item) => {
-                                if (item.product_id === p.id)
-                                  return {
-                                    product_id: p.id,
-                                    quantity: parseInt(ev.target.value),
-                                    price : item.price
-                                  };
-                                else return item;
-                              });
-                              return list;
-                            });
+                          let error = false;
+                          if (isNaN(parseInt(ev.target.value))) {
+                            setErrorMessage("Wrong quantity");
+                            error = true;
                           }
+                          setOrderProducts((old) => {
+                            const list = old.map((item) => {
+                              if (item.product_id === p.id)
+                                return {
+                                  product_id: p.id,
+                                  quantity: error
+                                    ? -1
+                                    : parseInt(ev.target.value),
+                                  price: item.price,
+                                };
+                              else return item;
+                            });
+                            return list;
+                          });
                         }}
                         id={p.id}
                         size='sm'></Form.Control>{" "}
-                      {" "}
                       Price:
                       <Form.Control
                         defaultValue={0}
-                        type="number"
+                        type='number'
                         inline
                         onChange={(ev) => {
-                          if (isNaN(parseFloat(ev.target.value)))
-                            {
-                              setErrorMessage("Wrong price");
-                              setOrderProducts((old) => {
-                                const list = old.map((item) => {
-                                  if (item.product_id === p.id)
-                                    return {
-                                      product_id: p.id,
-                                      price: -1,
-                                      quantity : item.quantity
-                                    };
-                                  else return item;
-                                });
-                                return list;
-                              });
-                            }
-                          else {
-                            setOrderProducts((old) => {
-                              const list = old.map((item) => {
-                                if (item.product_id === p.id)
-                                  return {
-                                    product_id: p.id,
-                                    quantity: item.quantity,
-                                    price : parseFloat(ev.target.value)
-                                  };
-                                else return item;
-                              });
-                              return list;
-                            });
+                          let errorPrice = false;
+                          if (isNaN(parseFloat(ev.target.value))) {
+                            setErrorMessage("Wrong price");
+                            errorPrice = true;
                           }
+                          setOrderProducts((old) => {
+                            const list = old.map((item) => {
+                              if (item.product_id === p.id)
+                                return {
+                                  product_id: p.id,
+                                  quantity: item.quantity,
+                                  price: errorPrice
+                                    ? -1
+                                    : parseFloat(ev.target.value),
+                                };
+                              else return item;
+                            });
+                            return list;
+                          });
                         }}
                         id={p.id}
                         size='sm'></Form.Control>{" "}
                     </>
-                  ) : null}
+                  ) : (
+                    ""
+                  )}
                 </Form.Group>
               </Row>
             ))}
           </Col>
 
-          {errorQuantity === false ?<Button
+          <Button
             className='se-button btn-block fixed-height below'
             onClick={(ev) => handleSubmit(ev, props)}>
             Issue Order
-          </Button> : ""}
+          </Button>
         </Form>
       </Container>
     </>

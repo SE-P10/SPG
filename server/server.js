@@ -13,6 +13,7 @@ const userDao = require("./dao/user-dao");
 const walletDao = require("./dao/wallet-dao");
 const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
+const testDao = require("./test-dao/test-dao.js")
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -210,6 +211,21 @@ app.get("/api/products/farmer/:farmer_id", isLoggedIn, (req, res) => {
   }
 });
 
+// DELETE /api/clients/:email
+app.delete('/api/clients/:email', async function (req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  try {
+    await gDao.deleteUser(req.params.email);
+    console.log("ciao")
+    res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
+  }
+});
 // POST /wallet/update/
 // parameters product_id, amount
 // update the value of the product to the new value
@@ -237,6 +253,25 @@ app.put(
 
 /*** Other express-related instructions ***/
 
+/*** API used just for the test enviroment***/
+app.delete('/api/test/restoretables/', async function (req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  try {
+    await testDao.restoreUsersTable();
+    await testDao.restoreProductsTable();
+    await testDao.restoreUsersMetaTable();
+    await testDao.restoreOrderProductTable();
+    await testDao.restoreOrdersTable();
+    
+    res.status(201).end();
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
+  }
+});
 // Activate the server
 app.listen(port, () => {
   console.log(`react-score-server-mini listening at http://localhost:${port}`);

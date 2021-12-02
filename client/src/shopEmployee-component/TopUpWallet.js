@@ -11,12 +11,12 @@ function TopUpWallet(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [isWalletLoading, setIsWalletLoading] = useState(true);
   const handleSearch = (emailValue) => {
-
     if (!emailValue) setErrorMessage("You have to insert an email!");
     else {
       setEmail(() => emailValue);
       API.getWalletByMail(emailValue)
         .then((walletValueN) => {
+          setIsWalletLoading(false);
           setErrorMessage("");
           setWalletValue(walletValueN);
         })
@@ -29,22 +29,19 @@ function TopUpWallet(props) {
 
   const rechargeWallet = () => {
     let operationOk = true;
-    if (rechargeAmount === null  || rechargeAmount == 0 || rechargeAmount < 0 ) {
-       operationOk = false;
-    } 
-    
+    if (rechargeAmount === null || rechargeAmount === 0 || rechargeAmount < 0) {
+      operationOk = false;
+    }
+
     if (operationOk) {
       API.updateWallet(rechargeAmount, email).catch((e) => {
         console.log("Error recharging the wallet. " + e);
         setErrorMessage("Error recharging the wallet. " + e);
-        
       });
       props.addMessage("successfully recharged your wallet");
       props.changeAction(0);
-      
-    }
-    else {
-      setErrorMessage("Wrong quantity")
+    } else {
+      setErrorMessage("Wrong quantity");
     }
   };
 
@@ -75,7 +72,7 @@ function TopUpWallet(props) {
         {walletValue ? (
           <>
             {" "}
-            {isWalletLoading ? (
+            {!isWalletLoading ? (
               <>
                 {" "}
                 <Row className='justify-content-center below'>
@@ -91,12 +88,18 @@ function TopUpWallet(props) {
                     min={0}
                     type='number'
                     onChange={(ev) => {
-                      if ( isNaN(parseInt(ev.target.value)) ||  parseInt(ev.target.value) <= 0)
-                        {setErrorMessage("wrong amount");setRechargeAmount(-1);}
-                      else setRechargeAmount(ev.target.value);
+                      if (
+                        isNaN(parseInt(ev.target.value)) ||
+                        parseInt(ev.target.value) <= 0
+                      ) {
+                        setErrorMessage("wrong amount");
+                        setRechargeAmount(-1);
+                      } else setRechargeAmount(ev.target.value);
                     }}
                   />{" "}
-                  <Button onClick={rechargeWallet} className='spg-button over below'>
+                  <Button
+                    onClick={rechargeWallet}
+                    className='spg-button over below'>
                     {" "}
                     Recharge the wallet
                   </Button>

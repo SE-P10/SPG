@@ -1,0 +1,32 @@
+{
+  "name": "spg",
+  "version": "1.0.0",
+  "description": "Solidarity Purchasing Group",
+  "dependencies": {
+    "pg": "^8.7.1"
+  },
+  "devDependencies": {
+    "@cypress/code-coverage": "^3.9.11",
+    "@cypress/instrument-cra": "^1.0.0",
+    "@testing-library/cypress": "^8.0.2",
+    "babel-plugin-istanbul": "^6.1.1",
+    "cypress": "^9.1.0",
+    "nyc": "^15.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SE-P10/SPG.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SE-P10/SPG/issues"
+  },
+  "homepage": "https://github.com/SE-P10/SPG#readme",
+  "nyc": {
+    "report-dir": "cypress-coverage"
+  }
+}
