@@ -3,7 +3,7 @@ import { handleFetch, parseResponse } from "./utility";
 /**
  *
  * @param {Number} filter userID
- * @returns {Array} [{id:0, text: '', seen:0}, ...]
+ * @returns {Array} [{id:0, message: '', object: '', seen:0}, ...]
  */
 async function getNotification(userID) {
     return parseResponse(
@@ -32,9 +32,9 @@ async function setSeenNotification(notificationID) {
  * @param {String} message
  * @returns {Boolean} 
  */
-async function insertNotification(userID, message) {
+async function insertNotification(userID, message, object = '') {
     return parseResponse(
-        await handleFetch("/api/notification/" + userID, { text: message }, "POST"),
+        await handleFetch("/api/notification/" + userID, { message: message, object: object }, "POST"),
         "boolean",
         []
     );

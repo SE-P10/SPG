@@ -6,24 +6,29 @@ const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const db = require("../db");
 const { getUserById } = require("./user-dao");
-const { debugLog } = require("../utility");
+const { debugLog, filter_args } = require("../utility");
 
 
-async function addNotification(userID, text, email = false) {
+async function addNotification(userID, body, email = false) {
 
-    let sql = 'INSERT INTO notification (user_id, text) VALUES(?, ?)';
+    let notificationData = filter_args({
+        message: '',
+        object: ''
+    }, body);
 
-    let status = await this.runQuerySQL(db, sql, [userID, text], true);
+    let sql = 'INSERT INTO notification (user_id, message, object) VALUES(?, ?, ?)';
+
+    let status = await this.runQuerySQL(db, sql, [userID, notificationData.message, notificationData.object], true);
 
     if (status && email) {
 
-        email = this.filter_args({
+        let emailData = this.filter_args({
             to: '',
-            body: text,
-            subject: ''
+            body: notificationData.message,
+            subject: notificationData.object
         }, email);
 
-        return this.sendMail(email.to, email.body, email.subject);
+        return this.sendMail(emailData.to, emailData.body, emailData.subject);
     }
 
     return status;
@@ -44,7 +49,8 @@ async function getNotification(userID) {
 
     return await getQuerySQL(db, sql, [userID], {
         id: 0,
-        text: '',
+        message: '',
+        object: '',
         seen: 0
     }, []);
 }
@@ -63,7 +69,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
         }
 
         try {
-            let status = await addNotification(user.id, req.body.text, { to: user.email });
+            let status = await addNotification(user.id, req.body, { to: user.email });
 
             if (status)
                 res.status(201).json(status).end();
