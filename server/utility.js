@@ -340,7 +340,7 @@ exports.sendMail = async (to, body, subject) => {
 
 exports.setNotification = async (db, userID, data, email = false) => {
 
-    let sql = 'INSERT INTO user_notification (user_id, data) VALUES(?, ?)';
+    let sql = 'INSERT INTO notification (user_id, data) VALUES(?, ?)';
 
     let status = await this.runQuerySQL(db, sql, [userID, data], true);
 
