@@ -1,11 +1,23 @@
 ## API Client
 
+## API.getUserId(email)
+* Description: return the id of the user with that email
+* Request params; email
+* Return: the id of the user.
+
+## API.updateFarmerProducts(productID, newAmount, farmerId, price)
+
+* Description: update the amount value and price of a product
+* Request params; productID, farmerId, newAmount, price
+* Return: the result of the update if is done or not
+
 ## API.getFarmerProducts(farmerID)
-  * Description: get all the products that a farmers decided to make avaible on
-    the application.
-  * Request params: farmerID, the id of the farmer 
-  * Return: a list of all the products, it is empty in case the there are no
-    products
+
+* Description: get all the products that a farmers decided to make avaible on
+the application.
+* Request params: farmerID, the id of the farmer 
+* Return: a list of all the products, it is empty in case the there are no
+products
 
 ## API.getOrders(filter = '')
 

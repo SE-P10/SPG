@@ -11,7 +11,7 @@ const { runQuerySQL, getQuerySQL } = require("../utility");
 exports.deleteUser = (userMail) => {
   return new Promise((resolve, reject) => {
     const sql = 'DELETE FROM users WHERE email = ?';
-    db.run(sql, [userMail], function (err) {
+    db.run(sql, [userMail], function(err) {
       if (err) {
         reject(err);
         console.log(err)
@@ -140,4 +140,18 @@ exports.execApi = (app, passport, isLoggedIn) => {
     }
   });
 
+  // Return the id of a user from his email
+  app.get("/api/users/:client_email", isLoggedIn, (req, res) => {
+    try {
+      this.getuserId(req.params.client_email)
+        .then((orders) => {
+          res.status(200).json(orders);
+        })
+        .catch((err) => {
+          res.status(503).json({});
+        });
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  });
 }

@@ -1,6 +1,39 @@
 
 # API Server
 
+## GET /api/users/:client_email
+
+Get the id of a user from his email
+
+```url
+http://localhost:3001/api/users/paolobianchi@demo.it
+```
+
+## GET /api/products/farmer/:farmer_id
+
+Get the list of all the products of a farmer
+
+```url
+http://localhost:3001/api/products/farmer/4
+```
+
+## POST /api/farmer/products/update
+update the products amount, of a farmer 
+
+```url 
+POST /api/farmer/products/update HTTP/1.1
+Host: localhost
+Content-Type: application/json
+Content-Length: 52
+
+{
+  "farmer_id": 4,
+  "product_id": 2,
+  "quantity":200,
+  "price":20,
+}
+```
+
 ## POST /api/wallet/update/
 
 ```url
