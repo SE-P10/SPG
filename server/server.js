@@ -278,6 +278,8 @@ app.delete('/api/test/restoretables/', async function (req, res) {
     res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
   }
 });
+
+
 // Activate the server
 app.listen(port, () => {
   console.log(`react-score-server-mini listening at http://localhost:${port}`);

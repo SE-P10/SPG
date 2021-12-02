@@ -11,7 +11,7 @@ exports.getProducts = async (farmerID) => {
   let products = await getQuerySQL(db,
     "SELECT products.id, products_details.name, products.quantity FROM products_details, products WHERE products.id = products_details.id AND products.farmer_id = ?",
     [farmerID],
-    {id: 0,  name: '', quantity: -1 }
+    { id: 0, name: '', quantity: -1 }
   );
 
 
@@ -29,15 +29,20 @@ exports.getProducts = async (farmerID) => {
 //     }
 //   });
 // }
-exports.updateProducts = async (farmerID, productID, newAmount,price) => {
+exports.updateProducts = async (farmerID, productID, newAmount, price) => {
 
-  return new Promise((resolve,reject) => {
-    const sql = "UPDATE products SET quantity = ?, price = ? WHERE farmer_id = ? AND products.id = ?";
-    db.run(sql,[newAmount,price,farmerID,productID],function(err){
-      if (err) {
-        reject(err);return;
-      }
-      resolve()
-    })
-  })
+  let dinoSQL = dynamicSQL("UPDATE products SET", { quantity: newAmount, price: price }, { farmer_id: farmerID, id: productID });
+
+  return runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true);
+
+  /*
+    return new Promise((resolve,reject) => {
+      const sql = "UPDATE products SET quantity = ?, price = ? WHERE farmer_id = ? AND products.id = ?";
+      db.run(sql,[newAmount,price,,productID],function(err){
+        if (err) {
+          reject(err);return;
+        }
+        resolve()
+      })
+    })*/
 }
