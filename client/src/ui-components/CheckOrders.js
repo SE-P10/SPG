@@ -1,7 +1,7 @@
-import { Alert, Form, Row, Col, Container } from "react-bootstrap";
+import { Alert, Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import { SearchComponent } from "./SearchComponent";
-import API from "./../API"
+import API from "./../API";
 import "../css/custom.css";
 
 function CheckOrders(props) {
@@ -10,7 +10,7 @@ function CheckOrders(props) {
 
   const handleSearch = async (email) => {
     let ordersTmp = [];
-    if (orders.length !== 0 ) setOrders([])
+    if (orders.length !== 0) setOrders([]);
     ordersTmp = await API.getOrders(email);
     if (ordersTmp.length === 0) {
       setErrorMessage("No orders found for this user.");

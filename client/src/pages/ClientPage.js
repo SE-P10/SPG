@@ -1,6 +1,5 @@
 import "../css/custom.css";
-import { Container, Row, Col, ListGroup, Button, Alert } from "react-bootstrap";
-import { Card } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert } from "react-bootstrap";
 import { useState } from "react";
 import { ClientOrder } from "../client-component/ClientOrder";
 import { BrowserProducts } from "../ui-components/BrowseProducts";

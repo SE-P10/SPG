@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Container, Row, Col, Alert } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";
@@ -37,9 +37,6 @@ const App = () => {
     checkAuth().catch((err) => console.log(err));
   }, []);
 
-
-  
-
   const doLogin = async (credentials) => {
     try {
       const user = await API.logIn(credentials);
@@ -57,8 +54,6 @@ const App = () => {
     setUser(null);
     setMessage("");
   };
-
-  
 
   const closeMessage = () => {
     setMessage("");
@@ -81,9 +76,9 @@ const App = () => {
                 {loggedIn && user !== null ? (
                   <>
                     {" "}
-                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
-                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
-                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
+                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
+                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
                   </>
                 ) : (
                   <LoginForm
@@ -113,26 +108,20 @@ const App = () => {
           render={() => (
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
-                {
-
-                    loggedIn && user !== null ? (
-                      <>
-                        {" "}
-                        {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
-                        {user.role == 0 ? <Redirect to='/clientpage' /> : null}
-                        {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
-                      </>
-                    ) : (
-                      <LoginForm
-                        closeMessage={closeMessage}
-                        message={message}
-                        login={doLogin}
-                      />
-                    )
-
-
-
-                }
+                {loggedIn && user !== null ? (
+                  <>
+                    {" "}
+                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
+                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
+                  </>
+                ) : (
+                  <LoginForm
+                    closeMessage={closeMessage}
+                    message={message}
+                    login={doLogin}
+                  />
+                )}
               </Row>
             </Container>
           )}
@@ -143,7 +132,7 @@ const App = () => {
           path='/shopemployee'
           render={() => (
             <>
-              {user !== null && user.role == 1 ? (
+              {user !== null && user.role === "1" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
                   <ShopEmployee user={user} loggedIn={loggedIn} />
@@ -174,7 +163,7 @@ const App = () => {
           path='/farmerpage'
           render={() => (
             <>
-              {user !== null && user.role == 2 ? (
+              {user !== null && user.role === "2" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
                   <FarmerPage user={user} />
@@ -192,7 +181,7 @@ const App = () => {
           render={() => (
             <>
               {" "}
-              {user !== null && user.role == 0 ? (
+              {user !== null && user.role === "0" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
                   <ClientPage user={user} />
