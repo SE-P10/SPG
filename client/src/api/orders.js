@@ -21,7 +21,6 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
   return handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
 }
 
-
 /**
  *
  * @param {Number | String} filter user_email|orderID|order_status
@@ -52,12 +51,7 @@ async function getPendingOrders() {
  */
 async function handOutOrder(orderID = 0) {
   return parseResponse(
-    await handleOrderAction(
-      orderID,
-      [],
-      { id: orderID, status: "handout" },
-      "PUT"
-    )
+    await handleOrderAction(orderID, [], { id: orderID, status: "handout" }, "PUT")
   );
 }
 /**
@@ -82,7 +76,7 @@ async function insertOrder(userID, products = [], order_details = {}) {
  */
 async function getRequestedProducts(farmerID) {
   return parseResponse(
-    await handleFetch("/api/orders/products/farmer/" + farmerID, {}, "GET") , 'array');
+    await handleFetch("/api/orders/products/farmer/" + farmerID, {}, "GET"), 'array');
 }
 
 const ordersApi = {

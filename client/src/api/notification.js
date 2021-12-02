@@ -7,7 +7,7 @@ import { handleFetch, parseResponse } from "./utility";
  */
 async function getNotification(userID) {
     return parseResponse(
-        await handleFetch("/api/notification/" + userID, {}, "GET"),
+        await handleFetch("/api/notification/" + userID + "/seen/", {}, "GET"),
         "array",
         []
     );
@@ -32,7 +32,7 @@ async function setSeenNotification(notificationID) {
  * @param {String} message
  * @returns {Boolean} 
  */
-async function insertNotification(userID, message, object = '') {
+async function addNotification(userID, message, object = '') {
     return parseResponse(
         await handleFetch("/api/notification/" + userID, { message: message, object: object }, "POST"),
         "boolean",
@@ -43,7 +43,7 @@ async function insertNotification(userID, message, object = '') {
 
 const notificationAPI = {
     setSeenNotification,
-    insertNotification,
+    addNotification,
     getNotification,
 };
 
