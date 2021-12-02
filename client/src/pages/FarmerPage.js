@@ -3,7 +3,7 @@ import { Button, Alert, Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import "../css/custom.css";
 
-import { updateIcon, backIcon } from "../ui-components/Icons";
+import { updateIcon, backIcon, confirmIcon } from "../ui-components/Icons";
 
 import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
 import { ConfirmProducts } from "../farmer-component/ConfirmProducts";
@@ -96,7 +96,7 @@ function FarmerPage(props) {
             />
           ) : null}
 
-          {actionF === 2 ? <ConfirmProducts /> : null}
+          {actionF === 2 ? <ConfirmProducts user={props.user} /> : null}
         </Row>
       </Container>
     </>

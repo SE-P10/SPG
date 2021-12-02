@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import "../css/custom.css";
 import gAPI from "../api/gAPI";
 import API from "../API";
-import { filterIcon, basketIcon } from "../ui-components/Icons";
+import { filterIcon, basketIcon, deleteIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
 import userAPI from "../api/user";
 

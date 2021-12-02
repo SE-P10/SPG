@@ -14,13 +14,10 @@ import { SearchComponent } from "../ui-components/SearchComponent";
 import { useEffect } from "react";
 import API from "./../API";
 import "../css/custom.css";
-
+import ordersApi from "../api/orders";
 function ConfirmProducts(props) {
   const [errorMessage, setErrorMessage] = useState("");
-  const [productQ, setProductQ] = useState([
-    { name: "Apple", quantity: "1" },
-    { name: "Banana", quantity: "3" },
-  ]);
+  const [productQ, setProductQ] = useState([]);
   const [confirmedProductQ, setConfirmedProductQ] = useState([]);
 
   // prendo i prodotti e le quantita dal db (productQ)
@@ -29,6 +26,13 @@ function ConfirmProducts(props) {
   // invio confirmedProductQ al server
 
   useEffect(() => {
+    const productOrdered = async () => {
+      const productsTmp = await ordersApi.getRequestedProducts(props.user.id);
+      setProductQ(productsTmp);
+    };
+
+    productOrdered();
+
     setConfirmedProductQ(productQ);
   }, []);
 
@@ -37,18 +41,20 @@ function ConfirmProducts(props) {
     console.log(confirmedProductQ.filter((p) => p.quantity > 0));
   };
 
-  const changeQ = (ev, name) => {
+  const changeQ = (ev, p) => {
     setConfirmedProductQ((old) =>
       old.map((o) => {
-        if (o.name == name)
+        if (o.name == p.name)
           return {
-            name: name,
-            quantity: ev.target.value,
+            id: p.id,
+
+            quantity: parseInt(ev.target.value),
+            price: p.price,
+            name: p.name,
           };
         else return o;
       })
     );
-    console.log(name, ev.target.value);
   };
 
   return (
@@ -95,7 +101,7 @@ function ConfirmProducts(props) {
                         min={0}
                         max={p.quantity}
                         onChange={(ev) => {
-                          changeQ(ev, p.name);
+                          changeQ(ev, p);
                         }}></Form.Control>{" "}
                     </Col>
                   </Row>{" "}
