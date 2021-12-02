@@ -41,7 +41,7 @@ const addClient = async (newClient) => {
 const listProducts = () => {
   return new Promise((resolve, reject) => {
     const sql =
-      "select p.id AS idP, quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_detalis pd where p.farmer_id = u.id and p.details_id = pd.id";
+      "select p.id AS idP, quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_details pd where p.farmer_id = u.id and p.details_id = pd.id";
     db.all(sql, [], (err, rows) => {
       if (err) reject(err);
       else {
@@ -110,7 +110,7 @@ const deleteAllBasket = (userId) => {
 const listProductsBasket = (userId) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "select p.id AS idP, b.quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_detalis pd, basket b where p.farmer_id = u.id and p.details_id = pd.id and p.id = b.product_id and b.user_id = ?";
+      "select p.id AS idP, b.quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_details pd, basket b where p.farmer_id = u.id and p.details_id = pd.id and p.id = b.product_id and b.user_id = ?";
     db.all(sql, [userId], (err, rows) => {
       if (err) reject(err);
       else {
