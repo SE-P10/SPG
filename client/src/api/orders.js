@@ -24,7 +24,7 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
 /**
  *
  * @param {Number | String} filter user_email|orderID|order_status
- * @returns {Object} { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
+ * @returns {Array} [{ id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}, ...]
  */
 async function getOrders(filter) {
   return parseResponse(
@@ -72,7 +72,7 @@ async function insertOrder(userID, products = [], order_details = {}) {
  * Frontend interface API
  *
  * @param {Number} farmerID
- * @returns {Array} [id: 2, quantity: 5, name: 'apple']
+ * @returns {Array} [{id: 2, quantity: 5, name: 'apple'}]
  */
 async function getRequestedProducts(farmerID) {
   return parseResponse(
