@@ -1,22 +1,12 @@
-import {
-  Button,
-  Alert,
-  Form,
-  Row,
-  Col,
-  Dropdown,
-  DropdownButton,
-  Container,
-} from "react-bootstrap";
+import { Button, Alert, Form, Row, Col, Container } from "react-bootstrap";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
 import farmerAPI from "./../api/farmer";
-import gAPI from "../api/gAPI";
 
 function UpdateAvailability(props) {
   useEffect(() => {
-    const fillTables = async () => {
+    const fillTables = async (props) => {
       //const productsTmp = await gAPI.getProducts();
       //mettere questa chiamata API e togliere la precedwente
       const productsTmp = await farmerAPI.getFarmerProducts(props.user.id);
@@ -51,6 +41,7 @@ function UpdateAvailability(props) {
           props.user.id,
           i.price
         );
+        if (!esito) console.log("error");
       }
       propsN.addMessage("Request sent correctly!");
 
@@ -60,12 +51,11 @@ function UpdateAvailability(props) {
 
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([]);
-  const [errorQuantity, setErrorQuantity] = useState(false);
   const [orderProduct, setOrderProducts] = useState([]);
   const [selectedPs, setSelectPs] = useState([]);
 
   const selectProduct = (id) => {
-    if (selectedPs.indexOf(id) == -1) {
+    if (selectedPs.indexOf(id) === -1) {
       setOrderProducts((old) => [
         ...old,
         { product_id: id, quantity: -1, price: -1 },
@@ -74,7 +64,7 @@ function UpdateAvailability(props) {
     } else {
       setSelectPs((old) =>
         old.filter((p) => {
-          return p != id;
+          return p !== id;
         })
       );
 
@@ -180,15 +170,11 @@ function UpdateAvailability(props) {
             ))}
           </Col>
 
-          {errorQuantity === false ? (
-            <Button
-              className='se-button mx-auto fixed-height below'
-              onClick={(ev) => handleSubmit(ev, props)}>
-              Update
-            </Button>
-          ) : (
-            ""
-          )}
+          <Button
+            className='se-button btn-block fixed-height below'
+            onClick={(ev) => handleSubmit(ev, props)}>
+            Issue Order
+          </Button>
         </Form>
       </Container>
     </>

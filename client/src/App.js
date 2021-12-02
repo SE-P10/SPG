@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Container, Row, Col, Alert } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";
@@ -76,9 +76,9 @@ const App = () => {
                 {loggedIn && user !== null ? (
                   <>
                     {" "}
-                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
-                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
-                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
+                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
+                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
                   </>
                 ) : (
                   <LoginForm
@@ -111,9 +111,9 @@ const App = () => {
                 {loggedIn && user !== null ? (
                   <>
                     {" "}
-                    {user.role == 1 ? <Redirect to='/shopemployee' /> : null}
-                    {user.role == 0 ? <Redirect to='/clientpage' /> : null}
-                    {user.role == 2 ? <Redirect to='/farmerpage' /> : null}
+                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
+                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
                   </>
                 ) : (
                   <LoginForm
@@ -132,7 +132,7 @@ const App = () => {
           path='/shopemployee'
           render={() => (
             <>
-              {user !== null && user.role == 1 ? (
+              {user !== null && user.role === "1" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
                   <ShopEmployee user={user} loggedIn={loggedIn} />
@@ -163,7 +163,7 @@ const App = () => {
           path='/farmerpage'
           render={() => (
             <>
-              {user !== null && user.role == 2 ? (
+              {user !== null && user.role === "2" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
                   <FarmerPage user={user} />
@@ -181,7 +181,7 @@ const App = () => {
           render={() => (
             <>
               {" "}
-              {user !== null && user.role == 0 ? (
+              {user !== null && user.role === "0" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
                   <ClientPage user={user} />

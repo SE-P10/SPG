@@ -1,5 +1,5 @@
-import { Container, Row, Col, ListGroup, Button, Alert } from "react-bootstrap";
-import { Card } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert } from "react-bootstrap";
+
 import { useState } from "react";
 import { HandOut } from "../shopEmployee-component/HandOut";
 import { CheckOrders } from "../ui-components/CheckOrders";
@@ -18,40 +18,39 @@ import {
   backIcon,
 } from "../ui-components/Icons.js";
 import { PendingOrders } from "../shopEmployee-component/PendingOrders.js";
-import gAPI from "../api/gAPI";
 import { ClientOrder } from "../client-component/ClientOrder";
 
 function ShopEmployee(props) {
   const [message, setMessage] = useState("");
   const [actionS, setActionS] = useState(0);
-  const [actionName,setActionName] = useState("")
+  const [actionName, setActionName] = useState("");
   const changeAction = (actionN) => {
     setActionS(actionN);
     switch (actionN) {
-      case 1 :
-        setActionName("Register a new client")
+      case 1:
+        setActionName("Register a new client");
         break;
-      case 2 :
-          setActionName("Browse products")
-          break;
-      case 3 :
-            setActionName("Top Up wallet")
-            break;  
-      case 4 :
-              setActionName("New order")
-              break;
-      case 5 :
-            setActionName("Hand Out")
-             break;
-      case 6 :
-            setActionName("Check orders")
-            break;  
-      case 7 :
-              setActionName("pending orders")
-              break;       
-            
-      default :
-      setActionName("")
+      case 2:
+        setActionName("Browse products");
+        break;
+      case 3:
+        setActionName("Top Up wallet");
+        break;
+      case 4:
+        setActionName("New order");
+        break;
+      case 5:
+        setActionName("Hand Out");
+        break;
+      case 6:
+        setActionName("Check orders");
+        break;
+      case 7:
+        setActionName("pending orders");
+        break;
+
+      default:
+        setActionName("");
     }
   };
 
@@ -86,10 +85,10 @@ function ShopEmployee(props) {
         )}
 
         <Row>
-          <Row>           
-                <Col md='auto'>
-                  <h1 className='mx-auto'> {actionName} </h1>{" "}
-                </Col>              
+          <Row>
+            <Col md='auto'>
+              <h1 className='mx-auto'> {actionName} </h1>{" "}
+            </Col>
           </Row>
           <Col className='ml-4'>
             {actionS === 0 ? (

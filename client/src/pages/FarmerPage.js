@@ -1,19 +1,9 @@
 import "../css/custom.css";
-import {
-  Button,
-  Alert,
-  Form,
-  Row,
-  Col,
-  Dropdown,
-  DropdownButton,
-  Container,
-} from "react-bootstrap";
+import { Button, Alert, Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
-import { useEffect } from "react";
 import "../css/custom.css";
-import gAPI from "../api/gAPI";
-import { updateIcon, backIcon, confirmIcon } from "../ui-components/Icons";
+
+import { updateIcon, backIcon } from "../ui-components/Icons";
 
 import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
 import { ConfirmProducts } from "../farmer-component/ConfirmProducts";
