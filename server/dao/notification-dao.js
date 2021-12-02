@@ -40,7 +40,6 @@ async function setNotification(notificationID) {
 
 exports.execApi = (app, passport, isLoggedIn) => {
 
-
     // insert a new notification /api/notification/:user_id
     app.post('/api/notification/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
