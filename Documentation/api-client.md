@@ -50,7 +50,7 @@ products
 * Return: **true** or **false**
 
 ## API.getNotification(userID)
-* Description: get all notification from a user not yet seen
+* Description: get all notification from a user
 * Request params: userID
 * Return: list of notification as defined **[{id:0, message: '', object: '', seen:0}, ...]**
 
