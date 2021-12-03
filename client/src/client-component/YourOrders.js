@@ -11,7 +11,7 @@ function YourOrders(props) {
   const [isOrderListLoading, setIsProductListLoading] = useState(true);
 
   useEffect(
-    (props) => {
+    () => {
       const fillOrders = async () => {
         let ordersTmp = await API.getOrders(props.user.email);
         setIsProductListLoading(false);
