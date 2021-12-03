@@ -63,7 +63,8 @@ exports.execApi = (app, passport, isLoggedIn) => {
   app.post(
     '/api/farmer/products/update',
     async (req, res) => {
-      if (thereIsError(req, res, 'update'))
+      // console.log(req.user)
+      if (thereIsError(req, res, 'update') || !isLoggedIn())
         return res.status(422).end();
       try {
         await this.updateProducts(

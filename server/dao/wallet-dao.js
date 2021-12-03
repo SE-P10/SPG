@@ -7,13 +7,13 @@ const { validationResult } = require("express-validator");
 
 exports.updateWallet = (ammount, client_email) => {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM users WHERE email = ?";
+    const sql = "SELECT users.id FROM users WHERE users.email = ?";
     db.get(sql, [client_email], (err, row) => {
       if (err) reject(err);
       else if (row === undefined) resolve({ error: "User not found." });
       else {
-        const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = (SELECT users.id FROM users WHERE users.email = ? LIMIT 1) and users_meta.meta_key = 'wallet';";
-        db.get(sql, [ammount, client_email], (err, row) => {
+        const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = ? and users_meta.meta_key = 'wallet';";
+        db.get(sql, [ammount, row.id], (err, row) => {
           if (err) {
             resolve(err);
           } else {
