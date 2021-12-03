@@ -444,7 +444,7 @@ cov_399vupmve();
 
 async function getUserId(email) {
   cov_399vupmve().f[0]++;
-  const response = (cov_399vupmve().s[0]++, await fetch('api/users/' + email));
+  const response = (cov_399vupmve().s[0]++, await fetch('/api/users/' + email));
   const respondeBody = (cov_399vupmve().s[1]++, await response.json());
   cov_399vupmve().s[2]++;
 

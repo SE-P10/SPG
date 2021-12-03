@@ -9,39 +9,6 @@ async function getProducts() {
     }
 }
 
-// The parameter is an object like email: {"new.user@demo.it", password: "password", username: "username", name: "name", surname: "surname"}
-async function addClient(newClient) {
-    return new Promise((resolve, reject) => {
-		fetch('/api/newClient', {
-		  	method: 'POST',
-		  	headers: {
-				'Content-Type': 'application/json',
-		  	},
-			body: JSON.stringify(newClient)
-		}).then((response) => {
-			if (response.ok) {
-				resolve(null);
-			} else {
-				response.json()
-					.then((message) => { reject(message); }) // error message in the response body
-					.catch(() => { reject({ error: "Impossible to read server response." }) }); // something else
-			}
-		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) }); // connection errors
-	});
-}
-
-// Return the wallet value of the user associated with the given mail 
-async function getWalletByMail(mail) {
-    // call: GET /api/products
-    const response = await fetch('/api/wallet/' + mail);
-    const walletJson = await response.json();
-    if (response.ok) {
-      	return walletJson.wallet;
-    } else {
-      	throw walletJson;  // an object with the error coming from the server
-    }
-}
-
 // The parameter is an object like { product_id: 5, quantity: 10 }
 async function insertProductInBasket(product) { //mettere controllo se prodotto già c'è o meno
 	return new Promise((resolve, reject) => {
@@ -92,13 +59,11 @@ async function getBasketProducts(setDirtyFalse) {
 }
 
 
-const gAPI = {
+const productsAPI = {
     getProducts,
-	addClient,
-	getWalletByMail,
 	deleteAllBasket,
 	insertProductInBasket,
 	getBasketProducts
 }
 
-export default gAPI;
+export default productsAPI;

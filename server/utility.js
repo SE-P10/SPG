@@ -162,6 +162,7 @@ exports.bulkSQL = async (db, sql, rows, callbacks = {}, transaction = true) => {
                 if (before) {
 
                     beforeRes = await before(rows[i]);
+
                     if (!beforeRes) {
                         if (transaction) {
                             db.run("ROLLBACK;");
@@ -336,26 +337,6 @@ exports.sendMail = async (to, body, subject) => {
         });
     })
 
-}
-
-exports.setNotification = async (db, userID, data, email = false) => {
-
-    let sql = 'INSERT INTO user_notification (user_id, data) VALUES(?, ?)';
-
-    let status = await this.runQuerySQL(db, sql, [userID, data], true);
-
-    if (status && email) {
-
-        email = this.filter_args({
-            to: '',
-            body: data,
-            subject: ''
-        }, email);
-
-        return this.sendMail(email.to, email.body, email.subject);
-    }
-
-    return status;
 }
 
 exports.debugLog = (...log) => {

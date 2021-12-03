@@ -1,7 +1,7 @@
 import { Row, Col, Container, Image, Spinner } from "react-bootstrap";
 import { useState } from "react";
 import { useEffect } from "react";
-import gAPI from "./../api/gAPI";
+import API from "../API";
 import "../css/custom.css";
 import ErrorToast from "./ErrorToast";
 import SearchForm from "./SearchForm";
@@ -16,7 +16,7 @@ function BrowserProducts(props) {
 
   useEffect(() => {
     const fillTables = async () => {
-      const productsTmp = await gAPI.getProducts();
+      const productsTmp = await API.getProducts();
 
       setIsProductsListLoading(false);
       setProducts(productsTmp);

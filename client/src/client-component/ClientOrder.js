@@ -13,12 +13,10 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import gAPI from "../api/gAPI";
 import {Basket} from "../client-component/Basket"
 import API from "../API";
 import { filterIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
-import userAPI from "../api/user";
 
 function ClientOrder(props) {
   const [errorMessage, setErrorMessage] = useState("");
@@ -43,7 +41,7 @@ function ClientOrder(props) {
 
   useEffect(() => {
     const fillTables = async () => {
-      const productsTmp = await gAPI.getProducts();
+      const productsTmp = await API.getProducts();
       setProducts(productsTmp);
       setIsProductListLoading(false);
       const farmersTmp = productsTmp
@@ -85,7 +83,7 @@ function ClientOrder(props) {
         setErrorMessage("You have to insert an email!");
         orderOk = false;
       } else {
-        userId = await userAPI.getUserId(mailInserted);
+        userId = await API.getUserId(mailInserted);
         if (userId.length === 0 || userId[0].role != 0) {
           setErrorMessage("Invalid user");
           orderOk = false;

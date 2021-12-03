@@ -1,8 +1,9 @@
-import gApi from "./api/gAPI.js";
+import productsAPI from "./api/products.js";
 import ordersApi from "./api/orders.js";
 import farmerAPI from "./api/farmer.js";
 import userAPI from "./api/user.js";
 import testAPI from "./api/testAPI.js";
+import walletAPI from "./api/wallet.js"
 
 /**
  * USER API
@@ -79,7 +80,7 @@ async function getOrders(client_email) {
 
 async function getUserInfo(userID) {
   const response = await (userID
-    ? fetch("/api/user/" + userID)
+    ? fetch("/api/users/" + userID)
     : fetch("/api/sessions/current"));
   const userInfo = await response.json();
 
@@ -90,35 +91,18 @@ async function getUserInfo(userID) {
   }
 }
 
-async function updateWallet(amount, client_email) {
-  const response = await fetch("/api/wallet/update/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      amount: amount,
-      client_email: client_email,
-    }),
-  });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    throw await response.json();
-  }
-}
 
 const API = {
   ...ordersApi,
-  ...gApi,
+  ...productsAPI,
   ...farmerAPI,
   ...userAPI,
   ...testAPI,
+  ...walletAPI,
   logIn,
   logOut,
   getUserInfo,
   setTime,
-  updateWallet,
   getOrders,
 };
 
