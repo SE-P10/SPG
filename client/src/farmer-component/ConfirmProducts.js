@@ -31,6 +31,7 @@ function ConfirmProducts(props) {
       setProductQ(productsTmp);
     };
 
+    console.log(props.user.id);
     productOrdered();
 
     setConfirmedProductQ(productQ);

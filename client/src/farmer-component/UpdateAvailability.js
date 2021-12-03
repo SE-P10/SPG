@@ -6,7 +6,7 @@ import farmerAPI from "./../api/farmer";
 
 function UpdateAvailability(props) {
   useEffect(() => {
-    const fillTables = async (props) => {
+    const fillTables = async () => {
       //const productsTmp = await gAPI.getProducts();
       //mettere questa chiamata API e togliere la precedwente
       const productsTmp = await farmerAPI.getFarmerProducts(props.user.id);
