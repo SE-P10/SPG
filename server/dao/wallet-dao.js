@@ -2,23 +2,57 @@
 /* Data Access Object (DAO) module for accessing users */
 
 const db = require("./../db");
+const { validationResult } = require("express-validator");
+const { getQuerySQL, runQuerySQL } = require("../utility")
 
-exports.updateWallet = (ammount, client_email) => {
-  return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM users WHERE email = ?";
-    db.get(sql, [client_email], (err, row) => {
-      if (err) reject(err);
-      else if (row === undefined) resolve({ error: "User not found." });
-      else {
-        const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = (SELECT users.id FROM users WHERE users.email = ? LIMIT 1) and users_meta.meta_key = 'wallet';";
-        db.get(sql, [ammount, client_email], (err, row) => {
-          if (err) {
-            resolve(err);
-          } else {
-            resolve(true);
-          }
-        });
-      }
-    });
+exports.updateWallet = async (ammount, client_email) => {
+  return new Promise(async (resolve, reject) => {
+    const sql = "SELECT users.id FROM users WHERE users.email = ?";
+    let user_id = (await getQuerySQL(db, sql, [client_email], { id: 0 }, { id: -1 }, true)).id
+    if ((user_id === -1)) {
+      resolve({ error: "User not found." });
+    } else {
+      const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = ? and users_meta.meta_key = 'wallet';";
+      return runQuerySQL(db, sql, [ammount, user_id], true);
+    }
   });
 };
+
+exports.execApi = (app, passport, isLoggedIn) => {
+  function thereIsError(req, res, action = '') {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      res.status(422).json({ errors: errors.array() });
+      return true;
+    }
+
+    return false
+  }
+
+  // POST /wallet/update/
+  // parameters client_email, amount
+  // up to the wallet the amount
+  app.post(
+    '/api/wallet/update/',
+    isLoggedIn,
+    async (req, res) => {
+      if (thereIsError(req, res, 'insert'))
+        return res
+          .status(400)
+          .render("contact", { errors: "error in the parameters" });
+      try {
+        this.updateWallet(req.body.amount, req.body.client_email)
+          .then((res1) => {
+            res.status(200).json({ result: res1 });
+          })
+          .catch((err) => {
+            // console.log(err);
+            res.status(503).json({ result: err });
+          });
+      } catch (err) {
+        res.status(500).json(false);
+      }
+    }
+  );
+}

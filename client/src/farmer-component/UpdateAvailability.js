@@ -6,14 +6,15 @@ import farmerAPI from "./../api/farmer";
 
 function UpdateAvailability(props) {
   useEffect(() => {
-    const fillTables = async (props) => {
+    const fillTables = async (id) => {
       //const productsTmp = await gAPI.getProducts();
       //mettere questa chiamata API e togliere la precedwente
-      const productsTmp = await farmerAPI.getFarmerProducts(props.user.id);
+      console.log(props)
+      const productsTmp = await farmerAPI.getFarmerProducts(id);
       setProducts(productsTmp);
     };
 
-    fillTables();
+    fillTables(props.user.id);
   }, []);
 
   const handleSubmit = async (event, propsN) => {

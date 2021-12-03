@@ -162,6 +162,7 @@ exports.bulkSQL = async (db, sql, rows, callbacks = {}, transaction = true) => {
                 if (before) {
 
                     beforeRes = await before(rows[i]);
+
                     if (!beforeRes) {
                         if (transaction) {
                             db.run("ROLLBACK;");
@@ -230,7 +231,9 @@ exports.existValueInDB = async (db, table, fieldValue, returnDef = false) => {
     })
 }
 
-exports.getQuerySQL = async (db, sql, values, objDef = {}, returnFail = null, single = false) => {
+exports.getQuerySQL = async (db, sql, values = [], objDef = {}, returnFail = null, single = false) => {
+
+    values = values.map((item) => { return this.isArray(item) ? item.join(', ') : item })
 
     return new Promise((resolve, reject) => {
 
@@ -238,13 +241,14 @@ exports.getQuerySQL = async (db, sql, values, objDef = {}, returnFail = null, si
             db.get(sql, [...values], (err, row) => {
 
                 if (err || !row) {
+                    console.log(err)
                     resolve(returnFail);
                 }
                 else {
-                    if (objDef)
-                        resolve({ ...this.filter_args(objDef, row) });
-                    else
+                    if (this.isEmptyObject(objDef))
                         resolve({ ...row });
+                    else
+                        resolve({ ...this.filter_args(objDef, row) });
                 }
             });
         }
@@ -252,10 +256,11 @@ exports.getQuerySQL = async (db, sql, values, objDef = {}, returnFail = null, si
             db.all(sql, [...values], (err, rows) => {
 
                 if (err || !rows) {
+                    console.log(err)
                     resolve(returnFail);
                 }
                 else {
-                    const rets = rows.map((row) => { return { ...(!!objDef ? this.filter_args(objDef, row) : row) } });
+                    const rets = rows.map((row) => { return { ...(this.isEmptyObject(objDef) ? row : this.filter_args(objDef, row)) } });
                     resolve(rets);
                 }
             });
@@ -263,7 +268,7 @@ exports.getQuerySQL = async (db, sql, values, objDef = {}, returnFail = null, si
     });
 }
 
-exports.runQuerySQL = async (db, sql, values, res = false) => {
+exports.runQuerySQL = async (db, sql, values = [], res = false) => {
 
     return new Promise((resolve, reject) => {
 
