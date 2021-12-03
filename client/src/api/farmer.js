@@ -1,8 +1,11 @@
 // call: GET /api/farmer/pruducts
 async function getFarmerProducts(farmerID) {
-  const response = await fetch("/api/products/farmer/" + farmerID.id);
+  // const response = await fetch("/api/products/farmer/" + farmerID.id);
+  console.log("test");
+  const response = await fetch("/api/products/farmer/" + farmerID);
   const pFramer = await response.json();
-  console.log(farmerID.id);
+  console.log("test");
+  console.log(farmerID);
   if (response.ok) {
     return pFramer;
   } else {
