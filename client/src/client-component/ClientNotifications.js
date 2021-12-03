@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { useEffect } from "react";
 import API from "./../API";
+import notificationAPI from "./../api/notification"
 import "../css/custom.css";
 import { MailBox } from "./MailBox";
 import ordersApi from "../api/orders";
@@ -16,7 +17,7 @@ function ClientNotifications(props) {
 
     useEffect(() => {
         const fillMailBox = async () => {
-            const mails = await API.getMails();
+            const mails = await notificationAPI.getNotification(props.user.id);
             setMails(mails);
         };
 
