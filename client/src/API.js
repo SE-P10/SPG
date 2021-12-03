@@ -1,4 +1,4 @@
-import gApi from "./api/gAPI.js";
+import productsAPI from "./api/products.js";
 import ordersApi from "./api/orders.js";
 import farmerAPI from "./api/farmer.js";
 import userAPI from "./api/user.js";
@@ -94,7 +94,7 @@ async function getUserInfo(userID) {
 
 const API = {
   ...ordersApi,
-  ...gApi,
+  ...productsAPI,
   ...farmerAPI,
   ...userAPI,
   ...testAPI,

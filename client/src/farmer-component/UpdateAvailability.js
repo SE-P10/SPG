@@ -2,15 +2,15 @@ import { Button, Alert, Form, Row, Col, Container } from "react-bootstrap";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import farmerAPI from "./../api/farmer";
+import API from "../API";
 
 function UpdateAvailability(props) {
   useEffect(() => {
     const fillTables = async (id) => {
-      //const productsTmp = await gAPI.getProducts();
+      //const productsTmp = await API.getProducts();
       //mettere questa chiamata API e togliere la precedwente
       console.log(props)
-      const productsTmp = await farmerAPI.getFarmerProducts(id);
+      const productsTmp = await API.getFarmerProducts(id);
       setProducts(productsTmp);
     };
 
@@ -36,7 +36,7 @@ function UpdateAvailability(props) {
 
     if (orderOk) {
       for (let i of orderProduct) {
-        let esito = await farmerAPI.updateFarmerProducts(
+        let esito = await API.updateFarmerProducts(
           i.product_id,
           i.quantity,
           props.user.id,

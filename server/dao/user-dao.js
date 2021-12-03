@@ -119,6 +119,41 @@ exports.getuserId = (client_email = null) => {
   });
 };
 
+const addClient = async (newClient) => {
+  return new Promise((resolve, reject) => {
+    const query = "SELECT * FROM users WHERE email = ?";
+    db.all(query, [newClient.email], (err, rows) => {
+      if (err) reject(err);
+      else if (rows.length) reject("Email already in use!");
+      else {
+        const sql1 =
+          "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0)";
+        const sql2 =
+          "INSERT into users_meta VALUES((SELECT MAX(id)+1 FROM users_meta), (SELECT MAX(id) FROM users), 'wallet', 0)";
+        bcrypt.hash(newClient.password, 10).then((passwordHash) => {
+          db.run(
+            sql1,
+            [
+              newClient.email,
+              passwordHash,
+              newClient.username,
+              newClient.name,
+              newClient.surname,
+            ],
+            (err) => {
+              if (err) reject(err);
+              db.run(sql2, [], (err) => {
+                if (err) reject(err);
+                resolve(this.lastID);
+              });
+            }
+          );
+        });
+      }
+    });
+  });
+};
+
 
 exports.execApi = (app, passport, isLoggedIn) => {
 
@@ -154,4 +189,28 @@ exports.execApi = (app, passport, isLoggedIn) => {
       res.status(500).json(false);
     }
   });
+
+  // POST /api/newClient
+  app.post(
+    "/api/newClient",
+    [/*
+      body("email").isEmail(),
+      body("password").isString(),
+      body("username").isString(),
+      body("name").isString(),
+      body("surname").isString(),*/
+    ],
+    async (req, res) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+      try {
+        await addClient(req.body);
+        res.status(201).end();
+      } catch (err) {
+        res.status(503).json({ error: err });
+      }
+    }
+  );
 }

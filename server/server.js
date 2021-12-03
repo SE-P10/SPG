@@ -12,7 +12,7 @@ const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 const dayjs = require("dayjs");
 
-const gDao = require("./dao/products-dao");
+const productsDao = require("./dao/products-dao");
 const userDao = require("./dao/user-dao");
 const walletDao = require("./dao/wallet-dao");
 const ordersDao = require("./dao/orders-dao.js");
@@ -89,7 +89,7 @@ app.use(passport.session());
 
 // API implemented in module gAPI
 userDao.execApi(app, passport, isLoggedIn);
-gDao.execApi(app, passport, isLoggedIn, body);
+productsDao.execApi(app, passport, isLoggedIn, body);
 ordersDao.execApi(app, passport, isLoggedIn);
 
 farmerDao.execApi(app, passport, isLoggedIn);

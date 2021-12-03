@@ -25,6 +25,14 @@ exports.updateProducts = async (farmerID, productID, newAmount, price) => {
   return runQuerySQL(db, dinoSQL.sql, dinoSQL.values, true);
 }
 
+const listOrderProducts = farmerId => {
+  return getQuerySQL(db,
+    "SELECT pd.name AS name, SUM(op.quantity) AS quantity FROM order_product op, products p, product_details pd GROUP BY product_id WHERE p.details.id=pd-id AND op.product_id=p.product_id AND p.farmer_id=?",
+    [farmerId],
+    { name: '', quantity: 0, }
+  );
+}
+
 exports.execApi = (app, passport, isLoggedIn) => {
   function thereIsError(req, res, action = '') {
 
@@ -78,6 +86,17 @@ exports.execApi = (app, passport, isLoggedIn) => {
         res.status(503).end();
       }
     }
-
   )
+
+  // GET /api/orderProducts
+  app.get("/api/orderProducts", isLoggedIn, async (req, res) => {
+    if (req.user.role !== 2)
+      res.status(404).json({ error: 'Only farmers have access to this functionality' }).end();
+    try {
+      const Products = await listOrderProducts(req.user.id);
+      res.json(Products);
+    } catch (err) {
+      res.status(500).end();
+    }
+  });
 }
