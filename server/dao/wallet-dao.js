@@ -3,25 +3,18 @@
 
 const db = require("./../db");
 const { validationResult } = require("express-validator");
-// const { } = require("../utility")
+const { getQuerySQL, runQuerySQL } = require("../utility")
 
-exports.updateWallet = (ammount, client_email) => {
-  return new Promise((resolve, reject) => {
+exports.updateWallet = async (ammount, client_email) => {
+  return new Promise(async (resolve, reject) => {
     const sql = "SELECT users.id FROM users WHERE users.email = ?";
-    db.get(sql, [client_email], (err, row) => {
-      if (err) reject(err);
-      else if (row === undefined) resolve({ error: "User not found." });
-      else {
-        const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = ? and users_meta.meta_key = 'wallet';";
-        db.get(sql, [ammount, row.id], (err, row) => {
-          if (err) {
-            resolve(err);
-          } else {
-            resolve(true);
-          }
-        });
-      }
-    });
+    let user_id = (await getQuerySQL(db, sql, [client_email], { id: 0 }, { id: -1 }, true)).id
+    if ((user_id === -1)) {
+      resolve({ error: "User not found." });
+    } else {
+      const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = ? and users_meta.meta_key = 'wallet';";
+      return runQuerySQL(db, sql, [ammount, user_id], true);
+    }
   });
 };
 

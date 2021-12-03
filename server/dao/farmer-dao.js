@@ -62,15 +62,15 @@ exports.execApi = (app, passport, isLoggedIn) => {
   // update the value of the product to the new value
   app.post(
     '/api/farmer/products/update',
+    isLoggedIn,
     async (req, res) => {
-      // console.log(req.user)
-      if (thereIsError(req, res, 'update') || !isLoggedIn())
+      if (thereIsError(req, res, 'update'))
         return res.status(422).end();
       try {
         await this.updateProducts(
           req.body.farmer_id,
           req.body.product_id,
-          req.body.quantity,
+          req.body.amount,
           req.body.price,
         );
         res.status(200).end();
