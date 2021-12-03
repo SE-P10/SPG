@@ -10,21 +10,18 @@ function YourOrders(props) {
   const [isOrderListDirty, setIsOrderListDirty] = useState(true);
   const [isOrderListLoading, setIsProductListLoading] = useState(true);
 
-  useEffect(
-    (props) => {
-      const fillOrders = async () => {
-        let ordersTmp = await API.getOrders(props.user.email);
-        setIsProductListLoading(false);
-        if (ordersTmp.length === 0) {
-        } else {
-          setOrders(ordersTmp);
-          setIsOrderListDirty(false);
-        }
-      };
-      fillOrders();
-    },
-    [isOrderListDirty]
-  );
+  useEffect(() => {
+    const fillOrders = async () => {
+      let ordersTmp = await API.getOrders(props.user.email);
+      setIsProductListLoading(false);
+      if (ordersTmp.length === 0) {
+      } else {
+        setOrders(ordersTmp);
+        setIsOrderListDirty(false);
+      }
+    };
+    fillOrders();
+  }, [isOrderListDirty]);
 
   return (
     <>
