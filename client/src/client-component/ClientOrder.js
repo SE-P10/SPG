@@ -100,8 +100,7 @@ function ClientOrder(props) {
 
     if (orderOk) {
       API.deleteAllBasket();
-
-      //Chiamare API , moemntanemtnate stampare l'ordine
+      
       let finalOrder = basketTmp.map((t) => ({
         product_id: t.id,
         confirmed: true,
@@ -114,7 +113,6 @@ function ClientOrder(props) {
       )
         .then(() => {
           propsN.addMessage("Request sent correctly!");
-          //console.log("ok")
 
           propsN.changeAction(0);
         })
