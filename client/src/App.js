@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Container, Row } from "react-bootstrap";
+import { Container, Row , Card} from "react-bootstrap";
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";
@@ -25,6 +25,9 @@ const App = () => {
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [dow,setDow] = useState('monday');
+  const [hour,setHour] = useState(12); //settarle tramite chiamate ad API
+
 
   useEffect(() => {
     //per non perdere utente loggato se aggiorno pagina, da qui viene l'errore della GET 401(unhautorized)
@@ -34,8 +37,12 @@ const App = () => {
       console.log(userTmp);
       setUser(userTmp);
     };
+    //fare api per prendere orario
     checkAuth().catch((err) => console.log(err));
   }, []);
+
+  const changeHour = (hourNew) => { setHour(hourNew); }
+  const changeDow = (dowNew) => { setDow(dowNew);}
 
   const doLogin = async (credentials) => {
     try {
@@ -59,13 +66,20 @@ const App = () => {
     setMessage("");
   };
 
+
   return (
     <Router>
       <MyNavbar
         doLogOut={doLogOut}
+
         loggedIn={loggedIn}
         closeMessage={closeMessage}
+        changeDow={changeDow}
+        changeHour={changeHour}
       />
+      <Card>
+            <Card.Title align='center'> Day : {dow} - hour : {hour} </Card.Title>
+      </Card>
       <Switch>
         <Route
           exact
@@ -135,7 +149,7 @@ const App = () => {
               {user !== null && user.role === "1" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ShopEmployee user={user} loggedIn={loggedIn} />
+                  <ShopEmployee hour={hour} dow={dow} user={user} loggedIn={loggedIn} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -166,7 +180,7 @@ const App = () => {
               {user !== null && user.role === "2" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <FarmerPage user={user} />
+                  <FarmerPage  hour={hour} dow={dow} user={user} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -184,7 +198,7 @@ const App = () => {
               {user !== null && user.role === "0" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ClientPage user={user} />
+                  <ClientPage  hour={hour} dow={dow} user={user} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
