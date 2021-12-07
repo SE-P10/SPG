@@ -7,7 +7,7 @@ const DEBUG_PROCESS = IS_DEBUG;
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
-const { check, validationResult, body } = require("express-validator"); // validation middleware
+const { validationResult, body } = require("express-validator"); // validation middleware
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
 const dayjs = require("dayjs");
@@ -19,12 +19,14 @@ const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
 const notificationDao = require("./dao/notification-dao.js");
 const testDao = require("./dao/test-dao.js");
+const { virtualCron } = require("./cron");
+const { isNumber } = require("./utility");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
 passport.use(
-  new LocalStrategy(function(username, password, done) {
+  new LocalStrategy(function (username, password, done) {
     userDao.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, {
@@ -77,15 +79,36 @@ app.use(
   })
 );
 
-function getTime() {
-  if (session.time)
-    return session.time;
-  return ({ weekDay: dayjs().format('dddd'), hour: Number(dayjs().format('H')) });
+function getVirtualTime() {
+  return session.time || dayjs().unix();
 }
 
 // init Passport to use sessions
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(virtualCron.run(() => {
+
+  let virtualTime = getVirtualTime();
+
+  // virtualCron.unscheduleAll();
+
+  virtualCron.schedule(virtualCron.times.ONCE_A_MINUTE / 30, (time, ...args) => {
+
+    console.log("FIRST", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'ciao-oaic', args);
+
+  }, [], virtualTime, true);
+
+
+  virtualCron.schedule(virtualCron.times.ONCE_A_SECOND * 10, (time, ...args) => {
+
+    console.log("SECOND", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'ciao-oaic', args);
+
+  }, [], virtualTime, true);
+
+  // virtualCron.debug();
+
+}));
 
 // API implemented in module gAPI
 userDao.execApi(app, passport, isLoggedIn);
@@ -97,10 +120,32 @@ walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
 
 
+
+//PUT /api/debug/time/
+app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
+
+  let parsedTimestamp, time = req.params.time;
+
+  if (time === 0) {
+    parsedTimestamp = null;
+  }
+  else {
+
+    let timestamp = new Date(isNumber(time) ? (time - 1000000000000 < 0 ? time * 1000 : time) : time)
+
+    parsedTimestamp = ((timestamp.getTime() > 0) ? dayjs(timestamp) : dayjs()).unix();
+  }
+
+  session.time = parsedTimestamp;
+
+  res.status(201).end();
+});
+
+
 /*** USER APIs ***/
 
 // Login --> POST /sessions
-app.post("/api/sessions", function(req, res, next) {
+app.post("/api/sessions", function (req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
     if (!user) {
@@ -130,26 +175,8 @@ app.get("/api/sessions/current", isLoggedIn, (req, res) => {
   res.status(200).json(req.user);
 });
 
-
-//PUT /api/debug/time/
-app.put("/api/debug/time/",
-  isLoggedIn,
-  [
-    body('hour').isNumeric(),
-  ],
-  function(req, res) {
-    if (!validationResult(req).isEmpty() || !['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'enddebug'].includes(req.body.weekDay.toLowerCase()))
-      return res.status(400).render('contact', { errors: "error in the parameters" });
-    if (req.user.role != 1)
-      res.status(404).json({ "result": 'Only the manager has access to this functionality!' });
-    if (req.body.weekDay === 'endDebug') session.time = null;
-    else session.time = req.body;
-    res.status(201).end();
-  }
-);
-
 // DELETE /api/clients/:email
-app.delete('/api/clients/:email', async function(req, res) {
+app.delete('/api/clients/:email', async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() })
@@ -164,7 +191,7 @@ app.delete('/api/clients/:email', async function(req, res) {
 });
 
 /*** API used just for the test enviroment***/
-app.delete('/api/test/restoretables/', async function(req, res) {
+app.delete('/api/test/restoretables/', async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() })
@@ -182,7 +209,6 @@ app.delete('/api/test/restoretables/', async function(req, res) {
     res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
   }
 });
-
 
 // Activate the server
 app.listen(port, () => {

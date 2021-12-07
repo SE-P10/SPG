@@ -6,18 +6,18 @@ const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const db = require("../db");
 const { getUser } = require("./user-dao");
-const { debugLog, filter_args } = require("../utility");
+const { debugLog, filter_args, sendMail, runQuerySQL, getQuerySQL } = require("../utility");
 
 
 async function addNotification(userID, message, object, email = false) {
 
     let sql = 'INSERT INTO notification (user_id, message, object) VALUES(?, ?, ?)';
 
-    let status = await this.runQuerySQL(db, sql, [userID, message, object], true);
+    let status = await runQuerySQL(db, sql, [userID, message, object], true);
 
     if (status && email) {
 
-        return this.sendMail(email, message, object);
+        return sendMail(email, message, object);
     }
 
     return status;
@@ -28,7 +28,7 @@ async function setNotification(notificationID) {
 
     let sql = 'UPDATE notification SET seen = 1 WHERE id = ?';
 
-    return this.runQuerySQL(db, sql, [notificationID], true);
+    return runQuerySQL(db, sql, [notificationID], true);
 }
 
 
