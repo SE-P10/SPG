@@ -19,12 +19,13 @@ const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
 const notificationDao = require("./dao/notification-dao.js");
 const testDao = require("./dao/test-dao.js");
+const { virtualCron } = require("./cron");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
 passport.use(
-  new LocalStrategy(function(username, password, done) {
+  new LocalStrategy(function (username, password, done) {
     userDao.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, {
@@ -87,6 +88,30 @@ function getTime() {
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+app.use(virtualCron.run(() => {
+
+  let virtualTime = session.time || dayjs().unix();
+
+  // virtualCron.unscheduleAll();
+
+  virtualCron.schedule(virtualCron.times.ONCE_A_MINUTE / 30, (time, ...args) => {
+
+    console.log("FIRST", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'ciao-oaic', args);
+
+  }, [], virtualTime, true);
+
+
+  virtualCron.schedule(virtualCron.times.ONCE_A_SECOND * 10, (time, ...args) => {
+
+    console.log("SECOND", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'ciao-oaic', args);
+
+  }, [], virtualTime, true);
+
+  // virtualCron.debug();
+
+}));
+
 // API implemented in module gAPI
 userDao.execApi(app, passport, isLoggedIn);
 productsDao.execApi(app, passport, isLoggedIn, body);
@@ -100,7 +125,7 @@ notificationDao.execApi(app, passport, isLoggedIn);
 /*** USER APIs ***/
 
 // Login --> POST /sessions
-app.post("/api/sessions", function(req, res, next) {
+app.post("/api/sessions", function (req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
     if (!user) {
@@ -137,7 +162,7 @@ app.put("/api/debug/time/",
   [
     body('hour').isNumeric(),
   ],
-  function(req, res) {
+  function (req, res) {
     if (!validationResult(req).isEmpty() || !['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'enddebug'].includes(req.body.weekDay.toLowerCase()))
       return res.status(400).render('contact', { errors: "error in the parameters" });
     if (req.user.role != 1)
@@ -149,7 +174,7 @@ app.put("/api/debug/time/",
 );
 
 // DELETE /api/clients/:email
-app.delete('/api/clients/:email', async function(req, res) {
+app.delete('/api/clients/:email', async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() })
@@ -164,7 +189,7 @@ app.delete('/api/clients/:email', async function(req, res) {
 });
 
 /*** API used just for the test enviroment***/
-app.delete('/api/test/restoretables/', async function(req, res) {
+app.delete('/api/test/restoretables/', async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() })
@@ -182,7 +207,6 @@ app.delete('/api/test/restoretables/', async function(req, res) {
     res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
   }
 });
-
 
 // Activate the server
 app.listen(port, () => {
