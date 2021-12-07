@@ -1,8 +1,13 @@
 ## API Client
 
+## API.setTime(time = 0)
+* Description: Handle Virtual clock time in user session
+* Request params: time, both datetime '2021-12-07' and unix timestamp (milliseconds or not)
+* Return: true or false
+
 ## API.getUserId(email)
 * Description: return the id of the user with that email
-* Request params; email
+* Request params: email
 * Return: the id of the user.
 
 ## API.updateFarmerProducts(productID, newAmount, farmerId, price)
