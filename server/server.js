@@ -124,21 +124,44 @@ notificationDao.execApi(app, passport, isLoggedIn);
 //PUT /api/debug/time/
 app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
 
-  let parsedTimestamp, time = req.params.time;
+  let timestamp, timeOffset = 0, time = req.params.time;
 
-  if (time === 0) {
-    parsedTimestamp = null;
+  if (isNumber(time)) {
+
+    /**
+     * is not an offset
+     */
+    if (time > 1000000000) {
+
+      /**
+       * is not in milliseconds
+       */
+      if (time < 1000000000000) {
+        time = time * 1000;
+      }
+    }
+    else {
+      timeOffset = time;
+      time = null;
+    }
   }
-  else {
 
-    let timestamp = new Date(isNumber(time) ? (time - 1000000000000 < 0 ? time * 1000 : time) : time)
+  /**
+   * try dirrect conevrsion
+   */
+  timestamp = new Date(time);
 
-    parsedTimestamp = ((timestamp.getTime() > 0) ? dayjs(timestamp) : dayjs()).unix();
+  let parsedTimestamp = ((timestamp.getTime() > 0) ? dayjs(timestamp) : dayjs()).unix() + Number.parseInt(timeOffset);
+
+  if (timeOffset === 0) {
+    timeOffset = parsedTimestamp - dayjs().unix();
   }
 
+  session.timeOffset = timeOffset;
   session.time = parsedTimestamp;
 
   res.status(201).end();
+
 });
 
 
