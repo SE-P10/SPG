@@ -4,7 +4,7 @@ const dayjs = require("dayjs");
 const md5 = require('md5');
 
 const db = require("./db");
-const { json, getQuerySQL, debugLog, isEmptyObject, removeEmpty, runQuerySQL } = require("./utility");
+const { json, getQuerySQL, removeEmpty, runQuerySQL } = require("./utility");
 
 const cronClass = {
 
