@@ -161,7 +161,18 @@ app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
   session.time = parsedTimestamp;
 
   res.status(201).end();
+});
 
+
+app.get("/api/debug/time/", function (req, res) {
+
+  let response = {
+    time: session.time || dayjs().unix(),
+    offset: session.timeOffset || 0
+  }
+
+  res.status(201).json(response).end();
+  
 });
 
 
