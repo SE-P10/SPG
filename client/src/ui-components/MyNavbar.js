@@ -1,8 +1,42 @@
-import { Nav, Navbar, NavDropdown ,  Form, ButtonGroup, Dropdown,  DropdownButton} from "react-bootstrap";
+import { Nav, Navbar,   NavDropdown ,  Form,  Button} from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { userIcon, plantIcon, logOutIcon } from "./Icons";
 import "../css/custom.css";
+import Calendar from 'react-calendar'
 function MyNavbar(props) {
+  const [tmpHour,setTmpHour] = useState(-1)
+  const setDayOfWeek = (day) => {
+    switch(day) {
+      case 0 :
+        
+        props.changeDow('Sunday');
+        break;
+      case 1 :
+        props.changeDow('Monday');
+        break;
+      case 2 :
+        props.changeDow('Tuesday');
+          break;
+      case 3 :
+        props.changeDow('Wednesday');
+          break;
+      case 4 :
+        props.changeDow('Thursday');
+            break;
+      case 5 :
+        props.changeDow('Friday');
+              break;
+      case 6 :
+        props.changeDow('Saturday');
+              break;
+
+            
+    }
+
+  }
+
+
   return (
     <Navbar collapseOnSelect expand='sm' className='SGP-Navbar' variant='dark'>
       <Nav.Item>
@@ -21,40 +55,37 @@ function MyNavbar(props) {
         </Link>
        
       </Nav.Item>
+      <NavDropdown title="Select date" id="navbarScrollingDropdown">
+
       <Nav.Item>
-        
-      {" "}<Form.Control id="1"   size='sm'  placeholder="Set hour"
-      
+      <Calendar
+       minDate={new Date()}
+        onClickDay={(value,event) =>
+         setDayOfWeek(value.getDay()) }
+      />
+
+        </Nav.Item>
+        </NavDropdown>
+        <NavDropdown title="Select hour" id="navbarScrollingDropdown">
+      <Nav.Item> 
+      <Form.Control id="1"   size='sm'  placeholder="Set hour"
       onChange={(ev) =>{
         if (!(isNaN(parseInt(ev.target.value))) && !((parseInt(ev.target.value)) > 23 || (parseInt(ev.target.value)) < 0))  {
-          props.changeHour((parseInt(ev.target.value)))
+          setTmpHour((parseInt(ev.target.value)))
 
         }
-        
-
       } }/>
-       </Nav.Item>
+      <Button className='spg-button' onClick={() =>{tmpHour !== -1 ? props.changeHour(tmpHour) : console.log(undefined)} }>set</Button>
+      </Nav.Item>
+      </NavDropdown>
 
-      <Nav.Item> 
-    {[DropdownButton].map((DropdownType, idx) => (
-      <DropdownType
-        as={ButtonGroup}
-        key="1"
-        id="1"
-        size="sm"
-        variant="light"
-        title="Chose Day"
-      >
-        <Dropdown.Item onClick={ () => {props.changeDow('Monday')}} >Mon</Dropdown.Item>
-        <Dropdown.Item onClick={ () => {props.changeDow('Tuesday')}}>Tue</Dropdown.Item>
-        <Dropdown.Item onClick={ () => {props.changeDow('Wednesday')}}>Wed</Dropdown.Item>
-        <Dropdown.Item onClick={ () => {props.changeDow('Thursday')}}>Thu</Dropdown.Item>
-        <Dropdown.Item onClick={ () => {props.changeDow('Friday')}}>Fri</Dropdown.Item>
-        <Dropdown.Item onClick={ () => {props.changeDow('Saturday')}}>Sat</Dropdown.Item>
-        <Dropdown.Item onClick={ () => {props.changeDow('Sunday')}}>Sun</Dropdown.Item>
-      </DropdownType>
-    ))}
-    </Nav.Item>
+      
+
+      
+
+      
+
+     
 
       <Navbar.Toggle aria-controls='responsive-navbar-nav' className='mb-2' />
       <Navbar.Collapse id='responsive-navbar-nav SGP-Navbar'>
