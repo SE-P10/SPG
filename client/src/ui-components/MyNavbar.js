@@ -33,12 +33,9 @@ function MyNavbar(props) {
         
 
       } }/>
-       
+       </Nav.Item>
 
-      </Nav.Item>
-
-      <Nav.Item>
-      <div>
+      <Nav.Item> 
     {[DropdownButton].map((DropdownType, idx) => (
       <DropdownType
         as={ButtonGroup}
@@ -57,9 +54,7 @@ function MyNavbar(props) {
         <Dropdown.Item onClick={ () => {props.changeDow('Sunday')}}>Sun</Dropdown.Item>
       </DropdownType>
     ))}
-  </div>
-
-        </Nav.Item>
+    </Nav.Item>
 
       <Navbar.Toggle aria-controls='responsive-navbar-nav' className='mb-2' />
       <Navbar.Collapse id='responsive-navbar-nav SGP-Navbar'>
