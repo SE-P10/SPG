@@ -459,6 +459,7 @@ tags
 
 ## OURS
 ./server/database.sqbpro
+./server/package-lock.json
 
 ./server/node_modules/
 ./server/.DS_Store
