@@ -1,7 +1,7 @@
 # SPG - Solidarity Purchasing Group
 
 ## TEAM P10
-
+ 
 ### MEMBERS
 
 | NAME               | ID      |
