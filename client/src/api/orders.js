@@ -100,7 +100,7 @@ async function getRequestedProducts(farmerID) {
  * @param {String} place
  * @returns {boolean} true|false
  */
- async function deliveryOrder(orderID, time, place = ‘local’) {
+ async function deliveryOrder(orderID, time, place = 'local') {
   return parseResponse(
     await handleOrderAction(orderID, [], { id: orderID, status: "handout", pickup_time: time, pickup_place: place}, "PUT")
   );
