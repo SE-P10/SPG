@@ -4,7 +4,7 @@ const dayjs = require("dayjs");
 const md5 = require('md5');
 
 const db = require("./db");
-const { json, getQuerySQL, removeEmpty, runQuerySQL } = require("./utility");
+const { json, getQuerySQL, removeEmpty, runQuerySQL, isNumber } = require("./utility");
 
 const cronClass = {
 
@@ -14,13 +14,20 @@ const cronClass = {
      *              time : 0,
      *              callback,
      *              args: [],
-     *              frequency: ONCE_A_DAY
+     *              interval: ONCE_A_DAY
      *           }
      * }
     */
     activity: {},
 
     times: {
+        MONDAY: 'Mo',
+        TUESDAY: 'Tu',
+        WEDNESDAY: 'We',
+        THURSDAY: 'Th',
+        FRIDAY: 'Fr',
+        SATURDAY: 'Sa',
+        SUNDAY: 'Su',
         ONCE_A_SECOND: 1,
         ONCE_A_MINUTE: 60,
         ONCE_A_HOUR: 3600,
@@ -64,9 +71,7 @@ const cronClass = {
 
     exec: function (virtualTime = null) {
 
-        if (!virtualTime) {
-            virtualTime = dayjs().unix();
-        }
+        let virtualDAYJS = virtualTime ? dayjs.unix(virtualTime) : dayjs();
 
         let cron, crons = removeEmpty(this.activity, {}, true);
 
@@ -77,18 +82,28 @@ const cronClass = {
 
             cron = crons[key];
 
-            if ((cron.time + cron.interval) <= virtualTime) {
+            let allowExec;
+
+            if (isNumber(cron.interval)) {
+                allowExec = (cron.time + cron.interval) <= virtualDAYJS.unix();
+            }
+            else {
+                allowExec = (virtualDAYJS.format("dd") === cron.interval) && cron.time <= virtualDAYJS.unix();
+            }
+
+            if (allowExec) {
 
                 // try to exec the callback
                 if (cron.callback) {
 
                     cron.callback = eval('(' + cron.callback + ')');
 
-                    cron.callback(virtualTime, ...(cron.args || []));
+                    cron.callback(virtualDAYJS.unix(), ...(cron.args || []));
                 }
 
                 // auto reschedule based on saved cron data
-                this.set(key, cron.once ? null : { ...cron, time: virtualTime }, true);
+                // if is week schedule skip to next one
+                this.set(key, cron.once ? null : { ...cron, time: cron.time + (isNumber(cron.interval) ? 0 : this.times.ONCE_A_WEEK) }, true);
             }
         }
     },
@@ -136,6 +151,8 @@ const cronClass = {
 
         let hook = this.hash(callback, args);
 
+        let oldCron = this.getHook(hook);
+
         /**
          * if null lets overwite
         */
@@ -145,7 +162,7 @@ const cronClass = {
             callback: callback,
             args: args,
             once: once
-        }, this.getHook(hook) === null);
+        }, oldCron === null || interval !== oldCron.interval);
     },
 
     dump: function () {
@@ -168,6 +185,7 @@ const cronClass = {
                 continue;
             }
 
+            // serialize the callback
             cron.callback = cron.callback.toString().replace(/(?:\r\n|\r|\n)/g, "").replace(/\s+/g, " ");
 
             cronData[key] = cron;
@@ -192,11 +210,11 @@ exports.virtualCron = {
 
         await cronClass.load();
 
-        cronClass.exec(virtualTime);
-
         if (callback) {
             callback();
         }
+
+        await cronClass.save();
     },
 
     /**
