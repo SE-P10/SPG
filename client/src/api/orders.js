@@ -35,6 +35,18 @@ async function getOrders(filter) {
 }
 
 /**
+ *
+ * @param {Number } filter orderID
+ * @returns {Object} { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
+ */
+async function getOrder(orderID) {
+
+  let orders = getOrders(orderID);
+
+  return orders[0] || {};
+}
+
+/**
  * Frontend interface API
  * 
  * @returns {Array} orders in pending status
@@ -79,11 +91,43 @@ async function getRequestedProducts(farmerID) {
     await handleFetch("/api/orders/products/farmer/" + farmerID, {}, "GET"), 'array');
 }
 
+
+/**
+ * Frontend interface API
+ *
+ * @param {Number} orderID
+ * @param {String} time
+ * @param {String} place
+ * @returns {boolean} true|false
+ */
+ async function deliveryOrder(orderID, time, place = 'local') {
+  return parseResponse(
+    await handleOrderAction(orderID, [], { id: orderID, status: "handout", pickup_time: time, pickup_place: place}, "PUT")
+  );
+}
+
+
+/**
+ * Frontend interface API
+ *
+ * @param {Number} orderID
+ * @param {Array} products 
+ * @returns {boolean} true|false
+ */
+ async function updateOrderProducts(orderID, products = []) {
+  return parseResponse(
+    await handleOrderAction(orderID, products, { id: orderID }, "PUT")
+  );
+}
+
 const ordersApi = {
   insertOrder,
   handOutOrder,
   getPendingOrders,
   getOrders,
+  getOrder,
+  deliveryOrder,
+  updateOrderProducts,
   getRequestedProducts
 };
 

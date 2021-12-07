@@ -91,22 +91,21 @@ app.use(virtualCron.run(() => {
 
   let virtualTime = getVirtualTime();
 
-  // virtualCron.unscheduleAll();
+  //virtualCron.unscheduleAll();
 
-  virtualCron.schedule(virtualCron.times.ONCE_A_MINUTE / 30, (time, ...args) => {
+  virtualCron.schedule(virtualCron.times.MONDAY, (time, ...args) => {
 
-    console.log("FIRST", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'ciao-oaic', args);
+    console.log("FIRST", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'hello world!', args);
 
-  }, [], virtualTime, true);
+  }, [], virtualTime, false);
 
+  virtualCron.schedule(virtualCron.times.TUESDAY, (time, ...args) => {
 
-  virtualCron.schedule(virtualCron.times.ONCE_A_SECOND * 10, (time, ...args) => {
+    console.log("SECOND", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'hello world!', args);
 
-    console.log("SECOND", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'ciao-oaic', args);
+  }, [], virtualTime, false);
 
-  }, [], virtualTime, true);
-
-  // virtualCron.debug();
+ // virtualCron.debug();
 
 }));
 
@@ -120,25 +119,58 @@ walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
 
 
-
 //PUT /api/debug/time/
 app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
 
-  let parsedTimestamp, time = req.params.time;
+  let timestamp, timeOffset = 0, time = req.params.time;
 
-  if (time === 0) {
-    parsedTimestamp = null;
+  if (isNumber(time)) {
+
+    /**
+     * is not an offset
+     */
+    if (time > 1000000000) {
+
+      /**
+       * is not in milliseconds
+       */
+      if (time < 1000000000000) {
+        time = time * 1000;
+      }
+    }
+    else {
+      timeOffset = time;
+      time = null;
+    }
   }
-  else {
 
-    let timestamp = new Date(isNumber(time) ? (time - 1000000000000 < 0 ? time * 1000 : time) : time)
+  /**
+   * try dirrect conevrsion
+   */
+  timestamp = new Date(time);
 
-    parsedTimestamp = ((timestamp.getTime() > 0) ? dayjs(timestamp) : dayjs()).unix();
+  let parsedTimestamp = ((timestamp.getTime() > 0) ? dayjs(timestamp) : dayjs()).unix() + Number.parseInt(timeOffset);
+
+  if (timeOffset === 0) {
+    timeOffset = parsedTimestamp - dayjs().unix();
   }
 
+  session.timeOffset = timeOffset;
   session.time = parsedTimestamp;
 
   res.status(201).end();
+});
+
+
+app.get("/api/debug/time/", function (req, res) {
+
+  let response = {
+    time: session.time || dayjs().unix(),
+    offset: session.timeOffset || 0
+  }
+
+  res.status(201).json(response).end();
+
 });
 
 

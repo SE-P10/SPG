@@ -58,16 +58,35 @@ function ClientOrder(props) {
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+      let basketTmp = [];
+      if (props.modifyOrder == -1)
+      basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+      else {
+              basketTmp =  [{product_id: 1,
+                quantity: 8,
+                name:"peach"},{product_id: 2,
+                  quantity: 8,
+                  name: "melon"}];
+                  //fare qui chiamata api
+              for (let p of basketTmp){
+                API.insertProductInBasket({
+                  product_id: p.product_id,
+                  quantity: p.quantity,
+                })
+              }
+        }
+
+
       setOrderProduct(
         basketTmp.map((t) => ({
-          product_id: t.id,
+          product_id: t.product_id,
           confirmed: true,
           quantity: t.quantity,
           name: t.name,
         }))
       );
       setChanges(old => !old);
+      console.log(orderProduct)
     };
 
     fillTables();
@@ -107,18 +126,22 @@ function ClientOrder(props) {
         quantity: t.quantity,
         name: t.name,
       }))
+      if (props.modifyOrder == -1){
       API.insertOrder(
         userId,
         finalOrder
-      )
-        .then(() => {
+      ).then(() => {
           propsN.addMessage("Request sent correctly!");
-
+        
           propsN.changeAction(0);
         })
         .catch((err) => {
           setErrorMessage("Server error during insert order. "+err);
-        });
+        });}
+        else { //fare chiamata ad update order
+          console.log("fare chiamta ad update order")
+          propsN.changeAction(0)
+        }
     }
   };
 

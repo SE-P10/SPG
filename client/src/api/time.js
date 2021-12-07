@@ -15,8 +15,17 @@ async function setTime(time = 0) {
     );
 }
 
+
+async function getTime() {
+    return parseResponse(
+        await handleFetch("/api/debug/time/", {}, "GET"),
+        "number"
+    );
+}
+
 const timeApi = {
-    setTime
+    setTime,
+    getTime
 };
 
 export default timeApi;

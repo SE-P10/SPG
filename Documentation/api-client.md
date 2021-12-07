@@ -110,9 +110,3 @@ products
 * Description: returns all the products in basket of the user that called the API
 * Request params: none
 * Return: list of products **[ { id: 1, quantity: 10, price: 5, name: "product2 name", farmer: "farmer2 name" }, { id: 2, quantity: 4, price: 7, name: "product2 name", farmer: "farmer2 name" }, { ... }, ... ]**
-
-## API.setTime(newTime = {weekDay: "endDebug", hour: 0})
-
-* Description: Modifies the week of the day and the hour in the server for the current session
-* Request params: an object **{ weekDay: 'monday', hour: 5 }** when modifying the time, none when the debug operations end (deafult param is used)
-* Return: null (if everything is fine) or an error message (if somthing is wrong)

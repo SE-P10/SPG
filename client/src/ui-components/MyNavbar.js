@@ -85,6 +85,8 @@ function MyNavbar(props) {
 
       
 
+     
+
       <Navbar.Toggle aria-controls='responsive-navbar-nav' className='mb-2' />
       <Navbar.Collapse id='responsive-navbar-nav SGP-Navbar'>
         {props.loggedIn ? (
