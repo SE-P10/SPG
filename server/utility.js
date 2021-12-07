@@ -1,7 +1,7 @@
 'use strict';
 
 const nodemailer = require('nodemailer');
-const fs = require('fs')
+const fs = require('fs');
 
 exports.filter_args = (default_, ...sources) => {
 
@@ -52,7 +52,6 @@ exports.isEmptyObject = (obj) => {
 exports.isDefined = (value, not = false) => {
     return !(value === null || typeof value === 'undefined' || typeof value === undefined) ? (not === false ? true : value) : not;
 }
-
 
 exports.isArray = (item, not = false) => {
     return this.isDefined(item) && (typeof item === 'object' && Array.isArray(item)) ? (not === false ? true : item) : not
@@ -241,7 +240,9 @@ exports.getQuerySQL = async (db, sql, values = [], objDef = {}, returnFail = nul
             db.get(sql, [...values], (err, row) => {
 
                 if (err || !row) {
-                    console.log(err)
+                    if (err) {
+                        console.log(err)
+                    }
                     resolve(returnFail);
                 }
                 else {
@@ -374,3 +375,30 @@ exports.file_exist = (name) => {
 
     return false;
 }
+
+exports.json = {
+
+    stringify: JSON.stringify,
+
+    parse: (data, default_) => {
+
+        if (this.isObject(data))
+            return data;
+
+        let parsed = default_;
+
+        if (data) {
+            try {
+                parsed = JSON.parse(data);
+            } catch (e) {
+                parsed = data;
+            }
+        }
+
+        return parsed || default_;
+    }
+}
+
+
+
+
