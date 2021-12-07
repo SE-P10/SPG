@@ -130,7 +130,7 @@ function ClientPage(props) {
               addMessage={addMessage}
             />
           ) : null}
-          {actionC === 2 ? (
+          {actionC === 2 && ((props.dow == 'Saturday' && props.hour >= 9 ) || (props.dow == 'Sunday' && props.hour <= 23 )) ? (
             <>
               <ClientOrder
                 user={props.user}
