@@ -91,22 +91,21 @@ app.use(virtualCron.run(() => {
 
   let virtualTime = getVirtualTime();
 
-  // virtualCron.unscheduleAll();
+  //virtualCron.unscheduleAll();
 
-  virtualCron.schedule(virtualCron.times.ONCE_A_MINUTE / 30, (time, ...args) => {
+  virtualCron.schedule(virtualCron.times.MONDAY, (time, ...args) => {
 
-    console.log("FIRST", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'ciao-oaic', args);
+    console.log("FIRST", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'hello world!', args);
 
-  }, [], virtualTime, true);
+  }, [], virtualTime, false);
 
+  virtualCron.schedule(virtualCron.times.TUESDAY, (time, ...args) => {
 
-  virtualCron.schedule(virtualCron.times.ONCE_A_SECOND * 10, (time, ...args) => {
+    console.log("SECOND", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'hello world!', args);
 
-    console.log("SECOND", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'ciao-oaic', args);
+  }, [], virtualTime, false);
 
-  }, [], virtualTime, true);
-
-  // virtualCron.debug();
+ // virtualCron.debug();
 
 }));
 
@@ -118,7 +117,6 @@ ordersDao.execApi(app, passport, isLoggedIn);
 farmerDao.execApi(app, passport, isLoggedIn);
 walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
-
 
 
 //PUT /api/debug/time/
@@ -172,7 +170,7 @@ app.get("/api/debug/time/", function (req, res) {
   }
 
   res.status(201).json(response).end();
-  
+
 });
 
 
