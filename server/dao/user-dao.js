@@ -3,6 +3,7 @@
 
 const db = require("../db");
 const bcrypt = require("bcrypt");
+const { validationResult } = require('express-validator');
 
 const { runQuerySQL, getQuerySQL, isEmail } = require("../utility");
 
