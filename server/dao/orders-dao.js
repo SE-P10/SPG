@@ -125,7 +125,7 @@ const updateProduct = async (productID, data) => {
   let dinoSQL = dynamicSQL("UPDATE products SET", data, { id: productID });
 
   return new Promise((resolve, reject) => {
-    db.run(dinoSQL.sql, [...dinoSQL.values], function(err) {
+    db.run(dinoSQL.sql, [...dinoSQL.values], function (err) {
       if (err) {
         debugLog(err)
         reject("Db error")
@@ -485,7 +485,8 @@ const processOrder = async (userID, orderID, data = {}) => {
   let order = {
     ...(data.order || {}),
     id: orderID,
-    user_id: userID
+    user_id: userID,
+    price: 0
   };
 
   let updatingOrder = orderID || false;

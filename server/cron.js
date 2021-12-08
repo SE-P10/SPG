@@ -20,18 +20,21 @@ const cronClass = {
     */
     activity: {},
 
-    times: {
+    weekdays: {
         MONDAY: 'Mo',
         TUESDAY: 'Tu',
         WEDNESDAY: 'We',
         THURSDAY: 'Th',
         FRIDAY: 'Fr',
         SATURDAY: 'Sa',
-        SUNDAY: 'Su',
+        SUNDAY: 'Su'
+    },
+
+    times: {
         ONCE_A_SECOND: 1,
         ONCE_A_MINUTE: 60,
         ONCE_A_HOUR: 3600,
-        TWICE_A_DAY: 23200,
+        TWICE_A_DAY: 43200,
         ONCE_A_DAY: 86400,
         ONCE_A_WEEK: 604800,
         ONCE_A_MONTH: 2592000
@@ -69,26 +72,73 @@ const cronClass = {
         return true;
     },
 
-    exec: function (virtualTime = null) {
+    calcDateDiff: function (date1, date2) {
 
-        let virtualDAYJS = virtualTime ? dayjs.unix(virtualTime) : dayjs();
+        let utc1 = Date.UTC(date1.year(), date1.month(), date1.date());
+        let utc2 = Date.UTC(date2.year(), date2.month(), date2.date());
 
-        let cron, crons = removeEmpty(this.activity, {}, true);
+        return Math.floor(Math.abs(utc2 - utc1) / (this.times.ONCE_A_DAY * 1000));
+    },
+
+    /**
+     * 
+     * @param {*} weekday 
+     * @returns {Integer} 0 to 6
+     */
+    weekdayToNumber: function (weekday) {
+
+        let value = 0;
+
+        for (let key in this.weekdays) {
+
+            if (weekday === this.weekdays[key] || weekday === key) {
+                break;
+            }
+
+            value++;
+        }
+
+        return value;
+    },
+
+    exec: function (virtualTime) {
+
+        let crons = removeEmpty(this.activity, {}, true);
 
         /**
          * Try to run those events
         */
         for (let key in crons) {
 
-            cron = crons[key];
+            let cron = crons[key];
 
-            let allowExec;
+            // fix removeEmpty with time=0
+            cron.time = cron.time || 0;
+
+            let allowExec = false;
 
             if (isNumber(cron.interval)) {
-                allowExec = (cron.time + cron.interval) <= virtualDAYJS.unix();
+                allowExec = (cron.time + cron.interval) <= virtualTime;
             }
-            else {
-                allowExec = (virtualDAYJS.format("dd") === cron.interval) && cron.time <= virtualDAYJS.unix();
+            else if (cron.time <= virtualTime) {
+
+                let vtime = dayjs.unix(virtualTime);
+
+                // last execution time
+                let calltime = dayjs.unix(cron.time);
+
+                // clac how many days are from last execution and scheduled execution
+                let dispathRealExecution = this.weekdayToNumber(calltime.format("dd")) - this.weekdayToNumber(cron.interval);
+
+                // fix future relative problems
+                if (dispathRealExecution < 0) {
+                    dispathRealExecution = 0;
+                }
+
+                // last execution time if on scheduled day
+                let ctime = calltime.subtract(dispathRealExecution, 'day');
+
+                allowExec = this.calcDateDiff(ctime, vtime) >= 7 || vtime.format("dd") === cron.interval;
             }
 
             if (allowExec) {
@@ -98,12 +148,13 @@ const cronClass = {
 
                     cron.callback = eval('(' + cron.callback + ')');
 
-                    cron.callback(virtualDAYJS.unix(), ...(cron.args || []));
+                    cron.callback(virtualTime, ...(cron.args || []));
                 }
 
+                console.log("RUNNING CRON", vtime.format('YYYY-MM-DD <HH:mm:ss>'), args);
+
                 // auto reschedule based on saved cron data
-                // if is week schedule skip to next one
-                this.set(key, cron.once ? null : { ...cron, time: cron.time + (isNumber(cron.interval) ? 0 : this.times.ONCE_A_WEEK) }, true);
+                this.set(key, cron.once ? null : { ...cron, time: virtualTime }, true);
             }
         }
     },
@@ -143,11 +194,7 @@ const cronClass = {
         return false;
     },
 
-    schedule: function (callback, interval, args, once = true, time = null) {
-
-        if (!time) {
-            time = dayjs().unix();
-        }
+    schedule: function (callback, interval, args, once = true, time = 0) {
 
         let hook = this.hash(callback, args);
 
@@ -204,9 +251,9 @@ const cronClass = {
 */
 exports.virtualCron = {
 
-    times: { ...cronClass.times },
+    schedules: { ...cronClass.weekdays, ...cronClass.times },
 
-    init: async function (callback = null, virtualTime = null) {
+    init: async function (callback = null) {
 
         await cronClass.load();
 
@@ -220,13 +267,14 @@ exports.virtualCron = {
     /**
      * 
      * @param {Function} callback 
+     * @param {Number} virtualTimeOffset
      * @returns {Function}
      */
-    run: function (callback = null, virtualTime = null) {
+    run: function (callback = null, virtualTimeOffset = 0) {
 
         let cronLoaded = false;
 
-        this.init(callback, virtualTime).then(() => {
+        this.init(callback).then(() => {
             cronLoaded = true;
         });
 
@@ -237,7 +285,8 @@ exports.virtualCron = {
 
             if (cronLoaded) {
 
-                cronClass.exec(virtualTime);
+                // calc virtual time
+                cronClass.exec(Number.parseInt(virtualTimeOffset) + dayjs().unix());
 
                 if (callback) {
                     callback()
@@ -250,7 +299,7 @@ exports.virtualCron = {
         };
     },
 
-    schedule: (interval, callback, args, time = 0, once = true) => {
+    schedule: (interval, callback, args, once = true, time = 0) => {
 
         return cronClass.schedule(callback, interval, args, once, time);
     },
@@ -263,10 +312,12 @@ exports.virtualCron = {
     },
 
     unscheduleAll: () => {
+
         return cronClass.removeHook();
     },
 
     debug: () => {
+
         cronClass.dump();
     }
 }

@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Container, Row , Card} from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";
@@ -7,6 +7,7 @@ import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
+import dayjs from "dayjs"
 
 import {
   BrowserRouter as Router,
@@ -22,12 +23,12 @@ import "./css/App.css";
 import API from "./API";
 
 const App = () => {
+
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [dow,setDow] = useState('monday');
-  const [hour,setHour] = useState(12); //settarle tramite chiamate ad API
-
+  const [virtualTimeDate, setVirtualTimeDate] = useState(dayjs());
+  const [timeDateOffset, setTimeDateOffset] = useState(0);
 
   useEffect(() => {
     //per non perdere utente loggato se aggiorno pagina, da qui viene l'errore della GET 401(unhautorized)
@@ -40,9 +41,6 @@ const App = () => {
     //fare api per prendere orario
     checkAuth().catch((err) => console.log(err));
   }, []);
-
-  const changeHour = (hourNew) => { setHour(hourNew); }
-  const changeDow = (dowNew) => { setDow(dowNew);}
 
   const doLogin = async (credentials) => {
     try {
@@ -66,20 +64,37 @@ const App = () => {
     setMessage("");
   };
 
+  /**
+   * Handle VirtualTime updates
+   */
+  useEffect(() => {
+
+    async function timeHandler() {
+
+      // prevent pooling the server
+      let timeoffset = timeDateOffset || (dayjs().unix() % 30 === 0 ? (await API.getTime(true)) : 0);
+
+      setVirtualTimeDate(dayjs().add(timeoffset, 'second'));
+    }
+
+    timeHandler();
+
+    const interval = setInterval(timeHandler, 1000);
+
+    return () => clearInterval(interval);
+
+  }, [timeDateOffset]);
 
   return (
     <Router>
       <MyNavbar
         doLogOut={doLogOut}
-
         loggedIn={loggedIn}
         closeMessage={closeMessage}
-        changeDow={changeDow}
-        changeHour={changeHour}
+        changeTimeDate={setTimeDateOffset}
+        virtualTimeDate={virtualTimeDate}
       />
-      <Card>
-            <Card.Title align='center'> Day : {dow} - hour : {hour} </Card.Title>
-      </Card>
+
       <Switch>
         <Route
           exact
@@ -149,7 +164,7 @@ const App = () => {
               {user !== null && user.role === "1" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ShopEmployee hour={hour} dow={dow} user={user} loggedIn={loggedIn} />
+                  <ShopEmployee hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} loggedIn={loggedIn} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -180,7 +195,7 @@ const App = () => {
               {user !== null && user.role === "2" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <FarmerPage  hour={hour} dow={dow} user={user} />
+                  <FarmerPage hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -198,7 +213,7 @@ const App = () => {
               {user !== null && user.role === "0" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ClientPage  hour={hour} dow={dow} user={user} />
+                  <ClientPage hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
                 </Container>
               ) : (
                 <Redirect to='/login' />

@@ -18,7 +18,7 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
     order_details = Object.assign({ id: 0 }, order_details);
   }
 
-  return handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
+  return await handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
 }
 
 /**
@@ -30,6 +30,19 @@ async function getOrders(filter) {
   return parseResponse(
     await handleOrderAction(filter, [], {}, "GET"),
     "array",
+    []
+  );
+}
+
+/**
+ *
+ * @param {Number } filter orderID
+ * @returns {Object} { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
+ */
+async function getOrder(orderID) {
+  return parseResponse(
+    await handleOrderAction(orderID, [], {}, "GET"),
+    "object",
     []
   );
 }
@@ -79,11 +92,43 @@ async function getRequestedProducts(farmerID) {
     await handleFetch("/api/orders/products/farmer/" + farmerID, {}, "GET"), 'array');
 }
 
+
+/**
+ * Frontend interface API
+ *
+ * @param {Number} orderID
+ * @param {String} time
+ * @param {String} place
+ * @returns {boolean} true|false
+ */
+ async function deliveryOrder(orderID, time, place = 'local') {
+  return parseResponse(
+    await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place}, "PUT")
+  );
+}
+
+
+/**
+ * Frontend interface API
+ *
+ * @param {Number} orderID
+ * @param {Array} products 
+ * @returns {boolean} true|false
+ */
+ async function updateOrderProducts(orderID, products = []) {
+  return parseResponse(
+    await handleOrderAction(orderID, products, { id: orderID }, "PUT")
+  );
+}
+
 const ordersApi = {
   insertOrder,
   handOutOrder,
   getPendingOrders,
   getOrders,
+  getOrder,
+  deliveryOrder,
+  updateOrderProducts,
   getRequestedProducts
 };
 

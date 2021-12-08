@@ -51,6 +51,7 @@ async function handleFetch(endpoint, body = {}, method = "POST") {
  * @returns {*}
  */
 async function parseResponse(response, type = "boolnum", falseRes = false) {
+
     response = await response;
 
     switch (type) {
@@ -62,6 +63,10 @@ async function parseResponse(response, type = "boolnum", falseRes = false) {
 
         case "array":
             if (!response || !Array.isArray(response)) response = falseRes;
+            break;
+
+        case "object":
+            if (!response || typeof response !== 'object') response = falseRes;
             break;
 
         default:
