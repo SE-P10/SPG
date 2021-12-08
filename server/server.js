@@ -101,7 +101,7 @@ app.use(virtualCron.run(() => {
 
   virtualCron.schedule(virtualCron.schedules.MONDAY, (time, ...args) => {
 
-    if (virtualTime.hour() > 9 || ) {
+    if (virtualTime.hour() > 9 || virtualCron.calcDateDiff(virtualTime, time)) {
 
     }
 
