@@ -151,6 +151,8 @@ const cronClass = {
                     cron.callback(virtualTime, ...(cron.args || []));
                 }
 
+                console.log("RUNNING CRON", vtime.format('YYYY-MM-DD <HH:mm:ss>'), args);
+
                 // auto reschedule based on saved cron data
                 this.set(key, cron.once ? null : { ...cron, time: virtualTime }, true);
             }
