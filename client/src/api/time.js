@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
  * Handle Virtual clock time in user session
  * accepts both datetime '2021-12-07' and unix timestamp (milliseconds or not)
  * 
- * @returns {Boolean} 
+ * @returns {Number} offset from now
  */
 async function setTime(time = 0) {
     return parseResponse(
@@ -19,7 +19,7 @@ async function setTime(time = 0) {
 /**
  * Return virtual timestamp or an offset from real one
  * 
- * @param {Boolean} offset 
+ * @param {Number} offset 
  * @returns 
  */
 async function getTime(offset = false) {

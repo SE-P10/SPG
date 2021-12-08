@@ -48,8 +48,14 @@ exports.getUser = async (userID_eMail, password = false) => {
 
   let user = await getQuerySQL(db, sql, [userID_eMail], filterObj, null, true);
 
-  if (password) {
-    return (await bcrypt.compare(password, user.password)) ? user : false;
+  if (user && password) {
+
+    let userPassword = user.password;
+
+    // prevent sensitive data disclosure 
+    delete user.password;
+
+    return (await bcrypt.compare(password, userPassword)) ? user : false;
   }
 
   return user;

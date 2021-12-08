@@ -160,8 +160,8 @@ app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
   session.timeOffset = timeOffset;
   session.time = parsedTimestamp;
 
-  res.status(201).end();
-
+  res.status(201).json(timeOffset).end();
+  
 });
 
 
