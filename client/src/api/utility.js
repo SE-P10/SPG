@@ -51,6 +51,7 @@ async function handleFetch(endpoint, body = {}, method = "POST") {
  * @returns {*}
  */
 async function parseResponse(response, type = "boolnum", falseRes = false) {
+    
     response = await response;
 
     switch (type) {

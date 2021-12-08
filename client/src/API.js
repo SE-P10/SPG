@@ -3,7 +3,9 @@ import ordersApi from "./api/orders.js";
 import farmerAPI from "./api/farmer.js";
 import userAPI from "./api/user.js";
 import testAPI from "./api/testAPI.js";
-import walletAPI from "./api/wallet.js"
+import walletAPI from "./api/wallet.js";
+import timeAPI from "./api/time.js";
+import notificationAPI from "./api/notification";
 
 /**
  * USER API
@@ -91,7 +93,6 @@ async function getUserInfo(userID) {
   }
 }
 
-
 const API = {
   ...ordersApi,
   ...productsAPI,
@@ -99,6 +100,8 @@ const API = {
   ...userAPI,
   ...testAPI,
   ...walletAPI,
+  ...notificationAPI,
+  ...timeAPI,
   logIn,
   logOut,
   getUserInfo,
