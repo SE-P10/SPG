@@ -75,13 +75,15 @@ app.use(
     secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
     resave: false,
     saveUninitialized: false,
-    time: null
+    time: null,
+    timeOffset: 0
   })
 );
 
-function getVirtualTime() {
-  return session.time || dayjs().unix();
+function getVirtualTime(offset = false) {
+  return (session.timeOffset || 0) + (offset ? 0 : dayjs().unix());
 }
+
 
 // init Passport to use sessions
 app.use(passport.initialize());
@@ -89,25 +91,25 @@ app.use(passport.session());
 
 app.use(virtualCron.run(() => {
 
-  let virtualTime = getVirtualTime();
-
   //virtualCron.unscheduleAll();
 
-  virtualCron.schedule(virtualCron.times.MONDAY, (time, ...args) => {
+  let virtualTime = getVirtualTime();
+
+  virtualCron.schedule(virtualCron.schedules.MONDAY, (time, ...args) => {
 
     console.log("FIRST", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'hello world!', args);
 
-  }, [], virtualTime, false);
+  }, [], false, virtualTime);
 
-  virtualCron.schedule(virtualCron.times.TUESDAY, (time, ...args) => {
+  virtualCron.schedule(virtualCron.schedules.TUESDAY, (time, ...args) => {
 
     console.log("SECOND", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'hello world!', args);
 
-  }, [], virtualTime, false);
+  }, [], false, virtualTime);
 
- // virtualCron.debug();
+  //virtualCron.debug();
 
-}));
+}, getVirtualTime(true)));
 
 // API implemented in module gAPI
 userDao.execApi(app, passport, isLoggedIn);
@@ -159,6 +161,7 @@ app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
   session.time = parsedTimestamp;
 
   res.status(201).end();
+
 });
 
 
