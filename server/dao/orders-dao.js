@@ -485,7 +485,8 @@ const processOrder = async (userID, orderID, data = {}) => {
   let order = {
     ...(data.order || {}),
     id: orderID,
-    user_id: userID
+    user_id: userID,
+    price: 0
   };
 
   let updatingOrder = orderID || false;
