@@ -103,7 +103,7 @@ async function getRequestedProducts(farmerID) {
  */
  async function deliveryOrder(orderID, time, place = 'local') {
   return parseResponse(
-    await handleOrderAction(orderID, [], { id: orderID, status: "handout", pickup_time: time, pickup_place: place}, "PUT")
+    await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place}, "PUT")
   );
 }
 
