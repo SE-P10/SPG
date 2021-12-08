@@ -1,17 +1,33 @@
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-const expect = chai.expect;
-const baseUrl = "localhost:3001/";
-chai.use(chaiHttp);
-describe("First Test", function () {
-  it("server is live", function (done) {
-    chai
-      .request(baseUrl)
-      .get("/")
-      .end(function (err, res) {
-        expect(res).to.have.status(200);
-        expect(res.text).to.equal("Hurray! Its live.");
-        done();
+var supertest = require("supertest");
+// var should = require("should");
+
+// This agent refers to PORT where program is runninng.
+
+var server = supertest.agent("http://localhost:3001/");
+
+// UNIT test begin
+
+describe("SAMPLE unit test", function() {
+
+  // #1 should return home page
+
+  it("should return home page", function(done) {
+
+    // calling home page api
+    server
+      .get("api/users/paolobianchi@demo.it/")
+      // .expect("Content-type", /json/)
+      .expect(200) // THis is HTTP response
+      .end(function(err, res) {
+        // NOTE: The .expect() failures are handled by err and is  
+        //       properly passed to done. You may also add logging
+        //       or other functionality here, as needed.
+        if (err) {
+          done(err);
+        } else {
+          done();
+        }
       });
   });
+
 });
