@@ -196,3 +196,15 @@ describe("Get Wallet by Email", function () {
       });
   });
 });
+
+describe("Logout", function () {
+  it("should return success", function (done) {
+    server.delete("api/sessions/current").end(function (err, res) {
+      if (err) {
+        done(err);
+      } else {
+        done();
+      }
+    });
+  });
+});
