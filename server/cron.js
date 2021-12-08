@@ -148,7 +148,7 @@ const cronClass = {
 
                     cron.callback = eval('(' + cron.callback + ')');
 
-                    cron.callback(virtualTime, ...(cron.args || []));
+                    cron.callback(cron.time, ...(cron.args || []));
                 }
 
                 console.log("RUNNING CRON", vtime.format('YYYY-MM-DD <HH:mm:ss>'), args);
@@ -319,5 +319,10 @@ exports.virtualCron = {
     debug: () => {
 
         cronClass.dump();
+    },
+
+    calcDateDiff: (date1, date2) => {
+        
+        return cronClass.calcDateDiff(date1, date2)
     }
 }

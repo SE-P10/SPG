@@ -92,6 +92,7 @@ app.use(passport.session());
 
 
 
+
 app.use(virtualCron.run(() => {
 
   //virtualCron.unscheduleAll();
@@ -100,28 +101,31 @@ app.use(virtualCron.run(() => {
 
   virtualCron.schedule(virtualCron.schedules.MONDAY, (time, ...args) => {
 
-/*
+    if (virtualTime.hour() > 9 || ) {
 
-    Give order-products
-    Confirm([{productId, quantity}]) //request: farmer
-    
-    update farmer_products, confirmed_quantity = quantity
-    
-    monday-9 confirm orders {
-        foreach order
-            foreach orderproduct op
-                if(op.quantity <= confirmed_qunaity)
-                    confirmed_q -= op.qunatity;
-                    op.confirmed=t
-                else
-                    rimuovi dall'ordine opproducts
-                insert in farmer payments new line (add delivered column)
     }
-    
-    magazziniere get* farmer payments
-    magazziniere update farmer payments delivered=true
 
-*/
+    /*
+        Give order-products
+        Confirm([{productId, quantity}]) //request: farmer
+        
+        update farmer_products, confirmed_quantity = quantity
+        
+        monday-9 confirm orders {
+            foreach order
+                foreach orderproduct op
+                    if(op.quantity <= confirmed_qunaity)
+                        confirmed_q -= op.qunatity;
+                        op.confirmed=t
+                    else
+                        rimuovi dall'ordine opproducts
+                    insert in farmer payments new line (add delivered column)
+        }
+        
+        magazziniere get* farmer payments
+        magazziniere update farmer payments delivered=true
+    
+    */
 
 
   }, [], false, virtualTime);
@@ -181,7 +185,7 @@ app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
   session.time = parsedTimestamp;
 
   res.status(201).json(timeOffset).end();
-  
+
 });
 
 
