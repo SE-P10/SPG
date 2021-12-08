@@ -209,7 +209,8 @@ Insert a new client in the databse
 ## GET /api/wallet/:email
 
 The user need to be authenticated.
-Return the value of the client whose mail is passed as parameter:
+Return the amount of money that are present in the wallet client whose mail is 
+passed as parameter:
 
 ```url
 http://localhost:3001/api/orders/john.doe@demo01.it
