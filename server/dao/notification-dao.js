@@ -11,7 +11,7 @@ const { debugLog, filter_args, sendMail, runQuerySQL, getQuerySQL } = require(".
 
 async function addNotification(userID, message, object, email = false) {
 
-    let sql = 'INSERT INTO notification (user_id, message, object) VALUES(?, ?, ?)';
+    let sql = 'INSERT INTO notifications (user_id, message, object) VALUES(?, ?, ?)';
 
     let status = await runQuerySQL(db, sql, [userID, message, object], true);
 
@@ -26,7 +26,7 @@ async function addNotification(userID, message, object, email = false) {
 
 async function setNotification(notificationID) {
 
-    let sql = 'UPDATE notification SET seen = 1 WHERE id = ?';
+    let sql = 'UPDATE notifications SET seen = 1 WHERE id = ?';
 
     return runQuerySQL(db, sql, [notificationID], true);
 }
