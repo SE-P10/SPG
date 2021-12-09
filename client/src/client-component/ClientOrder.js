@@ -60,7 +60,7 @@ function ClientOrder(props) {
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
       let basketTmp = [];
       if (props.modifyOrder == -1)
-      basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+     { basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);}
       else {
               basketTmp =  [{product_id: 1,
                 quantity: 8,
@@ -68,6 +68,8 @@ function ClientOrder(props) {
                   quantity: 8,
                   name: "melon"}];
                   //fare qui chiamata api
+            let orderOld = await API.getOrder(props.modifyOrder)
+            console.log(orderOld)
               for (let p of basketTmp){
                 API.insertProductInBasket({
                   product_id: p.product_id,
