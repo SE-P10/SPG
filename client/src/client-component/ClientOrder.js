@@ -140,6 +140,7 @@ function ClientOrder(props) {
           
             propsN.changeAction(0);
           })
+          
           .catch((err) => {
             setErrorMessage("Server error during insert order. "+err);
           });
