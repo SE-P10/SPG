@@ -51,6 +51,8 @@ function FarmerPage(props) {
         <Row className='mx-auto below'>
           {actionF === 0 ? (
             <>
+              {" "}
+              <Col></Col>
               <Col className=' justify-content-center below'>
                 <Button
                   className='se-button '
@@ -66,7 +68,6 @@ function FarmerPage(props) {
                   </Col>
                 </Button>
               </Col>
-
               <Col className=' justify-content-center below'>
                 <Button
                   className='se-button '
@@ -82,21 +83,37 @@ function FarmerPage(props) {
                   </Col>
                 </Button>
               </Col>
+              <Col></Col>
             </>
           ) : (
             ""
           )}
         </Row>
         <Row className='below'>
-          {actionF === 1 && props.dow == "Saturday" && props.hour <= 9 ? (
-            <UpdateAvailability
-              changeAction={changeAction}
-              addMessage={addMessage}
-              user={props.user}
-            />
+          {actionF === 1 ? (
+            <>
+              {props.dow == "Saturday" && props.hour <= 9 ? (
+                <UpdateAvailability
+                  changeAction={changeAction}
+                  addMessage={addMessage}
+                  user={props.user}
+                />
+              ) : (
+                "You can Update Availability on Saturday between 00:00 and 09:00"
+              )}{" "}
+            </>
           ) : null}
 
-          {actionF === 2 ? <ConfirmProducts user={props.user} /> : null}
+          {actionF === 2 ? (
+            <>
+              {(props.dow == "Sunday" && props.hour >= 23) ||
+              (props.dow == "Monday" && props.hour <= 9) ? (
+                <ConfirmProducts user={props.user} />
+              ) : (
+                "You can Confirm Product between Sunday at 23:00 and Monday at 09:00"
+              )}{" "}
+            </>
+          ) : null}
         </Row>
       </Container>
     </>
