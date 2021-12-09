@@ -26,7 +26,7 @@ const { isNumber } = require("./utility");
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
 passport.use(
-  new LocalStrategy(function (username, password, done) {
+  new LocalStrategy(function(username, password, done) {
     userDao.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, {
@@ -122,9 +122,10 @@ notificationDao.execApi(app, passport, isLoggedIn);
 
 
 //PUT /api/debug/time/
-app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
+app.put("/api/debug/time/:time", isLoggedIn, function(req, res) {
 
   let timestamp, timeOffset = 0, time = req.params.time;
+  console.log(time);
 
   if (isNumber(time)) {
 
@@ -165,7 +166,7 @@ app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
 });
 
 
-app.get("/api/debug/time/", function (req, res) {
+app.get("/api/debug/time/", function(req, res) {
 
   let response = {
     time: session.time || dayjs().unix(),
@@ -180,7 +181,7 @@ app.get("/api/debug/time/", function (req, res) {
 /*** USER APIs ***/
 
 // Login --> POST /sessions
-app.post("/api/sessions", function (req, res, next) {
+app.post("/api/sessions", function(req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
     if (!user) {
@@ -211,7 +212,7 @@ app.get("/api/sessions/current", isLoggedIn, (req, res) => {
 });
 
 // DELETE /api/clients/:email
-app.delete('/api/clients/:email', async function (req, res) {
+app.delete('/api/clients/:email', async function(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() })
@@ -226,7 +227,7 @@ app.delete('/api/clients/:email', async function (req, res) {
 });
 
 /*** API used just for the test enviroment***/
-app.delete('/api/test/restoretables/', async function (req, res) {
+app.delete('/api/test/restoretables/', async function(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() })

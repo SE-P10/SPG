@@ -54,17 +54,17 @@ exports.execApi = (app, passport, isLoggedIn) => {
     '/api/wallet/update/',
     isLoggedIn,
     async (req, res) => {
-      if (thereIsError(req, res, 'insert'))
+      if (thereIsError(req, res, 'insert')) {
         return res
           .status(400)
           .render("contact", { errors: "error in the parameters" });
+      }
       try {
         this.updateWallet(req.body.amount, req.body.client_email)
           .then((res1) => {
             res.status(200).json({ result: res1 });
           })
           .catch((err) => {
-            // console.log(err);
             res.status(503).json({ result: err });
           });
       } catch (err) {

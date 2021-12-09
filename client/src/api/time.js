@@ -10,10 +10,10 @@ import dayjs from 'dayjs';
  * @returns {Boolean} 
  */
 async function setTime(time = 0) {
-    return parseResponse(
-        await handleFetch("/api/debug/time/" + time, {}, "PUT"),
-        "number"
-    );
+  return parseResponse(
+    await handleFetch("/api/debug/time/" + time, {}, "PUT"),
+    "number"
+  );
 }
 
 /**
@@ -24,14 +24,14 @@ async function setTime(time = 0) {
  */
 async function getTime(offset = false) {
 
-    let virtualTime = await handleFetch("/api/debug/time/", {}, "GET");
+  let virtualTime = await handleFetch("/api/debug/time/", {}, "GET");
 
-    return parseResponse((offset ? virtualTime.offset : virtualTime.time), "number", (offset ? 0 : dayjs().unix()));
+  return parseResponse((offset ? virtualTime.offset : virtualTime.time), "number", (offset ? 0 : dayjs().unix()));
 }
 
 const timeApi = {
-    setTime,
-    getTime
+  setTime,
+  getTime
 };
 
 export default timeApi;
