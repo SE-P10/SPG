@@ -34,9 +34,12 @@ async function setNotification(notificationID) {
 
 async function getNotification(userID) {
 
+  console.log("[*] user_id", userID);
+
+  let seen = 0;
   seen = seen ? 1 : 0;
 
-  let sql = 'SELECT * FROM notifications WHERE user_id = ?';
+  let sql = 'SELECT * FROM notifications WHERE user_id = ? and seen = ?';
 
   return await getQuerySQL(db, sql, [userID, seen], {
     id: 0,
@@ -102,7 +105,8 @@ exports.execApi = (app, passport, isLoggedIn) => {
   app.get('/api/notification/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
     try {
-      let status = await getNotification(req.params.id);
+      console.log("[*] req.params.id", req.params.user_id);
+      let status = await getNotification(req.params.user_id);
 
       if (status)
         res.status(201).json(status).end();

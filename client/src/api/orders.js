@@ -18,7 +18,7 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
     order_details = Object.assign({ id: 0 }, order_details);
   }
 
-  return handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
+  return await handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
 }
 
 /**
@@ -40,10 +40,11 @@ async function getOrders(filter) {
  * @returns {Object} { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
  */
 async function getOrder(orderID) {
-
-  let orders = getOrders(orderID);
-
-  return orders[0] || {};
+  return parseResponse(
+    await handleOrderAction(orderID, [], {}, "GET"),
+    "object",
+    []
+  );
 }
 
 /**
@@ -102,7 +103,7 @@ async function getRequestedProducts(farmerID) {
  */
  async function deliveryOrder(orderID, time, place = 'local') {
   return parseResponse(
-    await handleOrderAction(orderID, [], { id: orderID, status: "handout", pickup_time: time, pickup_place: place}, "PUT")
+    await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place}, "PUT")
   );
 }
 

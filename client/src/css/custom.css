@@ -18,9 +18,18 @@ html {
   font-weight: bold !important;
 }
 
-#navbarScrollingDropdown {
+#navbarScrollingDropdown, .navbarScrollingDropdown .dropdown-toggle {
   color: white !important;
   font-weight: bold;
+}
+
+.virtualClockModal .react-calendar{
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.dropdown-menu .show{
+  padding: 0
 }
 
 body {

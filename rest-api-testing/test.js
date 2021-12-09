@@ -264,7 +264,7 @@ describe("Notifications", function() {
         }
       });
   });
-
+  // TODO Controll the output of the request
   it("GET api/notification/1 should return all the notification of a specific user", function(done) {
     server
       .get("api/notification/1")
@@ -275,7 +275,7 @@ describe("Notifications", function() {
         if (err) {
           done(err);
         } else {
-          // expect(res.statusCode).to.equal(201);
+          expect(res.statusCode).to.equal(201);
           done();
         }
       });

@@ -84,10 +84,14 @@ function getVirtualTime(offset = false) {
   return (session.timeOffset || 0) + (offset ? 0 : dayjs().unix());
 }
 
-
 // init Passport to use sessions
 app.use(passport.initialize());
 app.use(passport.session());
+
+
+
+
+
 
 app.use(virtualCron.run(() => {
 
@@ -97,19 +101,40 @@ app.use(virtualCron.run(() => {
 
   virtualCron.schedule(virtualCron.schedules.MONDAY, (time, ...args) => {
 
-    console.log("FIRST", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'hello world!', args);
+    if (virtualTime.hour() > 9 || virtualCron.calcDateDiff(virtualTime, time)) {
 
-  }, [], false, virtualTime);
+    }
 
-  virtualCron.schedule(virtualCron.schedules.TUESDAY, (time, ...args) => {
+    /*
+        Give order-products
+        Confirm([{productId, quantity}]) //request: farmer
+        
+        update farmer_products, confirmed_quantity = quantity
+        
+        monday-9 confirm orders {
+            foreach order
+                foreach orderproduct op
+                    if(op.quantity <= confirmed_qunaity)
+                        confirmed_q -= op.qunatity;
+                        op.confirmed=t
+                    else
+                        rimuovi dall'ordine opproducts
+                    insert in farmer payments new line (add delivered column)
+        }
+        
+        magazziniere get* farmer payments
+        magazziniere update farmer payments delivered=true
+    
+    */
 
-    console.log("SECOND", dayjs.unix(time).format('YYYY-MM-DD <HH:mm:ss>'), 'hello world!', args);
 
   }, [], false, virtualTime);
 
   //virtualCron.debug();
 
 }, getVirtualTime(true)));
+
+
 
 // API implemented in module gAPI
 userDao.execApi(app, passport, isLoggedIn);
@@ -119,7 +144,6 @@ ordersDao.execApi(app, passport, isLoggedIn);
 farmerDao.execApi(app, passport, isLoggedIn);
 walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
-
 
 //PUT /api/debug/time/
 app.put("/api/debug/time/:time", isLoggedIn, function(req, res) {
@@ -161,7 +185,7 @@ app.put("/api/debug/time/:time", isLoggedIn, function(req, res) {
   session.timeOffset = timeOffset;
   session.time = parsedTimestamp;
 
-  res.status(201).end();
+  res.status(201).json(timeOffset).end();
 
 });
 
