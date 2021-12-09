@@ -15,9 +15,16 @@ import {
 function ClientPage(props) {
   const [message, setMessage] = useState("");
   const [actionC, setActionC] = useState(0);
+  const [modifyOrder,setModifyOrder] = useState(-1);
   const changeAction = (actionN) => {
     setActionC(actionN);
   };
+
+  const modifyOrderFunc = (orderId) => {
+    setModifyOrder(orderId)
+    setActionC(2)
+    
+  }
 
   const addMessage = (messageN) => {
     setMessage(messageN);
@@ -116,6 +123,7 @@ function ClientPage(props) {
                       </Button>
                     </Row>{" "}
                   </Col>
+                  
                 </Row>
               </>
             ) : (
@@ -130,9 +138,10 @@ function ClientPage(props) {
               addMessage={addMessage}
             />
           ) : null}
-          {actionC === 2 ? (
+          {actionC === 2 && ((props.dow == 'Saturday' && props.hour >= 9 ) || (props.dow == 'Sunday' && props.hour <= 23 )) ? (
             <>
               <ClientOrder
+                modifyOrder={modifyOrder}
                 user={props.user}
                 changeAction={changeAction}
                 addMessage={addMessage}
@@ -141,6 +150,7 @@ function ClientPage(props) {
           ) : null}
           {actionC === 3 ? (
             <YourOrders
+            modifyOrder={modifyOrderFunc}
               user={props.user}
               changeAction={changeAction}
               addMessage={addMessage}

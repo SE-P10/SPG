@@ -1,14 +1,25 @@
-import { Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { React, useState } from "react";
+import { Nav, Navbar, NavDropdown, Modal, Button, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { userIcon, plantIcon, logOutIcon } from "./Icons";
 import "../css/custom.css";
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css';
+
+import API from "../API";
+import dayjs from "dayjs";
+
 function MyNavbar(props) {
+
+  let virtualTime = props.virtualTimeDate || dayjs();
+
+  const [showVCModal, setShowVCModal] = useState(props.showVCModal || false);
+
   return (
-    <Navbar collapseOnSelect expand='sm' className='SGP-Navbar' variant='dark'>
-      <Nav.Item>
-        <Link to={"/"}>
-          {" "}
-          <Navbar.Brand className='mainColor'>
+    <>
+      <Navbar collapseOnSelect expand='sm' className='SGP-Navbar' variant='dark'>
+        <Nav.Item>
+          <Link to={"/"}>
             {" "}
             {plantIcon} &nbsp;SPG
           </Navbar.Brand>{" "}

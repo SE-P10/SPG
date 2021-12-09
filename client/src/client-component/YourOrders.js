@@ -48,6 +48,7 @@ function YourOrders(props) {
                         <Col> id : {order.id}</Col>
                         <Col>price : {order.price}</Col>
                         <Col>status : {order.status}</Col>
+                        {order.status == 'booked' ? <Button className='spg-button' onClick={() =>  props.modifyOrder(order.id)} >Modify </Button> : ""}
                       </Row>
                     ))}{" "}
                   </Col>

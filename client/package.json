@@ -3,25 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.15.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
     "bootstrap": "^4.6.0",
     "dayjs": "^1.10.7",
-    "enzyme": "^3.11.0",
-    "fetch-mock": "^9.11.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",
     "react-bootstrap-icons": "^1.5.0",
+    "react-calendar": "^3.5.0",
     "react-dom": "^17.0.2",
     "react-native": "^0.66.3",
-    "react-native-web": "^0.17.5",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3"
   },
   "proxy": "http://localhost:3001",
   "scripts": {
-    "start": "react-scripts -r @cypress/instrument-cra start start",
+    "start": "react-scripts -r start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -51,18 +46,6 @@
     "last 1 firefox version",
     "last 1 safari version"
   ],
-  "devDependencies": {
-    "@cypress/code-coverage": "^3.9.11",
-    "@cypress/instrument-cra": "^1.4.0",
-    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
-    "babel-plugin-istanbul": "^6.1.1",
-    "cypress": "^9.1.0",
-    "enzyme-to-json": "^3.6.2",
-    "jest-sonar-reporter": "^2.0.0",
-    "msw": "^0.35.0",
-    "nyc": "^13.0.0",
-    "react-test-renderer": "^17.0.2"
-  },
   "browserslist": {
     "production": [
       ">0.2%",

@@ -88,7 +88,7 @@ function FarmerPage(props) {
           )}
         </Row>
         <Row className='below'>
-          {actionF === 1 ? (
+          {actionF === 1 && props.dow == "Saturday" && props.hour <= 9 ? (
             <UpdateAvailability
               changeAction={changeAction}
               addMessage={addMessage}

@@ -1,5 +1,6 @@
 // call: GET /api/farmer/pruducts
 async function getFarmerProducts(farmerID) {
+  // const response = await fetch("/api/products/farmer/" + farmerID.id);
   const response = await fetch("/api/products/farmer/" + farmerID);
   const pFramer = await response.json();
   if (response.ok) {
@@ -10,29 +11,19 @@ async function getFarmerProducts(farmerID) {
 }
 
 async function updateFarmerProducts(productID, newAmount, farmerId, price) {
-  return new Promise((resolve, reject) => {
-    fetch(
-      "/api/farmer/products/update/" +
-        productID +
-        "/" +
-        newAmount +
-        "/" +
-        farmerId +
-        "/" +
-        price +
-        "/",
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-      }
-    ).then((response) => {
-      if (response.ok) {
-        resolve(true);
-      } else {
-        throw response.json();
-      }
-    });
+  const response = await fetch("/api/farmer/products/update/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      product_id: productID,
+      amount: newAmount,
+      farmer_id: farmerId,
+      price: price,
+    }),
   });
+  return !!response.ok
 }
 
 const farmerAPI = {
