@@ -62,13 +62,9 @@ function ClientOrder(props) {
       if (props.modifyOrder == -1)
       basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
       else {
-              basketTmp =  [{product_id: 1,
-                quantity: 8,
-                name:"peach"},{product_id: 2,
-                  quantity: 8,
-                  name: "melon"}];
-                  //fare qui chiamata api
-              for (let p of basketTmp){
+              
+              let oldOrder = await API.getOrder(props.modifyOrder);
+              for (let p of oldOrder.products){
                 API.insertProductInBasket({
                   product_id: p.product_id,
                   quantity: p.quantity,
@@ -139,7 +135,14 @@ function ClientOrder(props) {
           setErrorMessage("Server error during insert order. "+err);
         });}
         else { //fare chiamata ad update order
-          console.log("fare chiamta ad update order")
+          API.updateOrderProducts(props.modifyOrder,finalOrder).then(() => {
+            propsN.addMessage("Request sent correctly!");
+          
+            propsN.changeAction(0);
+          })
+          .catch((err) => {
+            setErrorMessage("Server error during insert order. "+err);
+          });
           propsN.changeAction(0)
         }
     }

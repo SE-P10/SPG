@@ -1,6 +1,6 @@
 import "../css/custom.css";
 import { Container, Row, Col, Button, Alert } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ClientOrder } from "../client-component/ClientOrder";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
 import "../css/custom.css";
@@ -11,7 +11,7 @@ import {
   browseIcon,
   checkIcon,
 } from "../ui-components/Icons.js";
-
+import API from "../API";
 function ClientPage(props) {
   const [message, setMessage] = useState("");
   const [actionC, setActionC] = useState(0);
@@ -19,6 +19,15 @@ function ClientPage(props) {
   const changeAction = (actionN) => {
     setActionC(actionN);
   };
+
+  
+  useEffect(() => {
+    if (actionC != 2) setModifyOrder(-1);
+    API.deleteAllBasket().catch(() => {setMessage("Carello non liberato correttamente"); console.log("errore")});
+  }, [actionC]);
+
+
+
 
   const modifyOrderFunc = (orderId) => {
     setModifyOrder(orderId)
