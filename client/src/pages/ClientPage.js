@@ -48,7 +48,6 @@ function ClientPage(props) {
       )}{" "}
       <Container className='below'>
         <Row className=' cont below justify-content-center'>
-          {console.log(props.user)}
           {props.user.name ? <h2> {props.user.name} personal page </h2> : null}
         </Row>
         {message ? (
