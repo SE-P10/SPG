@@ -6,6 +6,7 @@ import testAPI from "./api/testAPI.js";
 import walletAPI from "./api/wallet.js";
 import timeAPI from "./api/time.js";
 import notificationAPI from "./api/notification";
+import warehouseAPI from "./api/warehouse";
 
 /**
  * USER API
@@ -58,6 +59,7 @@ const API = {
   ...walletAPI,
   ...notificationAPI,
   ...timeAPI,
+  ...warehouseAPI,
   logIn,
   logOut,
   getUserInfo,

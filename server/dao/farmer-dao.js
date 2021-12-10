@@ -5,6 +5,42 @@ const db = require("../db");
 const { validationResult } = require("express-validator");
 const { runQuerySQL, getQuerySQL, dynamicSQL, } = require("../utility");
 
+const getFarmerOrders = async farmer => {
+  let query = "SELECT p.id, SUM(op.quantity) as quantity, pd.name AS product, pd.unit FROM order_product op, products p, products_details pd " 
+  query += "WHERE op.product_id = p.id AND p.details_id = pd.id AND p.farmer_id = ? GROUP BY pd.name"
+  return getQuerySQL(db, query, [farmer], {
+    id: 0,
+    quantity: 0,
+    product: "",
+    unit: ""
+  }, null, false)
+}
+
+const confirmFarmerProduct = async (farmer, product, quantity) => {
+  /*let par = [], query = "SELECT COUNT(*) AS present FROM farmer_payments WHERE product_id = ? AND status = 'confirmed'";
+  if(getQuerySQL(db, sql, [product], {present: 0}).present) {
+    query = "UPDATE farmer_payments SET quantity = ? WHERE user_id = ? AND product_id = ? AND status = confirmed";
+    par = [quantity, farmer, product]
+  }
+  else {*/
+    const query = "INSERT INTO farmer_payments VALUES((SELECT MAX(id)+1 FROM farmer_payments), 0, ?, ?, ?, 0, 'confirmed')";
+    const par = [farmer, product, quantity];
+  //}
+    return runQuerySQL(db, query, par);
+}
+
+const getOpenDeliveries = async farmer => {
+  let query = "SELECT fp.id, pd.name AS product, pd.unit, fp.quantity FROM farmer_payments fp, products_details pd, products p " 
+  query += "WHERE fp.user_id = ? AND status = 'toDeliver' AND fp.product_id = p.id AND p.details_id = pd.id";
+  console.log(query);
+  return getQuerySQL(db, query, [farmer], {
+    id: 0,
+    product: "",
+    unit: "",
+    quantity: 0
+  }, null, true)
+}
+
 exports.getProducts = async (farmerID) => {
   if (!farmerID)
     return null;
@@ -99,4 +135,35 @@ exports.execApi = (app, passport, isLoggedIn, is_possible) => {
       res.status(500).end();
     }
   });
+
+  // GET /api/farmerOrders
+  app.get("/api/farmerOrders", isLoggedIn, async (req, res) => {
+    try {
+      const Products = await getFarmerOrders(req.user.id);
+      res.json(Products);
+    } catch (err) {
+      res.status(500).end();
+    }
+  });
+
+  // POST /api/farmerOrders
+  app.post("/api/farmerOrders", isLoggedIn, async (req, res) => {
+    try {
+      await confirmFarmerProduct(req.user.id, req.body.product, req.body.quantity);
+      res.status(200).end();
+    } catch (err) {
+      res.status(503).end();
+    }
+  });
+
+  // GET /api/farmerOrders/open
+  app.get("/api/farmerOrders/open", isLoggedIn, async (req, res) => {
+    try {
+      const deliveries = await getOpenDeliveries(req.user.id);
+      res.json(deliveries);
+    } catch (err) {
+      res.status(500).end();
+    }
+  });
+  
 }

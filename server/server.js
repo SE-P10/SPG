@@ -20,7 +20,9 @@ const walletDao = require("./dao/wallet-dao");
 const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
 const notificationDao = require("./dao/notification-dao.js");
+const warehouseDao = require("./dao/warehouse-dao.js");
 const testDao = require("./dao/test-dao.js");
+const time = require("./time.js");
 const { virtualCron } = require("./cron");
 const { isNumber } = require("./utility");
 
@@ -114,26 +116,7 @@ app.use(virtualCron.run(() => {
 
       console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
 
-      /*
-          Give order-products
-          Confirm([{productId, quantity}]) //request: farmer
-          
-          update farmer_products, confirmed_quantity = quantity
-          
-          monday-9 confirm orders {
-              foreach order
-                  foreach orderproduct op
-                      if(op.quantity <= confirmed_qunaity)
-                          confirmed_q -= op.qunatity;
-                          op.confirmed=t
-                      else
-                          rimuovi dall'ordine opproducts
-                      insert in farmer payments new line (add delivered column)
-          }
-          
-          magazziniere get* farmer payments
-          magazziniere update farmer payments delivered=true
-      */
+      //ordersDao.confrimOrders();
 
     }, [], false);
 
@@ -142,14 +125,15 @@ app.use(virtualCron.run(() => {
 }));
 
 
-// API implemented in module gAPI
+// API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);
 productsDao.execApi(app, passport, isLoggedIn, body);
-ordersDao.execApi(app, passport, isLoggedIn, is_possible);
+ordersDao.execApi(app, passport, isLoggedIn, time.is_possible);
 
-farmerDao.execApi(app, passport, isLoggedIn, is_possible);
+farmerDao.execApi(app, passport, isLoggedIn, time.is_possible);
 walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
+warehouseDao.execApi(app, passport, isLoggedIn);
 
 //PUT /api/debug/time/
 app.put("/api/debug/time/:time", isLoggedIn, function(req, res) {

@@ -118,6 +118,17 @@ const getProduct = async (productID) => {
   }, null, true)
 }
 
+const getOrderProducts = async (orderID) => {
+  if (!productID)
+    return null;
+  const query = "SELECT op.product_id AS id, op.quantity, p.price FROM order_product op, products p WHERE op.product_id = p.id AND order_id = ?"
+  return getQuerySQL(db, query, [orderID], {
+    id: 0,
+    price: 0,
+    quantity: 0,
+  }, null, true)
+}
+
 const updateProduct = async (productID, data) => {
 
   if (!productID)
@@ -534,6 +545,65 @@ const processOrder = async (userID, orderID, data = {}) => {
 
   return 0;
 };
+
+
+const getConfirmedProducts = async () => {
+  if (!productID)
+    return null;
+
+  return getQuerySQL(db, "SELECT id, product_id AS product, quantity FROM farmer_payments where status = 'confirmed'", [], {
+    id: 0,
+    product: 0,
+    quantity: 0,
+  }, null, true)
+}
+
+exports.confrimOrders = () => {
+  return new Promise(async (resolve, reject) => {
+    db.run("BEGIN TRANSACTION;");
+    try {
+      //Get the quantities confirmed by the farmers and the related product's id
+      const confirmedPorducts = getConfirmedProducts();
+      //Get all the booked orders
+      const orders = await getOrders('booked');
+      //Produce an array of objects like {id: row id, product: product id, leftQuantity: left quantity} to update farmer_payments later
+      const res = orders.reduce(async (values, order) => {
+        let newValues = values.map(v => ({id: v.id, product: v.product, leftQuantity: p.quantity}));
+        //For each order, get its product
+        const products = await getOrderProducts(order.id);
+        //For each product, update the left quantity or remove the element from the order
+        products.forEach(p => {
+          //if the product has not been confirmed by the farmer or the quantity is not enough,
+          if(!newValues.some(v => v.product === p.id) || newValues.find(v => v.product === p.id).quantity < p.quantity) {
+              //it is removed from the order
+              runQuerySQL(db, "DELETE FROM order_product WHERE order_id = ? AND product_id = ?;", [order.id, p.id]);
+              //and the order price is decreased
+              runQuerySQL(db, "UPDATE orders SET price = price - ? WHERE id = ?;", [p.price*p.quantity, order.id]);
+            }
+          else //Reduce the left quantity
+            newValues = newValues.map(v => v.product === p.id ? {id: v.id, product: v.product, leftQuantity: v.leftQuantity - p.quantity} : v)
+        });
+        let query = "SELECT meta_value FROM users_meta um, orders o WHERE o.id = ? AND o.user_id = um.user_id AND meta_key = 'wallet'"
+        const wallet = await getQuerySQL(db, query, [order.id], {meta_value: 0});
+        const price = await getQuerySQL(db, "SELECT price FROM orders WHERE o.id = ?", [order.id], {price: 0});
+        const newStatus = wallet < price ? 'pending' : 'confirmed';
+        runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [newStatus, order.id]);
+        return newValues;
+      }, confirmedPorducts);
+      //For each product confirmed by a farmer, the status is set to 'toDeliver' and the quantity decreased to that needed
+      res.foreach(e => 
+        runQuerySQL(db, "UPDATE farmer_payments SET status = toDeliver, quantity = ? WHERE id = ?;",
+          [confirmedPorducts.find(cp => cp.id===e.id).quantity- e.quantity, e.id]
+        )
+      );
+      db.run("COMMIT;");
+    }
+    catch(err) {
+      db.run("ROLLBACK;");
+      return reject(err);
+    }
+  })
+}
 
 exports.execApi = (app, passport, isLoggedIn, is_possible) => {
 
