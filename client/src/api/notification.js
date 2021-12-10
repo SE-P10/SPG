@@ -7,7 +7,7 @@ import { handleFetch, parseResponse } from "./utility";
  */
 async function getNotification(userID) {
     return parseResponse(
-        await handleFetch("/api/notification/" + userID + "/seen/", {}, "GET"),
+        await handleFetch("/api/notification/" + userID , {}, "GET"),
         "array",
         []
     );
