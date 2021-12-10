@@ -20,7 +20,7 @@ async function addNotification(userID, message, object, email = false) {
     return sendMail(email, message, object);
   }
 
-  return status;
+  resolve(status);
 }
 
 
