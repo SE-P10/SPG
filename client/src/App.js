@@ -69,10 +69,17 @@ const App = () => {
    */
   useEffect(() => {
 
+    let loaded = false;
+
     async function timeHandler() {
 
+      if (!loaded) {
+        loaded = true;
+        setTimeDateOffset(await API.getTime(true));
+      }
+
       // prevent pooling the server
-      let timeoffset = timeDateOffset || (dayjs().unix() % 30 === 0 ? (await API.getTime(true)) : 0);
+      let timeoffset = timeDateOffset || 0;
 
       setVirtualTimeDate(dayjs().add(timeoffset, 'second'));
     }
