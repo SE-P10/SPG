@@ -78,9 +78,10 @@ describe("Update Order", function () {
       .put("api/orders/51")
       .send({
         order: {
-          status: "",
-          pickup_time: "",
+          status: "pending",
+          /*   pickup_time: "",
           pickup_place: "",
+         */
         },
         products: [
           {
