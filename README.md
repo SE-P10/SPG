@@ -4,6 +4,7 @@
 
 ### MEMBERS
 
+
 | NAME               | ID      |
 | ------------------ | ------- |
 | Alessandro Morelli | s280147 |
@@ -12,6 +13,7 @@
 | Armando Chimirri   | s280119 |
 | Desirè Damino      | s279575 |
 | Michele Basilico   | s282513 |
+
 
 ## React Client Application Routes
 
@@ -41,7 +43,6 @@ Email, Password, Role
 - mariorossi@demo.it, password, [client]
 - paolobianchi@demo.it, password, [farmer]
 
-
 ## API
 
 - [API Server](./Documentation/api-server.md)
@@ -49,5 +50,3 @@ Email, Password, Role
 
 
 ## [Docker](./Documentation/Docker.md) 
-
-
