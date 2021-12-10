@@ -187,9 +187,6 @@ app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
     timeOffset = parsedTimestamp - dayjs().unix();
   }
 
-  session.timeOffset = timeOffset;
-  session.time = parsedTimestamp;
-
   req.session.timeOffset = timeOffset;
   req.session.time = parsedTimestamp;
 
