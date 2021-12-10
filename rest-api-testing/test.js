@@ -71,36 +71,6 @@ describe("User", function () {
   });
 });
 
-describe("Update Order", function () {
-  it("should return success 201", function (done) {
-    server
-
-      .put("api/orders/51")
-      .send({
-        order: {
-          status: "pending",
-          /*   pickup_time: "",
-          pickup_place: "",
-         */
-        },
-        products: [
-          {
-            product_id: 19,
-            quantity: 0,
-          },
-        ],
-      })
-      .expect(201)
-      .end(function (err, res) {
-        if (err) {
-          done(err);
-        } else {
-          done();
-        }
-      });
-  });
-});
-
 describe("Products", function () {
   it("GET api/products should return the products", function (done) {
     server
@@ -274,6 +244,34 @@ describe("Orders", function () {
           done(err);
         } else {
           expect(res.statusCode).to.equal(201);
+          done();
+        }
+      });
+  });
+
+  it("PUT api/orders/51 should return success 201", function (done) {
+    server
+
+      .put("api/orders/51")
+      .send({
+        order: {
+          status: "pending",
+          /*   pickup_time: "",
+          pickup_place: "",
+         */
+        },
+        products: [
+          {
+            product_id: 19,
+            quantity: 0,
+          },
+        ],
+      })
+      .expect(201)
+      .end(function (err, res) {
+        if (err) {
+          done(err);
+        } else {
           done();
         }
       });
