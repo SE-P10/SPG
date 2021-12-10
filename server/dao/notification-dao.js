@@ -34,11 +34,9 @@ async function setNotification(notificationID) {
 
 async function getNotification(userID) {
 
-    seen = seen ? 1 : 0;
-
     let sql = 'SELECT * FROM notifications WHERE user_id = ?';
 
-    return await getQuerySQL(db, sql, [userID, seen], {
+    return await getQuerySQL(db, sql, [userID], {
         id: 0,
         message: '',
         object: '',
