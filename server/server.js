@@ -10,6 +10,8 @@ const passport = require("passport");
 const { validationResult, body } = require("express-validator"); // validation middleware
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
+const sqliteStoreFactory = require('express-session-sqlite').default
+const sqlite3 = require('sqlite3')
 const dayjs = require("dayjs");
 
 const productsDao = require("./dao/products-dao");
@@ -21,6 +23,7 @@ const notificationDao = require("./dao/notification-dao.js");
 const testDao = require("./dao/test-dao.js");
 const { virtualCron } = require("./cron");
 const { isNumber } = require("./utility");
+
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -56,6 +59,7 @@ passport.deserializeUser((id, done) => {
 // init express
 const app = express();
 const port = 3001;
+const SqliteStore = sqliteStoreFactory(session);
 
 // set-up the middlewares
 app.use(morgan("dev"));
@@ -69,71 +73,73 @@ const isLoggedIn = (req, res, next) => {
 };
 
 // enable sessions in Express
-app.use(
-  session({
-    // set up here express-session
-    secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
-    resave: false,
-    saveUninitialized: false,
-    time: null,
-    timeOffset: 0
-  })
-);
-
-function getVirtualTime(offset = false) {
-  return (session.timeOffset || 0) + (offset ? 0 : dayjs().unix());
-}
+app.use(session({
+  // set up here express-session
+  secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    sameSite: true,
+    maxAge: 3600000
+  },
+  store: new SqliteStore({
+    driver: sqlite3.Database,
+    path: 'sessions.db',
+    ttl: 3600000,
+    prefix: 'sessid:',
+    cleanupInterval: 300000
+  }),
+}));
 
 // init Passport to use sessions
 app.use(passport.initialize());
 app.use(passport.session());
 
 
-
-
-
-
 app.use(virtualCron.run(() => {
 
-  //virtualCron.unscheduleAll();
+  // reset all cron jobs on server restart
+  virtualCron.unscheduleAll();
 
-  let virtualTime = getVirtualTime();
-
-  virtualCron.schedule(virtualCron.schedules.MONDAY, (time, ...args) => {
-
-    if (virtualTime.hour() > 9 || virtualCron.calcDateDiff(virtualTime, time)) {
-
-    }
-
-    /*
-        Give order-products
-        Confirm([{productId, quantity}]) //request: farmer
-        
-        update farmer_products, confirmed_quantity = quantity
-        
-        monday-9 confirm orders {
-            foreach order
-                foreach orderproduct op
-                    if(op.quantity <= confirmed_qunaity)
-                        confirmed_q -= op.qunatity;
-                        op.confirmed=t
-                    else
-                        rimuovi dall'ordine opproducts
-                    insert in farmer payments new line (add delivered column)
-        }
-        
-        magazziniere get* farmer payments
-        magazziniere update farmer payments delivered=true
-    
-    */
+  virtualCron.schedule({
+    from: { day: virtualCron.schedules.FRIDAY, hour: 20 },
+    to: { day: virtualCron.schedules.MONDAY, hour: 22 }
+  },
+    (virtualTime, lastExecutionTime, ...args) => {
 
 
-  }, [], false, virtualTime);
+      console.log("LastExecution:", lastExecutionTime.format('YYYY-MM-DD <HH:mm:ss>'));
+
+      console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
+
+      /*
+          Give order-products
+          Confirm([{productId, quantity}]) //request: farmer
+          
+          update farmer_products, confirmed_quantity = quantity
+          
+          monday-9 confirm orders {
+              foreach order
+                  foreach orderproduct op
+                      if(op.quantity <= confirmed_qunaity)
+                          confirmed_q -= op.qunatity;
+                          op.confirmed=t
+                      else
+                          rimuovi dall'ordine opproducts
+                      insert in farmer payments new line (add delivered column)
+          }
+          
+          magazziniere get* farmer payments
+          magazziniere update farmer payments delivered=true
+      */
+
+    }, [], false);
 
   //virtualCron.debug();
 
-}, getVirtualTime(true)));
-
+}));
 
 
 // API implemented in module gAPI
@@ -184,6 +190,9 @@ app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
   session.timeOffset = timeOffset;
   session.time = parsedTimestamp;
 
+  req.session.timeOffset = timeOffset;
+  req.session.time = parsedTimestamp;
+
   res.status(201).json(timeOffset).end();
 
 });
@@ -192,8 +201,8 @@ app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
 app.get("/api/debug/time/", function (req, res) {
 
   let response = {
-    time: session.time || dayjs().unix(),
-    offset: session.timeOffset || 0
+    time: req.session.time || dayjs().unix(),
+    offset: req.session.timeOffset || 0
   }
 
   res.status(201).json(response).end();
