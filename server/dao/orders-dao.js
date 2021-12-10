@@ -136,14 +136,30 @@ const updateProduct = async (productID, data) => {
   });
 }
 
+const calcProductsPice = async (products = []) => {
+
+  return await products.reduce(async (previousValue, item) => {
+
+    let pID = item.product_id || item.id || Object.keys(item)[0];
+    let quantity = item.quantity || item[pID];
+
+    let product = await getProduct(pID);
+
+    return (await previousValue) + (Number.parseFloat(quantity) * Number.parseFloat(product.price));
+
+  }, 0);
+
+}
+
 
 /**
  * 
  * @param {object} order 
  * @param {string} action 
+ * @param {Array} products 
  * @returns boolean
  */
-const handleOrderActions = async (order, action) => {
+const handleOrderActions = async (order, action, products = []) => {
 
   let reStatus = order.id;
 
@@ -153,8 +169,10 @@ const handleOrderActions = async (order, action) => {
 
       let wallet = await getUserMeta(order.user_id, 'wallet', true, 0);
 
-      if (Number.parseFloat(wallet) >= Number.parseFloat(order.price)) {
-        reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(order.price))
+      let productsPrice = await calcProductsPice(products);
+
+      if (Number.parseFloat(wallet) >= Number.parseFloat(productsPrice)) {
+        reStatus = await updateUserMeta(order.user_id, 'wallet', Number.parseFloat(wallet) - Number.parseFloat(productsPrice))
       }
       else {
         reStatus = 0;
@@ -175,25 +193,18 @@ const handleOrderActions = async (order, action) => {
   return reStatus;
 }
 
-const handleOrder = async (orderRAW, status = '') => {
+const orderExist = async (ordeID) => {
+
+  return await existValueInDB(db, 'orders', { id: ordeID }, 0);
+}
+
+const handleOrder = async (orderRAW, products = []) => {
 
   if (isNumber(orderRAW)) {
-
-    if (!status) {
-      /**
-       * return orderID if exist otherwise 0, nothing to update here
-       */
-      return existValueInDB(db, 'orders', { id: orderRAW }, 0);
-    }
-
     orderRAW = { id: orderRAW };
   }
 
   orderRAW = orderRAW || { id: 0 }
-
-  if (status) {
-    orderRAW['status'] = status;
-  }
 
   if (orderRAW.id) {
 
@@ -224,7 +235,7 @@ const handleOrder = async (orderRAW, status = '') => {
     /**
      * process order actions, default return orderID
      */
-    let reStatus = handleOrderActions(order, updateOrder.status);
+    let reStatus = handleOrderActions(order, updateOrder.status, products);
 
     if (reStatus) {
       /***
@@ -301,10 +312,9 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
             before: async (row) => {
 
               let pID = row[2],
-                quantity = Number.parseFloat(row[0]),
+                quantity = Number.parseFloat(row[0] || 0),
                 product = await getProduct(pID),
                 orderedProduct = await getOrderProduct(orderID, pID) || { order_id: orderID, product_id: pID, quantity: 0 };
-
 
               if (!orderID || !product || quantity < 0) {
                 if (AF_DEBUG) {
@@ -396,7 +406,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
             before: async (row) => {
 
               let pID = row[1],
-                quantity = Number.parseFloat(row[2]),
+                quantity = Number.parseFloat(row[2] || 0),
                 product = await getProduct(pID);
 
               if (!orderID || !product || quantity < 0) {
@@ -467,7 +477,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
             debugLog("ERROR insert order :: not all products were processed correctly")
           }
           processedProducts = [];
-          await handleOrder(orderID, 'error');
+          await handleOrder({ id: orderID, status: 'error' });
         }
       }
 
@@ -491,27 +501,10 @@ const processOrder = async (userID, orderID, data = {}) => {
 
   let updatingOrder = orderID || false;
 
-  if (products) {
-
-    order.price = await products.reduce(async (previousValue, item) => {
-
-      let pID = item.product_id || item.id || Object.keys(item)[0];
-      let quantity = item.quantity || item[pID];
-
-      let product = await getProduct(pID);
-
-      return (await previousValue) + (Number.parseFloat(quantity) * Number.parseFloat(product.price));
-    }, 0);
-
-    if (AF_DEBUG_PROCESS) {
-      debugLog("OrderPrice", order.price)
-    }
-  }
-
   /**
    * Insert / Update a order {id:...}
   */
-  orderID = await handleOrder(order);
+  orderID = await handleOrder(order, products);
 
   if (AF_DEBUG_PROCESS) {
     debugLog("orderID: " + orderID)
