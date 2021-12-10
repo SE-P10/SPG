@@ -7,6 +7,7 @@ import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
+import dayjs from "dayjs"
 
 import {
   BrowserRouter as Router,
@@ -22,9 +23,12 @@ import "./css/App.css";
 import API from "./API";
 
 const App = () => {
+
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [virtualTimeDate, setVirtualTimeDate] = useState(dayjs());
+  const [timeDateOffset, setTimeDateOffset] = useState(0);
 
   useEffect(() => {
     //per non perdere utente loggato se aggiorno pagina, da qui viene l'errore della GET 401(unhautorized)
@@ -34,6 +38,7 @@ const App = () => {
       console.log(userTmp);
       setUser(userTmp);
     };
+    //fare api per prendere orario
     checkAuth().catch((err) => console.log(err));
   }, []);
 
@@ -59,13 +64,44 @@ const App = () => {
     setMessage("");
   };
 
+  /**
+   * Handle VirtualTime updates
+   */
+  useEffect(() => {
+
+    let loaded = false;
+
+    async function timeHandler() {
+
+      if (!loaded) {
+        loaded = true;
+        setTimeDateOffset(await API.getTime(true));
+      }
+
+      // prevent pooling the server
+      let timeoffset = timeDateOffset || 0;
+
+      setVirtualTimeDate(dayjs().add(timeoffset, 'second'));
+    }
+
+    timeHandler();
+
+    const interval = setInterval(timeHandler, 1000);
+
+    return () => clearInterval(interval);
+
+  }, [timeDateOffset]);
+
   return (
     <Router>
       <MyNavbar
         doLogOut={doLogOut}
         loggedIn={loggedIn}
         closeMessage={closeMessage}
+        changeTimeDate={setTimeDateOffset}
+        virtualTimeDate={virtualTimeDate}
       />
+
       <Switch>
         <Route
           exact
@@ -135,7 +171,7 @@ const App = () => {
               {user !== null && user.role === "1" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ShopEmployee user={user} loggedIn={loggedIn} />
+                  <ShopEmployee hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} loggedIn={loggedIn} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -166,7 +202,7 @@ const App = () => {
               {user !== null && user.role === "2" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <FarmerPage user={user} />
+                  <FarmerPage hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -184,7 +220,7 @@ const App = () => {
               {user !== null && user.role === "0" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ClientPage user={user} />
+                  <ClientPage hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
                 </Container>
               ) : (
                 <Redirect to='/login' />

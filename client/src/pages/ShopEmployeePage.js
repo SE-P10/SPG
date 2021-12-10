@@ -247,7 +247,7 @@ function ShopEmployee(props) {
               className='justify-content-center'
             />
           ) : null}
-          {actionS === 4 ? (
+          {actionS === 4 && ((props.dow == 'Saturday' && props.hour >= 9 ) || (props.dow == 'Sunday' && props.hour <= 23 ))? (
             <ClientOrder
               changeAction={changeAction}
               addMessage={addMessage}

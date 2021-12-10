@@ -49,7 +49,7 @@ function FarmerPage(props) {
 
         <Row className=' justify-content-center below'>
           <Col>
-            {actionF === 0 ? (
+            {actionF === 0  ? (
               <Row className=' justify-content-center below'>
                 <Button
                   className='se-button '
@@ -71,7 +71,7 @@ function FarmerPage(props) {
           </Col>
         </Row>
         <Row className='below'>
-          {actionF === 1 ? (
+          {actionF === 1 && props.dow == 'Saturday' && props.hour <= 9 ? (
             <UpdateAvailability
               changeAction={changeAction}
               addMessage={addMessage}

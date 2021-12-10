@@ -4,6 +4,8 @@ import {
   Form,
   Row,
   Col,
+  Dropdown,
+  DropdownButton,
   Container,
   Image,
   Spinner,
@@ -11,11 +13,10 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import gAPI from "../api/gAPI";
+import {Basket} from "../client-component/Basket"
 import API from "../API";
-import { filterIcon, basketIcon } from "../ui-components/Icons";
+import { filterIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
-import userAPI from "../api/user";
 
 function ClientOrder(props) {
   const [errorMessage, setErrorMessage] = useState("");
@@ -30,7 +31,7 @@ function ClientOrder(props) {
   const [isOrderProductDirty, setIsOrderProductDirty] = useState(true);
   const [mailInserted, setMailInserted] = useState(undefined);
   const [isProductListLoading, setIsProductListLoading] = useState(true);
-
+  const [changes,setChanges] = useState(false)
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -40,32 +41,48 @@ function ClientOrder(props) {
 
   useEffect(() => {
     const fillTables = async () => {
-      const productsTmp = await gAPI.getProducts();
+      const productsTmp = await API.getProducts();
       setProducts(productsTmp);
       setIsProductListLoading(false);
       const farmersTmp = productsTmp
         .map((t) => t.farmer)
         .filter(function (item, pos) {
-          return productsTmp.map((t) => t.farmer).indexOf(item) === pos;
+          return productsTmp.map((t) => t.farmer).indexOf(item) == pos;
         });
       setFarmers(farmersTmp);
       const typesTmp = productsTmp
         .map((t) => t.name)
         .filter(function (item, pos) {
-          return productsTmp.map((t) => t.name).indexOf(item) === pos;
+          return productsTmp.map((t) => t.name).indexOf(item) == pos;
         });
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+      let basketTmp = [];
+      if (props.modifyOrder == -1)
+      basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+      else {
+              
+              let oldOrder = await API.getOrder(props.modifyOrder);
+              for (let p of oldOrder.products){
+                API.insertProductInBasket({
+                  product_id: p.product_id,
+                  quantity: p.quantity,
+                })
+              }
+        }
+
+
       setOrderProduct(
         basketTmp.map((t) => ({
-          product_id: t.id,
+          product_id: t.product_id,
           confirmed: true,
           quantity: t.quantity,
           name: t.name,
         }))
       );
+      setChanges(old => !old);
+      console.log(orderProduct)
     };
 
     fillTables();
@@ -76,43 +93,59 @@ function ClientOrder(props) {
     let userId;
     let orderOk = true;
 
-    if (props.user.role === "1") {
+    if (props.user.role == 1) {
       if (!mailInserted) {
         setErrorMessage("You have to insert an email!");
         orderOk = false;
       } else {
-        userId = await userAPI.getUserId(mailInserted);
-        if (userId.length === 0 || userId[0].role !== "0") {
+        userId = await API.getUserId(mailInserted);
+        if (userId.length === 0 || userId[0].role != 0) {
           setErrorMessage("Invalid user");
           orderOk = false;
-        }
+        } 
         if (orderOk) userId = userId[0].id;
       }
     } else userId = props.user.id;
+    const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
 
-    if (
-      orderOk &&
-      orderProduct.filter((t) => t.confirmed === true).length === 0
-    ) {
+    if (orderOk && basketTmp.length === 0) {
       setErrorMessage("Can't issue an order without items.");
       orderOk = false;
     }
 
     if (orderOk) {
       API.deleteAllBasket();
-
-      //Chiamare API , moemntanemtnate stampare l'ordine
-      let backetOrder = orderProduct.filter(
-        (t) => t.quantity !== 0 && t.confirmed === true
-      );
-      API.insertOrder(userId, backetOrder)
-        .then(() => {
+      
+      let finalOrder = basketTmp.map((t) => ({
+        product_id: t.id,
+        confirmed: true,
+        quantity: t.quantity,
+        name: t.name,
+      }))
+      if (props.modifyOrder == -1){
+      API.insertOrder(
+        userId,
+        finalOrder
+      ).then(() => {
           propsN.addMessage("Request sent correctly!");
+        
           propsN.changeAction(0);
         })
         .catch((err) => {
-          setErrorMessage("Server error during insert order.");
-        });
+          setErrorMessage("Server error during insert order. "+err);
+        });}
+        else { //fare chiamata ad update order
+          API.updateOrderProducts(props.modifyOrder,finalOrder).then(() => {
+            propsN.addMessage("Request sent correctly!");
+          
+            propsN.changeAction(0);
+          })
+          
+          .catch((err) => {
+            setErrorMessage("Server error during insert order. "+err);
+          });
+          propsN.changeAction(0)
+        }
     }
   };
 
@@ -134,7 +167,7 @@ function ClientOrder(props) {
           ""
         )}
 
-        {props.user.role === "1" ? (
+        {props.user.role == 1 ? (
           <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
             <Form.Label>Client mail</Form.Label>
             <Form.Control
@@ -150,9 +183,7 @@ function ClientOrder(props) {
           <Row>
             <SearchForm
               setSearchValue={setSearchValue}
-              onSearchSubmit={() => {
-                console.log("test");
-              }}
+              onSearchSubmit={() => {console.log("test")}}
             />
           </Row>
           <Button
@@ -230,7 +261,7 @@ function ClientOrder(props) {
           </div>
         ) : (
           <div>
-            {categorize === 1 && viewFilter === true ? (
+            {categorize == 1 && viewFilter === true ? (
               <div>
                 <Form>
                   <Form.Control
@@ -273,16 +304,16 @@ function ClientOrder(props) {
 
                   if (filterType !== "Type" && filterFarmer === "Farmer")
                     return (
-                      t.name === filterType &&
+                      t.name == filterType &&
                       t.name
                         .toLowerCase()
                         .includes(searchValue.toLowerCase()) &&
                       t.quantity > 0
                     );
 
-                  if (filterType === "Type" && filterFarmer !== "Farmer")
+                  if (filterType == "Type" && filterFarmer !== "Farmer")
                     return (
-                      t.farmer === filterFarmer &&
+                      t.farmer == filterFarmer &&
                       t.name
                         .toLowerCase()
                         .includes(searchValue.toLowerCase()) &&
@@ -291,11 +322,10 @@ function ClientOrder(props) {
 
                   if (filterType !== "Type" && filterFarmer !== "Farmer")
                     return (
-                      t.farmer === filterFarmer &&
-                      t.name === filterType &&
+                      t.farmer == filterFarmer &&
+                      t.name == filterType &&
                       t.name.toLowerCase().includes(searchValue.toLowerCase())
                     );
-                  return t;
                 })
                 .map((p) => (
                   <Row className='below'>
@@ -306,9 +336,7 @@ function ClientOrder(props) {
                     <Col>{p.name} </Col>
                     <Col>{p.price} €</Col>
                     <Col>max quantity : {p.quantity}</Col>
-                    {orderProduct.filter(
-                      (t) => t.product_id === p.id && t.confirmed === true
-                    ).length === 0 ? (
+                    
                       <Button
                         onClick={(ev) => {
                           if (
@@ -321,6 +349,7 @@ function ClientOrder(props) {
                           )
                             setErrorMessage("Wrong quantity");
                           else {
+                            
                             API.insertProductInBasket(
                               orderProduct
                                 .filter((t) => t.product_id === p.id)
@@ -329,6 +358,8 @@ function ClientOrder(props) {
                                   quantity: t.quantity,
                                 }))[0]
                             );
+                            
+                            setChanges(old => !old);
                             setOrderProduct((old) => {
                               const list = old.map((item) => {
                                 if (item.product_id === p.id)
@@ -345,32 +376,13 @@ function ClientOrder(props) {
                           }
                         }}
                         variant='outline-secondary'>
-                        ADD
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={(ev) => {
-                          API.insertProductInBasket(
-                            orderProduct
-                              .filter((t) => t.product_id === p.id)
-                              .map((t) => ({
-                                product_id: t.product_id,
-                                quantity: 0,
-                              }))[0]
-                          );
-
-                          setOrderProduct((old) => {
-                            return old.filter((t) => t.product_id !== p.id);
-                          });
-                        }}
-                        variant='outline-secondary'>
-                        DELETE
-                      </Button>
-                    )}
+                        {orderProduct.filter(
+                      (t) => t.product_id === p.id && t.confirmed == true
+                    ).length === 0 ? "ADD" : "MODIFY" }
+                       </Button>
+                    
                     <Col>
-                      {orderProduct.filter(
-                        (t) => t.product_id === p.id && t.confirmed === true
-                      ).length === 0 ? (
+                      
                         <Form.Group>
                           <Form.Control
                             onChange={(ev) => {
@@ -412,9 +424,7 @@ function ClientOrder(props) {
                             size='sm'
                           />
                         </Form.Group>
-                      ) : (
-                        ""
-                      )}
+                      
                     </Col>
                   </Row>
                 ))}
@@ -423,54 +433,7 @@ function ClientOrder(props) {
         )}
       </Col>
       <Col sm={4} className='ml-3'>
-        <Row>
-          <h2>Basket {basketIcon}</h2>
-        </Row>
-
-        {orderProduct.length !== 0 ? (
-          <>
-            {orderProduct
-              .filter((t) => t.quantity !== 0 && t.confirmed === true)
-              .map((p) => (
-                <>
-                  <Row>
-                    {p.name} Q: {p.quantity}{" "}
-                    <Button
-                      onClick={(ev) => {
-                        API.insertProductInBasket({
-                          product_id: p.product_id,
-                          quantity: 0,
-                        }).then((e) => {
-                          setIsOrderProductDirty(false);
-                          setOrderProduct((old) => {
-                            return old.filter((t) => t.product_id !== p.id);
-                          });
-                        });
-                      }}
-                      variant='outline-secondary'>
-                      DELETE
-                    </Button>
-                  </Row>
-                </>
-              ))}{" "}
-          </>
-        ) : (
-          <>
-            {" "}
-            {props.user.role === 1 ? (
-              <>Client's basket is empty!</>
-            ) : (
-              <>Your basket is empty!</>
-            )}
-          </>
-        )}
-        <Row>
-          <Button
-            className='spg-button  mx-auto below'
-            onClick={(ev) => handleSubmit(ev, props)}>
-            Issue Order
-          </Button>
-        </Row>
+        <Basket props={props} changes={changes} setIsOrderProductDirtyOk={setIsOrderProductDirtyOk} handleSubmit={handleSubmit} setIsOrderProductDirty={setIsOrderProductDirty} setOrderProduct={setIsOrderProductDirtyOk} />
       </Col>
     </>
   );
