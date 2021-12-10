@@ -29,9 +29,9 @@ async function getTime(offset = false) {
     return parseResponse((offset ? virtualTime.offset : virtualTime.time), "number", (offset ? 0 : dayjs().unix()));
 }
 
-const timeApi = {
+const timeAPI = {
     setTime,
     getTime
 };
 
-export default timeApi;
+export default timeAPI;

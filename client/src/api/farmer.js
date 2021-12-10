@@ -1,8 +1,9 @@
 // call: GET /api/farmer/pruducts
 async function getFarmerProducts(farmerID) {
-  // const response = await fetch("/api/products/farmer/" + farmerID.id);
+
   const response = await fetch("/api/products/farmer/" + farmerID);
   const pFramer = await response.json();
+
   if (response.ok) {
     return pFramer;
   } else {
@@ -30,4 +31,5 @@ const farmerAPI = {
   getFarmerProducts,
   updateFarmerProducts,
 };
+
 export default farmerAPI;

@@ -18,7 +18,7 @@ async function handleOrderAction(filter, products = [], order_details = {}, meth
     order_details = Object.assign({ id: 0 }, order_details);
   }
 
-  return await handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
+  return handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
 }
 
 /**
@@ -101,9 +101,9 @@ async function getRequestedProducts(farmerID) {
  * @param {String} place
  * @returns {boolean} true|false
  */
- async function deliveryOrder(orderID, time, place = 'local') {
+async function deliveryOrder(orderID, time, place = 'local') {
   return parseResponse(
-    await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place}, "PUT")
+    await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place }, "PUT")
   );
 }
 
@@ -115,7 +115,7 @@ async function getRequestedProducts(farmerID) {
  * @param {Array} products 
  * @returns {boolean} true|false
  */
- async function updateOrderProducts(orderID, products = []) {
+async function updateOrderProducts(orderID, products = []) {
   return parseResponse(
     await handleOrderAction(orderID, products, { id: orderID }, "PUT")
   );

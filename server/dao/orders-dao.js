@@ -126,7 +126,7 @@ const updateProduct = async (productID, data) => {
   let dinoSQL = dynamicSQL("UPDATE products SET", data, { id: productID });
 
   return new Promise((resolve, reject) => {
-    db.run(dinoSQL.sql, [...dinoSQL.values], function (err) {
+    db.run(dinoSQL.sql, [...dinoSQL.values], function(err) {
       if (err) {
         debugLog(err)
         reject("Db error")
@@ -535,7 +535,7 @@ const processOrder = async (userID, orderID, data = {}) => {
   return 0;
 };
 
-exports.execApi = (app, passport, isLoggedIn) => {
+exports.execApi = (app, passport, isLoggedIn, is_possible) => {
 
   function thereIsError(req, res, action = '') {
 
@@ -552,7 +552,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
   }
 
   // update existing order POST /api/orders/:user_id/:order_id
-  app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+  app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn && is_possible), async (req, res) => {
 
     if (thereIsError(req, res, 'update')) { return };
 
@@ -570,7 +570,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
   });
 
   // insert a new POST /api/orders/:user_id
-  app.post('/api/orders/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
+  app.post('/api/orders/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn && is_possible), async (req, res) => {
 
     if (thereIsError(req, res, 'insert')) { return };
 

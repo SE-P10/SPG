@@ -33,7 +33,7 @@ const listOrderProducts = farmerId => {
   );
 }
 
-exports.execApi = (app, passport, isLoggedIn) => {
+exports.execApi = (app, passport, isLoggedIn, is_possible) => {
   function thereIsError(req, res, action = '') {
 
     const errors = validationResult(req);
@@ -70,7 +70,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
   // update the value of the product to the new value
   app.post(
     '/api/farmer/products/update',
-    isLoggedIn,
+    (isLoggedIn && is_possible),
     async (req, res) => {
       if (thereIsError(req, res, 'update'))
         return res.status(422).end();
