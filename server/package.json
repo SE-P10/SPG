@@ -14,6 +14,7 @@
     "dayjs": "^1.10.7",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "express-session-sqlite": "^2.0.10",
     "express-validator": "^6.13.0",
     "md5": "^2.3.0",
     "morgan": "^1.10.0",
