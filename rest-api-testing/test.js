@@ -57,7 +57,7 @@ describe("Login as SHOPEMPLOYEE", function () {
 });
 
 describe("User", function () {
-  it("GET api/users/mariorossi@demo.it/should return the user ", function (done) {
+  it("GET api/users/mariorossi@demo.it/ should return the user ", function (done) {
     server
       .get("api/users/mariorossi@demo.it/")
       .expect("Content-type", /json/)
@@ -71,10 +71,24 @@ describe("User", function () {
   });
 });
 
-/* describe("Update Order", function () {
+describe("Update Order", function () {
   it("should return success 201", function (done) {
     server
-      .post("api/orders/5/51")
+
+      .put("api/orders/51")
+      .send({
+        order: {
+          status: "",
+          pickup_time: "",
+          pickup_place: "",
+        },
+        products: [
+          {
+            product_id: 19,
+            quantity: 0,
+          },
+        ],
+      })
       .expect(201)
       .end(function (err, res) {
         if (err) {
@@ -85,7 +99,6 @@ describe("User", function () {
       });
   });
 });
- */
 
 describe("Products", function () {
   it("GET api/products should return the products", function (done) {
@@ -102,7 +115,7 @@ describe("Products", function () {
   });
 });
 
-/* describe("Add a new client", function () {
+describe("Add a new client", function () {
   const newClient = {
     email: "new.client@demo.it",
     password: "password",
@@ -123,7 +136,7 @@ describe("Products", function () {
         }
       });
   });
-}); */
+});
 
 // TODO Test what should be the input and output
 describe("Virtual time", function () {
