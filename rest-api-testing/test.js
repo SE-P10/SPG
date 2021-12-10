@@ -35,18 +35,18 @@ function checkType(res, types) {
 // UNIT test begin
 
 // LOGIN as SHOPEMPLOYEE
-describe("Login as SHOPEMPLOYEE", function() {
+describe("Login as SHOPEMPLOYEE", function () {
   const credentials = {
     // username: "mariorossi@demo.it",
     username: "john.doe@demo01.it",
     password: "password",
   };
 
-  it("should return logged user", function(done) {
+  it("GET api/sessions should return logged user", function (done) {
     server
       .post("api/sessions")
       .send(credentials)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -56,72 +56,12 @@ describe("Login as SHOPEMPLOYEE", function() {
   });
 });
 
-describe("Get User From Email", function() {
-  it("should return the user ", function(done) {
+describe("User", function () {
+  it("GET api/users/mariorossi@demo.it/should return the user ", function (done) {
     server
       .get("api/users/mariorossi@demo.it/")
       .expect("Content-type", /json/)
-      .end(function(err, res) {
-        if (err) {
-          done(err);
-        } else {
-          done();
-        }
-      });
-  });
-});
-
-describe("Get User's Orders From Email", function() {
-  it("should return the user's orders", function(done) {
-    server
-      .get("api/orders/mariorossi@demo.it/")
-      .expect("Content-type", /json/)
-      .end(function(err, res) {
-        if (err) {
-          done(err);
-        } else {
-          done();
-        }
-      });
-  });
-});
-
-describe("Get User's Orders From Email", function() {
-  it("should return the user's orders", function(done) {
-    server
-      .get("api/orders/mariorossi@demo.it/")
-      .expect("Content-type", /json/)
-      .end(function(err, res) {
-        if (err) {
-          done(err);
-        } else {
-          done();
-        }
-      });
-  });
-});
-
-describe("Create an Order", function() {
-  it("should return success 201", function(done) {
-    server
-      .post("api/orders/5")
-      .expect(201)
-      .end(function(err, res) {
-        if (err) {
-          done(err);
-        } else {
-          done();
-        }
-      });
-  });
-});
-
-describe("Create an Order", function() {
-  it("should return success 201", function(done) {
-    server
-      .post("api/orders/5")
-      .expect(201)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -147,12 +87,12 @@ describe("Create an Order", function() {
 });
  */
 
-describe("Get Products", function() {
-  it("should return the products", function(done) {
+describe("Products", function () {
+  it("GET api/products should return the products", function (done) {
     server
       .get("api/products")
       .expect("Content-type", /json/)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -185,28 +125,13 @@ describe("Get Products", function() {
   });
 }); */
 
-describe("Get Wallet by Email", function() {
-  it("should return the wallet amount", function(done) {
-    server
-      .get("api/wallet/mariorossi@demo.it")
-      .expect("Content-type", /json/)
-      .end(function(err, res) {
-        if (err) {
-          done(err);
-        } else {
-          done();
-        }
-      });
-  });
-});
-
 // TODO Test what should be the input and output
-describe("Virtual time", function() {
-  it("PUT api/debug/time/Wed Dec 08 2021 18:00:03 GMT+0100 should return the offset from real time in seconds", function(done) {
+describe("Virtual time", function () {
+  it("PUT api/debug/time/Wed Dec 08 2021 18:00:03 GMT+0100 should return the offset from real time in seconds", function (done) {
     server
       .put("api/debug/time/Wed Dec 08 2021 18:00:03 GMT+0100")
       // .expect("Content-type", /json/)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -215,11 +140,11 @@ describe("Virtual time", function() {
       });
   });
 
-  it("GET api/debug/time/ should return an object with ofset and time", function(done) {
+  it("GET api/debug/time/ should return an object with ofset and time", function (done) {
     server
       .get("api/debug/time/")
       .expect("Content-type", /json/)
-      .end(function(err, res) {
+      .end(function (err, res) {
         // if (!checkType(res.body, [int, int]))
         //   console.log("error get api/debug/time");
         if (err) {
@@ -231,17 +156,16 @@ describe("Virtual time", function() {
   });
 });
 
-
-describe("Notifications", function() {
-  it("POST api/notification/1 should return success or fail", function(done) {
+describe("Notifications", function () {
+  it("POST api/notification/1 should return success or fail", function (done) {
     server
       .post("api/notification/1")
       .send({
-        "message": "test message",
-        "object": "test object",
+        message: "test message",
+        object: "test object",
       })
       // .expect(200)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -251,11 +175,11 @@ describe("Notifications", function() {
       });
   });
 
-  it("PUT api/notification/1 should return success or fail", function(done) {
+  it("PUT api/notification/1 should return success or fail", function (done) {
     server
       .put("api/notification/1")
       // .expect(200)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -265,11 +189,11 @@ describe("Notifications", function() {
       });
   });
   // TODO Controll the output of the request
-  it("GET api/notification/1 should return all the notification of a specific user", function(done) {
+  it("GET api/notification/1 should return all the notification of a specific user", function (done) {
     server
       .get("api/notification/1")
       .expect("Content-type", /json/)
-      .end(function(err, res) {
+      .end(function (err, res) {
         // if (!checkType(res.body, [int, str, str, int]))
         //   console.log("error get api/notification/1");
         if (err) {
@@ -282,15 +206,27 @@ describe("Notifications", function() {
   });
 });
 
-
-describe("Orders", function() {
-
+describe("Orders", function () {
   // TODO Controll the return and filter parameter
-  it("GET api/orders/1 should return an array of orders or a single one", function(done) {
+
+  it("GET api/orders/mariorossi@demo.it/ should return the user's orders", function (done) {
+    server
+      .get("api/orders/mariorossi@demo.it/")
+      .expect("Content-type", /json/)
+      .end(function (err, res) {
+        if (err) {
+          done(err);
+        } else {
+          done();
+        }
+      });
+  });
+
+  it("GET api/orders/1 should return an array of orders or a single one", function (done) {
     server
       .get("api/orders/1")
       .expect("Content-type", /json/)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -301,22 +237,24 @@ describe("Orders", function() {
   });
 
   // TODO Controll the parameters of the request
-  it("POST api/orders/5 should return success or fail", function(done) {
+  it("POST api/orders/5 should return success or fail", function (done) {
     server
       .post("api/orders/5")
       .send({
-        "order": {
-          "status": "",
-          "pickup_time": "",
-          "pickup_place": "Torino",
+        order: {
+          status: "",
+          pickup_time: "",
+          pickup_place: "Torino",
         },
-        "products": [{
-          "product_id": 1,
-          "quantity": 2
-        },]
+        products: [
+          {
+            product_id: 1,
+            quantity: 2,
+          },
+        ],
       })
       // .expect(200)
-      .end(function(err, res) {
+      .end(function (err, res) {
         // if (!checkType(res.body, [int, int])) { console.log("error post api/orders/1"); }
         if (err) {
           done(err);
@@ -329,16 +267,12 @@ describe("Orders", function() {
 });
 
 // TODO Controllare esegue, ma errori con promise
-describe("Wallet", function() {
-  it("POST api/wallet/update/ should return success or fail", function(done) {
+describe("Wallet", function () {
+  it("GET api/wallet/mariorossi@demo.it should return the wallet amount", function (done) {
     server
-      .post("api/wallet/update/")
-      .send({
-        client_email: 'mariorossi@demo.it',
-        amount: 10,
-      })
-      // .expect(200)
-      .end(function(err, res) {
+      .get("api/wallet/mariorossi@demo.it")
+      .expect("Content-type", /json/)
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -346,19 +280,35 @@ describe("Wallet", function() {
         }
       });
   });
-})
 
-describe("Basket", function() {
+  it("POST api/wallet/update/ should return success or fail", function (done) {
+    server
+      .post("api/wallet/update/")
+      .send({
+        client_email: "mariorossi@demo.it",
+        amount: 10,
+      })
+      // .expect(200)
+      .end(function (err, res) {
+        if (err) {
+          done(err);
+        } else {
+          done();
+        }
+      });
+  });
+});
 
-  it("POST api/basketProduct should return success or fail", function(done) {
+describe("Basket", function () {
+  it("POST api/basketProduct should return success or fail", function (done) {
     server
       .post("api/basketProduct")
       .send({
-        "product_id": 1,
-        "quantity": 4,
+        product_id: 1,
+        quantity: 4,
       })
       // .expect(200)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -368,11 +318,11 @@ describe("Basket", function() {
       });
   });
 
-  it("DELETE api/basketProduct should return success or fail", function(done) {
+  it("DELETE api/basketProduct should return success or fail", function (done) {
     server
       .delete("api/basketProduct")
       // .expect(200)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -383,11 +333,11 @@ describe("Basket", function() {
   });
 
   // TODO Controll the return object
-  it("GET api/basketProduct should return the list of the products in basket associated with the user that called the API", function(done) {
+  it("GET api/basketProduct should return the list of the products in basket associated with the user that called the API", function (done) {
     server
       .get("api/basketProduct")
       .expect(200)
-      .end(function(err, res) {
+      .end(function (err, res) {
         // if (!checkType(res.body, [int, int, int, str, str]))
         //   console.log("error get api/basketProduct");
         if (err) {
@@ -399,9 +349,9 @@ describe("Basket", function() {
   });
 });
 
-describe("Logout as SHOPEMPLOYEE", function() {
-  it("should return success", function(done) {
-    server.delete("api/sessions/current").end(function(err, res) {
+describe("Logout as SHOPEMPLOYEE", function () {
+  it("should return success", function (done) {
+    server.delete("api/sessions/current").end(function (err, res) {
       if (err) {
         done(err);
       } else {
@@ -412,17 +362,17 @@ describe("Logout as SHOPEMPLOYEE", function() {
 });
 
 // LOGIN as FARMER
-describe("Login as FARMER", function() {
+describe("Login as FARMER", function () {
   const credentials = {
     username: "paolobianchi@demo.it",
     password: "password",
   };
 
-  it("should return logged user", function(done) {
+  it("should return logged user", function (done) {
     server
       .post("api/sessions")
       .send(credentials)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -432,14 +382,13 @@ describe("Login as FARMER", function() {
   });
 });
 
-describe("Farmer", function() {
-
+describe("Farmer", function () {
   // TODO Controll the return object
-  it("GET api/products/farmer/1 should return a list of the products of the farmer", function(done) {
+  it("GET api/products/farmer/1 should return a list of the products of the farmer", function (done) {
     server
       .get("api/products/farmer/1")
       // .expect(200)
-      .end(function(err, res) {
+      .end(function (err, res) {
         // if (!checkType(res.body, [int, int]))
         //   console.log("error get api/products/farmer/1");
         if (err) {
@@ -451,17 +400,17 @@ describe("Farmer", function() {
       });
   });
 
-  it("POST api/farmer/products/update should return success or fail", function(done) {
+  it("POST api/farmer/products/update should return success or fail", function (done) {
     server
       .post("api/farmer/products/update")
       .send({
-        "farmer_id": 4,
-        "product_id": 2,
-        "amount": 200,
-        "price": 20,
+        farmer_id: 4,
+        product_id: 2,
+        amount: 200,
+        price: 20,
       })
       // .expect(200)
-      .end(function(err, res) {
+      .end(function (err, res) {
         if (err) {
           done(err);
         } else {
@@ -471,9 +420,9 @@ describe("Farmer", function() {
   });
 });
 
-describe("Logout as FARMER", function() {
-  it("should return success", function(done) {
-    server.delete("api/sessions/current").end(function(err, res) {
+describe("Logout as FARMER", function () {
+  it("should return success", function (done) {
+    server.delete("api/sessions/current").end(function (err, res) {
       if (err) {
         done(err);
       } else {
