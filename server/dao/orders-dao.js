@@ -8,7 +8,8 @@ const { validationResult } = require("express-validator");
 
 const db = require("../db");
 const { getUserMeta, updateUserMeta, getUser } = require("./user-dao");
-const { sendMail, isEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber, debugLog } = require("../utility");
+const { isEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber, debugLog } = require("../utility");
+const { addNotification } = require("./notification-dao");
 
 const getOrder = async (orderID) => {
 
@@ -177,7 +178,9 @@ const handleOrderActions = async (order, action, products = []) => {
       else {
         reStatus = 0;
         let user = await getUser(order.user_id);
-        await sendMail(user.email, "You orders is pending due to insufficient money. top-up your wallet!");
+        if (user) {
+          await addNotification(order.user_id, "You orders is pending due to insufficient money. top-up your wallet!", '', user.email);
+        }
       }
 
       if (!reStatus) {
