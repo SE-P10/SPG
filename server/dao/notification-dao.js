@@ -9,7 +9,7 @@ const { getUser } = require("./user-dao");
 const { debugLog, filter_args, sendMail, runQuerySQL, getQuerySQL } = require("../utility");
 
 
-async function addNotification(userID, message, object, email = false) {
+exports.addNotification = async (userID, message, object, email = false) => {
 
     let sql = 'INSERT INTO notifications (user_id, message, object) VALUES(?, ?, ?)';
 
@@ -24,7 +24,7 @@ async function addNotification(userID, message, object, email = false) {
 }
 
 
-async function setNotification(notificationID) {
+exports.setNotification = async (notificationID) => {
 
     let sql = 'UPDATE notifications SET seen = 1 WHERE id = ?';
 
@@ -32,7 +32,7 @@ async function setNotification(notificationID) {
 }
 
 
-async function getNotification(userID) {
+exports.getNotification = async (userID) => {
 
     let sql = 'SELECT * FROM notifications WHERE user_id = ?';
 
