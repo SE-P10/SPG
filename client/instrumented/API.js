@@ -92,7 +92,7 @@ async function getOrders(client_email) {
 
 async function getUserInfo(userID) {
   const response = await (userID
-    ? fetch("/api/user/" + userID)
+    ? fetch("/api/users/" + userID)
     : fetch("/api/sessions/current"));
   const userInfo = await response.json();
 

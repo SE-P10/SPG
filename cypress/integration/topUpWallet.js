@@ -64,7 +64,7 @@ describe('enterNewClientOrder', () => {
         cy.get('[disabled=""]').should('have.value', '0')
         //type a number to recharge
         cy.findByRole('spinbutton').clear().type('-20');
-        cy.findByRole('alert').should('include.text', 'negative number')
+        cy.findByRole('alert').should('include.text', 'wrong amount')
         //click on recharge button
         cy.findByRole('button', { name: /recharge the wallet/i }).click()
         //check the URL does not change -> Non va bene perchè l'URL è comunque la stessa
@@ -86,7 +86,7 @@ describe('enterNewClientOrder', () => {
         //click on 
         cy.findByRole('button', { name: /recharge the wallet/i }).click()
         //Check alert
-        cy.findByRole('alert').should('include.text', 'negative number')
+        cy.findByRole('alert').should('include.text', 'Wrong quantity')
     })
 
     it('a shopEmployee should be able to top up a client wallet (by entering 0)', () => {
@@ -99,7 +99,7 @@ describe('enterNewClientOrder', () => {
         //click on 
         cy.findByRole('button', { name: /recharge the wallet/i }).click()
         //Check alert
-        cy.findByRole('alert').should('include.text', 'negative number')
+        cy.findByRole('alert').should('include.text', 'Wrong quantity')
     })
 
     //CONTROLLO NON ESEGUITO CON 0

@@ -147,7 +147,7 @@ describe('addProductsToBasket', () => {
         //Aggiungo due ananas
         cy.get('.list > :nth-child(1)')
             .findByRole('textbox')
-            .type('-52')
+            .type(-2)
         cy.get('.list > :nth-child(1)')
             .findByRole('button')
             .click()

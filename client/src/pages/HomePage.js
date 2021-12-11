@@ -1,4 +1,4 @@
-import { Container, Carousel, Row, Col, Button } from "react-bootstrap";
+import { Container, Carousel, Row, Col } from "react-bootstrap";
 import "../css/custom.css";
 
 function HomePage(props) {

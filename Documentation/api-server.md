@@ -1,7 +1,177 @@
-## API Server
 
-### POST /api/wallet/update/
+# API Server
+
+## GET /api/users/:filter
+* Description: Get user data 
+* Request params: userID or user_email
+* Return: user object as defined below
+```json
+{
+  "id": 0,
+  "name": "",
+  "role": "client",
+  "email": ""
+}
+```
+## POST /api/newClient
+* Description: add new client
+* Body: user data as defined below
+* Return: success or fail
+```json
+{
+  "email": "",
+  "password": "",
+  "username": "",
+  "name": "",
+  "surname": ""
+}
+```
+---
+
+## PUT /api/debug/time/:time
+* Description: set virtual time
+* Request params: a time string like *(Wed Dec 08 2021 18:00:03 GMT+0100 (Ora standard dell’Europa centrale))* or an offset in seconds or a timestamp 
+* Return: offset from real time in seconds
+
+## GET /api/debug/time/
+* Description: get set session time
+* Return: an object as defined below
+```json
+{
+  "offset": 0,
+  "time": 1638982982,
+}
+```
+---
+
+## POST /api/notification/:user_id
+* Description: save a new notification for user_id
+* Request params: user_id
+* Body: an object as defined below
+* Return: success or fail
+```json
+{
+  "message": "",
+  "object": "",
+}
+```
+
+## PUT /api/notification/:id
+* Description: set a notification as seen
+* Request params: notification_id
+* Return: success or fail
+
+## GET /api/notification/:user_id
+* Description: get all notification for user_id
+* Request params: user_id
+* Return: an object as defined below
+```json
+{
+  "id": 0,
+  "message": "",
+  "object": "",
+  "seen": 0
+}
+```
+---
+
+## Get /api/orders/:filter
+* Description: get all orders based on the filter
+* Request params: **orderID** *(will return only an object)* or **user_email** or **order status** *(like: pending)* 
+* Return: an array of objects or a single one as defined below
+```json
+{
+  "id": 0,
+  "user_id": 0,
+  "status": "",
+  "price": 0,
+  "pickup_time": "",
+  "pickup_place": "",
+  "user": {
+            "username": "",
+            "email": "",
+            "role": "client",
+            "name": "",
+            "surname": "",
+          },
+  "products": [{
+            "product_id": 0,
+            "quantity": 0
+            }, ],
+}
+```
+
+## POST /api/orders/:user_id
+* Description: insert a new order for user_id
+* Request params: **user_id** 
+* Body: an object as defined below
+* Return:success or fail
+
+```json
+{
+  "order": {
+            "status": "",
+            "pickup_time": "",
+            "pickup_place": "",
+          },
+  "products": [{
+            "product_id": 0,
+            "quantity": 0
+            }, ],
+}
+```
+
+## PUT/api/orders/:order_id
+* Description: update an order
+* Request params: **order_id** 
+* Body: an object as defined below
+* Return:success or fail
+
+```json
+{
+  "order": {
+            "status": "",
+            "pickup_time": "",
+            "pickup_place": "",
+          },
+  "products": [{
+            "product_id": 0,
+            "quantity": 0
+            }, ],
+}
+```
+
+---
+
+
+## GET /api/products/farmer/:farmer_id
+
+Get the list of all the products of a farmer
+
+```url
+http://localhost:3001/api/products/farmer/4
+```
+
+## POST /api/farmer/products/update
+update the products amount, of a farmer 
+
 ```url 
+POST /api/farmer/products/update HTTP/1.1
+Host: localhost
+Content-Type: application/json
+Content-Length: 52
+
+{
+  "farmer_id": 4,
+  "product_id": 2,
+  "quantity":200,
+  "price":20,
+}
+```
+
+## POST /api/wallet/update/
+
+```url
 POST /api/wallet/update HTTP/1.1
 Host: localhost
 Content-Type: application/json
@@ -12,12 +182,35 @@ Content-Length: 52
   "amount": 10
 }
 ```
+
 Update the value of the wallet of a specific amount
 
-### Get /api/orders/:client_email
+## GET /api/products
 
 The user need to be authenticated.
-Return the list of orders made by a specific client given as parameter:
+Return a list of the products in the database
+
+```url
+http://localhost:3001/api/products
+```
+
+```json
+{
+  "id": 1,
+  "quantity": 10,
+  "price": 5,
+  "name": "product name",
+  "Farmer": "farmerName farmerSurname"
+}
+```
+
+Insert a new client in the databse
+
+## GET /api/wallet/:email
+
+The user need to be authenticated.
+Return the amount of money that are present in the wallet client whose mail is 
+passed as parameter:
 
 ```url
 http://localhost:3001/api/orders/john.doe@demo01.it
@@ -25,30 +218,50 @@ http://localhost:3001/api/orders/john.doe@demo01.it
 
 ```json
 {
-  "id":1,
-  "user_id":1,
-  "status":"done",
-  "price":10,
-  "pickup_time":"5-11-21-10-00-10",
-  "pickup_place":"TO"
+  "wallet": 50
 }
 ```
 
-
-### POST /api/orders/:user_id
-
-The user need to be authenticated.
-Return success if eveerything run correctly
+## POST /api/basketProduct
 
 ```url
-http://localhost:3001/api/orders/5
+POST /api/basketProduct
+Host: localhost
+Content-Type: application/json
+
+{
+  "product_id": 1,
+  "quantity": 4
+}
 ```
 
-### PUT /api/orders/:user_id/:order_id
+Delete the element associated with the id in the received object from the basket of the client that called the API. Then, if quantity is not 0, insert the received object in the database
+
+## DELETE /api/basketProduct
 
 The user need to be authenticated.
-Return success if eveerything run correctly
 
 ```url
-http://localhost:3001/api/orders/5/80
+http://localhost:3001/api/basketProduct
+```
+
+Delete all the element in basket associated with the user that called the API
+
+## GET /api/basketProduct
+
+The user need to be authenticated.
+Return the list of the products in basket associated with the user that called the API
+
+```url
+http://localhost:3001/api/basketProduct
+```
+
+```json
+{
+  "id": 1,
+  "quantity": 10,
+  "price": 5,
+  "name": "product name",
+  "Farmer": "farmerName farmerSurname"
+}
 ```

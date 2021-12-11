@@ -1,22 +1,12 @@
-import {
-  Alert,
-  Form,
-  Row,
-  Col,
-  Button,
-  Container,
-  Spinner,
-} from "react-bootstrap";
+import { Row, Col, Button, Container, Spinner } from "react-bootstrap";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { SearchComponent } from "../ui-components/SearchComponent";
+
 import { useEffect } from "react";
 import API from "./../API";
 import "../css/custom.css";
 
 function YourOrders(props) {
   const [orders, setOrders] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isOrderListDirty, setIsOrderListDirty] = useState(true);
   const [isOrderListLoading, setIsProductListLoading] = useState(true);
 
@@ -25,14 +15,12 @@ function YourOrders(props) {
       let ordersTmp = await API.getOrders(props.user.email);
       setIsProductListLoading(false);
       if (ordersTmp.length === 0) {
-        setErrorMessage("No orders found for this user.");
       } else {
         setOrders(ordersTmp);
         setIsOrderListDirty(false);
       }
     };
     fillOrders();
-    console.log(props.user.email);
   }, [isOrderListDirty]);
 
   return (
@@ -60,6 +48,7 @@ function YourOrders(props) {
                         <Col> id : {order.id}</Col>
                         <Col>price : {order.price}</Col>
                         <Col>status : {order.status}</Col>
+                        {order.status == 'booked' ? <Button className='spg-button' onClick={() =>  props.modifyOrder(order.id)} >Modify </Button> : ""}
                       </Row>
                     ))}{" "}
                   </Col>

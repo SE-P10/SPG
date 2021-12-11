@@ -1,7 +1,6 @@
 import "../css/custom.css";
-import { Container, Row, Col, ListGroup, Button, Alert } from "react-bootstrap";
-import { Card } from "react-bootstrap";
-import { useState } from "react";
+import { Container, Row, Col, Button, Alert } from "react-bootstrap";
+import { useState, useEffect } from "react";
 import { ClientOrder } from "../client-component/ClientOrder";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
 import "../css/custom.css";
@@ -12,31 +11,42 @@ import {
   browseIcon,
   checkIcon,
 } from "../ui-components/Icons.js";
-
+import API from "../API";
 function ClientPage(props) {
   const [message, setMessage] = useState("");
-  const [action, setAction] = useState(0);
+  const [actionC, setActionC] = useState(0);
+  const [modifyOrder,setModifyOrder] = useState(-1);
   const changeAction = (actionN) => {
-    setAction(actionN);
+    setActionC(actionN);
   };
+
+  
+  useEffect(() => {
+    if (actionC != 2) setModifyOrder(-1);
+    API.deleteAllBasket().catch(() => {setMessage("Carello non liberato correttamente"); console.log("errore")});
+  }, [actionC]);
+
+
+
+
+  const modifyOrderFunc = (orderId) => {
+    setModifyOrder(orderId)
+    setActionC(2)
+    
+  }
 
   const addMessage = (messageN) => {
     setMessage(messageN);
   };
-  /* Actions 
-    0 = No actions (Home)
-    1 = Browse products 
-    2 = NewOrder
-    3 = Your orders */
 
   return (
     <>
-      {action !== 0 ? (
+      {actionC !== 0 ? (
         <>
           <Button
             className='spg-button below back-button'
             onClick={() => {
-              setAction(0);
+              setActionC(0);
             }}>
             {" "}
             {backIcon}{" "}
@@ -47,7 +57,6 @@ function ClientPage(props) {
       )}{" "}
       <Container className='below'>
         <Row className=' cont below justify-content-center'>
-          {console.log(props.user)}
           {props.user.name ? <h2> {props.user.name} personal page </h2> : null}
         </Row>
         {message ? (
@@ -61,7 +70,7 @@ function ClientPage(props) {
 
         <Row className='secondColor justify-content-center below'>
           <Col>
-            {action === 0 ? (
+            {actionC === 0 ? (
               <>
                 {" "}
                 <Row>
@@ -70,7 +79,7 @@ function ClientPage(props) {
                       <Button
                         className='se-button '
                         onClick={() => {
-                          setAction(1);
+                          setActionC(1);
                         }}>
                         <Col className='justify-content-center'>
                           <Row className='justify-content-center'>
@@ -89,7 +98,7 @@ function ClientPage(props) {
                       <Button
                         className='se-button '
                         onClick={() => {
-                          setAction(2);
+                          setActionC(2);
                         }}>
                         <Col className='justify-content-center'>
                           <Row className='justify-content-center'>
@@ -108,7 +117,7 @@ function ClientPage(props) {
                       <Button
                         className='se-button '
                         onClick={() => {
-                          setAction(3);
+                          setActionC(3);
                         }}>
                         <Col className='justify-content-center'>
                           <Row className='justify-content-center'>
@@ -122,6 +131,7 @@ function ClientPage(props) {
                       </Button>
                     </Row>{" "}
                   </Col>
+                  
                 </Row>
               </>
             ) : (
@@ -130,23 +140,25 @@ function ClientPage(props) {
           </Col>
         </Row>
         <Row className='below'>
-          {action === 1 ? (
+          {actionC === 1 ? (
             <BrowserProducts
               changeAction={changeAction}
               addMessage={addMessage}
             />
           ) : null}
-          {action === 2 ? (
+          {actionC === 2 && ((props.dow == 'Saturday' && props.hour >= 9 ) || (props.dow == 'Sunday' && props.hour <= 23 )) ? (
             <>
               <ClientOrder
+                modifyOrder={modifyOrder}
                 user={props.user}
                 changeAction={changeAction}
                 addMessage={addMessage}
               />{" "}
             </>
           ) : null}
-          {action === 3 ? (
+          {actionC === 3 ? (
             <YourOrders
+            modifyOrder={modifyOrderFunc}
               user={props.user}
               changeAction={changeAction}
               addMessage={addMessage}
