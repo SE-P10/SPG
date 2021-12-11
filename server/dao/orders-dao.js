@@ -599,7 +599,9 @@ exports.confrimOrders = () => {
           const message = 'Your order code ' + order.id + ' is pending, top up your wallet!';
           notificationDao.addNotification(order.user_id, message, 'pending order', true);
         }
-        else newStatus = 'confirmed';
+        else {
+          newStatus = 'confirmed';
+        };
         runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [newStatus, order.id]);
         return newValues;
       }, confirmedPorducts);
