@@ -4,6 +4,7 @@
 const db = require("./../db");
 const { validationResult } = require("express-validator");
 const { getQuerySQL, runQuerySQL } = require("../utility")
+const { getUserMeta } = require("./user-dao")
 
 exports.updateWallet = async (ammount, client_email) => {
   return new Promise(async (resolve, reject) => {
@@ -13,7 +14,11 @@ exports.updateWallet = async (ammount, client_email) => {
       resolve({ error: "User not found." });
     } else {
       const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = ? and users_meta.meta_key = 'wallet';";
-      return runQuerySQL(db, sql, [ammount, user_id], true);
+      try {
+        runQuerySQL(db, sql, [ammount, user_id], true);
+      }
+      catch(e) {return reject(e);}
+      const newWallet = getQuerySQL(db, "SELECT meta_value FROM users_meta WHERE meta_key = 'wallet' AND ", [user_id], true);
     }
   });
 };

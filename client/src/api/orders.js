@@ -9,16 +9,20 @@ import { handleFetch, parseResponse } from "./utility";
  * @param {String} method
  * @returns {*}
  */
-async function handleOrderAction(filter, products = [], order_details = {}, method = "POST") {
-
+async function handleOrderAction(
+  filter,
+  products = [],
+  order_details = {},
+  method = "POST"
+) {
   if (typeof order_details === "number") {
     order_details = { id: order_details };
-  }
-  else {
+  } else {
     order_details = Object.assign({ id: 0 }, order_details);
   }
 
   return handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
+
 }
 
 /**
@@ -49,7 +53,7 @@ async function getOrder(orderID) {
 
 /**
  * Frontend interface API
- * 
+ *
  * @returns {Array} orders in pending status
  */
 async function getPendingOrders() {
@@ -64,7 +68,12 @@ async function getPendingOrders() {
  */
 async function handOutOrder(orderID = 0) {
   return parseResponse(
-    await handleOrderAction(orderID, [], { id: orderID, status: "handout" }, "PUT")
+    await handleOrderAction(
+      orderID,
+      [],
+      { id: orderID, status: "handout" },
+      "PUT"
+    )
   );
 }
 /**
@@ -89,9 +98,10 @@ async function insertOrder(userID, products = [], order_details = {}) {
  */
 async function getRequestedProducts(farmerID) {
   return parseResponse(
-    await handleFetch("/api/orders/products/farmer/" + farmerID, {}, "GET"), 'array');
+    await handleFetch("/api/orders/products/farmer/" + farmerID, {}, "GET"),
+    "array"
+  );
 }
-
 
 /**
  * Frontend interface API
@@ -104,18 +114,42 @@ async function getRequestedProducts(farmerID) {
 async function deliveryOrder(orderID, time, place = 'local') {
   return parseResponse(
     await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place }, "PUT")
+
   );
 }
-
 
 /**
  * Frontend interface API
  *
  * @param {Number} orderID
- * @param {Array} products 
+ * @param {Array} products
  * @returns {boolean} true|false
  */
 async function updateOrderProducts(orderID, products = []) {
+
+  let oldProducts = (await getOrder(orderID)).products || [];
+
+  if (!products || products.length === 0) {
+    products = oldProducts.map((x) => { console.log(x); return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
+  }
+  else {
+
+    for (let i = 0; i < oldProducts; i++) {
+      let exist = false;
+
+      for (let j = 0; j < products; j++) {
+        if (products[j].product_id === oldProducts[i].product_id) {
+          exist = oldProducts[i];
+          break;
+        }
+      }
+
+      if (exist) {
+        products.push({ order_id: exist.order_id, product_id: exist.product_id, quantity: 0 })
+      }
+    }
+  }
+
   return parseResponse(
     await handleOrderAction(orderID, products, { id: orderID }, "PUT")
   );
@@ -129,7 +163,7 @@ const ordersApi = {
   getOrder,
   deliveryOrder,
   updateOrderProducts,
-  getRequestedProducts
+  getRequestedProducts,
 };
 
 export default ordersApi;

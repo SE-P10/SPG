@@ -8,6 +8,7 @@ import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
 import dayjs from "dayjs"
+import { WarehousePage } from "./pages/WarehousePage";
 
 import {
   BrowserRouter as Router,
@@ -115,6 +116,8 @@ const App = () => {
                     {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
                     {user.role === "0" ? <Redirect to='/clientpage' /> : null}
                     {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
+                    {user.role === "3" ? <Redirect to='/warehouse' /> : null}
+
                   </>
                 ) : (
                   <LoginForm
@@ -150,6 +153,8 @@ const App = () => {
                     {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
                     {user.role === "0" ? <Redirect to='/clientpage' /> : null}
                     {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
+                    {user.role === "3" ? <Redirect to='/warehouse' /> : null}
+
                   </>
                 ) : (
                   <LoginForm
@@ -172,6 +177,21 @@ const App = () => {
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
                   <ShopEmployee hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} loggedIn={loggedIn} />
+                </Container>
+              ) : (
+                <Redirect to='/login' />
+              )}
+            </>
+          )}
+        />
+        <Route
+          exact
+          path='/warehouse'
+          render={() => (
+            <>
+              {user !== null && user.role === "3" ? (
+                <Container fluid className='justify-content-center d-flex'>
+                  <WarehousePage user={user}  hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -220,7 +240,7 @@ const App = () => {
               {user !== null && user.role === "0" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ClientPage hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
+                  <ClientPage virtualTimeDate={virtualTimeDate} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
