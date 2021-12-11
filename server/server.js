@@ -128,9 +128,9 @@ app.use(virtualCron.run(() => {
 // API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);
 productsDao.execApi(app, passport, isLoggedIn, body);
-ordersDao.execApi(app, passport, isLoggedIn, time.is_possible);
+ordersDao.execApi(app, passport, isLoggedIn);
 
-farmerDao.execApi(app, passport, isLoggedIn, time.is_possible);
+farmerDao.execApi(app, passport, isLoggedIn);
 walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
 warehouseDao.execApi(app, passport, isLoggedIn);
