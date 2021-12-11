@@ -3,9 +3,10 @@ import { Button, Alert, Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 import "../css/custom.css";
 
-import { updateIcon, backIcon } from "../ui-components/Icons";
+import { updateIcon, backIcon, confirmIcon } from "../ui-components/Icons";
 
 import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
+import { ConfirmProducts } from "../farmer-component/ConfirmProducts";
 
 function FarmerPage(props) {
   const [messageok, setMessageok] = useState("");
@@ -47,10 +48,12 @@ function FarmerPage(props) {
           ""
         )}
 
-        <Row className=' justify-content-center below'>
-          <Col>
-            {actionF === 0  ? (
-              <Row className=' justify-content-center below'>
+        <Row className='mx-auto below'>
+          {actionF === 0 ? (
+            <>
+              {" "}
+              <Col></Col>
+              <Col className=' justify-content-center below'>
                 <Button
                   className='se-button '
                   onClick={() => {
@@ -64,19 +67,52 @@ function FarmerPage(props) {
                     </Row>
                   </Col>
                 </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-          </Col>
+              </Col>
+              <Col className=' justify-content-center below'>
+                <Button
+                  className='se-button '
+                  onClick={() => {
+                    setActionF(2);
+                  }}>
+                  <Col className='justify-content-center'>
+                    <Row className='justify-content-center'>{confirmIcon} </Row>
+                    <Row className='justify-content-center'>
+                      {" "}
+                      Confirm Products{" "}
+                    </Row>
+                  </Col>
+                </Button>
+              </Col>
+              <Col></Col>
+            </>
+          ) : (
+            ""
+          )}
         </Row>
         <Row className='below'>
-          {actionF === 1 && props.dow == 'Saturday' && props.hour <= 9 ? (
-            <UpdateAvailability
-              changeAction={changeAction}
-              addMessage={addMessage}
-              user={props.user}
-            />
+          {actionF === 1 ? (
+            <>
+              {props.dow == "Saturday" && props.hour <= 9 ? (
+                <UpdateAvailability
+                  changeAction={changeAction}
+                  addMessage={addMessage}
+                  user={props.user}
+                />
+              ) : (
+                "You can Update Availability on Saturday between 00:00 and 09:00"
+              )}{" "}
+            </>
+          ) : null}
+
+          {actionF === 2 ? (
+            <>
+              {(props.dow == "Sunday" && props.hour >= 23) ||
+              (props.dow == "Monday" && props.hour <= 9) ? (
+                <ConfirmProducts user={props.user} />
+              ) : (
+                "You can Confirm Product between Sunday at 23:00 and Monday at 09:00"
+              )}{" "}
+            </>
           ) : null}
         </Row>
       </Container>

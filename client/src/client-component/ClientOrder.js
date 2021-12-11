@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import "../css/custom.css";
 import { Basket } from "../client-component/Basket";
 import API from "../API";
-import { filterIcon } from "../ui-components/Icons";
+import { filterIcon, basketIcon, deleteIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
 
 function ClientOrder(props) {
@@ -61,7 +61,7 @@ function ClientOrder(props) {
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
       let basketTmp = [];
       if (props.modifyOrder == -1)
-      basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+        basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
       else {
               
               let oldOrder = await API.getOrder(props.modifyOrder);
@@ -71,8 +71,9 @@ function ClientOrder(props) {
                   quantity: p.quantity,
                 })
               }
-        }
 
+        }
+      }
 
       setOrderProduct(
         basketTmp.map((t) => ({
@@ -85,6 +86,7 @@ function ClientOrder(props) {
       const walletValue = await API.getWalletByMail(props.user.email);
       setWalletValue(walletValue);
       setChanges((old) => !old);
+
     };
 
     fillTables();
@@ -116,8 +118,7 @@ function ClientOrder(props) {
     }
 
     if (orderOk) {
-      
-      
+
       let finalOrder = basketTmp.map((t) => ({
         product_id: t.id,
         confirmed: true,
@@ -155,6 +156,7 @@ function ClientOrder(props) {
           });
           propsN.changeAction(0)
         }
+
     }
   };
 
@@ -451,7 +453,8 @@ function ClientOrder(props) {
           </Form>
         )}
       </Col>
-      <Col sm={4} className="ml-3">
+
+      <Col sm={4} className='ml-3'>
         <Basket
           props={props}
           changes={changes}

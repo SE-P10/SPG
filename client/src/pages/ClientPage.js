@@ -15,7 +15,7 @@ import API from "../API";
 function ClientPage(props) {
   const [message, setMessage] = useState("");
   const [actionC, setActionC] = useState(0);
-  const [modifyOrder,setModifyOrder] = useState(-1);
+  const [modifyOrder, setModifyOrder] = useState(-1);
   const changeAction = (actionN) => {
     setActionC(actionN);
   };
@@ -30,10 +30,9 @@ function ClientPage(props) {
 
 
   const modifyOrderFunc = (orderId) => {
-    setModifyOrder(orderId)
-    setActionC(2)
-    
-  }
+    setModifyOrder(orderId);
+    setActionC(2);
+  };
 
   const addMessage = (messageN) => {
     setMessage(messageN);
@@ -131,7 +130,6 @@ function ClientPage(props) {
                       </Button>
                     </Row>{" "}
                   </Col>
-                  
                 </Row>
               </>
             ) : (
@@ -146,14 +144,19 @@ function ClientPage(props) {
               addMessage={addMessage}
             />
           ) : null}
-          {actionC === 2 && ((props.dow == 'Saturday' && props.hour >= 9 ) || (props.dow == 'Sunday' && props.hour <= 23 )) ? (
+          {actionC === 2 ? (
             <>
-              <ClientOrder
-                modifyOrder={modifyOrder}
-                user={props.user}
-                changeAction={changeAction}
-                addMessage={addMessage}
-              />{" "}
+              {(props.dow == "Saturday" && props.hour >= 9) ||
+              (props.dow == "Sunday" && props.hour <= 23) ? (
+                <ClientOrder
+                  modifyOrder={modifyOrder}
+                  user={props.user}
+                  changeAction={changeAction}
+                  addMessage={addMessage}
+                />
+              ) : (
+                "You can purchase an order from Saturday at 09:00 and Sunday at 23:00"
+              )}
             </>
           ) : null}
           {actionC === 3 ? (
@@ -161,6 +164,7 @@ function ClientPage(props) {
             virtualTimeDate={props.virtualTimeDate}
             hour={props.hour} dow={props.dow}
             modifyOrder={modifyOrderFunc}
+
               user={props.user}
               changeAction={changeAction}
               addMessage={addMessage}
