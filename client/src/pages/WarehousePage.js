@@ -1,6 +1,6 @@
 import { Container, Row, Button, Col } from "react-bootstrap";
 import { useState } from "react";
-import { backIcon, deliveryIcon } from "../ui-components/Icons";
+import { backIcon,  deliveryIcon } from "../ui-components/Icons";
 import { ManageDelivery } from "../warehouse-component/ManageDelivery";
 
 import "../css/custom.css";

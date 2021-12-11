@@ -73,7 +73,7 @@ function ClientOrder(props) {
               }
 
         }
-      }
+      
 
       setOrderProduct(
         basketTmp.map((t) => ({

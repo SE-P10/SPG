@@ -186,7 +186,7 @@ function YourOrders(props) {
                   isClearable
                   dateFormat="dd/MM/yyyy, hh:mm a"
                   placeholderText="No date&time set"
-                  minDate={props.virtualTimeDate == 'monday'.add(1,'day').toDate()}
+                  minDate={props.virtualTimeDate.add(1,'day').toDate()}
                 />
               </>
             ) : null}
