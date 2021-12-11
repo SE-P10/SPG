@@ -87,8 +87,8 @@ function YourOrders(props) {
                         <Col> id : {order.id}</Col>
                         <Col>price : {order.price}</Col>
                         <Col>status : {order.status}</Col>
-                        {order.status == 'booked' ? <Col><Button className='spg-button' onClick={() => props.modifyOrder(order.id)} >Modify </Button> </Col>: <Col></Col>}
-                        {order.status === "confirmed" ? 
+                        {order.status == 'booked' && ((props.dow == 'Saturday' && props.hour >= 9 ) || (props.dow == 'Sunday' && props.hour <= 23 )) ? <Col><Button className='spg-button' onClick={() => props.modifyOrder(order.id)} >Modify </Button> </Col>: <Col></Col>}
+                        {order.status === "confirmed" && ((props.dow=="Monday" && props.hour >= 9) || (props.dow=="Tuesday" && props.hour <= 18)) ? 
                         <>
                         <Col>
                           <Button className="spg-button" onClick={() => {setShow(true)

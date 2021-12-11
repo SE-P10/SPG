@@ -127,19 +127,22 @@ function ClientOrder(props) {
       if (props.modifyOrder == -1){
         console.log("test")
 
-      API.insertOrder(
+      let result = await API.insertOrder(
         userId,
         finalOrder
-      ).then(() => {
+      );
+      console.log(result)
+      if (result) {
+        
           API.deleteAllBasket();
           propsN.addMessage("Request sent correctly!");
           propsN.changeAction(0);
-        })
-        .catch((err) => {
+        }
+        else {
           console.log("test")
 
-          setErrorMessage("Server error during insert order. "+err);
-        });}
+          setErrorMessage("Server error during insert order. ");
+        }}
         else { //fare chiamata ad update order
           API.updateOrderProducts(props.modifyOrder,finalOrder).then(() => {
             propsN.addMessage("Request sent correctly!");

@@ -21,11 +21,14 @@ async function handleFetch(endpoint, body = {}, method = "POST") {
                 },
                 body: JSON.stringify(body)
             };
+            
     }
+    console.log("utility")
 
     return new Promise((resolve, reject) => {
         fetch(endpoint, request)
             .then(async (response) => {
+                console.log("promise")
                 try {
                     let parsed = await response.json();
                     if (response.ok) {
@@ -38,6 +41,8 @@ async function handleFetch(endpoint, body = {}, method = "POST") {
                 }
             })
             .catch(() => {
+                console.log("promise catch")
+
                 reject({ error: "Impossible to communicate with the server." });
             });
     });
