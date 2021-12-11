@@ -313,7 +313,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
         let updateProducts = products.map((x) => {
 
           let pID = x.product_id || x.id || Object.keys(x)[0];
-          let quantity = x.quantity || x[pID];
+          let quantity = x.quantity || x[pID] || 0;
 
           return [pID, quantity];
         });
