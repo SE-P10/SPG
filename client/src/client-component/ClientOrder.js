@@ -116,7 +116,7 @@ function ClientOrder(props) {
     }
 
     if (orderOk) {
-      API.deleteAllBasket();
+      
       
       let finalOrder = basketTmp.map((t) => ({
         product_id: t.id,
@@ -125,21 +125,25 @@ function ClientOrder(props) {
         name: t.name,
       }))
       if (props.modifyOrder == -1){
+        console.log("test")
+
       API.insertOrder(
         userId,
         finalOrder
       ).then(() => {
+          API.deleteAllBasket();
           propsN.addMessage("Request sent correctly!");
-        
           propsN.changeAction(0);
         })
         .catch((err) => {
+          console.log("test")
+
           setErrorMessage("Server error during insert order. "+err);
         });}
         else { //fare chiamata ad update order
           API.updateOrderProducts(props.modifyOrder,finalOrder).then(() => {
             propsN.addMessage("Request sent correctly!");
-          
+            API.deleteAllBasket();
             propsN.changeAction(0);
           })
           
