@@ -10,6 +10,7 @@ const db = require("../db");
 const { getUserMeta, updateUserMeta, getUser } = require("./user-dao");
 const { isEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber, debugLog } = require("../utility");
 const { addNotification } = require("./notification-dao");
+const { is_possible } = require("../time");
 
 const getOrder = async (orderID) => {
 
@@ -137,7 +138,7 @@ const updateProduct = async (productID, data) => {
   let dinoSQL = dynamicSQL("UPDATE products SET", data, { id: productID });
 
   return new Promise((resolve, reject) => {
-    db.run(dinoSQL.sql, [...dinoSQL.values], function(err) {
+    db.run(dinoSQL.sql, [...dinoSQL.values], function (err) {
       if (err) {
         debugLog(err)
         reject("Db error")
@@ -568,44 +569,44 @@ exports.confrimOrders = () => {
       const orders = await getOrders('booked');
       //Produce an array of objects like {id: row id, product: product id, leftQuantity: left quantity} to update farmer_payments later
       const res = orders.reduce(async (values, order) => {
-        let newValues = values.map(v => ({id: v.id, product: v.product, leftQuantity: p.quantity}));
+        let newValues = values.map(v => ({ id: v.id, product: v.product, leftQuantity: p.quantity }));
         //For each order, get its product
         const products = await getOrderProducts(order.id);
         //For each product, update the left quantity or remove the element from the order
         products.forEach(p => {
           //if the product has not been confirmed by the farmer or the quantity is not enough,
-          if(!newValues.some(v => v.product === p.id) || newValues.find(v => v.product === p.id).quantity < p.quantity) {
-              //it is removed from the order
-              runQuerySQL(db, "DELETE FROM order_product WHERE order_id = ? AND product_id = ?;", [order.id, p.id]);
-              //and the order price is decreased
-              runQuerySQL(db, "UPDATE orders SET price = price - ? WHERE id = ?;", [p.price*p.quantity, order.id]);
-            }
+          if (!newValues.some(v => v.product === p.id) || newValues.find(v => v.product === p.id).quantity < p.quantity) {
+            //it is removed from the order
+            runQuerySQL(db, "DELETE FROM order_product WHERE order_id = ? AND product_id = ?;", [order.id, p.id]);
+            //and the order price is decreased
+            runQuerySQL(db, "UPDATE orders SET price = price - ? WHERE id = ?;", [p.price * p.quantity, order.id]);
+          }
           else //Reduce the left quantity
-            newValues = newValues.map(v => v.product === p.id ? {id: v.id, product: v.product, leftQuantity: v.leftQuantity - p.quantity} : v)
+            newValues = newValues.map(v => v.product === p.id ? { id: v.id, product: v.product, leftQuantity: v.leftQuantity - p.quantity } : v)
         });
         let query = "SELECT meta_value FROM users_meta um, orders o WHERE o.id = ? AND o.user_id = um.user_id AND meta_key = 'wallet'"
-        const wallet = await getQuerySQL(db, query, [order.id], {meta_value: 0});
-        const price = await getQuerySQL(db, "SELECT price FROM orders WHERE o.id = ?", [order.id], {price: 0});
+        const wallet = await getQuerySQL(db, query, [order.id], { meta_value: 0 });
+        const price = await getQuerySQL(db, "SELECT price FROM orders WHERE o.id = ?", [order.id], { price: 0 });
         const newStatus = wallet < price ? 'pending' : 'confirmed';
         runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [newStatus, order.id]);
         return newValues;
       }, confirmedPorducts);
       //For each product confirmed by a farmer, the status is set to 'toDeliver' and the quantity decreased to that needed
-      res.foreach(e => 
+      res.foreach(e =>
         runQuerySQL(db, "UPDATE farmer_payments SET status = toDeliver, quantity = ? WHERE id = ?;",
-          [confirmedPorducts.find(cp => cp.id===e.id).quantity- e.quantity, e.id]
+          [confirmedPorducts.find(cp => cp.id === e.id).quantity - e.quantity, e.id]
         )
       );
       db.run("COMMIT;");
     }
-    catch(err) {
+    catch (err) {
       db.run("ROLLBACK;");
       return reject(err);
     }
   })
 }
 
-exports.execApi = (app, passport, isLoggedIn, is_possible) => {
+exports.execApi = (app, passport, isLoggedIn) => {
 
   function thereIsError(req, res, action = '') {
 
@@ -622,7 +623,11 @@ exports.execApi = (app, passport, isLoggedIn, is_possible) => {
   }
 
   // update existing order POST /api/orders/:user_id/:order_id
-  app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn && is_possible), async (req, res) => {
+  app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn), async (req, res) => {
+
+    if (!is_possible(req).clients_send_orders) {
+      return res.status(400).json({ error: 'Unable to update order, wrong ' });
+    }
 
     if (thereIsError(req, res, 'update')) { return };
 
@@ -640,9 +645,13 @@ exports.execApi = (app, passport, isLoggedIn, is_possible) => {
   });
 
   // insert a new POST /api/orders/:user_id
-  app.post('/api/orders/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn && is_possible), async (req, res) => {
+  app.post('/api/orders/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn), async (req, res) => {
 
     if (thereIsError(req, res, 'insert')) { return };
+
+    if (!is_possible(req).clients_send_orders) {
+      return res.status(400).json({ error: 'Unable to book order, wrong ' });
+    }
 
     let user = await existValueInDB(db, 'users', { id: req.params.user_id });
 

@@ -3,10 +3,11 @@
 
 const db = require("../db");
 const { validationResult } = require("express-validator");
+const { is_possible } = require("../time");
 const { runQuerySQL, getQuerySQL, dynamicSQL, } = require("../utility");
 
 const getFarmerOrders = async farmer => {
-  let query = "SELECT p.id, SUM(op.quantity) as quantity, pd.name AS product, pd.unit FROM order_product op, products p, products_details pd " 
+  let query = "SELECT p.id, SUM(op.quantity) as quantity, pd.name AS product, pd.unit FROM order_product op, products p, products_details pd "
   query += "WHERE op.product_id = p.id AND p.details_id = pd.id AND p.farmer_id = ? GROUP BY pd.name"
   return getQuerySQL(db, query, [farmer], {
     id: 0,
@@ -23,14 +24,14 @@ const confirmFarmerProduct = async (farmer, product, quantity) => {
     par = [quantity, farmer, product]
   }
   else {*/
-    const query = "INSERT INTO farmer_payments VALUES((SELECT MAX(id)+1 FROM farmer_payments), 0, ?, ?, ?, 0, 'confirmed')";
-    const par = [farmer, product, quantity];
+  const query = "INSERT INTO farmer_payments VALUES((SELECT MAX(id)+1 FROM farmer_payments), 0, ?, ?, ?, 0, 'confirmed')";
+  const par = [farmer, product, quantity];
   //}
-    return runQuerySQL(db, query, par);
+  return runQuerySQL(db, query, par);
 }
 
 const getOpenDeliveries = async farmer => {
-  let query = "SELECT fp.id, pd.name AS product, pd.unit, fp.quantity FROM farmer_payments fp, products_details pd, products p " 
+  let query = "SELECT fp.id, pd.name AS product, pd.unit, fp.quantity FROM farmer_payments fp, products_details pd, products p "
   query += "WHERE fp.user_id = ? AND status = 'toDeliver' AND fp.product_id = p.id AND p.details_id = pd.id";
   console.log(query);
   return getQuerySQL(db, query, [farmer], {
@@ -69,7 +70,7 @@ const listOrderProducts = farmerId => {
   );
 }
 
-exports.execApi = (app, passport, isLoggedIn, is_possible) => {
+exports.execApi = (app, passport, isLoggedIn) => {
   function thereIsError(req, res, action = '') {
 
     const errors = validationResult(req);
@@ -106,8 +107,13 @@ exports.execApi = (app, passport, isLoggedIn, is_possible) => {
   // update the value of the product to the new value
   app.post(
     '/api/farmer/products/update',
-    (isLoggedIn && is_possible),
+    (isLoggedIn),
     async (req, res) => {
+
+      if (!is_possible(req).farmer_estimation) {
+        return res.status(400).json({ error: 'Unable to update products, wrong time' });
+      }
+
       if (thereIsError(req, res, 'update'))
         return res.status(422).end();
       try {
@@ -165,5 +171,5 @@ exports.execApi = (app, passport, isLoggedIn, is_possible) => {
       res.status(500).end();
     }
   });
-  
+
 }
