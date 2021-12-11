@@ -291,7 +291,7 @@ const handleOrder = async (orderRAW, products = []) => {
     }
 
     let sql = 'INSERT INTO orders (user_id, status, price, pickup_time, pickup_place) VALUES(?, ?, ?, ?, ?)';
-
+    console.log("richiesta server")
     return runQuerySQL(db, sql, [newOrder.user_id, newOrder.status, 0, newOrder.pickup_time, newOrder.pickup_place], true);
   }
 }
