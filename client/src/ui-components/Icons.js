@@ -262,5 +262,4 @@ export {
   searchIcon,
   confirmIcon,
   deliveryIcon
-
 };

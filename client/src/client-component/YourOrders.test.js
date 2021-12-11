@@ -44,14 +44,14 @@ it('YourOrders renders without crashing', () => {
   });
 
 
-it("YourOrders trying to emulate useeffect", async () => {
-    const user = {email:'mariorossi@demo.it'}
+// it("YourOrders trying to emulate useeffect", async () => {
+//     const user = {email:'mariorossi@demo.it'}
 
-    render(<YourOrders user={user}/>);
+//     render(<YourOrders user={user}/>);
 
-    await waitFor(() => {
-        screen.getByText('List of your orders')
-    })
-    expect(screen.queryByText('List of your orders')).toBeInTheDocument();
+//     await waitFor(() => {
+//         screen.getByText('List of your orders')
+//     })
+//     expect(screen.queryByText('List of your orders')).toBeInTheDocument();
 
-});
+// });
