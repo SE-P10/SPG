@@ -84,6 +84,14 @@ body {
   margin-bottom: 20px !important;
 }
 
+.margin-yourwallet{
+  margin-left: 230px !important;
+}
+
+.margin-walletvalue{
+  margin-left:50px !important;
+}
+
 .iconColor {
   color: #f7aa00;
 }
@@ -152,6 +160,10 @@ body {
   font-weight: bold !important;
   color: darkcyan;
   text-shadow: 2px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
+
+.font-color{
+  color:#009378 !important;
 }
 
 .checkbox{
