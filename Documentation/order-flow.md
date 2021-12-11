@@ -1,9 +1,5 @@
 # Order flow
 
-booked - first status
-    pending -> farmer confirmation no money
-    or
-    confirmed -> farmer confirmation 
-ready -> arrived in warehouse
-delivering -> optional if in local
-delivered
+booked or pending - first status (if there are topup's change the eventually status of pending in booked )
+confirmed or canceled  -> after  farmer confirmation (decrease the wallets and delete pending orders ) 
+toDeliver -> warehouse acknowledge deliver

@@ -105,4 +105,17 @@ const getNextWeekday = (time, weekday = 1, changeWeek = true) => {
     return time.add((((weekday + skip - time.weekday() + 1) % 7) || skip), 'day');
 }
 
-export { handleFetch, parseResponse, getNextWeekday }
+const dateIsBetween = (cDate, date1, date2) => {
+
+    let wd0N = cDate.weekday();
+    let wd1N = date1.weekday();
+    let wd2N = date2.weekday();
+
+    if (wd2N < wd1N) {
+        return !(wd0N > wd2N && wd0N < wd1N);
+    }
+
+    return wd0N >= wd1N && wd0N <= wd2N;
+}
+
+export { handleFetch, parseResponse, getNextWeekday, dateIsBetween }

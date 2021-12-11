@@ -241,12 +241,19 @@ function ShopEmployee(props) {
             />
           ) : null}
           {actionS === 3 ? (
+            <>{(props.dow == "Saturday" && props.hour >= 9) ||
+            (props.dow == "Monday" && props.hour <= 9) ?
             <TopUpWallet
               changeAction={changeAction}
               addMessage={addMessage}
               className='justify-content-center'
             />
-          ) : null}
+            :(
+              "You can top up wallets from Saturday at 09:00 to Monday at 09:00"
+            )} 
+          </>
+              ) : null}
+
           {actionS === 4 ? (
             <>
               {(props.dow == "Saturday" && props.hour >= 9) ||
@@ -268,8 +275,14 @@ function ShopEmployee(props) {
             />
           ) : null}
           {actionS === 5 ? (
+            <>
+            { (props.dow == "Saturday" && props.hour >= 9) ||
+              (props.dow == "Sunday" && props.hour <= 23) ?
             <HandOut changeAction={changeAction} addMessage={addMessage} />
-          ) : null}
+             : ( "You can hand out an order from Wednesday at 09:00 to Friday at 18:00"
+             )}
+          </>
+            ) : null}
           {actionS === 6 ? (
             <CheckOrders changeAction={changeAction} addMessage={addMessage} />
           ) : null}
