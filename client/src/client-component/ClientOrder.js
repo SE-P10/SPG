@@ -13,9 +13,9 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 import "../css/custom.css";
-import {Basket} from "../client-component/Basket"
+import { Basket } from "../client-component/Basket";
 import API from "../API";
-import { filterIcon } from "../ui-components/Icons";
+import { filterIcon, basketIcon, deleteIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
 
 function ClientOrder(props) {
@@ -31,9 +31,11 @@ function ClientOrder(props) {
   const [isOrderProductDirty, setIsOrderProductDirty] = useState(true);
   const [mailInserted, setMailInserted] = useState(undefined);
   const [isProductListLoading, setIsProductListLoading] = useState(true);
-  const [changes,setChanges] = useState(false)
+  const [changes, setChanges] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [walletValue, setWalletValue] = useState(null);
+  const [previousOrder, setPreviousOrder] = useState([])
 
   const setIsOrderProductDirtyOk = () => {
     setIsOrderProductDirty(true);
@@ -58,20 +60,19 @@ function ClientOrder(props) {
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      let basketTmp = [];
-      if (props.modifyOrder == -1)
-      basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
-      else {
-              
-              let oldOrder = await API.getOrder(props.modifyOrder);
-              for (let p of oldOrder.products){
-                API.insertProductInBasket({
-                  product_id: p.product_id,
-                  quantity: p.quantity,
-                })
-              }
-        }
+      if (!!props.modifyOrder && props.modifyOrder !== -1) {
 
+        let oldOrder = (await API.getOrder(props.modifyOrder)) || [];
+        for (let p of oldOrder.products) {
+          await API.insertProductInBasket({
+            product_id: p.product_id,
+            quantity: p.quantity,
+          })
+        }
+        setPreviousOrder(oldOrder.products);
+      }
+
+      let basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
 
       setOrderProduct(
         basketTmp.map((t) => ({
@@ -81,12 +82,15 @@ function ClientOrder(props) {
           name: t.name,
         }))
       );
-      setChanges(old => !old);
-      console.log(orderProduct)
+
+      const walletValue = await API.getWalletByMail(props.user.email);
+      setWalletValue(walletValue);
+      setChanges((old) => !old);
+
     };
 
     fillTables();
-  }, [isOrderProductDirty]);
+  }, []);
 
   const handleSubmit = async (event, propsN) => {
     event.preventDefault();
@@ -102,64 +106,71 @@ function ClientOrder(props) {
         if (userId.length === 0 || userId[0].role != 0) {
           setErrorMessage("Invalid user");
           orderOk = false;
-        } 
+        }
         if (orderOk) userId = userId[0].id;
       }
     } else userId = props.user.id;
     const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
 
-    if (orderOk && basketTmp.length === 0) {
-      setErrorMessage("Can't issue an order without items.");
-      orderOk = false;
-    }
-
     if (orderOk) {
-      API.deleteAllBasket();
-      
+
+      //metti a 0 elemtni vecchi eliminati
+
       let finalOrder = basketTmp.map((t) => ({
         product_id: t.id,
         confirmed: true,
         quantity: t.quantity,
         name: t.name,
       }))
-      if (props.modifyOrder == -1){
-      API.insertOrder(
-        userId,
-        finalOrder
-      ).then(() => {
+
+      if (props.modifyOrder == -1) {
+        console.log("test")
+
+        let result = await API.insertOrder(
+          userId,
+          finalOrder
+        );
+        console.log(result)
+        if (result) {
+
+          API.deleteAllBasket();
           propsN.addMessage("Request sent correctly!");
-        
+          propsN.changeAction(0);
+        }
+        else {
+          console.log("test")
+
+          setErrorMessage("Server error during insert order. ");
+        }
+      }
+      else { //fare chiamata ad update order
+        API.updateOrderProducts(props.modifyOrder, finalOrder).then(() => {
+          propsN.addMessage("Request sent correctly!");
+          API.deleteAllBasket();
           propsN.changeAction(0);
         })
-        .catch((err) => {
-          setErrorMessage("Server error during insert order. "+err);
-        });}
-        else { //fare chiamata ad update order
-          API.updateOrderProducts(props.modifyOrder,finalOrder).then(() => {
-            propsN.addMessage("Request sent correctly!");
-          
-            propsN.changeAction(0);
-          })
-          
+
           .catch((err) => {
-            setErrorMessage("Server error during insert order. "+err);
+            setErrorMessage("Server error during insert order. " + err);
           });
-          propsN.changeAction(0)
-        }
+        propsN.changeAction(0)
+      }
+
     }
   };
 
   return (
     <>
-      <Col className='justify-content-center cont'>
-        <Row className='justify-content-center'>
+      <Col className="justify-content-center cont">
+        <Row className="justify-content-center">
           <h2>Issue Order</h2>
         </Row>
         {errorMessage ? (
           <Alert
-            variant='danger'
+            variant="danger"
             onClose={() => setErrorMessage("")}
-            dismissible>
+            dismissible
+          >
             {" "}
             {errorMessage}{" "}
           </Alert>
@@ -168,10 +179,10 @@ function ClientOrder(props) {
         )}
 
         {props.user.role == 1 ? (
-          <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
             <Form.Label>Client mail</Form.Label>
             <Form.Control
-              type='email'
+              type="email"
               onChange={(ev) => {
                 setMailInserted(ev.target.value);
               }}
@@ -179,15 +190,21 @@ function ClientOrder(props) {
           </Form.Group>
         ) : null}
 
-        <Col sm={8}>
+        <Col >
           <Row>
             <SearchForm
               setSearchValue={setSearchValue}
-              onSearchSubmit={() => {console.log("test")}}
+              onSearchSubmit={() => {
+                console.log("test");
+              }}
             />
+            <div className='margin-yourwallet'>
+              <h4 className="font-color">Your Wallet</h4>
+              <div className='margin-walletvalue'>{walletValue}€</div>
+            </div>
           </Row>
           <Button
-            className='spg-button below'
+            className="spg-button below"
             onClick={() => {
               if (showFilterMenu) {
                 setShowFilterMenu(false);
@@ -196,22 +213,24 @@ function ClientOrder(props) {
                 setFilterFarmer("Farmer");
                 setViewFilter(false);
               } else setShowFilterMenu(true);
-            }}>
+            }}
+          >
             {" "}
             {filterIcon} {showFilterMenu ? <> x </> : <>Filters</>}
           </Button>{" "}
           {showFilterMenu ? (
             <>
               {" "}
-              <Form className='below'>
+              <Form className="below">
                 <Form.Control
-                  as='select'
+                  as="select"
                   onChange={(event) => {
                     setCategorize(0);
                     setViewFilter(true);
                     setFilterType(event.target.value);
                     setViewFilter(false);
-                  }}>
+                  }}
+                >
                   <option value={undefined}> Type</option>
                   {type
                     .sort((a, b) => (a.name > b.name ? 1 : -1))
@@ -222,13 +241,14 @@ function ClientOrder(props) {
               </Form>
               <Form>
                 <Form.Control
-                  as='select'
+                  as="select"
                   onChange={(event) => {
                     setCategorize(1);
 
                     setFilterFarmer(event.target.value);
                     setViewFilter(false);
-                  }}>
+                  }}
+                >
                   <option value={undefined}> Farmer</option>
                   {farmers.map((t) => (
                     <option value={t}>{t}</option>
@@ -243,14 +263,15 @@ function ClientOrder(props) {
           <div>
             <Form>
               <Form.Control
-                as='select'
+                as="select"
                 onChange={(event) => {
                   setCategorize(0);
                   setViewFilter(true);
                   setFilterType(event.target.value);
                   setViewFilter(false);
-                }}>
-                <option value='Type'> Type</option>
+                }}
+              >
+                <option value="Type"> Type</option>
                 {type
                   .sort((a, b) => (a.name > b.name ? 1 : -1))
                   .map((t) => (
@@ -265,12 +286,13 @@ function ClientOrder(props) {
               <div>
                 <Form>
                   <Form.Control
-                    as='select'
+                    as="select"
                     onChange={(event) => {
                       setFilterFarmer(event.target.value);
                       setViewFilter(false);
-                    }}>
-                    <option value=''> Farmer</option>
+                    }}
+                  >
+                    <option value=""> Farmer</option>
                     {farmers.map((t) => (
                       <option value={t}>{t}</option>
                     ))}
@@ -283,13 +305,13 @@ function ClientOrder(props) {
           </div>
         )}
         {isProductListLoading ? (
-          <Container className='below'>
-            <Spinner animation='border' variant='success'></Spinner>
+          <Container className="below">
+            <Spinner animation="border" variant="success"></Spinner>
           </Container>
         ) : (
           <Form>
-            <h3 className='thirdColor below'> List of our products: </h3>
-            <Col className='below list'>
+            <h3 className="thirdColor below"> List of our products: </h3>
+            <Col className="below list">
               {products
                 .sort((a, b) => (a.name > b.name ? 1 : -1))
                 .filter((t) => {
@@ -328,103 +350,101 @@ function ClientOrder(props) {
                     );
                 })
                 .map((p) => (
-                  <Row className='below'>
+                  <Row className="below">
                     <Image
                       src={"./img/" + p.name + ".jpeg"}
-                      className='ph-prev justify-content-center'
+                      className="ph-prev justify-content-center"
                     />{" "}
                     <Col>{p.name} </Col>
                     <Col>{p.price} €</Col>
                     <Col>max quantity : {p.quantity}</Col>
-                    
-                      <Button
-                        onClick={(ev) => {
-                          if (
-                            orderProduct.filter((t) => t.product_id === p.id)
-                              .length === 0 ||
-                            orderProduct.filter((t) => t.product_id === p.id)[0]
-                              .quantity > p.quantity ||
-                            orderProduct.filter((t) => t.product_id === p.id)[0]
-                              .quantity <= 0
-                          )
-                            setErrorMessage("Wrong quantity");
-                          else {
-                            
-                            API.insertProductInBasket(
-                              orderProduct
-                                .filter((t) => t.product_id === p.id)
-                                .map((t) => ({
-                                  product_id: t.product_id,
-                                  quantity: t.quantity,
-                                }))[0]
-                            );
-                            
-                            setChanges(old => !old);
-                            setOrderProduct((old) => {
-                              const list = old.map((item) => {
-                                if (item.product_id === p.id)
-                                  return {
-                                    product_id: p.id,
-                                    confirmed: true,
-                                    quantity: item.quantity,
-                                    name: p.name,
-                                  };
-                                else return item;
-                              });
-                              return list;
+                    <Button
+                      onClick={(ev) => {
+                        if (
+                          orderProduct.filter((t) => t.product_id === p.id)
+                            .length === 0 ||
+                          orderProduct.filter((t) => t.product_id === p.id)[0]
+                            .quantity > p.quantity ||
+                          orderProduct.filter((t) => t.product_id === p.id)[0]
+                            .quantity <= 0
+                        )
+                          setErrorMessage("Wrong quantity");
+                        else {
+                          API.insertProductInBasket(
+                            orderProduct
+                              .filter((t) => t.product_id === p.id)
+                              .map((t) => ({
+                                product_id: t.product_id,
+                                quantity: t.quantity,
+                              }))[0]
+                          );
+
+                          setChanges((old) => !old);
+                          setOrderProduct((old) => {
+                            const list = old.map((item) => {
+                              if (item.product_id === p.id)
+                                return {
+                                  product_id: p.id,
+                                  confirmed: true,
+                                  quantity: item.quantity,
+                                  name: p.name,
+                                };
+                              else return item;
                             });
-                          }
-                        }}
-                        variant='outline-secondary'>
-                        {orderProduct.filter(
-                      (t) => t.product_id === p.id && t.confirmed == true
-                    ).length === 0 ? "ADD" : "MODIFY" }
-                       </Button>
-                    
+                            return list;
+                          });
+                        }
+                      }}
+                      variant="outline-secondary"
+                    >
+                      {orderProduct.filter(
+                        (t) => t.product_id === p.id && t.confirmed == true
+                      ).length === 0
+                        ? "ADD"
+                        : "MODIFY"}
+                    </Button>
                     <Col>
-                      
-                        <Form.Group>
-                          <Form.Control
-                            onChange={(ev) => {
-                              if (isNaN(parseInt(ev.target.value)))
-                                setErrorMessage("not a number");
-                              else {
-                                if (
-                                  orderProduct.filter(
-                                    (t) => t.product_id === p.id
-                                  ).length !== 0
-                                ) {
-                                  setOrderProduct((old) => {
-                                    const list = old.map((item) => {
-                                      if (item.product_id === p.id)
-                                        return {
-                                          product_id: p.id,
-                                          confirmed: item.confirmed,
-                                          quantity: parseInt(ev.target.value),
-                                          name: p.name,
-                                        };
-                                      else return item;
-                                    });
-                                    return list;
+                      <Form.Group>
+                        <Form.Control
+                          onChange={(ev) => {
+                            if (isNaN(parseInt(ev.target.value)))
+                              setErrorMessage("not a number");
+                            else {
+                              if (
+                                orderProduct.filter(
+                                  (t) => t.product_id === p.id
+                                ).length !== 0
+                              ) {
+                                setOrderProduct((old) => {
+                                  const list = old.map((item) => {
+                                    if (item.product_id === p.id)
+                                      return {
+                                        product_id: p.id,
+                                        confirmed: item.confirmed,
+                                        quantity: parseInt(ev.target.value),
+                                        name: p.name,
+                                      };
+                                    else return item;
                                   });
-                                } else {
-                                  setOrderProduct((old) => [
-                                    {
-                                      product_id: p.id,
-                                      confirmed: false,
-                                      quantity: parseInt(ev.target.value),
-                                      name: p.name,
-                                    },
-                                    ...old,
-                                  ]);
-                                }
+                                  return list;
+                                });
+                              } else {
+                                setOrderProduct((old) => [
+                                  {
+                                    product_id: p.id,
+                                    confirmed: false,
+                                    quantity: parseInt(ev.target.value),
+                                    name: p.name,
+                                  },
+                                  ...old,
+                                ]);
                               }
-                            }}
-                            id={p.id}
-                            size='sm'
-                          />
-                        </Form.Group>
-                      
+                            }
+                          }}
+                          id={p.id}
+                          size="sm"
+                        />
+                      </Form.Group>
                     </Col>
                   </Row>
                 ))}
@@ -432,8 +452,16 @@ function ClientOrder(props) {
           </Form>
         )}
       </Col>
+
       <Col sm={4} className='ml-3'>
-        <Basket props={props} changes={changes} setIsOrderProductDirtyOk={setIsOrderProductDirtyOk} handleSubmit={handleSubmit} setIsOrderProductDirty={setIsOrderProductDirty} setOrderProduct={setIsOrderProductDirtyOk} />
+        <Basket
+          props={props}
+          changes={changes}
+          setIsOrderProductDirtyOk={setIsOrderProductDirtyOk}
+          handleSubmit={handleSubmit}
+          setIsOrderProductDirty={setIsOrderProductDirty}
+          setOrderProduct={setIsOrderProductDirtyOk}
+        />
       </Col>
     </>
   );

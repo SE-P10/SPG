@@ -7,6 +7,7 @@ import {
   import { useEffect , useState} from "react";
 function Basket(props){
   const [basket,setBasket] = useState([])
+  const [update,setUpdate] = useState(false);
   useEffect(() => {
     const fillTables = async () => {
       
@@ -23,7 +24,7 @@ function Basket(props){
     };
 
     fillTables();
-  }, [props.changes]);
+  }, [props.changes,update]);
 
     return(
         <>
@@ -39,11 +40,12 @@ function Basket(props){
                   <Row>
                     {p.name} Q: {p.quantity}{" "}
                     <Button
-                      onClick={(ev) => {
+                      onClick={async (ev) => {
                         API.insertProductInBasket({
                           product_id: p.product_id,
                           quantity: 0,
                         }).then((e) => {
+                           setUpdate(old => !old)
                             props.setIsOrderProductDirty(false);
                             props.setOrderProduct((old) => {
                             return old.filter((t) => t.product_id !== p.id);

@@ -9,7 +9,7 @@ function UpdateAvailability(props) {
     const fillTables = async (id) => {
       //const productsTmp = await API.getProducts();
       //mettere questa chiamata API e togliere la precedwente
-      console.log(props)
+      console.log(props);
       const productsTmp = await API.getFarmerProducts(id);
       setProducts(productsTmp);
     };
@@ -91,7 +91,7 @@ function UpdateAvailability(props) {
           ""
         )}
         <Form>
-          <h3 className='thirdColor'> List of our products: </h3>
+          <h3 className='thirdColor'> List of your products: </h3>
           <Col className='below list over'>
             {products.map((p) => (
               <Row className='over'>
