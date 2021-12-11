@@ -158,6 +158,7 @@ function ClientPage(props) {
           ) : null}
           {actionC === 3 ? (
             <YourOrders
+            virtualTimeDate={props.virtualTimeDate}
             hour={props.hour} dow={props.dow}
             modifyOrder={modifyOrderFunc}
               user={props.user}
