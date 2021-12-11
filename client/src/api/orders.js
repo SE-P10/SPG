@@ -127,19 +127,26 @@ async function deliveryOrder(orderID, time, place = 'local') {
  */
 async function updateOrderProducts(orderID, products = []) {
 
-  let oldProducts = (await getOrder(orderID)) || [];
+  let oldProducts = (await getOrder(orderID)).products || [];
 
-  for (let i = 0; i < oldProducts; i++) {
-    let exist = false;
-    for (let j = 0; j < products; j++) {
+  if (!products || products.length === 0) {
+    products = oldProducts.map((x) => { console.log(x); return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
+  }
+  else {
 
-      if (products[j].product_id === oldProducts[i].product_id) {
-        exist = oldProducts[i];
+    for (let i = 0; i < oldProducts; i++) {
+      let exist = false;
+
+      for (let j = 0; j < products; j++) {
+        if (products[j].product_id === oldProducts[i].product_id) {
+          exist = oldProducts[i];
+          break;
+        }
       }
-    }
 
-    if (exist) {
-      products.push({ product_id: exist.product_id, quantity: exist.quantity })
+      if (exist) {
+        products.push({ order_id: exist.order_id, product_id: exist.product_id, quantity: 0 })
+      }
     }
   }
 

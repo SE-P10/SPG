@@ -7,6 +7,7 @@ const AF_DEBUG_PROCESS = AF_DEBUG;
 const { validationResult } = require("express-validator");
 
 const db = require("../db");
+const notificationDao = require("./notification-dao");
 const { getUserMeta, updateUserMeta, getUser } = require("./user-dao");
 const { isEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber, debugLog } = require("../utility");
 const { addNotification } = require("./notification-dao");
@@ -359,7 +360,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
             after: async (row, insertedID, orderedProduct) => {
 
               if (!orderedProduct)
-                return false;
+                return false
 
               let pID = row[0],
                 order = await getOrder(orderID),
@@ -377,7 +378,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
               let res = await updateProduct(pID, { quantity: (orderedQuantity + availableQuantity - updateQuantity) });
 
-              res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * (updateQuantity - orderedQuantity)) })
+              res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * Number.parseFloat(updateQuantity)) })
 
               if (AF_DEBUG_PROCESS) {
                 debugLog("Updated product:", await getProduct(pID))
@@ -410,18 +411,18 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
           let pID = x.product_id || x.id || Object.keys(x)[0];
           let quantity = x.quantity || x[pID];
 
-          return [orderID, pID, quantity];
+          return [pID, quantity];
         });
 
         try {
-          processedProducts = await bulkSQL(db, "INSERT INTO order_product (order_id, product_id, quantity) VALUES(?, ?, ?)", insertProducts, {
+          processedProducts = await bulkSQL(db, "INSERT INTO order_product (" + orderID + ", product_id, quantity) VALUES(?, ?, ?)", insertProducts, {
             /**
               * check product availability
              */
             before: async (row) => {
 
-              let pID = row[1],
-                quantity = Number.parseFloat(row[2] || 0),
+              let pID = row[0],
+                quantity = Number.parseFloat(row[1] || 0),
                 product = await getProduct(pID);
 
               if (!orderID || !product || quantity < 0) {
@@ -449,7 +450,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
             */
             after: async (row, insertedID, statusCheck) => {
 
-              let pID = row[1],
+              let pID = row[0],
                 product = await getProduct(pID),
                 order = await getOrder(orderID);
 
@@ -460,9 +461,9 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
                 return false;
               }
 
-              let res = await updateProduct(pID, { quantity: (Number.parseFloat(product.quantity) - Number.parseFloat(row[2])) });
+              let res = await updateProduct(pID, { quantity: (Number.parseFloat(product.quantity) - Number.parseFloat(row[1])) });
 
-              res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * Number.parseFloat(row[2])) });
+              res *= await handleOrder({ id: orderID, price: Number.parseFloat(order.price) + (Number.parseFloat(product.price) * Number.parseFloat(row[1])) });
 
               if (!res) {
                 if (AF_DEBUG) {
@@ -559,6 +560,10 @@ const getConfirmedProducts = async () => {
   }, null, true)
 }
 
+exports.deletePendingOrders = () => {
+  db.run("UPDATE orders SET status = 'deleted' WHERE status = 'pending'");
+}
+
 exports.confrimOrders = () => {
 
   return new Promise(async (resolve, reject) => {
@@ -588,7 +593,13 @@ exports.confrimOrders = () => {
         let query = "SELECT meta_value FROM users_meta um, orders o WHERE o.id = ? AND o.user_id = um.user_id AND meta_key = 'wallet'"
         const wallet = await getQuerySQL(db, query, [order.id], { meta_value: 0 });
         const price = await getQuerySQL(db, "SELECT price FROM orders WHERE o.id = ?", [order.id], { price: 0 });
-        const newStatus = wallet < price ? 'pending' : 'confirmed';
+        let newStatus;
+        if(wallet < price) {
+          newStatus = 'pending'
+          const message = 'Your order code ' + order.id + ' is pending, top up your wallet!';
+          notificationDao.addNotification(order.user_id, message, 'pending order', true);
+        }
+        else newStatus = 'confirmed';
         runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [newStatus, order.id]);
         return newValues;
       }, confirmedPorducts);

@@ -144,8 +144,6 @@ function ClientOrder(props) {
         }
       }
       else { //fare chiamata ad update order
-
-        console.log(finalOrder)
         API.updateOrderProducts(props.modifyOrder, finalOrder).then(() => {
           propsN.addMessage("Request sent correctly!");
           API.deleteAllBasket();

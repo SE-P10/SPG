@@ -6,7 +6,7 @@ const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const db = require("../db");
 const { getUser } = require("./user-dao");
-const { debugLog, filter_args, sendMail, runQuerySQL, getQuerySQL } = require("../utility");
+const { debugLog, filter_args, sendMail, runQuerySQL, getQuerySQL, isEmail } = require("../utility");
 
 
 exports.addNotification = async (userID, message, object, email = false) => {
@@ -16,6 +16,10 @@ exports.addNotification = async (userID, message, object, email = false) => {
     let status = await runQuerySQL(db, sql, [userID, message, object], true);
 
     if (status && email) {
+
+        if(!isEmail(email)) {
+            email = (await getUser(userID)).email;
+        }
 
         return sendMail(email, message, object);
     }

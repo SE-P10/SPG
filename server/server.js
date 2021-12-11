@@ -120,8 +120,13 @@ app.use(virtualCron.run(() => {
 
     }, [], false);
 
-  //virtualCron.debug();
+    /*from: { day: virtualCron.schedules.MONDAY, hour: 18 },
+    to: { day: virtualCron.schedules.MONDAY, hour: 9 }
+    orderDao.deletePendingOrders();
+    */
 
+  //virtualCron.debug();
+  
 }));
 
 
