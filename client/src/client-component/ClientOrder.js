@@ -35,6 +35,7 @@ function ClientOrder(props) {
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [walletValue, setWalletValue] = useState(null);
+  const [previousOrder, setPreviousOrder] = useState([])
 
   const setIsOrderProductDirtyOk = () => {
     setIsOrderProductDirty(true);
@@ -59,17 +60,29 @@ function ClientOrder(props) {
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      if (props.modifyOrder !== -1) {
+      if (!!props.modifyOrder && props.modifyOrder !== -1) {
 
-        let oldOrder = await API.getOrder(props.modifyOrder);
+        let oldOrder = (await API.getOrder(props.modifyOrder)) || [];
         for (let p of oldOrder.products) {
           await API.insertProductInBasket({
             product_id: p.product_id,
             quantity: p.quantity,
           })
         }
+        setPreviousOrder(oldOrder.products);
       }
-      
+
+      let basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+
+      setOrderProduct(
+        basketTmp.map((t) => ({
+          product_id: t.product_id,
+          confirmed: true,
+          quantity: t.quantity,
+          name: t.name,
+        }))
+      );
+
       const walletValue = await API.getWalletByMail(props.user.email);
       setWalletValue(walletValue);
       setChanges((old) => !old);
@@ -99,12 +112,9 @@ function ClientOrder(props) {
     } else userId = props.user.id;
     const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
 
-    if (orderOk && basketTmp.length === 0) {
-      setErrorMessage("Can't issue an order without items.");
-      orderOk = false;
-    }
-
     if (orderOk) {
+
+      //metti a 0 elemtni vecchi eliminati
 
       let finalOrder = basketTmp.map((t) => ({
         product_id: t.id,
@@ -112,6 +122,7 @@ function ClientOrder(props) {
         quantity: t.quantity,
         name: t.name,
       }))
+
       if (props.modifyOrder == -1) {
         console.log("test")
 

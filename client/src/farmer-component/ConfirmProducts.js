@@ -17,7 +17,6 @@ import "../css/custom.css";
 import ordersApi from "../api/orders";
 function ConfirmProducts(props) {
   const [errorMessage, setErrorMessage] = useState("");
-  const [productQ, setProductQ] = useState([]);
   const [confirmedProductQ, setConfirmedProductQ] = useState([]);
 
   // prendo i prodotti e le quantita dal db (productQ)
@@ -27,19 +26,25 @@ function ConfirmProducts(props) {
 
   useEffect(() => {
     const productOrdered = async () => {
-      const productsTmp = await ordersApi.getRequestedProducts(props.user.id);
-      setProductQ(productsTmp);
+      const productsTmp = await API.getFarmerOrders(props.user.id);
+      console.log(productsTmp)
+      setConfirmedProductQ(productsTmp);
     };
-
-    console.log(props.user.id);
     productOrdered();
-
-    setConfirmedProductQ(productQ);
   }, []);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // prodotti da mandare al db per delivery
-    console.log(confirmedProductQ.filter((p) => p.quantity > 0));
+    //API.confirmFarmerOrder()
+    let result;
+    for (let product of confirmedProductQ){
+      result = await API.confirmFarmerOrder(product.id,product.quantity)
+      console.log(result)
+    }
+    props.addMessage("Confirmation ok")
+    props.changeAction(0);
+
+    
   };
 
   const changeQ = (ev, p) => {
@@ -48,10 +53,9 @@ function ConfirmProducts(props) {
         if (o.name == p.name)
           return {
             id: p.id,
-
             quantity: parseInt(ev.target.value),
-            price: p.price,
-            name: p.name,
+            product: p.product,
+            unit: p.unit,
           };
         else return o;
       })
@@ -76,7 +80,7 @@ function ConfirmProducts(props) {
           ""
         )}
 
-        {productQ ? (
+        {confirmedProductQ ? (
           <>
             <Col className='below'>
               <Row>
@@ -91,10 +95,10 @@ function ConfirmProducts(props) {
                   <h3> Confirm</h3>
                 </Col>
               </Row>{" "}
-              {productQ.map((p) => (
+              {confirmedProductQ.map((p) => (
                 <>
                   <Row>
-                    <Col>{p.name} </Col> <Col>{p.quantity} </Col>{" "}
+                    <Col>{p.product} </Col> <Col>{p.quantity} </Col>{" "}
                     <Col>
                       <Form.Control
                         defaultValue={p.quantity}

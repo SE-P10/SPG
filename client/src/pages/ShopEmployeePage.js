@@ -242,14 +242,14 @@ function ShopEmployee(props) {
           ) : null}
           {actionS === 3 ? (
             <>{(props.dow == "Saturday" && props.hour >= 9) ||
-            (props.dow == "Monday" && props.hour <= 9) ?
+            (props.dow == "Monday" && props.hour <= 18) ?
             <TopUpWallet
               changeAction={changeAction}
               addMessage={addMessage}
               className='justify-content-center'
             />
             :(
-              "You can top up wallets from Saturday at 09:00 to Monday at 09:00"
+              "You can top up wallets from Saturday at 09:00 to Monday at 18:00"
             )} 
           </>
               ) : null}
@@ -259,6 +259,8 @@ function ShopEmployee(props) {
               {(props.dow == "Saturday" && props.hour >= 9) ||
               (props.dow == "Sunday" && props.hour <= 23) ? (
                 <ClientOrder
+                modifyOrder={-1}
+
                   changeAction={changeAction}
                   addMessage={addMessage}
                   user={props.user}

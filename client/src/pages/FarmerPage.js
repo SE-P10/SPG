@@ -109,7 +109,7 @@ function FarmerPage(props) {
             <>
               {(props.dow == "Sunday" && props.hour >= 23) ||
               (props.dow == "Monday" && props.hour <= 9) ? (
-                <ConfirmProducts user={props.user} />
+                <ConfirmProducts  changeAction={changeAction}    addMessage={addMessage}   user={props.user} />
               ) : (
                 "You can Confirm Product between Sunday at 23:00 and Monday at 09:00"
               )}{" "}

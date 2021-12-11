@@ -126,6 +126,23 @@ async function deliveryOrder(orderID, time, place = 'local') {
  * @returns {boolean} true|false
  */
 async function updateOrderProducts(orderID, products = []) {
+
+  let oldProducts = (await getOrder(orderID)) || [];
+
+  for (let i = 0; i < oldProducts; i++) {
+    let exist = false;
+    for (let j = 0; j < products; j++) {
+
+      if (products[j].product_id === oldProducts[i].product_id) {
+        exist = oldProducts[i];
+      }
+    }
+
+    if (exist) {
+      products.push({ product_id: exist.product_id, quantity: exist.quantity })
+    }
+  }
+
   return parseResponse(
     await handleOrderAction(orderID, products, { id: orderID }, "PUT")
   );

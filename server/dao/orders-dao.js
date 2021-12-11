@@ -314,22 +314,20 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
           let pID = x.product_id || x.id || Object.keys(x)[0];
           let quantity = x.quantity || x[pID];
 
-          return [quantity, orderID, pID];
+          return [pID, quantity];
         });
-
-        let oldOrderProducts = (await getOrder(orderID)).products || [];
 
         try {
 
-          processedProducts = await bulkSQL(db, "UPDATE order_product SET quantity = ? WHERE order_id = ? AND product_id = ?", updateProducts, {
+          processedProducts = await bulkSQL(db, "REPLACE INTO order_product (order_id, product_id, quantity) VALUES(" + orderID + ", ?, ?)", updateProducts, {
 
             /**
              * check product availability
              */
             before: async (row) => {
 
-              let pID = row[2],
-                quantity = Number.parseFloat(row[0] || 0),
+              let pID = row[0],
+                quantity = Number.parseFloat(row[1] || 0),
                 product = await getProduct(pID),
                 orderedProduct = await getOrderProduct(orderID, pID) || { order_id: orderID, product_id: pID, quantity: 0 };
 
@@ -363,12 +361,12 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
               if (!orderedProduct)
                 return false;
 
-              let pID = row[2],
+              let pID = row[0],
                 order = await getOrder(orderID),
                 product = await getProduct(pID),
                 availableQuantity = Number.parseFloat(product.quantity) || 0,
                 orderedQuantity = Number.parseFloat(orderedProduct.quantity) || 0,
-                updateQuantity = Number.parseFloat(row[0]) || 0;
+                updateQuantity = Number.parseFloat(row[1]) || 0;
 
               if (!product || !order) {
                 if (AF_DEBUG) {
@@ -628,7 +626,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
   // update existing order POST /api/orders/:user_id/:order_id
   app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn), async (req, res) => {
 
-    if (!is_possible(req).clients_send_orders) {
+    if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
       return res.status(400).json({ error: 'Unable to update order, wrong ' });
     }
 
@@ -652,7 +650,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
     if (thereIsError(req, res, 'insert')) { return };
 
-    if (!is_possible(req).clients_send_orders) {
+    if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
       return res.status(400).json({ error: 'Unable to book order, wrong ' });
     }
 
