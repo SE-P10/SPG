@@ -1,14 +1,71 @@
-import { Container } from "react-bootstrap";
+import { Container, Col, Row, Button, Table } from "react-bootstrap";
 import { useState } from "react";
 import "../css/custom.css";
+import warehouseAPI from "../api/warehouse";
+import { useEffect } from "react";
 
 function ManageDelivery(props) {
   const [deliveries, setDeliveries] = useState(null);
+  const [isDeliveryListLoading, setIsDeliveryListLoading] = useState(true);
+
+  useEffect(() => {
+    const getDeliveries = async () => {
+      warehouseAPI.getOpenDeliveries().then((d) => {
+        setDeliveries(d);
+      });
+    };
+
+    getDeliveries();
+  }, [deliveries]);
+
+  const handleConfirm = async (deliveryId) => {
+    console.log(deliveryId);
+    warehouseAPI.confirmDelivery(deliveryId);
+  };
 
   return (
     <>
+      <Row className='justify-content-center'>
+        {" "}
+        <h2> Manage Deliveries</h2>{" "}
+      </Row>
       <Container className='justify-content-center cont'>
-        {deliveries ? <></> : <> No deliveries</>}
+        {deliveries ? (
+          <>
+            <Table responsive size='sm'>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Farmer</th>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {deliveries.map((d) => (
+                  <tr>
+                    <td></td>
+                    <td>{d.farmer}</td>
+                    <td>{d.productName}</td>
+                    <td>{d.quantity}</td>
+                    <td>
+                      {" "}
+                      <Button
+                        className='spg-button'
+                        onClick={() => handleConfirm(d.id)}>
+                        {" "}
+                        Confirm
+                      </Button>
+                    </td>
+                  </tr>
+                ))}{" "}
+              </tbody>
+            </Table>
+          </>
+        ) : (
+          <> No deliveries</>
+        )}
       </Container>
     </>
   );
