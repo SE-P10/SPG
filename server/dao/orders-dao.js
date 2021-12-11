@@ -1,6 +1,6 @@
 'use strict';
 
-const AF_DEBUG = false;
+const AF_DEBUG = true;
 const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
@@ -317,6 +317,8 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
           return [quantity, orderID, pID];
         });
 
+        let oldOrderProducts = (await getOrder(orderID)).products || [];
+
         try {
 
           processedProducts = await bulkSQL(db, "UPDATE order_product SET quantity = ? WHERE order_id = ? AND product_id = ?", updateProducts, {
@@ -560,6 +562,7 @@ const getConfirmedProducts = async () => {
 }
 
 exports.confrimOrders = () => {
+
   return new Promise(async (resolve, reject) => {
     db.run("BEGIN TRANSACTION;");
     try {

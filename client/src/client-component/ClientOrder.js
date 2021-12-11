@@ -59,30 +59,17 @@ function ClientOrder(props) {
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      let basketTmp = [];
-      if (props.modifyOrder == -1)
-        basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
-      else {
-              
-              let oldOrder = await API.getOrder(props.modifyOrder);
-              for (let p of oldOrder.products){
-                API.insertProductInBasket({
-                  product_id: p.product_id,
-                  quantity: p.quantity,
-                })
-              }
+      if (props.modifyOrder !== -1) {
 
+        let oldOrder = await API.getOrder(props.modifyOrder);
+        for (let p of oldOrder.products) {
+          await API.insertProductInBasket({
+            product_id: p.product_id,
+            quantity: p.quantity,
+          })
         }
+      }
       
-
-      setOrderProduct(
-        basketTmp.map((t) => ({
-          product_id: t.product_id,
-          confirmed: true,
-          quantity: t.quantity,
-          name: t.name,
-        }))
-      );
       const walletValue = await API.getWalletByMail(props.user.email);
       setWalletValue(walletValue);
       setChanges((old) => !old);
@@ -90,7 +77,7 @@ function ClientOrder(props) {
     };
 
     fillTables();
-  }, [isOrderProductDirty]);
+  }, []);
 
   const handleSubmit = async (event, propsN) => {
     event.preventDefault();
@@ -125,16 +112,16 @@ function ClientOrder(props) {
         quantity: t.quantity,
         name: t.name,
       }))
-      if (props.modifyOrder == -1){
+      if (props.modifyOrder == -1) {
         console.log("test")
 
-      let result = await API.insertOrder(
-        userId,
-        finalOrder
-      );
-      console.log(result)
-      if (result) {
-        
+        let result = await API.insertOrder(
+          userId,
+          finalOrder
+        );
+        console.log(result)
+        if (result) {
+
           API.deleteAllBasket();
           propsN.addMessage("Request sent correctly!");
           propsN.changeAction(0);
@@ -143,19 +130,22 @@ function ClientOrder(props) {
           console.log("test")
 
           setErrorMessage("Server error during insert order. ");
-        }}
-        else { //fare chiamata ad update order
-          API.updateOrderProducts(props.modifyOrder,finalOrder).then(() => {
-            propsN.addMessage("Request sent correctly!");
-            API.deleteAllBasket();
-            propsN.changeAction(0);
-          })
-          
-          .catch((err) => {
-            setErrorMessage("Server error during insert order. "+err);
-          });
-          propsN.changeAction(0)
         }
+      }
+      else { //fare chiamata ad update order
+
+        console.log(finalOrder)
+        API.updateOrderProducts(props.modifyOrder, finalOrder).then(() => {
+          propsN.addMessage("Request sent correctly!");
+          API.deleteAllBasket();
+          propsN.changeAction(0);
+        })
+
+          .catch((err) => {
+            setErrorMessage("Server error during insert order. " + err);
+          });
+        propsN.changeAction(0)
+      }
 
     }
   };
