@@ -5,7 +5,7 @@ import warehouseAPI from "../api/warehouse";
 import { useEffect } from "react";
 
 function ManageDelivery(props) {
-  const [deliveries, setDeliveries] = useState(null);
+  const [deliveries, setDeliveries] = useState([]);
   const [isDeliveryListLoading, setIsDeliveryListLoading] = useState(true);
 
   useEffect(() => {
@@ -16,10 +16,10 @@ function ManageDelivery(props) {
     };
 
     getDeliveries();
-  }, [deliveries]);
+  }, [isDeliveryListLoading]);
 
   const handleConfirm = async (deliveryId) => {
-    console.log(deliveryId);
+    setIsDeliveryListLoading(old=>!old);
     warehouseAPI.confirmDelivery(deliveryId);
   };
 
@@ -30,7 +30,7 @@ function ManageDelivery(props) {
         <h2> Manage Deliveries</h2>{" "}
       </Row>
       <Container className='justify-content-center cont'>
-        {deliveries ? (
+        {deliveries.length ? (
           <>
             <Table responsive size='sm'>
               <thead>

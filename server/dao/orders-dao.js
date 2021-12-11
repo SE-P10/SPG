@@ -121,14 +121,14 @@ const getProduct = async (productID) => {
 }
 
 const getOrderProducts = async (orderID) => {
-  if (!productID)
+  if (!orderID)
     return null;
   const query = "SELECT op.product_id AS id, op.quantity, p.price FROM order_product op, products p WHERE op.product_id = p.id AND order_id = ?"
   return getQuerySQL(db, query, [orderID], {
     id: 0,
     price: 0,
     quantity: 0,
-  }, null, true)
+  }, null, false)
 }
 
 const updateProduct = async (productID, data) => {
@@ -550,14 +550,13 @@ const processOrder = async (userID, orderID, data = {}) => {
 
 
 const getConfirmedProducts = async () => {
-  if (!productID)
-    return null;
+  
 
   return getQuerySQL(db, "SELECT id, product_id AS product, quantity FROM farmer_payments where status = 'confirmed'", [], {
     id: 0,
     product: 0,
     quantity: 0,
-  }, null, true)
+  }, null, false)
 }
 
 exports.deletePendingOrders = () => {
@@ -570,12 +569,12 @@ exports.confrimOrders = () => {
     db.run("BEGIN TRANSACTION;");
     try {
       //Get the quantities confirmed by the farmers and the related product's id
-      const confirmedPorducts = getConfirmedProducts();
+      const confirmedProducts = getConfirmedProducts();
       //Get all the booked orders
       const orders = await getOrders('booked');
       //Produce an array of objects like {id: row id, product: product id, leftQuantity: left quantity} to update farmer_payments later
       const res = orders.reduce(async (values, order) => {
-        let newValues = values.map(v => ({ id: v.id, product: v.product, leftQuantity: p.quantity }));
+        let newValues = (await values).map(v => ({ id: v.id, product: v.product, leftQuantity: v.quantity }));
         //For each order, get its product
         const products = await getOrderProducts(order.id);
         //For each product, update the left quantity or remove the element from the order
@@ -586,14 +585,17 @@ exports.confrimOrders = () => {
             runQuerySQL(db, "DELETE FROM order_product WHERE order_id = ? AND product_id = ?;", [order.id, p.id]);
             //and the order price is decreased
             runQuerySQL(db, "UPDATE orders SET price = price - ? WHERE id = ?;", [p.price * p.quantity, order.id]);
+            //send notification
+            const message = 'product code: ' + p.id + 'removed from order code ' + order.id;
+            notificationDao.addNotification(order.user_id, message, 'product removed', true);
           }
           else //Reduce the left quantity
             newValues = newValues.map(v => v.product === p.id ? { id: v.id, product: v.product, leftQuantity: v.leftQuantity - p.quantity } : v)
         });
         let query = "SELECT meta_value FROM users_meta um, orders o WHERE o.id = ? AND o.user_id = um.user_id AND meta_key = 'wallet'"
-        const wallet = await getQuerySQL(db, query, [order.id], { meta_value: 0 });
-        const price = await getQuerySQL(db, "SELECT price FROM orders WHERE o.id = ?", [order.id], { price: 0 });
-        let newStatus;
+        const wallet = (await getQuerySQL(db, query, [order.id], { meta_value: 0 })).meta_value;
+        const price = (await getQuerySQL(db, "SELECT price FROM orders WHERE id = ?", [order.id], { price: 0 })).price;
+        let newStatus = '';
         if(wallet < price) {
           newStatus = 'pending'
           const message = 'Your order code ' + order.id + ' is pending, top up your wallet!';
@@ -601,14 +603,17 @@ exports.confrimOrders = () => {
         }
         else {
           newStatus = 'confirmed';
+          //update wallet
+          updateUserMeta(order.user_id, 'wallet', wallet-price);
         };
         runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [newStatus, order.id]);
-        return newValues;
-      }, confirmedPorducts);
+        console.log(newValues)
+        return newValues.map(v => ({ id: v.id, product: v.product, quantity: v.leftQuantity }));
+      }, confirmedProducts);
       //For each product confirmed by a farmer, the status is set to 'toDeliver' and the quantity decreased to that needed
-      res.foreach(e =>
-        runQuerySQL(db, "UPDATE farmer_payments SET status = toDeliver, quantity = ? WHERE id = ?;",
-          [confirmedPorducts.find(cp => cp.id === e.id).quantity - e.quantity, e.id]
+      (await res).forEach(async e =>
+        runQuerySQL(db, "UPDATE farmer_payments SET status = 'toDeliver', quantity = ? WHERE id = ?;",
+          [(await confirmedProducts).find(cp => cp.id === e.id).quantity - e.quantity, e.id]
         )
       );
       db.run("COMMIT;");

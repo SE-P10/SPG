@@ -106,29 +106,27 @@ app.use(virtualCron.run(() => {
   virtualCron.unscheduleAll();
 
   virtualCron.schedule({
-    from: { day: virtualCron.schedules.FRIDAY, hour: 20 },
-    to: { day: virtualCron.schedules.MONDAY, hour: 22 }
+    from: { day: virtualCron.schedules.MONDAY, hour: 9 },
+    to: { day: virtualCron.schedules.SATURDAY, hour: 9 }
   },
     (virtualTime, lastExecutionTime, ...args) => {
+      //console.log("LastExecution:", lastExecutionTime.format('YYYY-MM-DD <HH:mm:ss>'));
 
+      //console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
 
-      console.log("LastExecution:", lastExecutionTime.format('YYYY-MM-DD <HH:mm:ss>'));
-
-      console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
-
-      //ordersDao.confrimOrders();
+      ordersDao.confrimOrders();
 
     }, [], false);
 
-    /*from: { day: virtualCron.schedules.MONDAY, hour: 18 },
-    to: { day: virtualCron.schedules.MONDAY, hour: 9 }
-    orderDao.deletePendingOrders();
-    */
-
-  //virtualCron.debug();
+  virtualCron.schedule({
+    from: { day: virtualCron.schedules.MONDAY, hour: 18 },
+      to: { day: virtualCron.schedules.MONDAY, hour: 9 }
+  },
+    (virtualTime, lastExecutionTime, ...args) => {
+    ordersDao.deletePendingOrders();
+    }, [], false);
   
 }));
-
 
 // API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);

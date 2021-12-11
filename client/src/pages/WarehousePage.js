@@ -63,7 +63,15 @@ function WarehousePage(props) {
           </Col>
         </Row>
         <Row className='below'>
-          {actionC === 1 ? <ManageDelivery user={props.user} /> : null}
+          {actionC === 1 ?
+          <>
+          {(props.dow == "Monday" && props.hour >= 9) ||
+              (props.dow == "Tuesday" && props.hour <= 18) ? 
+           <ManageDelivery user={props.user} />
+        :(
+                "You can ack arrivals from Monday at 09:00 to Tuesday at 18:00"
+              ) }
+        </> : null}
         </Row>
       </Container>
     </>

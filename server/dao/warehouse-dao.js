@@ -29,6 +29,7 @@ const getFarmersDeliveries = () => {
 }
 
 const setFarmersDelivery = async deliveryID => {
+  
   return runQuerySQL(db, "UPDATE farmer_payments SET status = 'delivered' WHERE id = ?", [deliveryID]);
 }
 

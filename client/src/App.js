@@ -191,7 +191,7 @@ const App = () => {
             <>
               {user !== null && user.role === "3" ? (
                 <Container fluid className='justify-content-center d-flex'>
-                  <WarehousePage user={user} />
+                  <WarehousePage user={user}  hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
                 </Container>
               ) : (
                 <Redirect to='/login' />
