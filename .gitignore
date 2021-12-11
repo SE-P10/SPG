@@ -456,6 +456,7 @@ tags
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/vim,reactnative,jetbrains,visualstudiocode
+server/database.db
 
 ## OURS
 ./server/database.sqbpro
@@ -465,3 +466,4 @@ tags
 ./server/.DS_Store
 ./server/Desktop.ini
 ./server/Thumbs.db
+server/database.db
