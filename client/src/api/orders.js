@@ -130,14 +130,14 @@ async function updateOrderProducts(orderID, products = []) {
   let oldProducts = (await getOrder(orderID)).products || [];
 
   if (!products || products.length === 0) {
-    products = oldProducts.map((x) => { console.log(x); return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
+    products = oldProducts.map((x) => { return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
   }
   else {
 
-    for (let i = 0; i < oldProducts; i++) {
+    for (let i = 0; i < oldProducts.length; i++) {
       let exist = false;
 
-      for (let j = 0; j < products; j++) {
+      for (let j = 0; j < products.length; j++) {
         if (products[j].product_id === oldProducts[i].product_id) {
           exist = oldProducts[i];
           break;
