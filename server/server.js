@@ -128,6 +128,7 @@ app.use(virtualCron.run(() => {
   
 }));
 
+
 // API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);
 productsDao.execApi(app, passport, isLoggedIn, body);
