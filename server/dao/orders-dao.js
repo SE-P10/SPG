@@ -543,7 +543,6 @@ const processOrder = async (userID, orderID, data = {}) => {
 
 const getConfirmedProducts = async () => {
 
-
   return getQuerySQL(db, "SELECT id, product_id AS product, quantity FROM farmer_payments where status = 'confirmed'", [], {
     id: 0,
     product: 0,
