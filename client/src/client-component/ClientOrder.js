@@ -122,15 +122,14 @@ function ClientOrder(props) {
         quantity: t.quantity,
         name: t.name,
       }))
+      //console.log(finalOrder)
 
       if (props.modifyOrder == -1) {
-        console.log("test")
 
         let result = await API.insertOrder(
           userId,
           finalOrder
         );
-        console.log(result)
         if (result) {
 
           API.deleteAllBasket();
@@ -138,7 +137,6 @@ function ClientOrder(props) {
           propsN.changeAction(0);
         }
         else {
-          console.log("test")
 
           setErrorMessage("Server error during insert order. ");
         }
@@ -195,7 +193,6 @@ function ClientOrder(props) {
             <SearchForm
               setSearchValue={setSearchValue}
               onSearchSubmit={() => {
-                console.log("test");
               }}
             />
             <div className='margin-yourwallet'>

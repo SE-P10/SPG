@@ -13,6 +13,43 @@ const { isEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dy
 const { addNotification } = require("./notification-dao");
 const { is_possible } = require("../time");
 
+const insertOrderG = async (products, user) => {console.log(products)
+  
+  try {
+  runQuerySQL(db, "BEGIN TRANSACTION;", [], false);
+  const order_id = (await getQuerySQL(db, "SELECT MAX(id)+1 AS id FROM orders", [], {id: 0}, false, true)).id
+  console.log(order_id)
+  products.forEach(product =>{
+    runQuerySQL(db, "INSERT INTO order_product VALUES(?, ?, ?)", [order_id, product.product_id, product.quantity], false);
+    runQuerySQL(db, "UPDATE products SET quantity = quantity - ? WHERE id = ?", [product.quantity, product.product_id], false);
+  })
+  const price = "SELECT SUM(p.price*op.quantity) FROM products p, order_product op WHERE p.id=op.product_id AND op.order_id = ?";
+  runQuerySQL(db, "INSERT INTO orders VALUES(?, ?, 'booked', (" + price + "), null, null)", [order_id, user, order_id], false);
+  runQuerySQL(db, "COMMIT;", [], false);
+  }
+  catch(e) {
+    runQuerySQL(db, "ROLLBACK;", [], false);
+    throw(e);
+  }
+}
+
+const modifyOrderG = async (order_id, products, user) => {
+  try {
+    runQuerySQL(db, "BEGIN TRANSACTION;", [], false);
+    runQuerySQL(db, "DELETE FROM orders WHERE id = ?", [order_id], false);
+    const oldProducts = await getQuerySQL(db, "SELECT product_id, quantity FROM order_product WHERE order_id = ?", [order_id], {product_id: 0, quantity: 0}, false, false);
+    oldProducts.forEach(product => 
+    runQuerySQL(db, "UPDATE products SET quantity = quantity + ? WHERE id = ?", [product.quantity, product.id], false))
+    runQuerySQL(db, "DELETE FROM order_product WHERE order_id = ?", [order_id], false);
+  }
+  catch(e) {
+    runQuerySQL(db, "ROLLBACK;", [order_id], false);
+    throw(e);
+  }
+  insertOrder(products, user);
+
+}
+
 const getOrder = async (orderID) => {
 
   if (!orderID)
@@ -580,7 +617,7 @@ exports.confrimOrders = () => {
         //For each product, update the left quantity or remove the element from the order
         products.forEach(p => {
           //if the product has not been confirmed by the farmer or the quantity is not enough,
-          if (!newValues.some(v => v.product === p.id) || newValues.find(v => v.product === p.id).quantity < p.quantity) {
+          if (!newValues.some(v => v.product === p.id) || newValues.find(v => v.product === p.id).leftQuantity < p.quantity) {
             //it is removed from the order
             runQuerySQL(db, "DELETE FROM order_product WHERE order_id = ? AND product_id = ?;", [order.id, p.id]);
             //and the order price is decreased
@@ -592,9 +629,9 @@ exports.confrimOrders = () => {
           else //Reduce the left quantity
             newValues = newValues.map(v => v.product === p.id ? { id: v.id, product: v.product, leftQuantity: v.leftQuantity - p.quantity } : v)
         });
-        let query = "SELECT meta_value FROM users_meta um, orders o WHERE o.id = ? AND o.user_id = um.user_id AND meta_key = 'wallet'"
-        const wallet = (await getQuerySQL(db, query, [order.id], { meta_value: 0 })).meta_value;
-        const price = (await getQuerySQL(db, "SELECT price FROM orders WHERE id = ?", [order.id], { price: 0 })).price;
+        let query = "SELECT meta_value FROM users_meta WHERE user_id = ? AND meta_key = 'wallet'";
+        const wallet = (await getQuerySQL(db, query, [order.user_id], { meta_value: 0 }, null, true)).meta_value;
+        const price = (await getQuerySQL(db, "SELECT price FROM orders WHERE id = ?", [order.id], { price: 0 }, null, true)).price;
         let newStatus = '';
         if(wallet < price) {
           newStatus = 'pending'
@@ -607,7 +644,6 @@ exports.confrimOrders = () => {
           updateUserMeta(order.user_id, 'wallet', wallet-price);
         };
         runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [newStatus, order.id]);
-        console.log(newValues)
         return newValues.map(v => ({ id: v.id, product: v.product, quantity: v.leftQuantity }));
       }, confirmedProducts);
       //For each product confirmed by a farmer, the status is set to 'toDeliver' and the quantity decreased to that needed
@@ -616,6 +652,7 @@ exports.confrimOrders = () => {
           [(await confirmedProducts).find(cp => cp.id === e.id).quantity - e.quantity, e.id]
         )
       );
+      runQuerySQL(db, "DELETE FROM farmer_payments WHERE quantity = 0;", [], false);
       db.run("COMMIT;");
     }
     catch (err) {
@@ -643,7 +680,14 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
   // update existing order POST /api/orders/:user_id/:order_id
   app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn), async (req, res) => {
-
+    try{
+      modifyOrderG(req.params.order_id, req.body, req.user.id);
+      res.status(201).end();
+    }
+    catch{
+      res.status(503).json({ error: err });
+    }
+    /*
     if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
       return res.status(400).json({ error: 'Unable to update order, wrong ' });
     }
@@ -660,12 +704,18 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
     } catch (err) {
       res.status(503).json({ error: err });
-    }
+    }*/
   });
 
   // insert a new POST /api/orders/:user_id
   app.post('/api/orders/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn), async (req, res) => {
-
+    try{
+      insertOrderG(req.body, req.params.user_id);
+      res.status(201).end();
+    }
+    catch{
+      res.status(503).json({ error: err });
+    }/*
     if (thereIsError(req, res, 'insert')) { return };
 
     if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
@@ -690,7 +740,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     } catch (err) {
       debugLog(err)
       res.status(503).json({ error: err });
-    }
+    }*/
   });
 
   // GET order / orders /api/orders/:order_id

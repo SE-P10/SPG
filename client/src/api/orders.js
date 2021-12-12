@@ -84,10 +84,28 @@ async function handOutOrder(orderID = 0) {
  * @param {Object} order_details
  * @returns {boolean} true|false
  */
-async function insertOrder(userID, products = [], order_details = {}) {
+/*async function insertOrder(userID, products = [], order_details = {}) {
   return parseResponse(
     await handleOrderAction(userID, products, order_details, "POST")
   );
+}*/
+
+async function insertOrder(userID, products = []) {
+  return new Promise((resolve, reject) => {
+		fetch('/api/orders/'+ userID, {
+		  	method: 'POST',
+		  	headers: {'Content-Type': 'application/json',},
+			body: JSON.stringify(products)
+		}).then((response) => {
+			if (response.ok) {
+				resolve(null);
+			} else {
+				response.json()
+					.then((message) => { reject(message); }) // error message in the response body
+					.catch(() => { reject({ error: "Impossible to read server response." }) }); // something else
+			}
+		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) }); // connection errors
+	});
 }
 
 /**
@@ -130,7 +148,7 @@ async function updateOrderProducts(orderID, products = []) {
   let oldProducts = (await getOrder(orderID)).products || [];
 
   if (!products || products.length === 0) {
-    products = oldProducts.map((x) => { console.log(x); return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
+    products = oldProducts.map((x) => {  return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
   }
   else {
 
