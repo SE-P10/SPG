@@ -7,7 +7,7 @@ import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
-import dayjs from "dayjs"
+import dayjs from "dayjs";
 import { WarehousePage } from "./pages/WarehousePage";
 
 import {
@@ -20,11 +20,11 @@ import MyNavbar from "./ui-components/MyNavbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/App.css";
-
+import "./css/custom.css";
 import API from "./API";
+import { BrowserProducts } from "./ui-components/BrowseProducts";
 
 const App = () => {
-
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -69,11 +69,9 @@ const App = () => {
    * Handle VirtualTime updates
    */
   useEffect(() => {
-
     let loaded = false;
 
     async function timeHandler() {
-
       if (!loaded) {
         loaded = true;
         setTimeDateOffset(await API.getTime(true));
@@ -82,7 +80,7 @@ const App = () => {
       // prevent pooling the server
       let timeoffset = timeDateOffset || 0;
 
-      setVirtualTimeDate(dayjs().add(timeoffset, 'second'));
+      setVirtualTimeDate(dayjs().add(timeoffset, "second"));
     }
 
     timeHandler();
@@ -90,7 +88,6 @@ const App = () => {
     const interval = setInterval(timeHandler, 1000);
 
     return () => clearInterval(interval);
-
   }, [timeDateOffset]);
 
   return (
@@ -117,7 +114,6 @@ const App = () => {
                     {user.role === "0" ? <Redirect to='/clientpage' /> : null}
                     {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
                     {user.role === "3" ? <Redirect to='/warehouse' /> : null}
-
                   </>
                 ) : (
                   <LoginForm
@@ -135,8 +131,20 @@ const App = () => {
           exact
           path='/'
           render={() => (
+            <>
+              <Container fluid className='justify-content-center d-flex w-100'>
+                <HomePage className='w-100' />
+              </Container>
+            </>
+          )}
+        />
+
+        <Route
+          exact
+          path='/products'
+          render={() => (
             <Container fluid className='justify-content-center d-flex w-100'>
-              <HomePage className='w-100' />
+              <BrowserProducts />
             </Container>
           )}
         />
@@ -154,7 +162,6 @@ const App = () => {
                     {user.role === "0" ? <Redirect to='/clientpage' /> : null}
                     {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
                     {user.role === "3" ? <Redirect to='/warehouse' /> : null}
-
                   </>
                 ) : (
                   <LoginForm
@@ -176,7 +183,12 @@ const App = () => {
               {user !== null && user.role === "1" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ShopEmployee hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} loggedIn={loggedIn} />
+                  <ShopEmployee
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                    loggedIn={loggedIn}
+                  />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -209,7 +221,6 @@ const App = () => {
                 loggedIn={loggedIn}
                 doLogin={doLogin}
               />
-              )
             </Container>
           )}
         />
@@ -222,7 +233,11 @@ const App = () => {
               {user !== null && user.role === "2" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <FarmerPage hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
+                  <FarmerPage
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                  />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -240,7 +255,12 @@ const App = () => {
               {user !== null && user.role === "0" ? (
                 <Container fluid className='justify-content-center d-flex'>
                   {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ClientPage virtualTimeDate={virtualTimeDate} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
+                  <ClientPage
+                    virtualTimeDate={virtualTimeDate}
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                  />
                 </Container>
               ) : (
                 <Redirect to='/login' />
@@ -253,10 +273,12 @@ const App = () => {
           exact
           path='/about'
           render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <AboutPage user={user} />
-            </Container>
+            <>
+              <Container fluid className='justify-content-center d-flex'>
+                {/* inserire controllo loggedIn e ruolo*/}{" "}
+                <AboutPage user={user} />
+              </Container>
+            </>
           )}
         />
       </Switch>

@@ -183,7 +183,6 @@ function RegistrationForm(props) {
             </Button>
           </Modal.Footer>
         </Modal>
-        ;
       </Container>
     </>
   );
