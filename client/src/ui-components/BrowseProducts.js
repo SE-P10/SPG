@@ -33,7 +33,7 @@ function BrowserProducts(props) {
     <>
       <Container className='justify-content-center '>
         <Row className='justify-content-center '>
-          <h2> Available Products</h2>
+          <h2> Our Products</h2>
         </Row>
 
         <ErrorToast
