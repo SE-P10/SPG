@@ -415,7 +415,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
         });
 
         try {
-          processedProducts = await bulkSQL(db, "INSERT INTO order_product (" + orderID + ", product_id, quantity) VALUES(?, ?, ?)", insertProducts, {
+          processedProducts = await bulkSQL(db, "INSERT INTO order_product (order_id, product_id, quantity) VALUES(" + orderID + ", ?, ?)", insertProducts, {
             /**
               * check product availability
              */
