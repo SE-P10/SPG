@@ -209,8 +209,7 @@ function ClientOrder(props) {
                   setFilterFarmer("Farmer");
                   setViewFilter(false);
                 } else setShowFilterMenu(true);
-              }}
-            >
+              }}>
               {" "}
               {filterIcon} {showFilterMenu ? <> x </> : <>Filters</>}
             </Button>{" "}
