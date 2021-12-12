@@ -18,7 +18,7 @@ import ordersApi from "../api/orders";
 function ConfirmProducts(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [confirmedProductQ, setConfirmedProductQ] = useState([]);
-
+  const [productQ,setProductQ] = useState([]);
   // prendo i prodotti e le quantita dal db (productQ)
   // copio i valori in confirmedProductQ
   // se cambia qualcosa con i Form Control modifico confirmedProductQ
@@ -27,7 +27,7 @@ function ConfirmProducts(props) {
   useEffect(() => {
     const productOrdered = async () => {
       const productsTmp = await API.getFarmerOrders(props.user.id);
-      console.log(productsTmp)
+      setProductQ(productsTmp);
       setConfirmedProductQ(productsTmp);
     };
     productOrdered();
@@ -50,12 +50,12 @@ function ConfirmProducts(props) {
   const changeQ = (ev, p) => {
     setConfirmedProductQ((old) =>
       old.map((o) => {
-        if (o.name == p.name)
+        if (o.id === p.id)
           return {
             id: p.id,
             quantity: parseInt(ev.target.value),
-            product: p.product,
-            unit: p.unit,
+            product: o.product,
+            unit: o.unit,
           };
         else return o;
       })
@@ -80,10 +80,13 @@ function ConfirmProducts(props) {
           ""
         )}
 
-        {confirmedProductQ ? (
+        {productQ ? (
           <>
             <Col className='below'>
               <Row>
+              <Col>
+                  <h3>Id </h3>
+                </Col>
                 <Col>
                   <h3>Name </h3>
                 </Col>
@@ -95,9 +98,10 @@ function ConfirmProducts(props) {
                   <h3> Confirm</h3>
                 </Col>
               </Row>{" "}
-              {confirmedProductQ.map((p) => (
+              {productQ.map((p) => (
                 <>
                   <Row>
+                    <Col>{p.id}</Col>
                     <Col>{p.product} </Col> <Col>{p.quantity} </Col>{" "}
                     <Col>
                       <Form.Control

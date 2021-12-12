@@ -121,19 +121,21 @@ function ClientOrder(props) {
         confirmed: true,
         quantity: t.quantity,
         name: t.name,
-      }));
+      }))
+      //console.log(finalOrder)
 
       if (props.modifyOrder == -1) {
-        console.log("test");
 
-        let result = await API.insertOrder(userId, finalOrder);
-        console.log(result);
+        let result = await API.insertOrder(
+          userId,
+          finalOrder
+        );
         if (result) {
           API.deleteAllBasket();
           propsN.addMessage("Request sent correctly!");
           propsN.changeAction(0);
-        } else {
-          console.log("test");
+        }
+        else {
 
           setErrorMessage("Server error during insert order. ");
         }
@@ -185,25 +187,20 @@ function ClientOrder(props) {
             </Form.Group>
           ) : null}
 
-          <Col>
+          <Col >
             <Row>
               <SearchForm
                 setSearchValue={setSearchValue}
                 onSearchSubmit={() => {
-                  console.log("test");
                 }}
               />
-              <div className='margin-yourwallet '>
-                <h4 className='font-color'>Your Wallet</h4>
-                {isWalletLoading ? (
-                  <Spinner animation='border' className='mainColor'></Spinner>
-                ) : (
-                  <div className='margin-walletvalue'>{walletValue}€</div>
-                )}
+              <div className='margin-yourwallet'>
+                <h4 className="font-color">Your Wallet</h4>
+                <div className='margin-walletvalue'>{walletValue}€</div>
               </div>
             </Row>
             <Button
-              className='spg-button below'
+              className="spg-button below"
               onClick={() => {
                 if (showFilterMenu) {
                   setShowFilterMenu(false);
@@ -212,10 +209,12 @@ function ClientOrder(props) {
                   setFilterFarmer("Farmer");
                   setViewFilter(false);
                 } else setShowFilterMenu(true);
-              }}>
+              }}
+            >
               {" "}
               {filterIcon} {showFilterMenu ? <> x </> : <>Filters</>}
             </Button>{" "}
+
             {showFilterMenu ? (
               <>
                 {" "}

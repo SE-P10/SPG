@@ -36,7 +36,6 @@ const App = () => {
     const checkAuth = async () => {
       const userTmp = await API.getUserInfo();
       setLoggedIn(true);
-      console.log(userTmp);
       setUser(userTmp);
     };
     //fare api per prendere orario

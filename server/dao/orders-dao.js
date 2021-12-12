@@ -1,6 +1,6 @@
 'use strict';
 
-const AF_DEBUG = true;
+const AF_DEBUG = false;
 const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
@@ -542,7 +542,6 @@ const processOrder = async (userID, orderID, data = {}) => {
 
 
 const getConfirmedProducts = async () => {
-  
 
   return getQuerySQL(db, "SELECT id, product_id AS product, quantity FROM farmer_payments where status = 'confirmed'", [], {
     id: 0,
@@ -551,8 +550,8 @@ const getConfirmedProducts = async () => {
   }, null, false)
 }
 
-exports.deletePendingOrders = () => {
-  db.run("UPDATE orders SET status = 'deleted' WHERE status = 'pending'");
+exports.deletePendingOrders = async () => {
+  return db.run("UPDATE orders SET status = 'deleted' WHERE status = 'pending'");
 }
 
 exports.confrimOrders = () => {
@@ -572,7 +571,7 @@ exports.confrimOrders = () => {
         //For each product, update the left quantity or remove the element from the order
         products.forEach(p => {
           //if the product has not been confirmed by the farmer or the quantity is not enough,
-          if (!newValues.some(v => v.product === p.id) || newValues.find(v => v.product === p.id).quantity < p.quantity) {
+          if (!newValues.some(v => v.product === p.id) || newValues.find(v => v.product === p.id).leftQuantity < p.quantity) {
             //it is removed from the order
             runQuerySQL(db, "DELETE FROM order_product WHERE order_id = ? AND product_id = ?;", [order.id, p.id]);
             //and the order price is decreased
@@ -584,11 +583,11 @@ exports.confrimOrders = () => {
           else //Reduce the left quantity
             newValues = newValues.map(v => v.product === p.id ? { id: v.id, product: v.product, leftQuantity: v.leftQuantity - p.quantity } : v)
         });
-        let query = "SELECT meta_value FROM users_meta um, orders o WHERE o.id = ? AND o.user_id = um.user_id AND meta_key = 'wallet'"
-        const wallet = (await getQuerySQL(db, query, [order.id], { meta_value: 0 })).meta_value;
-        const price = (await getQuerySQL(db, "SELECT price FROM orders WHERE id = ?", [order.id], { price: 0 })).price;
+        let query = "SELECT meta_value FROM users_meta WHERE user_id = ? AND meta_key = 'wallet'";
+        const wallet = (await getQuerySQL(db, query, [order.user_id], { meta_value: 0 }, null, true)).meta_value;
+        const price = (await getQuerySQL(db, "SELECT price FROM orders WHERE id = ?", [order.id], { price: 0 }, null, true)).price;
         let newStatus = '';
-        if(wallet < price) {
+        if (wallet < price) {
           newStatus = 'pending'
           const message = 'Your order code ' + order.id + ' is pending, top up your wallet!';
           notificationDao.addNotification(order.user_id, message, 'pending order', true);
@@ -596,10 +595,9 @@ exports.confrimOrders = () => {
         else {
           newStatus = 'confirmed';
           //update wallet
-          updateUserMeta(order.user_id, 'wallet', wallet-price);
+          updateUserMeta(order.user_id, 'wallet', wallet - price);
         };
         runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [newStatus, order.id]);
-        console.log(newValues)
         return newValues.map(v => ({ id: v.id, product: v.product, quantity: v.leftQuantity }));
       }, confirmedProducts);
       //For each product confirmed by a farmer, the status is set to 'toDeliver' and the quantity decreased to that needed
@@ -608,6 +606,7 @@ exports.confrimOrders = () => {
           [(await confirmedProducts).find(cp => cp.id === e.id).quantity - e.quantity, e.id]
         )
       );
+      runQuerySQL(db, "DELETE FROM farmer_payments WHERE quantity = 0;", [], false);
       db.run("COMMIT;");
     }
     catch (err) {

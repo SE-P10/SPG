@@ -15,10 +15,23 @@ exports.updateWallet = async (ammount, client_email) => {
     } else {
       const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = ? and users_meta.meta_key = 'wallet';";
       try {
+        runQuerySQL(db, 'BEGIN TRANSACTION', [], true);
         runQuerySQL(db, sql, [ammount, user_id], true);
+        const pendingOrders = await getQuerySQL(db, "SELECT id, price FROM orders WHERE status = 'pending' AND user_id = ?", [user_id], {id: 0, price: 0 }, null,  false);
+        let newWallet = (await getQuerySQL(db, "SELECT meta_value FROM users_meta WHERE meta_key = 'wallet' AND user_id = ?", [user_id], {meta_value: 0}, null, true)).meta_value;
+        pendingOrders.forEach(o => {
+          if(o.price <= newWallet){
+            runQuerySQL(db, "UPDATE orders SET status = 'confirmed' WHERE id = ?", [o.id], true);
+            newWallet -= o.price;
+          }
+        });
+        runQuerySQL(db, "UPDATE users_meta SET meta_value = ? WHERE user_id = ? AND meta_key = 'wallet'", [newWallet, user_id], true);
+        runQuerySQL(db, 'COMMIT', [], true);
       }
-      catch(e) {return reject(e);}
-      const newWallet = getQuerySQL(db, "SELECT meta_value FROM users_meta WHERE meta_key = 'wallet' AND ", [user_id], true);
+      catch(e) {
+        runQuerySQL(db, 'ROLLBACK', [], true);
+        return reject(e);
+      }
     }
   });
 };
