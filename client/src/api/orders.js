@@ -10,18 +10,18 @@ import { handleFetch, parseResponse } from "./utility";
  * @returns {*}
  */
 async function handleOrderAction(
-  filter,
-  products = [],
-  order_details = {},
-  method = "POST"
+	filter,
+	products = [],
+	order_details = {},
+	method = "POST"
 ) {
-  if (typeof order_details === "number") {
-    order_details = { id: order_details };
-  } else {
-    order_details = Object.assign({ id: 0 }, order_details);
-  }
+	if (typeof order_details === "number") {
+		order_details = { id: order_details };
+	} else {
+		order_details = Object.assign({ id: 0 }, order_details);
+	}
 
-  return handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
+	return handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
 
 }
 
@@ -31,11 +31,11 @@ async function handleOrderAction(
  * @returns {Array} [{ id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}, ...]
  */
 async function getOrders(filter) {
-  return parseResponse(
-    await handleOrderAction(filter, [], {}, "GET"),
-    "array",
-    []
-  );
+	return parseResponse(
+		await handleOrderAction(filter, [], {}, "GET"),
+		"array",
+		[]
+	);
 }
 
 /**
@@ -44,11 +44,11 @@ async function getOrders(filter) {
  * @returns {Object} { id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}
  */
 async function getOrder(orderID) {
-  return parseResponse(
-    await handleOrderAction(orderID, [], {}, "GET"),
-    "object",
-    []
-  );
+	return parseResponse(
+		await handleOrderAction(orderID, [], {}, "GET"),
+		"object",
+		[]
+	);
 }
 
 /**
@@ -57,7 +57,7 @@ async function getOrder(orderID) {
  * @returns {Array} orders in pending status
  */
 async function getPendingOrders() {
-  return getOrders("pending");
+	return getOrders("pending");
 }
 
 /**
@@ -67,14 +67,9 @@ async function getPendingOrders() {
  * @returns {boolean} true|false
  */
 async function handOutOrder(orderID = 0) {
-  return parseResponse(
-    await handleOrderAction(
-      orderID,
-      [],
-      { id: orderID, status: "handout" },
-      "PUT"
-    )
-  );
+	return parseResponse(
+		await handleOrderAction(orderID, [], { id: orderID, status: "handout" }, "PUT")
+	);
 }
 /**
  * Frontend interface API
@@ -84,28 +79,10 @@ async function handOutOrder(orderID = 0) {
  * @param {Object} order_details
  * @returns {boolean} true|false
  */
-/*async function insertOrder(userID, products = [], order_details = {}) {
-  return parseResponse(
-    await handleOrderAction(userID, products, order_details, "POST")
-  );
-}*/
-
-async function insertOrder(userID, products = []) {
-  return new Promise((resolve, reject) => {
-		fetch('/api/orders/'+ userID, {
-		  	method: 'POST',
-		  	headers: {'Content-Type': 'application/json',},
-			body: JSON.stringify(products)
-		}).then((response) => {
-			if (response.ok) {
-				resolve(null);
-			} else {
-				response.json()
-					.then((message) => { reject(message); }) // error message in the response body
-					.catch(() => { reject({ error: "Impossible to read server response." }) }); // something else
-			}
-		}).catch(() => { reject({ error: "Impossible to communicate with the server." }) }); // connection errors
-	});
+async function insertOrder(userID, products = [], order_details = {}) {
+	return parseResponse(
+		await handleOrderAction(userID, products, order_details, "POST")
+	);
 }
 
 /**
@@ -115,10 +92,10 @@ async function insertOrder(userID, products = []) {
  * @returns {Array} [{id: 2, quantity: 5, name: 'apple'}]
  */
 async function getRequestedProducts(farmerID) {
-  return parseResponse(
-    await handleFetch("/api/orders/products/farmer/" + farmerID, {}, "GET"),
-    "array"
-  );
+	return parseResponse(
+		await handleFetch("/api/orders/products/farmer/" + farmerID, {}, "GET"),
+		"array"
+	);
 }
 
 /**
@@ -130,10 +107,10 @@ async function getRequestedProducts(farmerID) {
  * @returns {boolean} true|false
  */
 async function deliveryOrder(orderID, time, place = 'local') {
-  return parseResponse(
-    await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place }, "PUT")
+	return parseResponse(
+		await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place }, "PUT")
 
-  );
+	);
 }
 
 /**
@@ -145,43 +122,43 @@ async function deliveryOrder(orderID, time, place = 'local') {
  */
 async function updateOrderProducts(orderID, products = []) {
 
-  let oldProducts = (await getOrder(orderID)).products || [];
+	let oldProducts = (await getOrder(orderID)).products || [];
 
-  if (!products || products.length === 0) {
-    products = oldProducts.map((x) => {  return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
-  }
-  else {
+	if (!products || products.length === 0) {
+		products = oldProducts.map((x) => { return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
+	}
+	else {
 
-    for (let i = 0; i < oldProducts; i++) {
-      let exist = false;
+		for (let i = 0; i < oldProducts.length; i++) {
+			let exist = false;
 
-      for (let j = 0; j < products; j++) {
-        if (products[j].product_id === oldProducts[i].product_id) {
-          exist = oldProducts[i];
-          break;
-        }
-      }
+			for (let j = 0; j < products.length; j++) {
+				if (products[j].product_id === oldProducts[i].product_id) {
+					exist = oldProducts[i];
+					break;
+				}
+			}
 
-      if (exist) {
-        products.push({ order_id: exist.order_id, product_id: exist.product_id, quantity: 0 })
-      }
-    }
-  }
+			if (exist) {
+				products.push({ order_id: exist.order_id, product_id: exist.product_id, quantity: 0 })
+			}
+		}
+	}
 
-  return parseResponse(
-    await handleOrderAction(orderID, products, { id: orderID }, "PUT")
-  );
+	return parseResponse(
+		await handleOrderAction(orderID, products, { id: orderID }, "PUT")
+	);
 }
 
 const ordersApi = {
-  insertOrder,
-  handOutOrder,
-  getPendingOrders,
-  getOrders,
-  getOrder,
-  deliveryOrder,
-  updateOrderProducts,
-  getRequestedProducts,
+	insertOrder,
+	handOutOrder,
+	getPendingOrders,
+	getOrders,
+	getOrder,
+	deliveryOrder,
+	updateOrderProducts,
+	getRequestedProducts,
 };
 
 export default ordersApi;

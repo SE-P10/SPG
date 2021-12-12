@@ -343,21 +343,21 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
 
       let processedProducts = [];
 
+      let insertUpdateProducts = products.map((x) => {
+
+        let pID = x.product_id || x.id || Object.keys(x)[0];
+        let quantity = x.quantity || x[pID] || 0;
+
+        return [pID, quantity];
+      });
+
       db.run("BEGIN TRANSACTION;");
 
       if (updatingOrder) {
 
-        let updateProducts = products.map((x) => {
-
-          let pID = x.product_id || x.id || Object.keys(x)[0];
-          let quantity = x.quantity || x[pID] || 0;
-
-          return [pID, quantity];
-        });
-
         try {
 
-          processedProducts = await bulkSQL(db, "REPLACE INTO order_product (order_id, product_id, quantity) VALUES(" + orderID + ", ?, ?)", updateProducts, {
+          processedProducts = await bulkSQL(db, "REPLACE INTO order_product (order_id, product_id, quantity) VALUES(" + orderID + ", ?, ?)", insertUpdateProducts, {
 
             /**
              * check product availability
@@ -443,16 +443,8 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
       }
       else {
 
-        let insertProducts = products.map((x) => {
-
-          let pID = x.product_id || x.id || Object.keys(x)[0];
-          let quantity = x.quantity || x[pID];
-
-          return [pID, quantity];
-        });
-
         try {
-          processedProducts = await bulkSQL(db, "INSERT INTO order_product (" + orderID + ", product_id, quantity) VALUES(?, ?, ?)", insertProducts, {
+          processedProducts = await bulkSQL(db, "INSERT INTO order_product (order_id, product_id, quantity) VALUES(" + orderID + ", ?, ?)", insertUpdateProducts, {
             /**
               * check product availability
              */
@@ -525,7 +517,7 @@ const handleOrderProducts = async (orderID, products, updatingOrder = false) => 
           processedProducts = [];
         }
 
-        if (processedProducts.length !== insertProducts.length) {
+        if (processedProducts.length !== insertUpdateProducts.length) {
           if (AF_DEBUG) {
             debugLog("ERROR insert order :: not all products were processed correctly")
           }
