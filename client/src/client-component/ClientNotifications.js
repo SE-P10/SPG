@@ -1,4 +1,5 @@
 import { Row, Col, Container, Button } from "react-bootstrap";
+import Offcanvas from 'react-bootstrap/Offcanvas'
 import React, { useState, useEffect } from 'react';
 
 import API from "./../API";
@@ -8,6 +9,13 @@ import { MailBox } from "./MailBox";
 import ordersApi from "../api/orders";
 
 function ClientNotifications(props) {
+
+    //OffCanvas set
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+
     const [mails, setMails] = useState([]);
     const [pendingOrders, setPendingOrders] = useState([])
     const [userWallet, setUserWallet] = useState([])
@@ -45,7 +53,7 @@ function ClientNotifications(props) {
                     <Col sm={7} className='justify-content-center cont '>
                         <MailBox mails={mails} messageSeen={messageSeen} />
                     </Col>
-                    <Col sm={4}  className='justify-content-center cont ml-5'>
+                    <Col sm={4} className='justify-content-center cont ml-5'>
                         <h1>Your Info:</h1>
                         <h2>Pending Orders:</h2>
                         {pendingOrders.length === 0 ?
@@ -65,6 +73,7 @@ function ClientNotifications(props) {
                         </h3>
                         {(pendingOrders.reduce((acc, curr) => acc + curr.price, 0) - userWallet) > 0 ? <Button></Button> : null}
                     </Col>
+
                 </Row>
             </Container>
         </>
