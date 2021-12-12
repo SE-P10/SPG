@@ -278,8 +278,8 @@ function ShopEmployee(props) {
           ) : null}
           {actionS === 5 ? (
             <>
-            { (props.dow == "Saturday" && props.hour >= 9) ||
-              (props.dow == "Sunday" && props.hour <= 23) ?
+            { (props.dow == "Wednesday" && props.hour >= 9) ||
+              (props.dow == "Friday" && props.hour <= 23) || props.dow=="Thursday" ?
             <HandOut changeAction={changeAction} addMessage={addMessage} />
              : ( "You can hand out an order from Wednesday at 09:00 to Friday at 18:00"
              )}
