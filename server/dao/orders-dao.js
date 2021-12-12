@@ -1,6 +1,6 @@
 'use strict';
 
-const AF_DEBUG = true;
+const AF_DEBUG = false;
 const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
@@ -12,43 +12,6 @@ const { getUserMeta, updateUserMeta, getUser } = require("./user-dao");
 const { isEmail, runQuerySQL, getQuerySQL, isArray, filter_args, removeEmpty, dynamicSQL, bulkSQL, existValueInDB, isNumber, debugLog } = require("../utility");
 const { addNotification } = require("./notification-dao");
 const { is_possible } = require("../time");
-
-const insertOrderG = async (products, user) => {console.log(products)
-  
-  try {
-  runQuerySQL(db, "BEGIN TRANSACTION;", [], false);
-  const order_id = (await getQuerySQL(db, "SELECT MAX(id)+1 AS id FROM orders", [], {id: 0}, false, true)).id
-  console.log(order_id)
-  products.forEach(product =>{
-    runQuerySQL(db, "INSERT INTO order_product VALUES(?, ?, ?)", [order_id, product.product_id, product.quantity], false);
-    runQuerySQL(db, "UPDATE products SET quantity = quantity - ? WHERE id = ?", [product.quantity, product.product_id], false);
-  })
-  const price = "SELECT SUM(p.price*op.quantity) FROM products p, order_product op WHERE p.id=op.product_id AND op.order_id = ?";
-  runQuerySQL(db, "INSERT INTO orders VALUES(?, ?, 'booked', (" + price + "), null, null)", [order_id, user, order_id], false);
-  runQuerySQL(db, "COMMIT;", [], false);
-  }
-  catch(e) {
-    runQuerySQL(db, "ROLLBACK;", [], false);
-    throw(e);
-  }
-}
-
-const modifyOrderG = async (order_id, products, user) => {
-  try {
-    runQuerySQL(db, "BEGIN TRANSACTION;", [], false);
-    runQuerySQL(db, "DELETE FROM orders WHERE id = ?", [order_id], false);
-    const oldProducts = await getQuerySQL(db, "SELECT product_id, quantity FROM order_product WHERE order_id = ?", [order_id], {product_id: 0, quantity: 0}, false, false);
-    oldProducts.forEach(product => 
-    runQuerySQL(db, "UPDATE products SET quantity = quantity + ? WHERE id = ?", [product.quantity, product.id], false))
-    runQuerySQL(db, "DELETE FROM order_product WHERE order_id = ?", [order_id], false);
-  }
-  catch(e) {
-    runQuerySQL(db, "ROLLBACK;", [order_id], false);
-    throw(e);
-  }
-  insertOrder(products, user);
-
-}
 
 const getOrder = async (orderID) => {
 
@@ -579,7 +542,7 @@ const processOrder = async (userID, orderID, data = {}) => {
 
 
 const getConfirmedProducts = async () => {
-  
+
 
   return getQuerySQL(db, "SELECT id, product_id AS product, quantity FROM farmer_payments where status = 'confirmed'", [], {
     id: 0,
@@ -588,8 +551,8 @@ const getConfirmedProducts = async () => {
   }, null, false)
 }
 
-exports.deletePendingOrders = () => {
-  db.run("UPDATE orders SET status = 'deleted' WHERE status = 'pending'");
+exports.deletePendingOrders = async () => {
+  return db.run("UPDATE orders SET status = 'deleted' WHERE status = 'pending'");
 }
 
 exports.confrimOrders = () => {
@@ -625,7 +588,7 @@ exports.confrimOrders = () => {
         const wallet = (await getQuerySQL(db, query, [order.user_id], { meta_value: 0 }, null, true)).meta_value;
         const price = (await getQuerySQL(db, "SELECT price FROM orders WHERE id = ?", [order.id], { price: 0 }, null, true)).price;
         let newStatus = '';
-        if(wallet < price) {
+        if (wallet < price) {
           newStatus = 'pending'
           const message = 'Your order code ' + order.id + ' is pending, top up your wallet!';
           notificationDao.addNotification(order.user_id, message, 'pending order', true);
@@ -633,7 +596,7 @@ exports.confrimOrders = () => {
         else {
           newStatus = 'confirmed';
           //update wallet
-          updateUserMeta(order.user_id, 'wallet', wallet-price);
+          updateUserMeta(order.user_id, 'wallet', wallet - price);
         };
         runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [newStatus, order.id]);
         return newValues.map(v => ({ id: v.id, product: v.product, quantity: v.leftQuantity }));
@@ -672,14 +635,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
   // update existing order POST /api/orders/:user_id/:order_id
   app.put('/api/orders/:order_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn), async (req, res) => {
-    try{
-      modifyOrderG(req.params.order_id, req.body, req.user.id);
-      res.status(201).end();
-    }
-    catch{
-      res.status(503).json({ error: err });
-    }
-    /*
+
     if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
       return res.status(400).json({ error: 'Unable to update order, wrong ' });
     }
@@ -696,18 +652,12 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
     } catch (err) {
       res.status(503).json({ error: err });
-    }*/
+    }
   });
 
   // insert a new POST /api/orders/:user_id
   app.post('/api/orders/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : (isLoggedIn), async (req, res) => {
-    try{
-      insertOrderG(req.body, req.params.user_id);
-      res.status(201).end();
-    }
-    catch{
-      res.status(503).json({ error: err });
-    }/*
+
     if (thereIsError(req, res, 'insert')) { return };
 
     if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
@@ -732,7 +682,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     } catch (err) {
       debugLog(err)
       res.status(503).json({ error: err });
-    }*/
+    }
   });
 
   // GET order / orders /api/orders/:order_id
