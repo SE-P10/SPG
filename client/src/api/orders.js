@@ -133,14 +133,14 @@ async function updateOrderProducts(orderID, products = []) {
 			let exist = false;
 
 			for (let j = 0; j < products.length; j++) {
-				if (products[j].product_id === oldProducts[i].product_id) {
+				if (products[j].product_id == oldProducts[i].product_id) {
 					exist = oldProducts[i];
 					break;
 				}
 			}
 
-			if (exist) {
-				products.push({ order_id: exist.order_id, product_id: exist.product_id, quantity: 0 })
+			if (!exist) {
+				products.push({ order_id: exist.order_id, product_id: exist.product_id, quantity: 0 });
 			}
 		}
 	}
