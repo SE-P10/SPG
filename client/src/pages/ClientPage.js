@@ -10,6 +10,7 @@ import {
   newIcon,
   browseIcon,
   checkIcon,
+  mailIcon,
 } from "../ui-components/Icons.js";
 import { ClientNotifications } from "../client-component/ClientNotifications";
 
@@ -141,7 +142,7 @@ function ClientPage(props) {
                         }}>
                         <Col className='justify-content-center'>
                           <Row className='justify-content-center'>
-                            {checkIcon}{" "}
+                            {mailIcon}{" "}
                           </Row>
                           <Row className='justify-content-center'>
                             {" "}

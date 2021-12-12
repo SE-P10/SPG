@@ -35,7 +35,6 @@ exports.setNotification = async (notificationID) => {
     return runQuerySQL(db, sql, [notificationID], true);
 }
 
-    seen = seen ? 1 : 0;
 
 exports.getNotification = async (userID) => {
 

@@ -44,8 +44,6 @@ const getOrder = async (orderID) => {
   }
 
   return order;
-<<<<<<< HEAD
-=======
 }
 
 const getOrders = async (status = '') => {
@@ -95,58 +93,10 @@ const getOrders = async (status = '') => {
   }
 
   return orders;
->>>>>>> origin/development
 }
 
 const getOrderProduct = async (orderID, productID) => {
 
-<<<<<<< HEAD
-  if (isNumber(status))
-    return getOrder(status);
-
-  let sql = 'SELECT * FROM orders',
-    values = [];
-
-  if (status) {
-    if (isEmail(status))
-      sql += " WHERE user_id = (SELECT id FROM users WHERE email = ?);"
-    else
-      sql += " WHERE status = ?;"
-    values.push(status)
-  }
-
-  let orders = await getQuerySQL(db, sql, values, {
-    id: 0,
-    user_id: 0,
-    status: '',
-    price: 0,
-    pickup_time: '',
-    pickup_place: ''
-  }, null);
-
-  if (orders && orders.length > 0) {
-    orders = Promise.all(orders.map(async (order) => {
-
-      return {
-        ...order,
-        user: await getQuerySQL(db, "SELECT * FROM users where id = ?", [order.user_id], {
-          id: 0,
-          username: '',
-          email: '',
-          name: '',
-          surname: ''
-        }, null, true),
-        products: await getQuerySQL(db, "SELECT * FROM order_product where order_id = ?", [order.id], {
-          order_id: 0,
-          product_id: '',
-          quantity: 0
-        })
-      }
-    }))
-  }
-
-  return orders;
-=======
   if (!orderID || !productID)
     return null;
 
@@ -168,7 +118,6 @@ const getProduct = async (productID) => {
     price: 0,
     name: '',
   }, null, true)
->>>>>>> origin/development
 }
 
 const getOrderProducts = async (orderID) => {
@@ -182,36 +131,13 @@ const getOrderProducts = async (orderID) => {
   }, null, false)
 }
 
-<<<<<<< HEAD
-  if (!orderID || !productID)
-    return null;
-
-  return getQuerySQL(db, "SELECT * FROM order_product WHERE order_id = ? AND product_id = ?", [orderID, productID], {
-    order_id: 0,
-    product_id: 0,
-    quantity: 0
-  }, null, true)
-}
-=======
 const updateProduct = async (productID, data) => {
 
   if (!productID)
     return false;
->>>>>>> origin/development
 
   let dinoSQL = dynamicSQL("UPDATE products SET", data, { id: productID });
 
-<<<<<<< HEAD
-  if (!productID)
-    return null;
-
-  return getQuerySQL(db, "SELECT * FROM products where id = ?", [productID], {
-    id: 0,
-    quantity: 0,
-    price: 0,
-    name: '',
-  }, null, true)
-=======
   return new Promise((resolve, reject) => {
     db.run(dinoSQL.sql, [...dinoSQL.values], function (err) {
       if (err) {
@@ -222,28 +148,10 @@ const updateProduct = async (productID, data) => {
     });
 
   });
->>>>>>> origin/development
 }
 
 const calcProductsPice = async (products = []) => {
 
-<<<<<<< HEAD
-  if (!productID)
-    return false;
-
-  let dinoSQL = dynamicSQL("UPDATE products SET", data, { id: productID });
-
-  return new Promise((resolve, reject) => {
-    db.run(dinoSQL.sql, [...dinoSQL.values], function(err) {
-      if (err) {
-        debugLog(err)
-        reject("Db error")
-      }
-      resolve(this.changes ? productID : 0);
-    });
-
-  });
-=======
   return await products.reduce(async (previousValue, item) => {
 
     let pID = item.product_id || item.id || Object.keys(item)[0];
@@ -255,7 +163,6 @@ const calcProductsPice = async (products = []) => {
 
   }, 0);
 
->>>>>>> origin/development
 }
 
 

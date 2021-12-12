@@ -32,8 +32,7 @@ function ClientNotifications(props) {
     //Carico ogni volta che cambia l'utente le sue notifiche, i pendent order ed il suo wallet
     useEffect(() => {
         const fillTable = async () => {
-            const orders = ordersApi.getPendingOrders();
-            console.log(orders.filter((o) => { return o.user_id === props.user.id; }))
+            const orders = await ordersApi.getPendingOrders();
             //const mails = await notificationAPI.getNotification(props.user.id);
             const wallet = await API.getWalletByMail(props.user.email);
             setUserWallet(wallet);
