@@ -551,6 +551,7 @@ const getConfirmedProducts = async () => {
 }
 
 exports.deletePendingOrders = async () => {
+  console.log("vado")
   return db.run("UPDATE orders SET status = 'deleted' WHERE status = 'pending'");
 }
 

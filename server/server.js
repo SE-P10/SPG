@@ -113,14 +113,14 @@ app.use(virtualCron.run(() => {
       //console.log("LastExecution:", lastExecutionTime.format('YYYY-MM-DD <HH:mm:ss>'));
 
       //console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
-
+      console.log("test")
       ordersDao.confrimOrders();
 
     }, [], false);
 
   virtualCron.schedule({
     from: { day: virtualCron.schedules.MONDAY, hour: 18 },
-      to: { day: virtualCron.schedules.MONDAY, hour: 9 }
+      to: { day: virtualCron.schedules.SATURDAY, hour: 9 }
   },
     (virtualTime, lastExecutionTime, ...args) => {
     ordersDao.deletePendingOrders();
