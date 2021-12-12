@@ -18,9 +18,19 @@ html {
   font-weight: bold !important;
 }
 
-#navbarScrollingDropdown {
+#navbarScrollingDropdown,
+.navbarScrollingDropdown .dropdown-toggle {
   color: white !important;
   font-weight: bold;
+}
+
+.virtualClockModal .react-calendar {
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.dropdown-menu .show {
+  padding: 0;
 }
 
 body {
@@ -32,19 +42,40 @@ body {
   height: 100%;
   width: 100%;
 }
-
 .ph-prev {
   height: 100px;
   width: 150px;
+  margin-top: 10px;
+}
+
+.ph-au-f {
+  max-width: 100%;
+}
+
+.ph-au {
+  width: 100%;
+  height: 100%;
+}
+
+.row-prev {
+  height: 40px;
+  width: 50px;
   margin-top: 10px;
   border-radius: 50%;
   border-style: solid;
   border-width: 2px;
   border-color: #009378;
 }
+footer {
+  clear: both;
+  position: relative;
+  width: 100%;
+  bottom: 0px;
+  background-color: #009378;
+}
 
 .list {
-  width: 200px;
+  max-width: 100%;
   height: 800px;
   overflow-y: scroll;
 }
@@ -53,6 +84,7 @@ body {
   background-color: #f5f9ee;
   margin-bottom: 20px;
   border-radius: 10px !important;
+  width: 100%;
 }
 
 .p-cont {
@@ -60,7 +92,6 @@ body {
 
   width: 150px;
   height: 260px;
-  border-radius: 5px;
 }
 
 .mainColor {
@@ -73,6 +104,14 @@ body {
 
 .over {
   margin-bottom: 20px !important;
+}
+
+.margin-yourwallet {
+  margin-left: 35% !important;
+}
+
+.margin-walletvalue {
+  margin-left: 35% !important;
 }
 
 .iconColor {
@@ -109,7 +148,7 @@ body {
   width: 300px;
 }
 
-.fixed-height{
+.fixed-height {
   height: 100px !important;
 }
 .se-button:hover {
@@ -123,8 +162,14 @@ body {
 }
 
 .back-button {
-  height: 100px !important;
-  width: 100px !important;
+  height: 70px !important;
+  width: 110px !important;
+}
+
+@media (max-width: 480px) {
+  .button-disappear {
+    display: none !important;
+  }
 }
 
 .font-about-us {
@@ -145,6 +190,10 @@ body {
   text-shadow: 2px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 }
 
-.checkbox{
+.font-color {
+  color: #009378 !important;
+}
+
+.checkbox {
   width: 2px;
 }

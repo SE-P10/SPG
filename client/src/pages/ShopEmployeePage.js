@@ -241,18 +241,34 @@ function ShopEmployee(props) {
             />
           ) : null}
           {actionS === 3 ? (
+            <>{(props.dow == "Saturday" && props.hour >= 9) ||
+            (props.dow == "Monday" && props.hour <= 18) ?
             <TopUpWallet
               changeAction={changeAction}
               addMessage={addMessage}
               className='justify-content-center'
             />
-          ) : null}
+            :(
+              "You can top up wallets from Saturday at 09:00 to Monday at 18:00"
+            )} 
+          </>
+              ) : null}
+
           {actionS === 4 ? (
-            <ClientOrder
-              changeAction={changeAction}
-              addMessage={addMessage}
-              user={props.user}
-            />
+            <>
+              {(props.dow == "Saturday" && props.hour >= 9) ||
+              (props.dow == "Sunday" && props.hour <= 23) ? (
+                <ClientOrder
+                modifyOrder={-1}
+
+                  changeAction={changeAction}
+                  addMessage={addMessage}
+                  user={props.user}
+                />
+              ) : (
+                "Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00"
+              )}{" "}
+            </>
           ) : null}
           {actionS === 7 ? (
             <PendingOrders
@@ -261,8 +277,14 @@ function ShopEmployee(props) {
             />
           ) : null}
           {actionS === 5 ? (
+            <>
+            { (props.dow == "Saturday" && props.hour >= 9) ||
+              (props.dow == "Sunday" && props.hour <= 23) ?
             <HandOut changeAction={changeAction} addMessage={addMessage} />
-          ) : null}
+             : ( "You can hand out an order from Wednesday at 09:00 to Friday at 18:00"
+             )}
+          </>
+            ) : null}
           {actionS === 6 ? (
             <CheckOrders changeAction={changeAction} addMessage={addMessage} />
           ) : null}

@@ -4,7 +4,7 @@
  * @returns
  */
 async function getUserId(email) {
-  const response = await fetch("api/users/" + email);
+  const response = await fetch("/api/users/" + email);
   const respondeBody = await response.json();
   if (response.ok) {
     return respondeBody;

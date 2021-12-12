@@ -5,40 +5,43 @@ const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const db = require("../db");
-const { getUserById } = require("./user-dao");
-const { debugLog, filter_args } = require("../utility");
+const { getUser } = require("./user-dao");
+const { debugLog, filter_args, sendMail, runQuerySQL, getQuerySQL, isEmail } = require("../utility");
 
 
-async function addNotification(userID, message, object, email = false) {
+exports.addNotification = async (userID, message, object, email = false) => {
 
-    let sql = 'INSERT INTO notification (user_id, message, object) VALUES(?, ?, ?)';
+    let sql = 'INSERT INTO notifications (user_id, message, object) VALUES(?, ?, ?)';
 
-    let status = await this.runQuerySQL(db, sql, [userID, message, object], true);
+    let status = await runQuerySQL(db, sql, [userID, message, object], true);
 
     if (status && email) {
 
-        return this.sendMail(email, message, object);
+        if(!isEmail(email)) {
+            email = (await getUser(userID)).email;
+        }
+
+        return sendMail(email, message, object);
     }
 
     return status;
 }
 
 
-async function setNotification(notificationID) {
+exports.setNotification = async (notificationID) => {
 
-    let sql = 'UPDATE notification SET seen = 1 WHERE id = ?';
+    let sql = 'UPDATE notifications SET seen = 1 WHERE id = ?';
 
-    return this.runQuerySQL(db, sql, [notificationID], true);
+    return runQuerySQL(db, sql, [notificationID], true);
 }
-
-
-async function getNotification(userID) {
 
     seen = seen ? 1 : 0;
 
+exports.getNotification = async (userID) => {
+
     let sql = 'SELECT * FROM notifications WHERE user_id = ?';
 
-    return await getQuerySQL(db, sql, [userID, seen], {
+    return await getQuerySQL(db, sql, [userID], {
         id: 0,
         message: '',
         object: '',
@@ -52,7 +55,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     // insert a new notification /api/notification/:userID
     app.post('/api/notification/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
-        let user = await getUserById(req.params.user_id);
+        let user = await getUser(req.params.user_id);
 
         if (!user) {
             res.status(501).json({ error: 'Invalid user ID' });

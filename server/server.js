@@ -7,9 +7,11 @@ const DEBUG_PROCESS = IS_DEBUG;
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
-const { check, validationResult, body } = require("express-validator"); // validation middleware
+const { validationResult, body } = require("express-validator"); // validation middleware
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
+const sqliteStoreFactory = require('express-session-sqlite').default
+const sqlite3 = require('sqlite3')
 const dayjs = require("dayjs");
 
 const productsDao = require("./dao/products-dao");
@@ -18,7 +20,12 @@ const walletDao = require("./dao/wallet-dao");
 const ordersDao = require("./dao/orders-dao.js");
 const farmerDao = require("./dao/farmer-dao.js");
 const notificationDao = require("./dao/notification-dao.js");
+const warehouseDao = require("./dao/warehouse-dao.js");
 const testDao = require("./dao/test-dao.js");
+const time = require("./time.js");
+const { virtualCron } = require("./cron");
+const { isNumber } = require("./utility");
+
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -42,7 +49,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((id, done) => {
   userDao
-    .getUserById(id)
+    .getUser(id)
     .then((user) => {
       done(null, user); // req.user
     })
@@ -54,6 +61,7 @@ passport.deserializeUser((id, done) => {
 // init express
 const app = express();
 const port = 3001;
+const SqliteStore = sqliteStoreFactory(session);
 
 // set-up the middlewares
 app.use(morgan("dev"));
@@ -67,27 +75,60 @@ const isLoggedIn = (req, res, next) => {
 };
 
 // enable sessions in Express
-app.use(
-  session({
-    // set up here express-session
-    secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
-    resave: false,
-    saveUninitialized: false,
-    time: null
-  })
-);
-
-function getTime() {
-  if (session.time)
-    return session.time;
-  return ({ weekDay: dayjs().format('dddd'), hour: Number(dayjs().format('H')) });
-}
+app.use(session({
+  // set up here express-session
+  secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    sameSite: true,
+    maxAge: 3600000
+  },
+  store: new SqliteStore({
+    driver: sqlite3.Database,
+    path: 'sessions.db',
+    ttl: 3600000,
+    prefix: 'sessid:',
+    cleanupInterval: 300000
+  }),
+}));
 
 // init Passport to use sessions
 app.use(passport.initialize());
 app.use(passport.session());
 
-// API implemented in module gAPI
+
+app.use(virtualCron.run(() => {
+
+  // reset all cron jobs on server restart
+  virtualCron.unscheduleAll();
+
+  virtualCron.schedule({
+    from: { day: virtualCron.schedules.MONDAY, hour: 9 },
+    to: { day: virtualCron.schedules.SATURDAY, hour: 9 }
+  },
+    (virtualTime, lastExecutionTime, ...args) => {
+      //console.log("LastExecution:", lastExecutionTime.format('YYYY-MM-DD <HH:mm:ss>'));
+
+      //console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
+
+      ordersDao.confrimOrders();
+
+    }, [], false);
+
+  virtualCron.schedule({
+    from: { day: virtualCron.schedules.MONDAY, hour: 18 },
+      to: { day: virtualCron.schedules.MONDAY, hour: 9 }
+  },
+    (virtualTime, lastExecutionTime, ...args) => {
+    ordersDao.deletePendingOrders();
+    }, [], false);
+  
+}));
+
+// API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);
 productsDao.execApi(app, passport, isLoggedIn, body);
 ordersDao.execApi(app, passport, isLoggedIn);
@@ -95,6 +136,62 @@ ordersDao.execApi(app, passport, isLoggedIn);
 farmerDao.execApi(app, passport, isLoggedIn);
 walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
+warehouseDao.execApi(app, passport, isLoggedIn);
+
+//PUT /api/debug/time/
+app.put("/api/debug/time/:time", isLoggedIn, function(req, res) {
+
+  let timestamp, timeOffset = 0, time = req.params.time;
+
+  if (isNumber(time)) {
+
+    /**
+     * is not an offset
+     */
+    if (time > 1000000000) {
+
+      /**
+       * is not in milliseconds
+       */
+      if (time < 1000000000000) {
+        time = time * 1000;
+      }
+    }
+    else {
+      timeOffset = time;
+      time = null;
+    }
+  }
+
+  /**
+   * try dirrect conevrsion
+   */
+  timestamp = new Date(time);
+
+  let parsedTimestamp = ((timestamp.getTime() > 0) ? dayjs(timestamp) : dayjs()).unix() + Number.parseInt(timeOffset);
+
+  if (timeOffset === 0) {
+    timeOffset = parsedTimestamp - dayjs().unix();
+  }
+
+  req.session.timeOffset = timeOffset;
+  req.session.time = parsedTimestamp;
+
+  res.status(201).json(timeOffset).end();
+
+});
+
+
+app.get("/api/debug/time/", function(req, res) {
+
+  let response = {
+    time: req.session.time || dayjs().unix(),
+    offset: req.session.timeOffset || 0
+  }
+
+  res.status(201).json(response).end();
+
+});
 
 
 /*** USER APIs ***/
@@ -130,24 +227,6 @@ app.get("/api/sessions/current", isLoggedIn, (req, res) => {
   res.status(200).json(req.user);
 });
 
-
-//PUT /api/debug/time/
-app.put("/api/debug/time/",
-  isLoggedIn,
-  [
-    body('hour').isNumeric(),
-  ],
-  function(req, res) {
-    if (!validationResult(req).isEmpty() || !['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'enddebug'].includes(req.body.weekDay.toLowerCase()))
-      return res.status(400).render('contact', { errors: "error in the parameters" });
-    if (req.user.role != 1)
-      res.status(404).json({ "result": 'Only the manager has access to this functionality!' });
-    if (req.body.weekDay === 'endDebug') session.time = null;
-    else session.time = req.body;
-    res.status(201).end();
-  }
-);
-
 // DELETE /api/clients/:email
 app.delete('/api/clients/:email', async function(req, res) {
   const errors = validationResult(req);
@@ -182,7 +261,6 @@ app.delete('/api/test/restoretables/', async function(req, res) {
     res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
   }
 });
-
 
 // Activate the server
 app.listen(port, () => {

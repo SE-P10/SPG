@@ -1,7 +1,18 @@
-import { Container, Carousel, Row, Col } from "react-bootstrap";
+import { Container, Carousel, Row, Col, Button } from "react-bootstrap";
 import "../css/custom.css";
+import { useHistory } from "react-router-dom";
 
 function HomePage(props) {
+  const history = useHistory();
+
+  const goToAboutPage = () => {
+    history.push("/about");
+  };
+
+  const goToProductsPage = () => {
+    history.push("/products");
+  };
+
   return (
     <>
       <Container className='justify-content-center fuild'>
@@ -52,6 +63,15 @@ function HomePage(props) {
               </Carousel.Item>
             </Carousel>
           </Col>
+        </Row>
+
+        <Row className='justify-content-center below'>
+          <Button className='spg-button mr-1' onClick={goToAboutPage}>
+            About us
+          </Button>
+          <Button className='spg-button' onClick={goToProductsPage}>
+            Our Products
+          </Button>
         </Row>
       </Container>
     </>
