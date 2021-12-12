@@ -422,7 +422,7 @@ function ClientOrder(props) {
                                 });
                               }
                             }}
-                            variant='outline-secondary'>
+                            className='spg-button'>
                             {orderProduct.filter(
                               (t) =>
                                 t.product_id === p.id && t.confirmed == true
@@ -431,7 +431,7 @@ function ClientOrder(props) {
                               : "MODIFY"}
                           </Button>
                         </Row>
-                        <Row className='justify-content-center below'>
+                        <Row className='justify-content-center '>
                           <Form.Group>
                             <Form.Control
                               onChange={(ev) => {

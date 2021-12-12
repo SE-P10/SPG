@@ -52,7 +52,7 @@ function Basket(props) {
                             });
                           });
                         }}
-                        variant='outline-secondary'>
+                        className='spg-button'>
                         DELETE
                       </Button>
                     </td>
