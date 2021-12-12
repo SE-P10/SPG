@@ -20,14 +20,13 @@ function ClientPage(props) {
     setActionC(actionN);
   };
 
-  
   useEffect(() => {
     if (actionC != 2) setModifyOrder(-1);
-    API.deleteAllBasket().catch(() => {setMessage("Carello non liberato correttamente"); console.log("errore")});
+    API.deleteAllBasket().catch(() => {
+      setMessage("Carello non liberato correttamente");
+      console.log("errore");
+    });
   }, [actionC]);
-
-
-
 
   const modifyOrderFunc = (orderId) => {
     setModifyOrder(orderId);
@@ -43,7 +42,7 @@ function ClientPage(props) {
       {actionC !== 0 ? (
         <>
           <Button
-            className='spg-button below back-button'
+            className='spg-button below back-button button-disappear'
             onClick={() => {
               setActionC(0);
             }}>
@@ -55,9 +54,6 @@ function ClientPage(props) {
         ""
       )}{" "}
       <Container className='below'>
-        <Row className=' cont below justify-content-center'>
-          {props.user.name ? <h2> {props.user.name} personal page </h2> : null}
-        </Row>
         {message ? (
           <Alert variant='success' onClose={() => setMessage("")} dismissible>
             {" "}
@@ -67,11 +63,15 @@ function ClientPage(props) {
           ""
         )}
 
-        <Row className='secondColor justify-content-center below'>
+        <Row className=' justify-content-center below'>
           <Col>
             {actionC === 0 ? (
               <>
-                {" "}
+                <Row className=' cont below justify-content-center'>
+                  {props.user.name ? (
+                    <h2> {props.user.name} personal page </h2>
+                  ) : null}
+                </Row>{" "}
                 <Row>
                   <Col>
                     <Row className='secondColor justify-content-center below'>
@@ -161,10 +161,10 @@ function ClientPage(props) {
           ) : null}
           {actionC === 3 ? (
             <YourOrders
-            virtualTimeDate={props.virtualTimeDate}
-            hour={props.hour} dow={props.dow}
-            modifyOrder={modifyOrderFunc}
-
+              virtualTimeDate={props.virtualTimeDate}
+              hour={props.hour}
+              dow={props.dow}
+              modifyOrder={modifyOrderFunc}
               user={props.user}
               changeAction={changeAction}
               addMessage={addMessage}
