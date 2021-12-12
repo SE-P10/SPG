@@ -20,7 +20,7 @@ import MyNavbar from "./ui-components/MyNavbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/App.css";
-
+import "./css/custom.css";
 import API from "./API";
 import { BrowserProducts } from "./ui-components/BrowseProducts";
 
@@ -131,9 +131,11 @@ const App = () => {
           exact
           path='/'
           render={() => (
-            <Container fluid className='justify-content-center d-flex w-100'>
-              <HomePage className='w-100' />
-            </Container>
+            <>
+              <Container fluid className='justify-content-center d-flex w-100'>
+                <HomePage className='w-100' />
+              </Container>
+            </>
           )}
         />
 
@@ -271,10 +273,12 @@ const App = () => {
           exact
           path='/about'
           render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <AboutPage user={user} />
-            </Container>
+            <>
+              <Container fluid className='justify-content-center d-flex'>
+                {/* inserire controllo loggedIn e ruolo*/}{" "}
+                <AboutPage user={user} />
+              </Container>
+            </>
           )}
         />
       </Switch>

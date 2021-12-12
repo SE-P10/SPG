@@ -42,7 +42,7 @@ function ClientPage(props) {
       {actionC !== 0 ? (
         <>
           <Button
-            className='spg-button below back-button'
+            className='spg-button below back-button button-disappear'
             onClick={() => {
               setActionC(0);
             }}>

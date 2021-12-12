@@ -7,6 +7,7 @@ import {
   Modal,
   Form,
   Alert,
+  Table,
 } from "react-bootstrap";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
@@ -15,7 +16,8 @@ import dayjs from "dayjs";
 
 import { useEffect } from "react";
 import API from "./../API";
-import { getNextWeekday } from "../api/utility"
+import { getNextWeekday } from "../api/utility";
+import { editIcon } from "../ui-components/Icons";
 import "../css/custom.css";
 
 function YourOrders(props) {
@@ -28,34 +30,34 @@ function YourOrders(props) {
   const handleClose = () => setShow(false);
   const [show, setShow] = useState(false);
   const [address, setAddress] = useState("");
-  const [errorMessage, setErrorMessage] = useState("")
-  const [selectedOrderId, setSelectedOrderId] = useState(null)
+  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const onDateTimeChange = (newDate) => {
     setDateTime(() => newDate);
   };
 
   const handleShippingInfo = () => {
-    setErrorMessage("")
+    setErrorMessage("");
 
     if (openPickupForm && dateTime) {
-      API.deliveryOrder(selectedOrderId, dateTime)
-      handleClose()
+      API.deliveryOrder(selectedOrderId, dateTime);
+      handleClose();
+    } else if (openDeliveryForm && dateTime && address) {
+      API.deliveryOrder(selectedOrderId, dateTime, address);
+      handleClose();
+    } else {
+      setErrorMessage("Insert a valid date and/or address");
     }
-    else if (openDeliveryForm && dateTime && address) {
-      API.deliveryOrder(selectedOrderId, dateTime, address)
-      handleClose()
-    }
-    else {
-      setErrorMessage("Insert a valid date and/or address")
-    }
-    setOpenDeliveryForm(false)
-    setOpenPickupForm(false)
-  }
+    setOpenDeliveryForm(false);
+    setOpenPickupForm(false);
+  };
 
   useEffect(() => {
     const fillOrders = async () => {
       let ordersTmp = await API.getOrders(props.user.email);
+      console.log(orders);
+
       setIsProductListLoading(false);
       if (ordersTmp.length === 0) {
       } else {
@@ -68,11 +70,11 @@ function YourOrders(props) {
 
   return (
     <>
-      <Col className="cont">
-        <Row className="justify-content-center">
+      <Col className='cont'>
+        <Row className='justify-content-center'>
           {isOrderListLoading ? (
-            <Container className="below">
-              <Spinner animation="border" variant="success"></Spinner>
+            <Container className='below'>
+              <Spinner animation='border' variant='success'></Spinner>
             </Container>
           ) : (
             <>
@@ -81,42 +83,69 @@ function YourOrders(props) {
                   <Col>
                     <Row>
                       {" "}
-                      <h3 className="thirdColor mx-auto">
+                      <h3 className='thirdColor mx-auto'>
                         {" "}
                         List of your orders{" "}
                       </h3>{" "}
                     </Row>
-                    {orders.map((order) => (
-                      <Row className="over">
-                        <Col> id : {order.id}</Col>
-                        <Col>price : {order.price}</Col>
-                        <Col>status : {order.status}</Col>
-                        {order.status === "booked" && ((props.dow == 'Saturday' && props.hour >= 9) || (props.dow == 'Sunday' && props.hour <= 23)) ? <Col><Button className='spg-button' onClick={() => props.modifyOrder(order.id)} >Modify </Button> </Col> : <Col></Col>}
-                        {order.status === "confirmed" && ((props.dow == "Monday" && props.hour >= 9) || (props.dow == "Tuesday" && props.hour <= 18)) ?
-                          <>
-                            <Col>
-                              <Button className="spg-button" onClick={() => {
-                                setShow(true)
-                                setSelectedOrderId(order.id)
-                              }}>
-                                Shipping Info
-                              </Button>
-                            </Col>
-                          </>
-                          : <Col></Col>}
-                      </Row>
-                    ))}{" "}
+
+                    <Table responsive size='sm'>
+                      <thead>
+                        <tr>
+                          <th>Price</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orders.map((order) => (
+                          <tr className='over'>
+                            <td> {order.price}€</td>
+                            <td> {order.status}</td>
+                            {order.status === "booked" &&
+                            ((props.dow == "Saturday" && props.hour >= 9) ||
+                              (props.dow == "Sunday" && props.hour <= 23)) ? (
+                              <td>
+                                <Button
+                                  className='spg-button'
+                                  onClick={() => props.modifyOrder(order.id)}>
+                                  {editIcon}{" "}
+                                </Button>{" "}
+                              </td>
+                            ) : (
+                              <td></td>
+                            )}
+                            {order.status === "confirmed" &&
+                            ((props.dow == "Monday" && props.hour >= 9) ||
+                              (props.dow == "Tuesday" && props.hour <= 18)) ? (
+                              <>
+                                <td>
+                                  <Button
+                                    className='spg-button'
+                                    onClick={() => {
+                                      setShow(true);
+                                      setSelectedOrderId(order.id);
+                                    }}>
+                                    Shipping Info
+                                  </Button>
+                                </td>
+                              </>
+                            ) : (
+                              <td></td>
+                            )}
+                          </tr>
+                        ))}{" "}
+                      </tbody>
+                    </Table>
                   </Col>
                 </>
               ) : (
                 <>
-                  <h3 className="below">
+                  <h3 className='below'>
                     {" "}
                     No orders found! Purchaise a &ensp;
                     <Button
-                      className="spg-button"
-                      onClick={() => props.changeAction(2)}
-                    >
+                      className='spg-button'
+                      onClick={() => props.changeAction(2)}>
                       {" "}
                       New Order{" "}
                     </Button>
@@ -131,12 +160,11 @@ function YourOrders(props) {
       <Modal
         show={show}
         onHide={handleClose}
-        backdrop="static"
-        keyboard={false}
-      >
+        backdrop='static'
+        keyboard={false}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <h3 className="font-color">Home Delivery or Pick-Up?</h3>
+            <h3 className='font-color'>Home Delivery or Pick-Up?</h3>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -155,51 +183,62 @@ function YourOrders(props) {
             <Form.Group>
               <Row>
                 <Form.Check
-                  label="Pick-Up"
-                  type="radio"
-                  name="group1"
-                  id="pickup"
+                  label='Pick-Up'
+                  type='radio'
+                  name='group1'
+                  id='pickup'
                   onClick={() => {
                     setOpenPickupForm(true);
                     setOpenDeliveryForm(false);
-                  }}
-                ></Form.Check>
+                  }}></Form.Check>
               </Row>
               <Row>
                 <Form.Check
-                  label="Home Delivery"
-                  name="group1"
-                  type="radio"
-                  id="homedelivery"
+                  label='Home Delivery'
+                  name='group1'
+                  type='radio'
+                  id='homedelivery'
                   onClick={() => {
                     setOpenDeliveryForm(true);
                     setOpenPickupForm(false);
-                  }}
-                ></Form.Check>
+                  }}></Form.Check>
               </Row>
             </Form.Group>
 
             {openPickupForm || openDeliveryForm ? (
               <>
-              {(()=> {
-
-            
-              })()}
-                <Row className="justify-content-center font-color">
+                {(() => {})()}
+                <Row className='justify-content-center font-color'>
                   Choose A Date
                 </Row>
                 <DatePicker
-                  className="form-control fw-300"
+                  className='form-control fw-300'
                   selected={dateTime}
                   onChange={onDateTimeChange}
                   showTimeSelect
                   isClearable
-                  dateFormat="dd/MM/yyyy, hh:mm a"
-                  placeholderText="No date&time set"
-                  minTime={dayjs(dateTime).weekday() === 3 ? dayjs(dateTime).hour("9").minute("0").toDate() : dayjs(dateTime).hour("0").minute("0").toDate()}
-                  maxTime={dayjs(dateTime).weekday() === 5 ? dayjs(dateTime).hour("19").minute("0").toDate() : dayjs(dateTime).hour("23").minute("59").toDate()}
-                  minDate={getNextWeekday(props.virtualTimeDate, 2, false).toDate()}
-                  maxDate={getNextWeekday(props.virtualTimeDate, 4, false).toDate()}
+                  dateFormat='dd/MM/yyyy, hh:mm a'
+                  placeholderText='No date&time set'
+                  minTime={
+                    dayjs(dateTime).weekday() === 3
+                      ? dayjs(dateTime).hour("9").minute("0").toDate()
+                      : dayjs(dateTime).hour("0").minute("0").toDate()
+                  }
+                  maxTime={
+                    dayjs(dateTime).weekday() === 5
+                      ? dayjs(dateTime).hour("19").minute("0").toDate()
+                      : dayjs(dateTime).hour("23").minute("59").toDate()
+                  }
+                  minDate={getNextWeekday(
+                    props.virtualTimeDate,
+                    2,
+                    false
+                  ).toDate()}
+                  maxDate={getNextWeekday(
+                    props.virtualTimeDate,
+                    4,
+                    false
+                  ).toDate()}
                 />
               </>
             ) : null}
@@ -208,16 +247,18 @@ function YourOrders(props) {
               <>
                 <Form>
                   <Row>
-                    <Form.Group as={Col} controlId="formGridName">
+                    <Form.Group as={Col} controlId='formGridName'>
                       <Row className='justify-content-center'>
-                        <Form.Label className='font-color below'>Address</Form.Label>
+                        <Form.Label className='font-color below'>
+                          Address
+                        </Form.Label>
                       </Row>
                       <Form.Control
                         required
-                        type="text"
+                        type='text'
                         value={address}
                         onChange={(ev) => setAddress(ev.target.value)}
-                        placeholder="Enter Address"
+                        placeholder='Enter Address'
                       />
                     </Form.Group>
                   </Row>
@@ -227,10 +268,12 @@ function YourOrders(props) {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" className="below" onClick={handleClose}>
+          <Button variant='danger' className='below' onClick={handleClose}>
             Cancel
           </Button>
-          <Button className="spg-button below" onClick={handleShippingInfo}>Confirm</Button>
+          <Button className='spg-button below' onClick={handleShippingInfo}>
+            Confirm
+          </Button>
         </Modal.Footer>
       </Modal>
     </>
