@@ -86,7 +86,7 @@
 * Description: get all orders based on the filter
 * Request params: **orderID** *(will return only an object)* or **user_email** or **order status** *(like: pending)* 
 * Return: an array of objects or a single one as defined below
-* HTTP Response: 200 success, 404 user not found, 422 Unprocessable Request, 500 Server Error
+* HTTP Response: 200 success, 404 order not found, 422 Unprocessable Request, 500 Server Error
 ```json
 {
   "id": 0,
