@@ -797,7 +797,7 @@ exports.confrimOrders = () => {
           notificationDao.addNotification(
             order.user_id,
             message,
-            "pending order",
+            "Order deleted",
             true
           );
         } else {

@@ -107,7 +107,7 @@ function FarmerPage(props) {
 
           {actionF === 2 ? (
             <>
-              {(props.dow === "Sunday" && props.hour > 23) ||
+              {(props.dow === "Sunday" && props.hour >= 23) ||
               (props.dow === "Monday" && props.hour < 9) ? (
                 <ConfirmProducts
                   changeAction={changeAction}

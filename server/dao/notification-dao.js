@@ -87,7 +87,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
           req.body || {}
         );
 
-        let status = await addNotification(
+        let status = await this.addNotification(
           user.id,
           notifyData.message,
           notifyData.object,
@@ -136,7 +136,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
       : isLoggedIn,
     async (req, res) => {
       try {
-        let status = await getNotification(req.params.user_id);
+        let status = await this.getNotification(req.params.user_id);
 
         if (status) res.status(200).json(status).end();
         else
