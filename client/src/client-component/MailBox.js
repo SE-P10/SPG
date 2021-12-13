@@ -1,7 +1,6 @@
 import "../css/custom.css";
-import { Container, Row, Col, Table, Modal, Button } from "react-bootstrap";
-import React, { useState, useEffect } from 'react';
-import Accordion from 'react-bootstrap/Accordion'
+import { Container, Table, Modal, Button } from "react-bootstrap";
+import React, { useState } from 'react';
 import "../css/custom.css";
 
 const MailBox = (props) => {
@@ -16,19 +15,6 @@ const MailBox = (props) => {
         setShow(true);
     }
 
-    //Logica per la visione della accordition a seconda del proprio status.
-    let statusClass = null
-    switch (props.mails ? props.mails.seen : "0") {
-        case '0':
-            statusClass = 'danger';
-            break;
-        case '1':
-            statusClass = 'light';
-            break;
-        default:
-            statusClass = "danger"
-            break;
-    }
     return (
         <Container>
             <Table responsive>
@@ -40,9 +26,9 @@ const MailBox = (props) => {
                         <th key={3}>Object</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody >
                     {props.mails ? props.mails.map((m) => (
-                        <tr>
+                        <tr className={m.seen===0? "bg-info text-white" : "bg-light text-dark"}>
                             <td>{m.id}</td>
                             <td >info@SPG.com</td>
                             <td >{props.user.email}</td>

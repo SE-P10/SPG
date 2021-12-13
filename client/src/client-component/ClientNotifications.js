@@ -10,12 +10,6 @@ import ordersApi from "../api/orders";
 
 function ClientNotifications(props) {
 
-    //OffCanvas set
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-
     const [mails, setMails] = useState([]);
     const [pendingOrders, setPendingOrders] = useState([])
     const [userWallet, setUserWallet] = useState([])
@@ -40,9 +34,11 @@ function ClientNotifications(props) {
             setMails(mails);
             setDirtyMessage(false);
         };
-        fillTable().catch((err) => {
-            console.log(err)
-        })
+        if (dirtyMessage) {
+            fillTable().catch((err) => {
+                console.log(err)
+            })
+        }
     }, [props.user, dirtyMessage]);
 
     return (
@@ -70,7 +66,7 @@ function ClientNotifications(props) {
                             pendingOrders.reduce((acc, curr) => acc + curr.price, 0) - userWallet :
                             'You have not to recharge your wallet'}
                         </h3>
-                        {(pendingOrders.reduce((acc, curr) => acc + curr.price, 0) - userWallet) > 0 ? <Button></Button> : null}
+                        {/*(pendingOrders.reduce((acc, curr) => acc + curr.price, 0) - userWallet) > 0 ? <Button></Button> : null*/}
                     </Col>
 
                 </Row>

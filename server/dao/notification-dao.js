@@ -91,7 +91,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     app.put('/api/notification/:id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
         try {
-            let status = await setNotification(req.params.id);
+            let status = await this.setNotification(req.params.id);
 
             if (status)
                 res.status(201).json(status).end();
