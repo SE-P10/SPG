@@ -111,10 +111,7 @@ app.use(
         to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
       },
       (virtualTime, lastExecutionTime, ...args) => {
-        //console.log("LastExecution:", lastExecutionTime.format('YYYY-MM-DD <HH:mm:ss>'));
-
-        //console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
-        console.log("test");
+        
         ordersDao.confrimOrders();
       },
       [],
