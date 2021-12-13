@@ -10,7 +10,10 @@ import {
   newIcon,
   browseIcon,
   checkIcon,
+  mailIcon,
 } from "../ui-components/Icons.js";
+import { ClientNotifications } from "../client-component/ClientNotifications";
+
 import API from "../API";
 function ClientPage(props) {
   const [message, setMessage] = useState("");
@@ -130,6 +133,25 @@ function ClientPage(props) {
                       </Button>
                     </Row>{" "}
                   </Col>
+                  <Col>
+                    <Row className='secondColor justify-content-center below'>
+                      <Button
+                        className='se-button '
+                        onClick={() => {
+                          setActionC(4);
+                        }}>
+                        <Col className='justify-content-center'>
+                          <Row className='justify-content-center'>
+                            {mailIcon}{" "}
+                          </Row>
+                          <Row className='justify-content-center'>
+                            {" "}
+                            Personal MailBox{" "}
+                          </Row>
+                        </Col>
+                      </Button>
+                    </Row>{" "}
+                  </Col>
                 </Row>
               </>
             ) : (
@@ -165,6 +187,13 @@ function ClientPage(props) {
               hour={props.hour}
               dow={props.dow}
               modifyOrder={modifyOrderFunc}
+              user={props.user}
+              changeAction={changeAction}
+              addMessage={addMessage}
+            />
+          ) : null}
+          {actionC === 4 ? (
+            <ClientNotifications
               user={props.user}
               changeAction={changeAction}
               addMessage={addMessage}
