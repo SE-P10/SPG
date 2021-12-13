@@ -98,7 +98,7 @@ function ConfirmProducts(props) {
                   <h3> Confirm</h3>
                 </Col>
               </Row>{" "}
-              {productQ.map((p) => (
+              {productQ.filter(t => t.quantity > 0).map((p) => (
                 <>
                   <Row>
                     <Col>{p.id}</Col>

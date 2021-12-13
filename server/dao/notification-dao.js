@@ -1,6 +1,6 @@
 'use strict';
 
-const AF_DEBUG = false;
+const AF_DEBUG = true;
 const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
@@ -17,7 +17,7 @@ exports.addNotification = async (userID, message, object, email = false) => {
 
     if (status && email) {
 
-        if(!isEmail(email)) {
+        if (!isEmail(email)) {
             email = (await getUser(userID)).email;
         }
 
@@ -36,11 +36,16 @@ exports.setNotification = async (notificationID) => {
 }
 
 
-exports.getNotification = async (userID) => {
+exports.getNotification = async (userID, seen = null) => {
 
-    let sql = 'SELECT * FROM notifications WHERE user_id = ?';
+    let filter = [userID], sql = 'SELECT * FROM notifications WHERE user_id = ?';
 
-    return await getQuerySQL(db, sql, [userID], {
+    if (seen !== null) {
+        sql += " AND SEEN = ?";
+        filter.push(seen ? 1 : 0);
+    }
+
+    return getQuerySQL(db, sql, filter, {
         id: 0,
         message: '',
         object: '',
@@ -103,7 +108,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     app.get('/api/notification/:user_id', AF_ALLOW_DIRTY ? (req, res, next) => { return next() } : isLoggedIn, async (req, res) => {
 
         try {
-            let status = await getNotification(req.params.id);
+            let status = await this.getNotification(req.params.user_id);
 
             if (status)
                 res.status(201).json(status).end();

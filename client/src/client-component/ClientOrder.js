@@ -103,12 +103,14 @@ function ClientOrder(props) {
         setErrorMessage("You have to insert an email!");
         orderOk = false;
       } else {
-        userId = await API.getUserId(mailInserted);
-        if (userId.length === 0 || userId[0].role != 0) {
+        let user = await API.getUserId(mailInserted);
+        if (user.role != 0) {
           setErrorMessage("Invalid user");
           orderOk = false;
         }
-        if (orderOk) userId = userId[0].id;
+        else {
+          userId = user.id;
+        }
       }
     } else userId = props.user.id;
     const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
