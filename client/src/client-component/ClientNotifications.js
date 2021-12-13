@@ -33,7 +33,7 @@ function ClientNotifications(props) {
     useEffect(() => {
         const fillTable = async () => {
             const orders = await ordersApi.getPendingOrders();
-            const mails = notificationAPI.getNotification(props.user.id);
+            const mails = await notificationAPI.getNotification(props.user.id);
             const wallet = await API.getWalletByMail(props.user.email);
             setUserWallet(wallet);
             setPendingOrders(orders.filter((o) => { return o.user_id === props.user.id; }));
@@ -49,10 +49,10 @@ function ClientNotifications(props) {
         <>
             <Container fluid className="vh-100">
                 <Row >
-                    <Col sm={7} className='justify-content-center cont '>
-                        <MailBox mails={mails} messageSeen={messageSeen} />
+                    <Col sm={8} className='justify-content-center cont '>
+                        <MailBox mails={mails} messageSeen={messageSeen} user={props.user} />
                     </Col>
-                    <Col sm={4} className='justify-content-center cont ml-5'>
+                    <Col sm={3} className='justify-content-center cont ml-5'>
                         <h1>Your Info:</h1>
                         <h2>Pending Orders:</h2>
                         {pendingOrders.length === 0 ?
