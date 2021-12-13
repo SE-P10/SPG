@@ -5,11 +5,8 @@ import {
   Button,
   Container,
   Table,
-  Spinner,
 } from "react-bootstrap";
-import { useState } from "react";
-
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import API from "./../API";
 import "../css/custom.css";
 function ConfirmProducts(props) {
@@ -30,12 +27,11 @@ function ConfirmProducts(props) {
     };
     productOrdered();
 
-    const confirmedQ = async () => {
-      const confirmedQ = await API.getFarmerOpenDeliveries();
-      console.log(confirmedQ);
-      setConfirmedQ(confirmedQ);
+    const confirmedQe = async () => {
+      const confirmedQo = await API.getFarmerOpenDeliveries();
+      setConfirmedQ(confirmedQo);
     };
-    confirmedQ();
+    confirmedQe();
   }, []);
 
   const handleConfirm = async () => {

@@ -1,5 +1,4 @@
-import { Row, Col, Container, Button } from "react-bootstrap";
-import Offcanvas from 'react-bootstrap/Offcanvas'
+import { Row, Col, Container } from "react-bootstrap";
 import React, { useState, useEffect } from 'react';
 
 import API from "./../API";
@@ -26,12 +25,12 @@ function ClientNotifications(props) {
     //Carico ogni volta che cambia l'utente le sue notifiche, i pendent order ed il suo wallet
     useEffect(() => {
         const fillTable = async () => {
-            const orders = await ordersApi.getPendingOrders();
-            const mails = await notificationAPI.getNotification(props.user.id);
+            const orders =  ordersApi.getPendingOrders();
+            const mailsTmpy =  notificationAPI.getNotification(props.user.id);
             const wallet = await API.getWalletByMail(props.user.email);
             setUserWallet(wallet);
             setPendingOrders(orders.filter((o) => { return o.user_id === props.user.id; }));
-            setMails(mails);
+            setMails(mailsTmpy);
             setDirtyMessage(false);
         };
         if (dirtyMessage) {

@@ -9,12 +9,11 @@ import {
   Alert,
   Table,
 } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 
 import dayjs from "dayjs";
 
-import { useEffect } from "react";
 import API from "./../API";
 import { getNextWeekday } from "../api/utility";
 import { editIcon } from "../ui-components/Icons";
@@ -54,7 +53,7 @@ function YourOrders(props) {
 
   useEffect(() => {
     const fillOrders = async () => {
-      let ordersTmp = await API.getOrders(props.user.email);
+      let ordersTmp =  API.getOrders(props.user.email);
 
       setIsProductListLoading(false);
       if (!!ordersTmp) {
@@ -203,7 +202,7 @@ function YourOrders(props) {
 
             {openPickupForm || openDeliveryForm ? (
               <>
-                {(() => {})()}
+                
                 <Row className='justify-content-center font-color'>
                   Choose A Date
                 </Row>

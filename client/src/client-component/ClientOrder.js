@@ -8,8 +8,7 @@ import {
   Image,
   Spinner,
 } from "react-bootstrap";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import "../css/custom.css";
 import { Basket } from "../client-component/Basket";
 import API from "../API";
@@ -83,8 +82,8 @@ function ClientOrder(props) {
         }))
       );
 
-      const walletValue = await API.getWalletByMail(props.user.email);
-      setWalletValue(walletValue);
+      const walletValueT = await API.getWalletByMail(props.user.email);
+      setWalletValue(walletValueT);
       if (walletValue) setIsWalletLoading(false);
       setChanges((old) => !old);
     };
@@ -185,7 +184,7 @@ function ClientOrder(props) {
             <Row>
               <SearchForm
                 setSearchValue={setSearchValue}
-                onSearchSubmit={() => {}}
+                onSearchSubmit={() => {console.log("testSubmit")}}
               />
               <div className='margin-yourwallet'>
                 <h4 className='font-color'>Your Wallet</h4>
@@ -309,7 +308,7 @@ function ClientOrder(props) {
                     .filter((t) => {
                       if (filterType === "Type" && filterFarmer === "Farmer")
                         return (
-                          true &&
+                          
                           t.name
                             .toLowerCase()
                             .includes(searchValue.toLowerCase()) &&
@@ -405,7 +404,7 @@ function ClientOrder(props) {
 
                                 setChanges((old) => !old);
                                 setOrderProduct((old) => {
-                                  const list = old.map((item) => {
+                                  return   old.map((item) => {
                                     if (item.product_id === p.id)
                                       return {
                                         product_id: p.id,
@@ -415,14 +414,13 @@ function ClientOrder(props) {
                                       };
                                     else return item;
                                   });
-                                  return list;
                                 });
                               }
                             }}
                             className='spg-button'>
                             {orderProduct.filter(
                               (t) =>
-                                t.product_id === p.id && t.confirmed == true
+                                t.product_id === p.id && t.confirmed
                             ).length === 0
                               ? "ADD"
                               : "MODIFY"}
@@ -441,7 +439,7 @@ function ClientOrder(props) {
                                     ).length !== 0
                                   ) {
                                     setOrderProduct((old) => {
-                                      const list = old.map((item) => {
+                                      return  old.map((item) => {
                                         if (item.product_id === p.id)
                                           return {
                                             product_id: p.id,
@@ -451,7 +449,6 @@ function ClientOrder(props) {
                                           };
                                         else return item;
                                       });
-                                      return list;
                                     });
                                   } else {
                                     setOrderProduct((old) => [

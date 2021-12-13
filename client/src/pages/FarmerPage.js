@@ -1,7 +1,6 @@
 import "../css/custom.css";
 import { Button, Alert, Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
-import "../css/custom.css";
 
 import { updateIcon, backIcon, confirmIcon } from "../ui-components/Icons";
 

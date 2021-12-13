@@ -3,7 +3,6 @@ import { Container, Row, Col, Button, Alert } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { ClientOrder } from "../client-component/ClientOrder";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
-import "../css/custom.css";
 import { YourOrders } from "../client-component/YourOrders";
 import {
   backIcon,

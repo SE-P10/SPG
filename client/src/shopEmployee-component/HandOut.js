@@ -25,10 +25,10 @@ function HandOut(props) {
       let ordersTm = [];
       setOrders(ordersTm);
       API.getOrders(email)
-        .then((ordersTm) => {
-          if (ordersTm.length === 0) setErrorMessage("No orders found");
+        .then((ordersTml) => {
+          if (ordersTml.length === 0) setErrorMessage("No orders found");
           else {
-            setOrders(ordersTm);
+            setOrders(ordersTml);
             setErrorMessage("");
           }
         })

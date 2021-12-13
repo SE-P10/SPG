@@ -1,6 +1,5 @@
 import { Button, Alert, Form, Row, Container, Table } from "react-bootstrap";
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "../css/custom.css";
 import API from "../API";
 
@@ -125,7 +124,7 @@ function UpdateAvailability(props) {
                                 error = true;
                               }
                               setOrderProducts((old) => {
-                                const list = old.map((item) => {
+                                return  old.map((item) => {
                                   if (item.product_id === p.id)
                                     return {
                                       product_id: p.id,
@@ -136,7 +135,7 @@ function UpdateAvailability(props) {
                                     };
                                   else return item;
                                 });
-                                return list;
+                                
                               });
                             }}
                             id={p.id}
@@ -153,7 +152,7 @@ function UpdateAvailability(props) {
                                 errorPrice = true;
                               }
                               setOrderProducts((old) => {
-                                const list = old.map((item) => {
+                                return  old.map((item) => {
                                   if (item.product_id === p.id)
                                     return {
                                       product_id: p.id,
@@ -164,7 +163,7 @@ function UpdateAvailability(props) {
                                     };
                                   else return item;
                                 });
-                                return list;
+                                
                               });
                             }}
                             id={p.id}

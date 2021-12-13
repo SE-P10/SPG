@@ -19,7 +19,6 @@ import {
 import MyNavbar from "./ui-components/MyNavbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./css/App.css";
 import "./css/custom.css";
 import API from "./API";
 import { BrowserProducts } from "./ui-components/BrowseProducts";
