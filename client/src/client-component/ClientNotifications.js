@@ -33,11 +33,11 @@ function ClientNotifications(props) {
     useEffect(() => {
         const fillTable = async () => {
             const orders = await ordersApi.getPendingOrders();
-            //const mails = await notificationAPI.getNotification(props.user.id);
+            const mails = notificationAPI.getNotification(props.user.id);
             const wallet = await API.getWalletByMail(props.user.email);
             setUserWallet(wallet);
             setPendingOrders(orders.filter((o) => { return o.user_id === props.user.id; }));
-            //setMails(mails);
+            setMails(mails);
             setDirtyMessage(false);
         };
         fillTable().catch((err) => {
