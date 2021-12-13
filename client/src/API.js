@@ -21,7 +21,8 @@ async function logIn(credentials) {
     body: JSON.stringify(credentials),
   });
   if (response.ok) {
-    return await response.json();
+    const user = await response.json();
+    return user;
   } else {
     try {
       const errDetail = await response.json();
