@@ -6,13 +6,12 @@ import { useEffect, useState } from "react";
 function Basket(props) {
   const [basket, setBasket] = useState([]);
   const [update, setUpdate] = useState(false);
+  const [basketLoading,setBasketLoading] = useState(true)
   useEffect(() => {
     const fillTables = async () => {
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      const basketTmp = await API.getBasketProducts(
-        props.setIsOrderProductDirtyOk
-      );
+      const basketTmp = await API.getBasketProducts();
       setBasket(
         basketTmp.map((t) => ({
           product_id: t.id,
@@ -20,10 +19,11 @@ function Basket(props) {
           name: t.name,
         }))
       );
+      setBasketLoading(false)
     };
 
     fillTables();
-  }, [props.changes, update, props.setIsOrderProductDirtyOk]);
+  }, [update,props.changes]);
 
   return (
     <>
@@ -31,7 +31,7 @@ function Basket(props) {
         <h2>Basket {basketIcon}</h2>
       </Row>
       <Table responsive size='sm'>
-        {props.isBasketLoading ? (
+        {basketLoading || props.isBasketLoading ? (
           <Spinner animation='border' variant='success' size='sm'></Spinner>
         ) : (
           <>
@@ -50,8 +50,8 @@ function Basket(props) {
                                 product_id: p.product_id,
                                 quantity: 0,
                               }).then((e) => {
+                                setBasketLoading(true)
                                 setUpdate((old) => !old);
-                                props.setIsOrderProductDirty(false);
                                 props.setOrderProduct((old) => {
                                   return old.filter(
                                     (t) => t.product_id !== p.id

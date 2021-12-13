@@ -25,32 +25,31 @@ function ClientOrder(props) {
   const [categorize, setCategorize] = useState(1); //0 per prodotti 1 per farmer
   const [filterType, setFilterType] = useState("Type"); //Type -> all types
   const [filterFarmer, setFilterFarmer] = useState("Farmer"); // Farmer -> all farmers
-  const [isOrderProductDirty, setIsOrderProductDirty] = useState(true);
   const [mailInserted, setMailInserted] = useState(undefined);
   const [isProductListLoading, setIsProductListLoading] = useState(true);
   const [changes, setChanges] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [walletValue, setWalletValue] = useState(null);
-  const [previousOrder, setPreviousOrder] = useState([]);
   const [isWalletLoading, setIsWalletLoading] = useState(true);
   const [isBasketLoading, setIsBasketLoading] = useState(true);
 
-  const setIsOrderProductDirtyOk = () => {
-    setIsOrderProductDirty(true);
-  };
+ 
 
   useEffect(() => {
+
     const fillTables = async () => {
+
       const productsTmp = await API.getProducts();
       setProducts(productsTmp);
-      setIsProductListLoading(false);
       const farmersTmp = productsTmp
         .map((t) => t.farmer)
         .filter(function (item, pos) {
           return productsTmp.map((t) => t.farmer).indexOf(item) == pos;
         });
       setFarmers(farmersTmp);
+      setIsProductListLoading(false);
+
       const typesTmp = productsTmp
         .map((t) => t.name)
         .filter(function (item, pos) {
@@ -59,7 +58,7 @@ function ClientOrder(props) {
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      if (!!props.modifyOrder && props.modifyOrder !== -1) {
+      if (props.modifyOrder !== -1) {
         let oldOrder = (await API.getOrder(props.modifyOrder)) || [];
         for (let p of oldOrder.products) {
           await API.insertProductInBasket({
@@ -67,10 +66,9 @@ function ClientOrder(props) {
             quantity: p.quantity,
           });
         }
-        setPreviousOrder(oldOrder.products);
       }
 
-      let basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+      let basketTmp = await API.getBasketProducts();
       if (basketTmp) setIsBasketLoading(false);
 
       setOrderProduct(
@@ -82,9 +80,10 @@ function ClientOrder(props) {
         }))
       );
 
+      if (props.user.role == 0){
       const walletValueT = await API.getWalletByMail(props.user.email);
       setWalletValue(walletValueT);
-      if (walletValue) setIsWalletLoading(false);
+      if (walletValueT) setIsWalletLoading(old => !old);}
       setChanges((old) => !old);
     };
 
@@ -110,7 +109,7 @@ function ClientOrder(props) {
         }
       }
     } else userId = props.user.id;
-    const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+    const basketTmp = await API.getBasketProducts();
 
     if (orderOk) {
       //metti a 0 elemtni vecchi eliminati
@@ -186,7 +185,7 @@ function ClientOrder(props) {
                 setSearchValue={setSearchValue}
                 onSearchSubmit={() => {console.log("testSubmit")}}
               />
-              <div className='margin-yourwallet'>
+              {props.user.role == 0 ? <div className='margin-yourwallet'>
                 <h4 className='font-color'>Your Wallet</h4>
                 {isWalletLoading ? (
                   <Spinner
@@ -196,7 +195,7 @@ function ClientOrder(props) {
                 ) : (
                   <div className='margin-walletvalue'>{walletValue}€</div>
                 )}
-              </div>
+              </div> : <></>}
             </Row>
             <Button
               className='spg-button below'
@@ -480,10 +479,8 @@ function ClientOrder(props) {
           <Basket
             props={props}
             changes={changes}
-            setIsOrderProductDirtyOk={setIsOrderProductDirtyOk}
             handleSubmit={handleSubmit}
-            setIsOrderProductDirty={setIsOrderProductDirty}
-            setOrderProduct={setIsOrderProductDirtyOk}
+            setOrderProduct={setOrderProduct}
             isBasketLoading={isBasketLoading}
           />
         </Col>

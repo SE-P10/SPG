@@ -53,7 +53,7 @@ function YourOrders(props) {
 
   useEffect(() => {
     const fillOrders = async () => {
-      let ordersTmp =  API.getOrders(props.user.email);
+      let ordersTmp = await API.getOrders(props.user.email);
 
       setIsProductListLoading(false);
       if (!!ordersTmp) {
