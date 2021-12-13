@@ -1,11 +1,11 @@
 import productsAPI from "./api/products.js";
-import ordersApi from "./api/orders.js";
-import farmerAPI from "./api/farmer.js";
+import ordersApi from "./api/orders";
+import farmerAPI from "./api/farmerAPI";
 import userAPI from "./api/user.js";
 import testAPI from "./api/testAPI.js";
 import walletAPI from "./api/wallet.js";
 import timeAPI from "./api/time.js";
-import notificationAPI from "./api/notification";
+import notificationAPI from "./api/notificationAPI";
 import warehouseAPI from "./api/warehouse";
 
 /**
@@ -22,6 +22,9 @@ async function logIn(credentials) {
   });
   if (response.ok) {
     const user = await response.json();
+    if (user === undefined){
+      console.log("user not loaded")
+    }
     return user;
   } else {
     try {

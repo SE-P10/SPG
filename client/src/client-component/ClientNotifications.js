@@ -3,7 +3,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas'
 import React, { useState, useEffect } from 'react';
 
 import API from "./../API";
-import notificationAPI from "./../api/notification"
+import notificationAPI from "./../api/notificationAPI"
 import "../css/custom.css";
 import { MailBox } from "./MailBox";
 import ordersApi from "../api/orders";
