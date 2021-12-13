@@ -55,8 +55,8 @@ function ClientNotifications(props) {
                             <h3> No pending Orders </h3>
                             : pendingOrders.map((pO) => (
                                 <Row className='over'>
-                                    <Col>id : {pO.id}</Col>
-                                    <Col>price : {pO.price}</Col>
+                                    <Col sm>id : {pO.id}</Col>
+                                    <Col sm>price : {pO.price}</Col>
                                 </Row>
                             ))}
                         <h2>Your wallet:</h2>
