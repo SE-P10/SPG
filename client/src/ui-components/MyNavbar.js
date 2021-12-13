@@ -60,7 +60,7 @@ function MyNavbar(props) {
                         .set("minute", comps[1]);
 
                       props.changeTimeDate(
-                         API.setTime(newTimedate.toDate())
+                        await API.setTime(newTimedate.toDate())
                       );
                     }
                   }}
@@ -78,7 +78,7 @@ function MyNavbar(props) {
                       .set("date", newDate.date());
 
                     props.changeTimeDate(
-                       API.setTime(newTimeDate.toDate())
+                       await API.setTime(newTimeDate.toDate())
                     );
                   }}
                   value={virtualTime.toDate()}
