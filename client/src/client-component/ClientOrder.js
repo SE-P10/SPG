@@ -4,11 +4,8 @@ import {
   Form,
   Row,
   Col,
-  Dropdown,
-  DropdownButton,
   Container,
   Image,
-  Table,
   Spinner,
 } from "react-bootstrap";
 import { useState } from "react";
@@ -16,7 +13,7 @@ import { useEffect } from "react";
 import "../css/custom.css";
 import { Basket } from "../client-component/Basket";
 import API from "../API";
-import { filterIcon, basketIcon, deleteIcon } from "../ui-components/Icons";
+import { filterIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
 
 function ClientOrder(props) {
@@ -38,6 +35,7 @@ function ClientOrder(props) {
   const [walletValue, setWalletValue] = useState(null);
   const [previousOrder, setPreviousOrder] = useState([]);
   const [isWalletLoading, setIsWalletLoading] = useState(true);
+  const [isBasketLoading, setIsBasketLoading] = useState(true);
 
   const setIsOrderProductDirtyOk = () => {
     setIsOrderProductDirty(true);
@@ -74,6 +72,7 @@ function ClientOrder(props) {
       }
 
       let basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+      if (basketTmp) setIsBasketLoading(false);
 
       setOrderProduct(
         basketTmp.map((t) => ({
@@ -107,8 +106,7 @@ function ClientOrder(props) {
         if (user.role != 0) {
           setErrorMessage("Invalid user");
           orderOk = false;
-        }
-        else {
+        } else {
           userId = user.id;
         }
       }
@@ -123,22 +121,16 @@ function ClientOrder(props) {
         confirmed: true,
         quantity: t.quantity,
         name: t.name,
-      }))
+      }));
       //console.log(finalOrder)
 
       if (props.modifyOrder == -1) {
-
-        let result = await API.insertOrder(
-          userId,
-          finalOrder
-        );
+        let result = await API.insertOrder(userId, finalOrder);
         if (result) {
           API.deleteAllBasket();
           propsN.addMessage("Request sent correctly!");
           propsN.changeAction(0);
-        }
-        else {
-
+        } else {
           setErrorMessage("Server error during insert order. ");
         }
       } else {
@@ -189,20 +181,26 @@ function ClientOrder(props) {
             </Form.Group>
           ) : null}
 
-          <Col >
+          <Col>
             <Row>
               <SearchForm
                 setSearchValue={setSearchValue}
-                onSearchSubmit={() => {
-                }}
+                onSearchSubmit={() => {}}
               />
               <div className='margin-yourwallet'>
-                <h4 className="font-color">Your Wallet</h4>
-                <div className='margin-walletvalue'>{walletValue}€</div>
+                <h4 className='font-color'>Your Wallet</h4>
+                {isWalletLoading ? (
+                  <Spinner
+                    animation='border'
+                    variant='success'
+                    size='sm'></Spinner>
+                ) : (
+                  <div className='margin-walletvalue'>{walletValue}€</div>
+                )}
               </div>
             </Row>
             <Button
-              className="spg-button below"
+              className='spg-button below'
               onClick={() => {
                 if (showFilterMenu) {
                   setShowFilterMenu(false);
@@ -215,7 +213,6 @@ function ClientOrder(props) {
               {" "}
               {filterIcon} {showFilterMenu ? <> x </> : <>Filters</>}
             </Button>{" "}
-
             {showFilterMenu ? (
               <>
                 {" "}
@@ -490,6 +487,7 @@ function ClientOrder(props) {
             handleSubmit={handleSubmit}
             setIsOrderProductDirty={setIsOrderProductDirty}
             setOrderProduct={setIsOrderProductDirtyOk}
+            isBasketLoading={isBasketLoading}
           />
         </Col>
       </Container>

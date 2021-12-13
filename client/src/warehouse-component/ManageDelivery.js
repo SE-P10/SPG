@@ -1,4 +1,4 @@
-import { Container, Col, Row, Button, Table } from "react-bootstrap";
+import { Container, Row, Button, Table } from "react-bootstrap";
 import { useState } from "react";
 import "../css/custom.css";
 import warehouseAPI from "../api/warehouse";
@@ -19,7 +19,7 @@ function ManageDelivery(props) {
   }, [isDeliveryListLoading]);
 
   const handleConfirm = async (deliveryId) => {
-    setIsDeliveryListLoading(old=>!old);
+    setIsDeliveryListLoading((old) => !old);
     warehouseAPI.confirmDelivery(deliveryId);
   };
 

@@ -1,7 +1,8 @@
 import API from "../API";
 import { basketIcon } from "../ui-components/Icons";
-import { Button, Row, Table } from "react-bootstrap";
+import { Button, Row, Table, Spinner } from "react-bootstrap";
 import { useEffect, useState } from "react";
+
 function Basket(props) {
   const [basket, setBasket] = useState([]);
   const [update, setUpdate] = useState(false);
@@ -22,7 +23,7 @@ function Basket(props) {
     };
 
     fillTables();
-  }, [props.changes, update]);
+  }, [props.changes, update, props.setIsOrderProductDirtyOk]);
 
   return (
     <>
@@ -30,40 +31,48 @@ function Basket(props) {
         <h2>Basket {basketIcon}</h2>
       </Row>
       <Table responsive size='sm'>
-        {basket.length !== 0 ? (
-          <>
-            {basket
-              .filter((t) => t.quantity !== 0)
-              .map((p) => (
-                <>
-                  <tr>
-                    <td> {p.name} </td> <td> Q: {p.quantity} </td>
-                    <td>
-                      <Button
-                        onClick={async (ev) => {
-                          API.insertProductInBasket({
-                            product_id: p.product_id,
-                            quantity: 0,
-                          }).then((e) => {
-                            setUpdate((old) => !old);
-                            props.setIsOrderProductDirty(false);
-                            props.setOrderProduct((old) => {
-                              return old.filter((t) => t.product_id !== p.id);
-                            });
-                          });
-                        }}
-                        className='spg-button'>
-                        DELETE
-                      </Button>
-                    </td>
-                  </tr>
-                </>
-              ))}{" "}
-          </>
+        {props.isBasketLoading ? (
+          <Spinner animation='border' variant='success' size='sm'></Spinner>
         ) : (
           <>
-            {" "}
-            <>Basket is empty!</>
+            {basket.length !== 0 ? (
+              <>
+                {basket
+                  .filter((t) => t.quantity !== 0)
+                  .map((p) => (
+                    <>
+                      <tr>
+                        <td> {p.name} </td> <td> Q: {p.quantity} </td>
+                        <td>
+                          <Button
+                            onClick={async (ev) => {
+                              API.insertProductInBasket({
+                                product_id: p.product_id,
+                                quantity: 0,
+                              }).then((e) => {
+                                setUpdate((old) => !old);
+                                props.setIsOrderProductDirty(false);
+                                props.setOrderProduct((old) => {
+                                  return old.filter(
+                                    (t) => t.product_id !== p.id
+                                  );
+                                });
+                              });
+                            }}
+                            className='spg-button'>
+                            DELETE
+                          </Button>
+                        </td>
+                      </tr>
+                    </>
+                  ))}{" "}
+              </>
+            ) : (
+              <>
+                {" "}
+                <>Basket is empty!</>
+              </>
+            )}{" "}
           </>
         )}
       </Table>

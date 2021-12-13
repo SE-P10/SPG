@@ -172,6 +172,18 @@ footer {
   }
 }
 
+@media (max-width: 480px) {
+  .big-screen {
+    display: none !important;
+  }
+}
+
+@media (min-width: 480px) {
+  .small-screen {
+    display: none !important;
+  }
+}
+
 .font-about-us {
   font-family: cursive !important;
   font-weight: normal !important;

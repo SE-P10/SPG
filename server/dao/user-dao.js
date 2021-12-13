@@ -3,57 +3,55 @@
 
 const db = require("../db");
 const bcrypt = require("bcrypt");
-const { validationResult } = require('express-validator');
+const { validationResult } = require("express-validator");
 
 const { runQuerySQL, getQuerySQL, isEmail } = require("../utility");
-
 
 // delete an existing client
 exports.deleteUser = (userMail) => {
   return new Promise((resolve, reject) => {
-    const sql = 'DELETE FROM users WHERE email = ?';
+    const sql = "DELETE FROM users WHERE email = ?";
     db.run(sql, [userMail], function (err) {
       if (err) {
         reject(err);
-        console.log(err)
+        console.log(err);
         return;
-      } else
-        resolve(null);
+      } else resolve(null);
     });
   });
-}
+};
 
 /**
- * 
- * @param {Number} userID_eMail 
- * @param {String} password 
+ *
+ * @param {Number} userID_eMail
+ * @param {String} password
  * @returns {Object|Boolean|null}
  */
 exports.getUser = async (userID_eMail, password = false) => {
+  if (!userID_eMail) return null;
 
-  if (!userID_eMail)
-    return null;
-
-  let sql = "SELECT * FROM users WHERE " + (isEmail(userID_eMail) ? "email" : "id") + " = ?";
+  let sql =
+    "SELECT * FROM users WHERE " +
+    (isEmail(userID_eMail) ? "email" : "id") +
+    " = ?";
 
   let filterObj = {
     id: 0,
-    name: '',
-    role: 'client',
-    email: ''
+    name: "",
+    role: "client",
+    email: "",
   };
 
   if (password) {
-    filterObj['password'] = '';
+    filterObj["password"] = "";
   }
 
   let user = await getQuerySQL(db, sql, [userID_eMail], filterObj, null, true);
 
   if (user && password) {
-
     let userPassword = user.password;
 
-    // prevent sensitive data disclosure 
+    // prevent sensitive data disclosure
     delete user.password;
 
     return (await bcrypt.compare(password, userPassword)) ? user : false;
@@ -77,16 +75,23 @@ exports.updateUserMeta = async (userID, meta_key, meta_value) => {
 /**
  * @author sh1zen
  */
-exports.getUserMeta = async (userID, meta_key, single = false, failRes = false) => {
+exports.getUserMeta = async (
+  userID,
+  meta_key,
+  single = false,
+  failRes = false
+) => {
   return (
-    (await getQuerySQL(
-      db,
-      "SELECT meta_value FROM users_meta WHERE user_id = ? AND meta_key = ?",
-      [userID, meta_key],
-      null,
-      { meta_value: failRes },
-      single
-    )).meta_value || failRes
+    (
+      await getQuerySQL(
+        db,
+        "SELECT meta_value FROM users_meta WHERE user_id = ? AND meta_key = ?",
+        [userID, meta_key],
+        null,
+        { meta_value: failRes },
+        single
+      )
+    ).meta_value || failRes
   );
 };
 
@@ -125,48 +130,32 @@ const addClient = async (newClient) => {
   });
 };
 
-
 exports.execApi = (app, passport, isLoggedIn) => {
-
   app.get("/api/users/:id", async (req, res) => {
-
     try {
-
       let user = await this.getUser(req.params.id);
 
       if (user) {
         res.status(200).json(user);
+      } else {
+        res.status(404).json({});
       }
-      else {
-        res.status(503).json({});
-      }
-
     } catch (err) {
       res.status(500).json(false);
     }
   });
 
   // POST /api/newClient
-  app.post(
-    "/api/newClient",
-    [/*
-      body("email").isEmail(),
-      body("password").isString(),
-      body("username").isString(),
-      body("name").isString(),
-      body("surname").isString(),*/
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
-      }
-      try {
-        await addClient(req.body);
-        res.status(201).end();
-      } catch (err) {
-        res.status(503).json({ error: err });
-      }
+  app.post("/api/newClient", async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
     }
-  );
-}
+    try {
+      await addClient(req.body);
+      res.status(201).end();
+    } catch (err) {
+      res.status(500).json({ error: err });
+    }
+  });
+};

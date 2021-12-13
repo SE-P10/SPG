@@ -63,7 +63,7 @@ function ShopEmployee(props) {
       {actionS !== 0 ? (
         <>
           <Button
-            className='spg-button below back-button'
+            className='spg-button below back-button button-disappear'
             onClick={() => {
               setActionS(0);
             }}>
@@ -241,26 +241,26 @@ function ShopEmployee(props) {
             />
           ) : null}
           {actionS === 3 ? (
-            <>{(props.dow == "Saturday" && props.hour >= 9) ||
-            (props.dow == "Monday" && props.hour <= 18) ?
-            <TopUpWallet
-              changeAction={changeAction}
-              addMessage={addMessage}
-              className='justify-content-center'
-            />
-            :(
-              "You can top up wallets from Saturday at 09:00 to Monday at 18:00"
-            )} 
-          </>
-              ) : null}
+            <>
+              {(props.dow === "Saturday" && props.hour >= 9) ||
+              (props.dow === "Monday" && props.hour <= 18) ? (
+                <TopUpWallet
+                  changeAction={changeAction}
+                  addMessage={addMessage}
+                  className='justify-content-center'
+                />
+              ) : (
+                "You can top up wallets from Saturday at 09:00 to Monday at 18:00"
+              )}
+            </>
+          ) : null}
 
           {actionS === 4 ? (
             <>
-              {(props.dow == "Saturday" && props.hour >= 9) ||
-              (props.dow == "Sunday" && props.hour <= 23) ? (
+              {(props.dow === "Saturday" && props.hour >= 9) ||
+              (props.dow === "Sunday" && props.hour <= 23) ? (
                 <ClientOrder
-                modifyOrder={-1}
-
+                  modifyOrder={-1}
                   changeAction={changeAction}
                   addMessage={addMessage}
                   user={props.user}
@@ -278,13 +278,15 @@ function ShopEmployee(props) {
           ) : null}
           {actionS === 5 ? (
             <>
-            { (props.dow == "Wednesday" && props.hour >= 9) ||
-              (props.dow == "Friday" && props.hour <= 23) || props.dow=="Thursday" ?
-            <HandOut changeAction={changeAction} addMessage={addMessage} />
-             : ( "You can hand out an order from Wednesday at 09:00 to Friday at 18:00"
-             )}
-          </>
-            ) : null}
+              {(props.dow === "Wednesday" && props.hour >= 9) ||
+              (props.dow === "Friday" && props.hour <= 23) ||
+              props.dow === "Thursday" ? (
+                <HandOut changeAction={changeAction} addMessage={addMessage} />
+              ) : (
+                "You can hand out an order from Wednesday at 09:00 to Friday at 18:00"
+              )}
+            </>
+          ) : null}
           {actionS === 6 ? (
             <CheckOrders changeAction={changeAction} addMessage={addMessage} />
           ) : null}

@@ -22,7 +22,6 @@ import "../css/custom.css";
 
 function YourOrders(props) {
   const [orders, setOrders] = useState([]);
-  const [isOrderListDirty, setIsOrderListDirty] = useState(true);
   const [isOrderListLoading, setIsProductListLoading] = useState(true);
   const [openDeliveryForm, setOpenDeliveryForm] = useState(false);
   const [openPickupForm, setOpenPickupForm] = useState(false);
@@ -56,17 +55,14 @@ function YourOrders(props) {
   useEffect(() => {
     const fillOrders = async () => {
       let ordersTmp = await API.getOrders(props.user.email);
-      console.log(orders);
 
       setIsProductListLoading(false);
-      if (ordersTmp.length === 0) {
-      } else {
+      if (!!ordersTmp) {
         setOrders(ordersTmp);
-        setIsOrderListDirty(false);
       }
     };
     fillOrders();
-  }, [isOrderListDirty]);
+  }, [props.user.email]);
 
   return (
     <>
@@ -102,8 +98,8 @@ function YourOrders(props) {
                             <td> {order.price}€</td>
                             <td> {order.status}</td>
                             {order.status === "booked" &&
-                            ((props.dow == "Saturday" && props.hour >= 9) ||
-                              (props.dow == "Sunday" && props.hour <= 23)) ? (
+                            ((props.dow === "Saturday" && props.hour >= 9) ||
+                              (props.dow === "Sunday" && props.hour <= 23)) ? (
                               <td>
                                 <Button
                                   className='spg-button'
@@ -115,8 +111,8 @@ function YourOrders(props) {
                               <td></td>
                             )}
                             {order.status === "confirmed" &&
-                            ((props.dow == "Monday" && props.hour >= 9) ||
-                              (props.dow == "Tuesday" && props.hour <= 18)) ? (
+                            ((props.dow === "Monday" && props.hour >= 9) ||
+                              (props.dow === "Tuesday" && props.hour <= 18)) ? (
                               <>
                                 <td>
                                   <Button

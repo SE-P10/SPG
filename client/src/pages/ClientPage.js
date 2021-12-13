@@ -24,7 +24,7 @@ function ClientPage(props) {
   };
 
   useEffect(() => {
-    if (actionC != 2) setModifyOrder(-1);
+    if (actionC !== 2) setModifyOrder(-1);
     API.deleteAllBasket().catch(() => {
       setMessage("Carello non liberato correttamente");
       console.log("errore");
@@ -168,8 +168,8 @@ function ClientPage(props) {
           ) : null}
           {actionC === 2 ? (
             <>
-              {(props.dow == "Saturday" && props.hour >= 9) ||
-              (props.dow == "Sunday" && props.hour <= 23) ? (
+              {(props.dow === "Saturday" && props.hour >= 9) ||
+              (props.dow === "Sunday" && props.hour <= 23) ? (
                 <ClientOrder
                   modifyOrder={modifyOrder}
                   user={props.user}
