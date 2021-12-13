@@ -9,7 +9,7 @@ function PendingOrders(props) {
 
   useEffect(() => {
     const fillTables = async () => {
-      const ordersTmp =  API.getPendingOrders();
+      const ordersTmp = await  API.getPendingOrders();
       setOrders(ordersTmp);
     };
 
