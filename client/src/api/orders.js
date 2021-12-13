@@ -21,8 +21,11 @@ async function handleOrderAction(
     order_details = Object.assign({ id: 0 }, order_details);
   }
 
-  return handleFetch("/api/orders/" + filter, { products: products, order: order_details }, method)
-
+  return handleFetch(
+    "/api/orders/" + filter,
+    { products: products, order: order_details },
+    method
+  );
 }
 
 /**
@@ -111,10 +114,14 @@ async function getRequestedProducts(farmerID) {
  * @param {String} place
  * @returns {boolean} true|false
  */
-async function deliveryOrder(orderID, time, place = 'local') {
+async function deliveryOrder(orderID, time, place = "local") {
   return parseResponse(
-    await handleOrderAction(orderID, [], { id: orderID, pickup_time: time, pickup_place: place }, "PUT")
-
+    await handleOrderAction(
+      orderID,
+      [],
+      { id: orderID, pickup_time: time, pickup_place: place },
+      "PUT"
+    )
   );
 }
 
@@ -126,26 +133,29 @@ async function deliveryOrder(orderID, time, place = 'local') {
  * @returns {boolean} true|false
  */
 async function updateOrderProducts(orderID, products = []) {
-
   let oldProducts = (await getOrder(orderID)).products || [];
 
   if (!products || products.length === 0) {
-    products = oldProducts.map((x) => { console.log(x); return { order_id: x.order_id, product_id: x.product_id, quantity: 0 } });
-  }
-  else {
-
-    for (let i = 0; i < oldProducts; i++) {
+    products = oldProducts.map((x) => {
+      return { order_id: x.order_id, product_id: x.product_id, quantity: 0 };
+    });
+  } else {
+    for (let i = 0; i < oldProducts.length; i++) {
       let exist = false;
 
-      for (let j = 0; j < products; j++) {
+      for (let j = 0; j < products.length; j++) {
         if (products[j].product_id === oldProducts[i].product_id) {
-          exist = oldProducts[i];
+          exist = true;
           break;
         }
       }
 
-      if (exist) {
-        products.push({ order_id: exist.order_id, product_id: exist.product_id, quantity: 0 })
+      if (!exist) {
+        products.push({
+          order_id: oldProducts[i].order_id,
+          product_id: oldProducts[i].product_id,
+          quantity: 0,
+        });
       }
     }
   }

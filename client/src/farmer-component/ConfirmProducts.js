@@ -2,23 +2,21 @@ import {
   Alert,
   Form,
   Row,
-  Col,
   Button,
   Container,
+  Table,
   Spinner,
-  Image,
 } from "react-bootstrap";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { SearchComponent } from "../ui-components/SearchComponent";
+
 import { useEffect } from "react";
 import API from "./../API";
 import "../css/custom.css";
-import ordersApi from "../api/orders";
 function ConfirmProducts(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [confirmedProductQ, setConfirmedProductQ] = useState([]);
-
+  const [productQ, setProductQ] = useState([]);
+  const [confirmedQ, setConfirmedQ] = useState([]);
   // prendo i prodotti e le quantita dal db (productQ)
   // copio i valori in confirmedProductQ
   // se cambia qualcosa con i Form Control modifico confirmedProductQ
@@ -27,39 +25,51 @@ function ConfirmProducts(props) {
   useEffect(() => {
     const productOrdered = async () => {
       const productsTmp = await API.getFarmerOrders(props.user.id);
-      console.log(productsTmp)
+      setProductQ(productsTmp);
       setConfirmedProductQ(productsTmp);
     };
     productOrdered();
+
+    const confirmedQ = async () => {
+      const confirmedQ = await API.getFarmerOpenDeliveries();
+      console.log(confirmedQ);
+      setConfirmedQ(confirmedQ);
+    };
+    confirmedQ();
   }, []);
 
   const handleConfirm = async () => {
     // prodotti da mandare al db per delivery
     //API.confirmFarmerOrder()
     let result;
-    for (let product of confirmedProductQ){
-      result = await API.confirmFarmerOrder(product.id,product.quantity)
-      console.log(result)
+    for (let product of confirmedProductQ) {
+      result = await API.confirmFarmerOrder(product.id, product.quantity);
+      console.log(result);
     }
-    props.addMessage("Confirmation ok")
+    props.addMessage("Confirmation ok");
     props.changeAction(0);
-
-    
   };
 
   const changeQ = (ev, p) => {
     setConfirmedProductQ((old) =>
       old.map((o) => {
-        if (o.name == p.name)
+        if (o.id === p.id)
           return {
             id: p.id,
             quantity: parseInt(ev.target.value),
-            product: p.product,
-            unit: p.unit,
+            product: o.product,
+            unit: o.unit,
           };
         else return o;
       })
     );
+  };
+
+  const getQuantityConfirmed = (id) => {
+    console.log(confirmedQ);
+    if (!confirmedQ) return 0;
+    if (!confirmedQ.some((e) => e.product === id)) return 0;
+    return confirmedQ.find((e) => e.product === id).quantity;
   };
 
   return (
@@ -80,39 +90,41 @@ function ConfirmProducts(props) {
           ""
         )}
 
-        {confirmedProductQ ? (
+        {productQ ? (
           <>
-            <Col className='below'>
-              <Row>
-                <Col>
-                  <h3>Name </h3>
-                </Col>
-                <Col>
-                  {" "}
-                  <h3>Ordered </h3>
-                </Col>
-                <Col>
-                  <h3> Confirm</h3>
-                </Col>
-              </Row>{" "}
-              {confirmedProductQ.map((p) => (
-                <>
-                  <Row>
-                    <Col>{p.product} </Col> <Col>{p.quantity} </Col>{" "}
-                    <Col>
-                      <Form.Control
-                        defaultValue={p.quantity}
-                        type='number'
-                        min={0}
-                        max={p.quantity}
-                        onChange={(ev) => {
-                          changeQ(ev, p);
-                        }}></Form.Control>{" "}
-                    </Col>
-                  </Row>{" "}
-                </>
-              ))}
-            </Col>
+            <Table responsive size='sm' className='below'>
+              <thead>
+                <th>Name </th>
+
+                <th>Ordered </th>
+
+                <th> Confirmed </th>
+
+                <th> Confirm</th>
+              </thead>
+              <tbody>
+                {productQ
+                  .filter((t) => t.quantity > 0)
+                  .map((p) => (
+                    <>
+                      <tr>
+                        <td>{p.product} </td> <td>{p.quantity} </td>{" "}
+                        <td> {getQuantityConfirmed(p.id)} </td>
+                        <td>
+                          <Form.Control
+                            defaultValue={p.quantity}
+                            type='number'
+                            min={0}
+                            max={p.quantity}
+                            onChange={(ev) => {
+                              changeQ(ev, p);
+                            }}></Form.Control>{" "}
+                        </td>
+                      </tr>{" "}
+                    </>
+                  ))}
+              </tbody>
+            </Table>
           </>
         ) : (
           <> No orders for you this week!</>

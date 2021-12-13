@@ -60,7 +60,7 @@ function HandOut(props) {
 
       <Col className='below'>
         {orders
-          .filter((t) => t.status === "ready")
+          .filter((t) => t.status === "confirmed")
           .map((order) => (
             <Row className='below'>
               <Col> id : {order.id}</Col>

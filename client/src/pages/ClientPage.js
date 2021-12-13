@@ -10,7 +10,10 @@ import {
   newIcon,
   browseIcon,
   checkIcon,
+  mailIcon,
 } from "../ui-components/Icons.js";
+import { ClientNotifications } from "../client-component/ClientNotifications";
+
 import API from "../API";
 function ClientPage(props) {
   const [message, setMessage] = useState("");
@@ -20,14 +23,13 @@ function ClientPage(props) {
     setActionC(actionN);
   };
 
-  
   useEffect(() => {
-    if (actionC != 2) setModifyOrder(-1);
-    API.deleteAllBasket().catch(() => {setMessage("Carello non liberato correttamente"); console.log("errore")});
+    if (actionC !== 2) setModifyOrder(-1);
+    API.deleteAllBasket().catch(() => {
+      setMessage("Carello non liberato correttamente");
+      console.log("errore");
+    });
   }, [actionC]);
-
-
-
 
   const modifyOrderFunc = (orderId) => {
     setModifyOrder(orderId);
@@ -43,7 +45,7 @@ function ClientPage(props) {
       {actionC !== 0 ? (
         <>
           <Button
-            className='spg-button below back-button'
+            className='spg-button below back-button button-disappear'
             onClick={() => {
               setActionC(0);
             }}>
@@ -55,9 +57,6 @@ function ClientPage(props) {
         ""
       )}{" "}
       <Container className='below'>
-        <Row className=' cont below justify-content-center'>
-          {props.user.name ? <h2> {props.user.name} personal page </h2> : null}
-        </Row>
         {message ? (
           <Alert variant='success' onClose={() => setMessage("")} dismissible>
             {" "}
@@ -67,11 +66,15 @@ function ClientPage(props) {
           ""
         )}
 
-        <Row className='secondColor justify-content-center below'>
+        <Row className=' justify-content-center below'>
           <Col>
             {actionC === 0 ? (
               <>
-                {" "}
+                <Row className=' cont below justify-content-center'>
+                  {props.user.name ? (
+                    <h2> {props.user.name} personal page </h2>
+                  ) : null}
+                </Row>{" "}
                 <Row>
                   <Col>
                     <Row className='secondColor justify-content-center below'>
@@ -130,6 +133,25 @@ function ClientPage(props) {
                       </Button>
                     </Row>{" "}
                   </Col>
+                  <Col>
+                    <Row className='secondColor justify-content-center below'>
+                      <Button
+                        className='se-button '
+                        onClick={() => {
+                          setActionC(4);
+                        }}>
+                        <Col className='justify-content-center'>
+                          <Row className='justify-content-center'>
+                            {mailIcon}{" "}
+                          </Row>
+                          <Row className='justify-content-center'>
+                            {" "}
+                            Personal MailBox{" "}
+                          </Row>
+                        </Col>
+                      </Button>
+                    </Row>{" "}
+                  </Col>
                 </Row>
               </>
             ) : (
@@ -146,8 +168,8 @@ function ClientPage(props) {
           ) : null}
           {actionC === 2 ? (
             <>
-              {(props.dow == "Saturday" && props.hour >= 9) ||
-              (props.dow == "Sunday" && props.hour <= 23) ? (
+              {(props.dow === "Saturday" && props.hour >= 9) ||
+              (props.dow === "Sunday" && props.hour <= 23) ? (
                 <ClientOrder
                   modifyOrder={modifyOrder}
                   user={props.user}
@@ -161,10 +183,17 @@ function ClientPage(props) {
           ) : null}
           {actionC === 3 ? (
             <YourOrders
-            virtualTimeDate={props.virtualTimeDate}
-            hour={props.hour} dow={props.dow}
-            modifyOrder={modifyOrderFunc}
-
+              virtualTimeDate={props.virtualTimeDate}
+              hour={props.hour}
+              dow={props.dow}
+              modifyOrder={modifyOrderFunc}
+              user={props.user}
+              changeAction={changeAction}
+              addMessage={addMessage}
+            />
+          ) : null}
+          {actionC === 4 ? (
+            <ClientNotifications
               user={props.user}
               changeAction={changeAction}
               addMessage={addMessage}

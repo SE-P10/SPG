@@ -23,7 +23,7 @@ function FarmerPage(props) {
       {actionF !== 0 ? (
         <>
           <Button
-            className='spg-button below back-button'
+            className='spg-button below back-button button-disappear'
             onClick={() => {
               setActionF(0);
             }}>
@@ -92,8 +92,8 @@ function FarmerPage(props) {
         <Row className='below'>
           {actionF === 1 ? (
             <>
-              {(props.dow == "Friday" && props.hour >= 18) ||
-              (props.dow == "Saturday" && props.hour <= 9) ? (
+              {(props.dow === "Friday" && props.hour > 18) ||
+              (props.dow === "Saturday" && props.hour < 9) ? (
                 <UpdateAvailability
                   changeAction={changeAction}
                   addMessage={addMessage}
@@ -107,9 +107,13 @@ function FarmerPage(props) {
 
           {actionF === 2 ? (
             <>
-              {(props.dow == "Sunday" && props.hour >= 23) ||
-              (props.dow == "Monday" && props.hour <= 9) ? (
-                <ConfirmProducts  changeAction={changeAction}    addMessage={addMessage}   user={props.user} />
+              {(props.dow === "Sunday" && props.hour >= 23) ||
+              (props.dow === "Monday" && props.hour < 9) ? (
+                <ConfirmProducts
+                  changeAction={changeAction}
+                  addMessage={addMessage}
+                  user={props.user}
+                />
               ) : (
                 "You can Confirm Product between Sunday at 23:00 and Monday at 09:00"
               )}{" "}

@@ -33,5 +33,4 @@ const walletAPI = {
   updateWallet,
   getWalletByMail
 };
-
 export default walletAPI;

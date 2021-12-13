@@ -1,21 +1,19 @@
 import { Container, Row, Button, Col } from "react-bootstrap";
 import { useState } from "react";
-import { backIcon,  deliveryIcon } from "../ui-components/Icons";
+import { backIcon, deliveryIcon } from "../ui-components/Icons";
 import { ManageDelivery } from "../warehouse-component/ManageDelivery";
 
 import "../css/custom.css";
 
 function WarehousePage(props) {
   const [actionC, setActionC] = useState(0);
-  const changeAction = (actionN) => {
-    setActionC(actionN);
-  };
+
   return (
     <>
       {actionC !== 0 ? (
         <>
           <Button
-            className='spg-button below back-button'
+            className='spg-button below back-button button-disappear'
             onClick={() => {
               setActionC(0);
             }}>
@@ -63,15 +61,16 @@ function WarehousePage(props) {
           </Col>
         </Row>
         <Row className='below'>
-          {actionC === 1 ?
-          <>
-          {(props.dow == "Monday" && props.hour >= 9) ||
-              (props.dow == "Tuesday" && props.hour <= 18) ? 
-           <ManageDelivery user={props.user} />
-        :(
+          {actionC === 1 ? (
+            <>
+              {(props.dow === "Monday" && props.hour >= 9) ||
+              (props.dow === "Tuesday" && props.hour <= 18) ? (
+                <ManageDelivery user={props.user} />
+              ) : (
                 "You can ack arrivals from Monday at 09:00 to Tuesday at 18:00"
-              ) }
-        </> : null}
+              )}
+            </>
+          ) : null}
         </Row>
       </Container>
     </>

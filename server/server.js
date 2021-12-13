@@ -10,8 +10,8 @@ const passport = require("passport");
 const { validationResult, body } = require("express-validator"); // validation middleware
 const LocalStrategy = require("passport-local").Strategy; // username+psw
 const session = require("express-session");
-const sqliteStoreFactory = require('express-session-sqlite').default
-const sqlite3 = require('sqlite3')
+const sqliteStoreFactory = require("express-session-sqlite").default;
+const sqlite3 = require("sqlite3");
 const dayjs = require("dayjs");
 
 const productsDao = require("./dao/products-dao");
@@ -26,12 +26,11 @@ const time = require("./time.js");
 const { virtualCron } = require("./cron");
 const { isNumber } = require("./utility");
 
-
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
 passport.use(
-  new LocalStrategy(function(username, password, done) {
+  new LocalStrategy(function (username, password, done) {
     userDao.getUser(username, password).then((user) => {
       if (!user)
         return done(null, false, {
@@ -75,58 +74,66 @@ const isLoggedIn = (req, res, next) => {
 };
 
 // enable sessions in Express
-app.use(session({
-  // set up here express-session
-  secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
-  resave: true,
-  saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    secure: false,
-    sameSite: true,
-    maxAge: 3600000
-  },
-  store: new SqliteStore({
-    driver: sqlite3.Database,
-    path: 'sessions.db',
-    ttl: 3600000,
-    prefix: 'sessid:',
-    cleanupInterval: 300000
-  }),
-}));
+app.use(
+  session({
+    // set up here express-session
+    secret: "ajs5sd6f5sd6fiufadds8f9865d6fsgeifgefleids89fwu",
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      sameSite: true,
+      maxAge: 3600000,
+    },
+    store: new SqliteStore({
+      driver: sqlite3.Database,
+      path: "sessions.db",
+      ttl: 3600000,
+      prefix: "sessid:",
+      cleanupInterval: 300000,
+    }),
+  })
+);
 
 // init Passport to use sessions
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(
+  virtualCron.run(() => {
+    // reset all cron jobs on server restart
+    virtualCron.unscheduleAll();
 
-app.use(virtualCron.run(() => {
+    virtualCron.schedule(
+      {
+        from: { day: virtualCron.schedules.MONDAY, hour: 9 },
+        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+      },
+      (virtualTime, lastExecutionTime, ...args) => {
+        //console.log("LastExecution:", lastExecutionTime.format('YYYY-MM-DD <HH:mm:ss>'));
 
-  // reset all cron jobs on server restart
-  virtualCron.unscheduleAll();
+        //console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
+        console.log("test");
+        ordersDao.confrimOrders();
+      },
+      [],
+      false
+    );
 
-  virtualCron.schedule({
-    from: { day: virtualCron.schedules.MONDAY, hour: 9 },
-    to: { day: virtualCron.schedules.SATURDAY, hour: 9 }
-  },
-    (virtualTime, lastExecutionTime, ...args) => {
-      //console.log("LastExecution:", lastExecutionTime.format('YYYY-MM-DD <HH:mm:ss>'));
-
-      //console.log("VirtualTime", virtualTime.format('YYYY-MM-DD <HH:mm:ss>'));
-
-      ordersDao.confrimOrders();
-
-    }, [], false);
-
-  virtualCron.schedule({
-    from: { day: virtualCron.schedules.MONDAY, hour: 18 },
-      to: { day: virtualCron.schedules.MONDAY, hour: 9 }
-  },
-    (virtualTime, lastExecutionTime, ...args) => {
-    ordersDao.deletePendingOrders();
-    }, [], false);
-  
-}));
+    virtualCron.schedule(
+      {
+        from: { day: virtualCron.schedules.MONDAY, hour: 23 },
+        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+      },
+      (virtualTime, lastExecutionTime, ...args) => {
+        ordersDao.deletePendingOrders();
+      },
+      [],
+      false
+    );
+  })
+);
 
 // API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);
@@ -139,25 +146,23 @@ notificationDao.execApi(app, passport, isLoggedIn);
 warehouseDao.execApi(app, passport, isLoggedIn);
 
 //PUT /api/debug/time/
-app.put("/api/debug/time/:time", isLoggedIn, function(req, res) {
-
-  let timestamp, timeOffset = 0, time = req.params.time;
+app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {
+  let timestamp,
+    timeOffset = 0,
+    time = req.params.time;
 
   if (isNumber(time)) {
-
     /**
      * is not an offset
      */
     if (time > 1000000000) {
-
       /**
        * is not in milliseconds
        */
       if (time < 1000000000000) {
         time = time * 1000;
       }
-    }
-    else {
+    } else {
       timeOffset = time;
       time = null;
     }
@@ -168,7 +173,9 @@ app.put("/api/debug/time/:time", isLoggedIn, function(req, res) {
    */
   timestamp = new Date(time);
 
-  let parsedTimestamp = ((timestamp.getTime() > 0) ? dayjs(timestamp) : dayjs()).unix() + Number.parseInt(timeOffset);
+  let parsedTimestamp =
+    (timestamp.getTime() > 0 ? dayjs(timestamp) : dayjs()).unix() +
+    Number.parseInt(timeOffset);
 
   if (timeOffset === 0) {
     timeOffset = parsedTimestamp - dayjs().unix();
@@ -178,26 +185,21 @@ app.put("/api/debug/time/:time", isLoggedIn, function(req, res) {
   req.session.time = parsedTimestamp;
 
   res.status(201).json(timeOffset).end();
-
 });
 
-
-app.get("/api/debug/time/", function(req, res) {
-
+app.get("/api/debug/time/", function (req, res) {
   let response = {
     time: req.session.time || dayjs().unix(),
-    offset: req.session.timeOffset || 0
-  }
+    offset: req.session.timeOffset || 0,
+  };
 
-  res.status(201).json(response).end();
-
+  res.status(200).json(response).end();
 });
-
 
 /*** USER APIs ***/
 
 // Login --> POST /sessions
-app.post("/api/sessions", function(req, res, next) {
+app.post("/api/sessions", function (req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
     if (!user) {
@@ -228,25 +230,27 @@ app.get("/api/sessions/current", isLoggedIn, (req, res) => {
 });
 
 // DELETE /api/clients/:email
-app.delete('/api/clients/:email', async function(req, res) {
+app.delete("/api/clients/:email", async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array() });
   }
   try {
     await userDao.deleteUser(req.params.email);
     res.status(201).end();
   } catch (err) {
     console.log(err);
-    res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
+    res.status(503).json({
+      error: `Database error during the deletion of user because: ${err}.`,
+    });
   }
 });
 
 /*** API used just for the test enviroment***/
-app.delete('/api/test/restoretables/', async function(req, res) {
+app.delete("/api/test/restoretables/", async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array() });
   }
   try {
     await testDao.restoreUsersTable();
@@ -258,7 +262,9 @@ app.delete('/api/test/restoretables/', async function(req, res) {
     res.status(201).end();
   } catch (err) {
     console.log(err);
-    res.status(503).json({ error: `Database error during the deletion of user because: ${err}.` });
+    res.status(503).json({
+      error: `Database error during the deletion of user because: ${err}.`,
+    });
   }
 });
 
