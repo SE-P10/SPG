@@ -1,6 +1,5 @@
 import { Row, Col, Container, Image, Spinner } from "react-bootstrap";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import API from "../API";
 import "../css/custom.css";
 import ErrorToast from "./ErrorToast";
@@ -12,7 +11,9 @@ function BrowserProducts(props) {
   const [serverErrorMessage, setServerErrorMessage] = useState(null);
   const [searchValue, setSearchValue] = useState("");
 
-  const handleSearchSubmit = () => {};
+  const handleSearchSubmit = () => {
+    console.log("handle search submit")
+  };
 
   useEffect(() => {
     const fillTables = async () => {

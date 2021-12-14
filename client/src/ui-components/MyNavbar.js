@@ -78,7 +78,7 @@ function MyNavbar(props) {
                       .set("date", newDate.date());
 
                     props.changeTimeDate(
-                      await API.setTime(newTimeDate.toDate())
+                       await API.setTime(newTimeDate.toDate())
                     );
                   }}
                   value={virtualTime.toDate()}

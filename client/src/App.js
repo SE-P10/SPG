@@ -19,7 +19,6 @@ import {
 import MyNavbar from "./ui-components/MyNavbar";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./css/App.css";
 import "./css/custom.css";
 import API from "./API";
 import { BrowserProducts } from "./ui-components/BrowseProducts";
@@ -44,9 +43,9 @@ const App = () => {
 
   const doLogin = async (credentials) => {
     try {
-      const user = await API.logIn(credentials);
+      const userTm = await API.logIn(credentials);
       setLoggedIn(true);
-      setUser(user);
+      setUser(userTm);
       setMessage({ msg: "Welcome ", type: "success" });
     } catch (err) {
       setMessage({ msg: err, type: "danger" });
@@ -100,31 +99,7 @@ const App = () => {
       />
 
       <Switch>
-        <Route
-          exact
-          path='/login'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null ? (
-                  <>
-                    {" "}
-                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
-                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
-                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
-                    {user.role === "3" ? <Redirect to='/warehouse' /> : null}
-                  </>
-                ) : (
-                  <LoginForm
-                    closeMessage={closeMessage}
-                    message={message}
-                    login={doLogin}
-                  />
-                )}
-              </Row>
-            </Container>
-          )}
-        />
+        
 
         <Route
           exact
@@ -148,31 +123,6 @@ const App = () => {
           )}
         />
 
-        <Route
-          exact
-          path='/personalpage'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null ? (
-                  <>
-                    {" "}
-                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
-                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
-                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
-                    {user.role === "3" ? <Redirect to='/warehouse' /> : null}
-                  </>
-                ) : (
-                  <LoginForm
-                    closeMessage={closeMessage}
-                    message={message}
-                    login={doLogin}
-                  />
-                )}
-              </Row>
-            </Container>
-          )}
-        />
 
         <Route
           exact
@@ -280,6 +230,33 @@ const App = () => {
             </>
           )}
         />
+
+          <Route
+          path='/'
+          render={() => (
+            <Container fluid className='justify-content-center d-flex'>
+              <Row className='vh-100vh mt-10'>
+                {loggedIn && user !== null ? (
+                  <>
+                    {" "}
+                    
+                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
+                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
+                    {user.role === "3" ? <Redirect to='/warehouse' /> : null}
+                  </>
+                ) : (
+                  <LoginForm
+                    closeMessage={closeMessage}
+                    message={message}
+                    login={doLogin}
+                  />
+                )}
+              </Row>
+            </Container>
+          )}
+        />
+
       </Switch>
     </Router>
   );

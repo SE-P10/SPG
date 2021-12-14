@@ -22,13 +22,13 @@ function HandOut(props) {
   const handleSearch = (email) => {
     if (!email) setErrorMessage("You have to insert an email!");
     else {
-      let ordersTmp = [];
-      setOrders(ordersTmp);
+      let ordersTm = [];
+      setOrders(ordersTm);
       API.getOrders(email)
-        .then((ordersTmp) => {
-          if (ordersTmp.length === 0) setErrorMessage("No orders found");
+        .then((ordersTml) => {
+          if (ordersTml.length === 0) setErrorMessage("No orders found");
           else {
-            setOrders(ordersTmp);
+            setOrders(ordersTml);
             setErrorMessage("");
           }
         })

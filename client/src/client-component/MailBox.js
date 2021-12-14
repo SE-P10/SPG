@@ -1,7 +1,6 @@
 import "../css/custom.css";
 import { Container, Table, Modal, Button } from "react-bootstrap";
 import React, { useState } from 'react';
-import "../css/custom.css";
 
 const MailBox = (props) => {
 

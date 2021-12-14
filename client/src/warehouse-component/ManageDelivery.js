@@ -1,8 +1,7 @@
 import { Container, Row, Button, Table } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../css/custom.css";
 import warehouseAPI from "../api/warehouse";
-import { useEffect } from "react";
 
 function ManageDelivery(props) {
   const [deliveries, setDeliveries] = useState([]);

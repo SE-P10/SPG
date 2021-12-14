@@ -4,7 +4,8 @@
 // react-testing-library renders your components to document.body,
 // this adds jest-dom's custom assertions
 //La importo qui così viene importata prima di ogni test
-import '@testing-library/jest-dom';
+
+
 //Setup example
 /* 
 const localStorageMock = {
@@ -15,3 +16,6 @@ const localStorageMock = {
   };
   global.localStorage = localStorageMock;
   */
+
+  
+import '@testing-library/jest-dom';
