@@ -1,6 +1,4 @@
 import {
-  Alert,
-  Form,
   Row,
   Col,
   Button,
@@ -8,8 +6,6 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { SearchComponent } from "../ui-components/SearchComponent";
 import { useEffect } from "react";
 import API from "./../API";
 import "../css/custom.css";

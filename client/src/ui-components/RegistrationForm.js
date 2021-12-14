@@ -8,7 +8,7 @@ import {
   Card,
   Modal,
 } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import API from "../API";
 
@@ -20,7 +20,7 @@ function RegistrationForm(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const history = useHistory();
+  const history = useNavigate();
   const [show, setShow] = useState(false);
 
   const handleModalClose = () => setShow(false);

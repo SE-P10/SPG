@@ -1,17 +1,9 @@
 import { Container, Carousel, Row, Col, Button } from "react-bootstrap";
 import "../css/custom.css";
-import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function HomePage(props) {
-  const history = useHistory();
 
-  const goToAboutPage = () => {
-    history.push("/about");
-  };
-
-  const goToProductsPage = () => {
-    history.push("/products");
-  };
 
   return (
     <>
@@ -105,12 +97,16 @@ function HomePage(props) {
           </Row>
         </Container>
         <Row className='justify-content-center below'>
-          <Button className='spg-button mr-1' onClick={goToAboutPage}>
-            About us
-          </Button>
-          <Button className='spg-button' onClick={goToProductsPage}>
-            Our Products
-          </Button>
+          <Link to={"/about"} >
+            <Button className='spg-button mr-1'>
+              About us
+            </Button>
+          </Link>
+          <Link to={"/products"} >
+            <Button className='spg-button'>
+              Our Products
+            </Button>
+          </Link>
         </Row>
       </Container>
     </>

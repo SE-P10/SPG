@@ -11,10 +11,10 @@ import dayjs from "dayjs";
 import { WarehousePage } from "./pages/WarehousePage";
 
 import {
-  BrowserRouter as Router,
+  BrowserRouter,
   Route,
-  Switch,
-  Redirect,
+  Routes,
+  Navigate,
 } from "react-router-dom";
 import MyNavbar from "./ui-components/MyNavbar";
 
@@ -89,7 +89,8 @@ const App = () => {
   }, [timeDateOffset]);
 
   return (
-    <Router>
+    <BrowserRouter>
+
       <MyNavbar
         doLogOut={doLogOut}
         loggedIn={loggedIn}
@@ -98,36 +99,33 @@ const App = () => {
         virtualTimeDate={virtualTimeDate}
       />
 
-      <Switch>
-        
+      <Routes>
 
         <Route
           exact
           path='/'
-          render={() => (
-            <>
-              <Container fluid className='justify-content-center d-flex w-100'>
-                <HomePage className='w-100' />
-              </Container>
-            </>
-          )}
+          element={
+            <Container fluid className='justify-content-center d-flex w-100'>
+              <HomePage className='w-100' />
+            </Container>
+          }
         />
 
         <Route
           exact
           path='/products'
-          render={() => (
+          element={
             <Container fluid className='justify-content-center d-flex w-100'>
               <BrowserProducts />
             </Container>
-          )}
+          }
         />
 
 
         <Route
           exact
           path='/shopemployee'
-          render={() => (
+          element={
             <>
               {user !== null && user.role === "1" ? (
                 <Container fluid className='justify-content-center d-flex'>
@@ -140,30 +138,30 @@ const App = () => {
                   />
                 </Container>
               ) : (
-                <Redirect to='/login' />
+                <Navigate to='/login' />
               )}
             </>
-          )}
+          }
         />
         <Route
           exact
           path='/warehouse'
-          render={() => (
+          element={
             <>
               {user !== null && user.role === "3" ? (
                 <Container fluid className='justify-content-center d-flex'>
-                  <WarehousePage user={user}  hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
+                  <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
                 </Container>
               ) : (
-                <Redirect to='/login' />
+                <Navigate to='/login' />
               )}
             </>
-          )}
+          }
         />
         <Route
           exact
           path='/signup'
-          render={() => (
+          element={
             <Container fluid className='justify-content-center d-flex w-100'>
               <RegistrationForm
                 className='below'
@@ -171,13 +169,13 @@ const App = () => {
                 doLogin={doLogin}
               />
             </Container>
-          )}
+          }
         />
 
         <Route
           exact
           path='/farmerpage'
-          render={() => (
+          element={
             <>
               {user !== null && user.role === "2" ? (
                 <Container fluid className='justify-content-center d-flex'>
@@ -189,16 +187,16 @@ const App = () => {
                   />
                 </Container>
               ) : (
-                <Redirect to='/login' />
+                <Navigate to='/login' />
               )}
             </>
-          )}
+          }
         />
 
         <Route
           exact
           path='/clientpage'
-          render={() => (
+          element={
             <>
               {" "}
               {user !== null && user.role === "0" ? (
@@ -212,38 +210,36 @@ const App = () => {
                   />
                 </Container>
               ) : (
-                <Redirect to='/login' />
+                <Navigate to='/login' />
               )}
             </>
-          )}
+          }
         />
 
         <Route
           exact
           path='/about'
-          render={() => (
-            <>
-              <Container fluid className='justify-content-center d-flex'>
-                {/* inserire controllo loggedIn e ruolo*/}{" "}
-                <AboutPage user={user} />
-              </Container>
-            </>
-          )}
+          element={
+            <Container fluid className='justify-content-center d-flex'>
+              {/* inserire controllo loggedIn e ruolo*/}{" "}
+              <AboutPage user={user} />
+            </Container>
+          }
         />
 
-          <Route
-          path='/'
-          render={() => (
+        <Route
+          path='/login'
+          element={
             <Container fluid className='justify-content-center d-flex'>
               <Row className='vh-100vh mt-10'>
                 {loggedIn && user !== null ? (
                   <>
                     {" "}
-                    
-                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
-                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
-                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
-                    {user.role === "3" ? <Redirect to='/warehouse' /> : null}
+
+                    {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Navigate to='/clientpage' /> : null}
+                    {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
+                    {user.role === "3" ? <Navigate to='/warehouse' /> : null}
                   </>
                 ) : (
                   <LoginForm
@@ -254,11 +250,11 @@ const App = () => {
                 )}
               </Row>
             </Container>
-          )}
+          }
         />
 
-      </Switch>
-    </Router>
+      </Routes>
+    </BrowserRouter>
   );
 };
 
