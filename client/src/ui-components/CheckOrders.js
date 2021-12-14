@@ -1,7 +1,7 @@
-import { Alert, Form, Row, Col, Container } from "react-bootstrap";
+import { Alert, Row, Col, Container, Table } from "react-bootstrap";
 import { useState } from "react";
 import { SearchComponent } from "./SearchComponent";
-import API from "./../API"
+import API from "./../API";
 import "../css/custom.css";
 
 function CheckOrders(props) {
@@ -10,7 +10,7 @@ function CheckOrders(props) {
 
   const handleSearch = async (email) => {
     let ordersTmp = [];
-    if (orders.length !== 0 ) setOrders([])
+    if (orders.length !== 0) setOrders([]);
     ordersTmp = await API.getOrders(email);
     if (ordersTmp.length === 0) {
       setErrorMessage("No orders found for this user.");
@@ -45,13 +45,22 @@ function CheckOrders(props) {
             ""
           )}
         </Row>
-        {orders.map((order) => (
-          <Row className='over'>
-            <Col> id : {order.id}</Col>
-            <Col>price : {order.price}</Col>
-            <Col>status : {order.status}</Col>
-          </Row>
-        ))}
+        <Table responsive size='sm'>
+          <thead>
+            <th>Id</th>
+            <th>Price</th>
+            <th>Status</th>
+          </thead>
+          <tbody>
+            {orders.map((order) => (
+              <tr className='over'>
+                <td> {order.id}</td>
+                <td> {order.price}</td>
+                <td> {order.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </Col>
     </Container>
   );

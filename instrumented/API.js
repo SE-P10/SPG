@@ -1400,7 +1400,7 @@ async function getOrders(client_email) {
 
 async function getUserInfo(userID) {
   cov_1qtekkkqs8().f[17]++;
-  const response = (cov_1qtekkkqs8().s[31]++, await (userID ? (cov_1qtekkkqs8().b[5][0]++, fetch("/api/user/" + userID)) : (cov_1qtekkkqs8().b[5][1]++, fetch("/api/sessions/current"))));
+  const response = (cov_1qtekkkqs8().s[31]++, await (userID ? (cov_1qtekkkqs8().b[5][0]++, fetch("/api/users/" + userID)) : (cov_1qtekkkqs8().b[5][1]++, fetch("/api/sessions/current"))));
   const userInfo = (cov_1qtekkkqs8().s[32]++, await response.json());
   cov_1qtekkkqs8().s[33]++;
 

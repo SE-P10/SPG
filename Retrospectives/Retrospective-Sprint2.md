@@ -54,9 +54,9 @@ Team P10 RETROSPECTIVE Sprint #2
 - Technical Debt management:
   - Total hours estimated : 1h
   - Total hours spent : 2h
-  - Hours estimated for remediation by SonarQube : 1h 30m
-  - Hours estimated for remediation by SonarQube only for the selected and planned issues : we spent 1h 30m to reduce duplications , minimize code smells and assert that there were no blocker code smells 
-  - Hours spent on remediation  : 1h 30m
+  - Hours estimated for remediation by SonarQube : 4h 56m
+  - Hours estimated for remediation by SonarQube only for the selected and planned issues : 2h 
+  - Hours spent on remediation  : we spent 1h 30m to reduce duplications , minimize code smells and assert that there were no blocker code smells
   - debt ratio (as reported by SonarQube under "Measures-Maintainability") : 0.5 %
   - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ) :
   <br>Reliability : A <br>Security : A

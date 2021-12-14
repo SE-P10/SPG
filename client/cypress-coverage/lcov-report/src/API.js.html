@@ -427,7 +427,7 @@ async function getOrders(client_email) {
 &nbsp;
 async function getUserInfo(userID) {
   const response = await (userID
-    ? <span class="branch-0 cbranch-no" title="branch not covered" >fetch("/api/user/" + userID)</span>
+    ? <span class="branch-0 cbranch-no" title="branch not covered" >fetch("/api/users/" + userID)</span>
     : fetch("/api/sessions/current"));
   const userInfo = await response.json();
 &nbsp;

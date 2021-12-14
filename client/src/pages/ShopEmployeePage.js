@@ -1,5 +1,5 @@
-import { Container, Row, Col, ListGroup, Button, Alert } from "react-bootstrap";
-import { Card } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert } from "react-bootstrap";
+
 import { useState } from "react";
 import { HandOut } from "../shopEmployee-component/HandOut";
 import { CheckOrders } from "../ui-components/CheckOrders";
@@ -18,40 +18,39 @@ import {
   backIcon,
 } from "../ui-components/Icons.js";
 import { PendingOrders } from "../shopEmployee-component/PendingOrders.js";
-import gAPI from "../api/gAPI";
 import { ClientOrder } from "../client-component/ClientOrder";
 
 function ShopEmployee(props) {
   const [message, setMessage] = useState("");
   const [actionS, setActionS] = useState(0);
-  const [actionName,setActionName] = useState("")
+  const [actionName, setActionName] = useState("");
   const changeAction = (actionN) => {
     setActionS(actionN);
     switch (actionN) {
-      case 1 :
-        setActionName("Register a new client")
+      case 1:
+        setActionName("Register a new client");
         break;
-      case 2 :
-          setActionName("Browse products")
-          break;
-      case 3 :
-            setActionName("Top Up wallet")
-            break;  
-      case 4 :
-              setActionName("New order")
-              break;
-      case 5 :
-            setActionName("Hand Out")
-             break;
-      case 6 :
-            setActionName("Check orders")
-            break;  
-      case 7 :
-              setActionName("pending orders")
-              break;       
-            
-      default :
-      setActionName("")
+      case 2:
+        setActionName("Browse products");
+        break;
+      case 3:
+        setActionName("Top Up wallet");
+        break;
+      case 4:
+        setActionName("New order");
+        break;
+      case 5:
+        setActionName("Hand Out");
+        break;
+      case 6:
+        setActionName("Check orders");
+        break;
+      case 7:
+        setActionName("pending orders");
+        break;
+
+      default:
+        setActionName("");
     }
   };
 
@@ -64,7 +63,7 @@ function ShopEmployee(props) {
       {actionS !== 0 ? (
         <>
           <Button
-            className='spg-button below back-button'
+            className='spg-button below back-button button-disappear'
             onClick={() => {
               setActionS(0);
             }}>
@@ -86,10 +85,10 @@ function ShopEmployee(props) {
         )}
 
         <Row>
-          <Row>           
-                <Col md='auto'>
-                  <h1 className='mx-auto'> {actionName} </h1>{" "}
-                </Col>              
+          <Row>
+            <Col md='auto'>
+              <h1 className='mx-auto'> {actionName} </h1>{" "}
+            </Col>
           </Row>
           <Col className='ml-4'>
             {actionS === 0 ? (
@@ -242,18 +241,34 @@ function ShopEmployee(props) {
             />
           ) : null}
           {actionS === 3 ? (
-            <TopUpWallet
-              changeAction={changeAction}
-              addMessage={addMessage}
-              className='justify-content-center'
-            />
+            <>
+              {(props.dow === "Saturday" && props.hour >= 9) ||
+              (props.dow === "Monday" && props.hour <= 18) ? (
+                <TopUpWallet
+                  changeAction={changeAction}
+                  addMessage={addMessage}
+                  className='justify-content-center'
+                />
+              ) : (
+                "You can top up wallets from Saturday at 09:00 to Monday at 18:00"
+              )}
+            </>
           ) : null}
+
           {actionS === 4 ? (
-            <ClientOrder
-              changeAction={changeAction}
-              addMessage={addMessage}
-              user={props.user}
-            />
+            <>
+              {(props.dow === "Saturday" && props.hour >= 9) ||
+              (props.dow === "Sunday" && props.hour <= 23) ? (
+                <ClientOrder
+                  modifyOrder={-1}
+                  changeAction={changeAction}
+                  addMessage={addMessage}
+                  user={props.user}
+                />
+              ) : (
+                "Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00"
+              )}{" "}
+            </>
           ) : null}
           {actionS === 7 ? (
             <PendingOrders
@@ -262,7 +277,15 @@ function ShopEmployee(props) {
             />
           ) : null}
           {actionS === 5 ? (
-            <HandOut changeAction={changeAction} addMessage={addMessage} />
+            <>
+              {(props.dow === "Wednesday" && props.hour >= 9) ||
+              (props.dow === "Friday" && props.hour <= 23) ||
+              props.dow === "Thursday" ? (
+                <HandOut changeAction={changeAction} addMessage={addMessage} />
+              ) : (
+                "You can hand out an order from Wednesday at 09:00 to Friday at 18:00"
+              )}
+            </>
           ) : null}
           {actionS === 6 ? (
             <CheckOrders changeAction={changeAction} addMessage={addMessage} />

@@ -39,6 +39,7 @@
 |product_id|INTEGER||
 |quantity|INTEGER||
 |price|INTEGER||
+|status|TEXT||
 
 ## farmer_products
 |NAME|TYPE|DESCRIPTION|

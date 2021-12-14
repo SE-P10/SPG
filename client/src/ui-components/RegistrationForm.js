@@ -24,7 +24,6 @@ function RegistrationForm(props) {
   const [show, setShow] = useState(false);
 
   const handleModalClose = () => setShow(false);
-  const handleModalShow = () => setShow(true);
 
   const registrationSubmit = (event) => {
     event.preventDefault();
@@ -184,7 +183,6 @@ function RegistrationForm(props) {
             </Button>
           </Modal.Footer>
         </Modal>
-        ;
       </Container>
     </>
   );
