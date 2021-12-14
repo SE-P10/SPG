@@ -34,30 +34,29 @@ function MyNavbar(props) {
         className='SGP-Navbar'
         variant='dark'>
 
-        <Container fluid className='justify-content-center d-flex w-100' style={{maxWidth: "1280px"}}>
+        <Container fluid className='justify-content-center d-flex w-100' style={{ maxWidth: "1280px" }}>
 
           <Nav.Item>
             <Link to={"/"}>
-              {" "}
               <Navbar.Brand className='mainColor'>
-                {" "}
-                {plantIcon} &nbsp;SPG
-              </Navbar.Brand>{" "}
+                {plantIcon}{" "}SPG
+              </Navbar.Brand>
             </Link>
           </Nav.Item>
 
           {props.loggedIn ? (
-            <>
-              <Modal
-                show={showVCModal}
-                onHide={() => setShowVCModal(false)}
-                className='virtualClockModal'>
-                <Modal.Header closeButton>
-                  <Modal.Title>Virtual Clock</Modal.Title>
-                </Modal.Header>
-                <Modal.Body align='center'>
+            <Modal
+              show={showVCModal}
+              onHide={() => setShowVCModal(false)}
+              className='virtualClockModal'>
+              <Modal.Header closeButton>
+                <Modal.Title>Virtual Clock</Modal.Title>
+              </Modal.Header>
+              <Modal.Body align='center'>
+                <Container fluid >
                   <input
                     id='setHour'
+                    className="im-input"
                     style={{ width: "100%", padding: "2px 17px" }}
                     placeholder='Set hour'
                     type='time'
@@ -77,8 +76,8 @@ function MyNavbar(props) {
                     }}
                     value={getVirtualTimeTMP().format("HH:mm")}
                   />
-                  <br /> <br />
-                  <Calendar
+                  <br />
+                  <Calendar className={"im-calendar light-shadow"}
                     minDate={virtualTime.toDate()}
                     onClickDay={async (value, event) => {
                       let newDate = dayjs(value);
@@ -92,86 +91,83 @@ function MyNavbar(props) {
                     }}
                     value={getVirtualTimeTMP().toDate()}
                   />
-                </Modal.Body>
-                <Button variant="outline-danger"
-                  onClick={async () => {
+                  <br />
+                  <Container className="d-flex w-100 justify-content-center">
+                    <Button variant="outline-danger" className="im-button"
+                      onClick={async () => {
 
-                    let timeoffset = await API.setTime(getVirtualTimeTMP().toDate());
+                        let timeoffset = await API.setTime(getVirtualTimeTMP().toDate());
 
-                    setVirtualTime(getVirtualTimeTMP());
+                        setVirtualTime(getVirtualTimeTMP());
 
-                    props.changeTimeDate(timeoffset);
+                        props.changeTimeDate(timeoffset);
 
-                    setShowVCModal(false)
-                  }}>
-                  SET
-                </Button>
-              </Modal>
-            </>
+                        setShowVCModal(false)
+                      }}>
+                      SET
+                    </Button>
+                  </Container>
+                </Container>
+              </Modal.Body>
+            </Modal>
           ) : (
             <></>
           )}
-
           <Navbar.Toggle aria-controls='responsive-navbar-nav' className='mb-2' />
           <Navbar.Collapse id='responsive-navbar-nav '>
             {props.loggedIn ? (
-              <>
-                <Container className='ml-auto'>
-                  <Nav.Item className='ml-auto mr-3 mainColor'>
-                    {" "}
-                    <Link to={"/login"} className='text-white'>
-                      {" "}
-                      {userIcon}{" "}
-                    </Link>{" "}
-                  </Nav.Item>
-                  <Link
-                    to={"/"}
-                    className='text-white'
-                    onClick={() => {
-                      props.closeMessage();
-                      props.doLogOut();
-                    }}>
-                    {logOutIcon}{" "}
+              <Container className='ml-auto'>
+                <Nav.Item className='ml-auto mr-3 mainColor'>
+                  <Link to={"/login"} className='text-white'>
+                    {userIcon}
                   </Link>
-                </Container>
-              </>
+                </Nav.Item>
+                <Link
+                  to={"/"}
+                  className='text-white'
+                  onClick={() => {
+                    props.closeMessage();
+                    props.doLogOut();
+                  }}>
+                  {logOutIcon}{" "}
+                </Link>
+              </Container>
             ) : (
-              <>
-                {" "}
-                <Container className='ml-auto'>
-                  <Nav.Item className='ml-auto mainColor'>
-                    <Link className='mainColor' to='login'>
-                      Login &nbsp;{" "}
-                    </Link>
-                  </Nav.Item>
-                  <Nav.Item className=' mainColor'>
-                    <Link className='mainColor' to='signup'>
-                      Sign up{" "}
-                    </Link>
-                  </Nav.Item>
-                </Container>
-              </>
+              <Container className='ml-auto'>
+                <Nav.Item className='ml-auto mainColor'>
+                  <Link className='mainColor im-spaced-text' to='login'>
+                    Login
+                  </Link>
+                </Nav.Item>
+                <Nav.Item className=' mainColor'>
+                  <Link className='mainColor' to='signup'>
+                  {" "}Sign up
+                  </Link>
+                </Nav.Item>
+              </Container>
             )}
           </Navbar.Collapse>
         </Container>
 
       </Navbar>
-      {props.loggedIn ? (
-        <Card>
-          <Card.Body align='center' style={{ padding: "8px" }}>
-            {" "}
-            {virtualTime.format("DD-MM-YYYY HH:mm:ss")}
-            <>&nbsp;</>
-            <Button
-              variant='outline-danger'
-              onClick={() => setShowVCModal(true)}>
-              set
-            </Button>
-          </Card.Body>
-        </Card>
-      ) : (
-        <></>
-      )}
+      {
+        props.loggedIn ? (
+          <Card>
+            <Card.Body align='center' style={{ padding: "8px" }}>
+              {" "}
+              {virtualTime.format("DD-MM-YYYY HH:mm:ss")}
+              <>&nbsp;</>
+              <Button
+                variant='outline-danger'
+                onClick={() => setShowVCModal(true)}>
+                set
+              </Button>
+            </Card.Body>
+          </Card>
+        ) : (
+          <></>
+        )
+      }
     </>
   );
 }

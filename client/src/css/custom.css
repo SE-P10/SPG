@@ -24,10 +24,6 @@ html {
   font-weight: bold;
 }
 
-.virtualClockModal .react-calendar {
-  border-radius: 5px;
-  overflow: hidden;
-}
 
 .dropdown-menu .show {
   padding: 0;
@@ -208,4 +204,41 @@ footer {
 
 .checkbox {
   width: 2px;
+}
+
+.im-spaced-text{
+  padding-right: 1em;
+}
+
+.im-button{
+  max-width: 250px;
+  min-width: 150px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.virtualClockModal .im-calendar {
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.light-shadow{
+  -webkit-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.65);
+  -moz-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.65);
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.65);
+}
+
+.im-input{
+  margin: 0;
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  border: 1px solid #5e5e5e;
+  outline: 0;
+  color: currentColor;
+  -webkit-appearance: none;
+  appearance: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
