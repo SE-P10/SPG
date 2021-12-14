@@ -84,6 +84,48 @@ describe('ConfirmProductsByFarmer', () => {
         //Check the farmer can not confirm an order
         cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
 
+        //Provo per il resto della settimana
+        cy.get('.react-calendar__month-view__days > :nth-child(16)').click()
+        cy.get('#setHour').type('09:30')
+        cy.wait(1000)
+        //Check the farmer can not confirm an order
+        cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
+
+        //Provo per il resto della settimana
+        cy.get('.react-calendar__month-view__days > :nth-child(17)').click()
+        cy.get('#setHour').type('09:30')
+        cy.wait(1000)
+        //Check the farmer can not confirm an order
+        cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
+
+        //Provo per il resto della settimana
+        cy.get('.react-calendar__month-view__days > :nth-child(17)').click()
+        cy.get('#setHour').type('09:30')
+        cy.wait(1000)
+        //Check the farmer can not confirm an order
+        cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
+
+        //Provo per il resto della settimana
+        cy.get('.react-calendar__month-view__days > :nth-child(18)').click()
+        cy.get('#setHour').type('09:30')
+        cy.wait(1000)
+        //Check the farmer can not confirm an order
+        cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
+
+        //Provo per il resto della settimana
+        cy.get('.react-calendar__month-view__days > :nth-child(19)').click()
+        cy.get('#setHour').type('09:30')
+        cy.wait(1000)
+        //Check the farmer can not confirm an order
+        cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
+
+        //Provo il sabato prima dell'apertura
+        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
+        cy.get('#setHour').type('22:30')
+        cy.wait(1000)
+        //Check the farmer can not confirm an order
+        cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
+
     })
 
     it('a shopEmployee should be able to confirm product', () => {
@@ -96,8 +138,48 @@ describe('ConfirmProductsByFarmer', () => {
       cy.wait(1000)
       cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
       cy.get('.modal-header > .btn-close').click()
-      //Check the farmer can not confirm an order
-      //cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
+      
     })
+
+    it('an order should be confirmed when the wallet has not be recharged', () => {
+
+        //Mi sposto in un altra data per verificare di essere nella data giusta
+        cy.get('.card-body > .btn').click()
+        cy.findByRole('button', { name: /›/i }).click()
+        //Il quattordicesimo elemento è sempre una domenica(ed esiste sempre per ogni mese)
+        cy.get('#setHour').type('23:30')
+        cy.wait(1000)
+        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
+        cy.get('.modal-header > .btn-close').click()
+        
+      })
+
+      it('an order should be pending cancellation when the wallet needs to be reloaded and confirmed after the recharge', () => {
+
+        //Mi sposto in un altra data per verificare di essere nella data giusta
+        cy.get('.card-body > .btn').click()
+        cy.findByRole('button', { name: /›/i }).click()
+        //Il quattordicesimo elemento è sempre una domenica(ed esiste sempre per ogni mese)
+        cy.get('#setHour').type('23:30')
+        cy.wait(1000)
+        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
+        cy.get('.modal-header > .btn-close').click()
+        
+      })
+
+      it('an order should be pending cancellation when the wallet needs to be reloaded and deleted after the missed recharge', () => {
+
+        //Mi sposto in un altra data per verificare di essere nella data giusta
+        cy.get('.card-body > .btn').click()
+        cy.findByRole('button', { name: /›/i }).click()
+        //Il quattordicesimo elemento è sempre una domenica(ed esiste sempre per ogni mese)
+        cy.get('#setHour').type('23:30')
+        cy.wait(1000)
+        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
+        cy.get('.modal-header > .btn-close').click()
+        
+      })
+
+      
 
 })
