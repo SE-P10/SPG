@@ -52,9 +52,9 @@ describe('ConfirmProductsByFarmer', () => {
         //Close Alert
         cy.get('.btn-close').click()
         //ToDO -> Check on the server
-         //Logout
-         cy.get('[href="/"] > .bi')
-         cy.clearCookies()
+        //Logout
+        cy.get('[href="/"] > .bi')
+        cy.clearCookies()
 
 
     })
@@ -128,20 +128,34 @@ describe('ConfirmProductsByFarmer', () => {
 
     })
 
-    it('a shopEmployee should be able to confirm product', () => {
+    it('a shopEmployee should be able to confirm product and order should be confirmed when the wallet has not to be recharged', () => {
 
-      //Mi sposto in un altra data per verificare di essere nella data giusta
-      cy.get('.card-body > .btn').click()
-      cy.findByRole('button', { name: /›/i }).click()
-      //Il quattordicesimo elemento è sempre una domenica(ed esiste sempre per ogni mese)
-      cy.get('#setHour').type('23:30')
-      cy.wait(1000)
-      cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
-      cy.get('.modal-header > .btn-close').click()
-      
+        //Mi sposto in un altra data per verificare di essere nella data giusta
+        cy.get('.card-body > .btn').click()
+        cy.findByRole('button', { name: /›/i }).click()
+        //Il quattordicesimo elemento è sempre una domenica(ed esiste sempre per ogni mese)
+        cy.get('#setHour').type('23:30')
+        cy.wait(1000)
+        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
+        cy.get('.modal-header > .btn-close').click()
+        //Logout
+        cy.get('[href="/"] > .bi')
+        cy.clearCookies()
+
+        //Check order state and user's wallet -> By user
+        cy.visit('http://localhost:3000');
+        cy.findByRole('link', { name: /login/i }).click();
+        //Login as a ShopEmployee
+        cy.findByRole('textbox', { name: /email/i }).type('michele@gmail.com');
+        cy.findByLabelText(/password/i).type('ciao');
+        cy.findByRole('button', { name: /login/i }).click();
+        //Click a button to hand out a order
+        cy.findByRole('button', { name: /your orders/i })
+
     })
 
-    it('an order should be confirmed when the wallet has not be recharged', () => {
+
+    it('an order should be pending cancellation when the wallet needs to be reloaded and confirmed after the recharge', () => {
 
         //Mi sposto in un altra data per verificare di essere nella data giusta
         cy.get('.card-body > .btn').click()
@@ -151,23 +165,10 @@ describe('ConfirmProductsByFarmer', () => {
         cy.wait(1000)
         cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
         cy.get('.modal-header > .btn-close').click()
-        
-      })
 
-      it('an order should be pending cancellation when the wallet needs to be reloaded and confirmed after the recharge', () => {
+    })
 
-        //Mi sposto in un altra data per verificare di essere nella data giusta
-        cy.get('.card-body > .btn').click()
-        cy.findByRole('button', { name: /›/i }).click()
-        //Il quattordicesimo elemento è sempre una domenica(ed esiste sempre per ogni mese)
-        cy.get('#setHour').type('23:30')
-        cy.wait(1000)
-        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
-        cy.get('.modal-header > .btn-close').click()
-        
-      })
-
-      it('an order should be pending cancellation when the wallet needs to be reloaded and deleted after the missed recharge', () => {
+    it('an order should be pending cancellation when the wallet needs to be reloaded and deleted after the missed recharge', () => {
 
         //Mi sposto in un altra data per verificare di essere nella data giusta
         cy.get('.card-body > .btn').click()
@@ -177,9 +178,9 @@ describe('ConfirmProductsByFarmer', () => {
         cy.wait(1000)
         cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
         cy.get('.modal-header > .btn-close').click()
-        
-      })
 
-      
+    })
+
+
 
 })
