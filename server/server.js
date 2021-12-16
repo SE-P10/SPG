@@ -26,6 +26,8 @@ const time = require("./time.js");
 const { virtualCron } = require("./cron");
 const { isNumber } = require("./utility");
 
+const { notifyTelegram } = require("./telegram");
+
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
 // by setting a function to verify username and password
@@ -125,6 +127,22 @@ app.use(
       },
       (virtualTime, lastExecutionTime, ...args) => {
         ordersDao.deletePendingOrders();
+      },
+      [],
+      false
+    );
+
+    /**
+     * Telegram Cron Job
+    */
+    virtualCron.schedule(
+      virtualCron.schedules.SATURDAY,
+      (virtualTime, lastExecutionTime, ...args) => {
+
+        let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+        if(days > 0 && (days > 0 || virtualTime.hour() > 9))
+          notifyTelegram();
       },
       [],
       false

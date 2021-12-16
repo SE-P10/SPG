@@ -53,7 +53,7 @@ function RegistrationForm(props) {
           })
           .catch((e) => {
             console.log(e.error);
-            setErrorMessage(e.error);
+            setErrorMessage(e.errorno);
           });
       } else {
         //password mismatch
@@ -116,13 +116,13 @@ function RegistrationForm(props) {
 
               <Row className='mb-3'>
                 <Form.Group as={Col} controlId='formGridUsername'>
-                  <Form.Label>Username</Form.Label>
+                  <Form.Label>Telegram Username</Form.Label>
                   <Form.Control
                     required
                     type='text'
                     value={username}
                     onChange={(ev) => setUsername(ev.target.value)}
-                    placeholder='Enter Username'
+                    placeholder='Enter your Telegram Username'
                   />
                 </Form.Group>
 
@@ -173,7 +173,16 @@ function RegistrationForm(props) {
           <Modal.Header>
             <Modal.Title>Registration was successful</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Do you want to login,now?</Modal.Body>
+          <Modal.Body>
+            <Row className="justify-content-center">
+              <img src={process.env.PUBLIC_URL+"/images/telegram.svg"} />
+            </Row>
+            <Row className="justify-content-center">
+            <p className="telegramColor">Scan the Telegram QR code, so you can recive all the updates or <a href="https://t.me/spg10_bot"> click here</a></p>
+            </Row>
+            Do you want to login, now?
+
+          </Modal.Body>
           <Modal.Footer>
             <Button className='spg-button below' onClick={goToLogin}>
               YES
