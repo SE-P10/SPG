@@ -2,25 +2,24 @@ import {
   Button,
   Alert,
   Form,
-  Row,
-  Col,
   Container,
-  Image,
-  Spinner,
+  Spinner
 } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import "../css/custom.css";
 import { Basket } from "../client-component/Basket";
 import API from "../API";
 import { filterIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
+import { ProductsList } from "../ui-components/Products";
+import {ToastNotification}from "../ui-components/ToastNotification";
+import { PageSection, BlockTitle, PageSeparator } from "../ui-components/Page";
 
 function ClientOrder(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([]);
-  const [orderProduct, setOrderProduct] = useState([]);
   const [type, setType] = useState([]);
   const [farmers, setFarmers] = useState([]);
+  const [orderedProducts, setOrderedProducts] = useState([]);
   const [viewFilter, setViewFilter] = useState(false);
   const [categorize, setCategorize] = useState(1); //0 per prodotti 1 per farmer
   const [filterType, setFilterType] = useState("Type"); //Type -> all types
@@ -34,32 +33,32 @@ function ClientOrder(props) {
   const [isWalletLoading, setIsWalletLoading] = useState(true);
   const [isBasketLoading, setIsBasketLoading] = useState(true);
 
- 
-
   useEffect(() => {
 
-    const fillTables = async () => {
+    const fillTables = async (user, modifyOrder) => {
 
       const productsTmp = await API.getProducts();
       setProducts(productsTmp);
       const farmersTmp = productsTmp
         .map((t) => t.farmer)
         .filter(function (item, pos) {
-          return productsTmp.map((t) => t.farmer).indexOf(item) == pos;
+          return productsTmp.map((t) => t.farmer).indexOf(item) === pos;
         });
+
       setFarmers(farmersTmp);
       setIsProductListLoading(false);
 
       const typesTmp = productsTmp
         .map((t) => t.name)
         .filter(function (item, pos) {
-          return productsTmp.map((t) => t.name).indexOf(item) == pos;
+          return productsTmp.map((t) => t.name).indexOf(item) === pos;
         });
+
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      if (props.modifyOrder !== -1) {
-        let oldOrder = (await API.getOrder(props.modifyOrder)) || [];
+      if (modifyOrder !== -1) {
+        let oldOrder = (await API.getOrder(modifyOrder)) || [];
         for (let p of oldOrder.products) {
           await API.insertProductInBasket({
             product_id: p.product_id,
@@ -69,39 +68,37 @@ function ClientOrder(props) {
       }
 
       let basketTmp = await API.getBasketProducts();
-      if (basketTmp) setIsBasketLoading(false);
 
-      setOrderProduct(
-        basketTmp.map((t) => ({
-          product_id: t.product_id,
-          confirmed: true,
-          quantity: t.quantity,
-          name: t.name,
-        }))
-      );
+      if (basketTmp) {
+        setIsBasketLoading(false);
+        setOrderedProducts(basketTmp);
+      }
 
-      if (props.user.role == 0){
-      const walletValueT = await API.getWalletByMail(props.user.email);
-      setWalletValue(walletValueT);
-      if (walletValueT) setIsWalletLoading(old => !old);}
+      if (Number.parseInt(user.role) === 0) {
+        const walletValueT = await API.getWalletByMail(user.email);
+        setWalletValue(walletValueT);
+        if (walletValueT) setIsWalletLoading(old => !old);
+      }
       setChanges((old) => !old);
     };
 
-    fillTables();
-  }, []);
+    fillTables(props.user, props.modifyOrder);
+
+  }, [props.user, props.modifyOrder]);
 
   const handleSubmit = async (event, propsN) => {
+
     event.preventDefault();
     let userId;
     let orderOk = true;
 
-    if (props.user.role == 1) {
+    if (Number.parseInt(props.user.role) === 1) {
       if (!mailInserted) {
         setErrorMessage("You have to insert an email!");
         orderOk = false;
       } else {
         let user = await API.getUserId(mailInserted);
-        if (user.role != 0) {
+        if (Number.parseInt(user.role) !== 0) {
           setErrorMessage("Invalid user");
           orderOk = false;
         } else {
@@ -109,7 +106,8 @@ function ClientOrder(props) {
         }
       }
     } else userId = props.user.id;
-    const basketTmp = await API.getBasketProducts();
+
+    let basketTmp = await API.getBasketProducts();
 
     if (orderOk) {
       //metti a 0 elemtni vecchi eliminati
@@ -120,9 +118,8 @@ function ClientOrder(props) {
         quantity: t.quantity,
         name: t.name,
       }));
-      //console.log(finalOrder)
 
-      if (props.modifyOrder == -1) {
+      if (props.modifyOrder === -1) {
         let result = await API.insertOrder(userId, finalOrder);
         if (result) {
           API.deleteAllBasket();
@@ -148,112 +145,94 @@ function ClientOrder(props) {
     }
   };
 
-  return (
-    <>
-      <Container className='d-flex fluid flex-wrap'>
-        <Col className='justify-content-center cont p-2'>
-          <Row className='justify-content-center'>
-            <h2>Issue Order</h2>
-          </Row>
-          {errorMessage ? (
-            <Alert
-              variant='danger'
-              onClose={() => setErrorMessage("")}
-              dismissible>
-              {" "}
-              {errorMessage}{" "}
-            </Alert>
-          ) : (
-            ""
-          )}
+  const updateRequestedQuantity = async (product, quantity) => {
 
-          {props.user.role == 1 ? (
+    let requestedProduct = products.filter(
+      (t) => t.id === product.id
+    );
+
+    if (
+      requestedProduct.length === 0 ||
+      quantity > requestedProduct.quantity ||
+      quantity <= 0
+    )
+      return false;
+
+    else {
+      await API.insertProductInBasket({ product_id: product.id, quantity: quantity });
+
+      setChanges((old) => !old);
+
+      return true;
+    }
+  }
+
+  return (
+    <section className="im-clientOrderWrapper">
+      <PageSection style={{ flex: "1 1 800px" }}>
+        <BlockTitle>
+          Issue Order
+        </BlockTitle>
+
+        <ToastNotification
+          variant='error'
+          onSet={() => setErrorMessage("")}
+          message={errorMessage}
+        />
+
+        {
+          Number.parseInt(props.user.role) === 1 ? (
             <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
               <Form.Label>Client mail</Form.Label>
               <Form.Control
+                className="im-input"
                 type='email'
                 onChange={(ev) => {
                   setMailInserted(ev.target.value);
                 }}
               />
             </Form.Group>
-          ) : null}
+          ) : <></>}
 
-          <Col>
-            <Row>
-              <SearchForm
-                setSearchValue={setSearchValue}
-                onSearchSubmit={() => {console.log("testSubmit")}}
-              />
-              {props.user.role == 0 ? <div className='margin-yourwallet'>
-                <h4 className='font-color'>Your Wallet</h4>
-                {isWalletLoading ? (
-                  <Spinner
-                    animation='border'
-                    variant='success'
-                    size='sm'></Spinner>
-                ) : (
-                  <div className='margin-walletvalue'>{walletValue}€</div>
-                )}
-              </div> : <></>}
-            </Row>
-            <Button
-              className='spg-button below'
-              onClick={() => {
-                if (showFilterMenu) {
-                  setShowFilterMenu(false);
-                  setCategorize(2);
-                  setFilterType("Type");
-                  setFilterFarmer("Farmer");
-                  setViewFilter(false);
-                } else setShowFilterMenu(true);
-              }}>
-              {" "}
-              {filterIcon} {showFilterMenu ? <> x </> : <>Filters</>}
-            </Button>{" "}
-            {showFilterMenu ? (
-              <>
-                {" "}
-                <Form className='below'>
-                  <Form.Control
-                    as='select'
-                    onChange={(event) => {
-                      setCategorize(0);
-                      setViewFilter(true);
-                      setFilterType(event.target.value);
-                      setViewFilter(false);
-                    }}>
-                    <option value={undefined}> Type</option>
-                    {type
-                      .sort((a, b) => (a.name > b.name ? 1 : -1))
-                      .map((t) => (
-                        <option value={t}>{t}</option>
-                      ))}
-                  </Form.Control>
-                </Form>
-                <Form>
-                  <Form.Control
-                    as='select'
-                    onChange={(event) => {
-                      setCategorize(1);
+        <PageSeparator />
 
-                      setFilterFarmer(event.target.value);
-                      setViewFilter(false);
-                    }}>
-                    <option value={undefined}> Farmer</option>
-                    {farmers.map((t) => (
-                      <option value={t}>{t}</option>
-                    ))}
-                  </Form.Control>
-                </Form>
-              </>
-            ) : null}
-          </Col>
+        <section>
+          <section>
+            <SearchForm
+              setSearchValue={setSearchValue}
+              onSearchSubmit={() => { console.log("testSubmit") }}
+            />
+            {Number.parseInt(props.user.role) === 0 ? <div className='margin-yourwallet'>
+              <h4 className='font-color'>Your Wallet</h4>
+              {isWalletLoading ? (
+                <Spinner
+                  animation='border'
+                  variant='success'
+                  size='sm'></Spinner>
+              ) : (
+                <div className='margin-walletvalue'>{walletValue}€</div>
+              )}
+            </div> : <></>}
+          </section>
+          <Button
+            className='below im-button im-animate'
+            onClick={() => {
+              if (showFilterMenu) {
+                setShowFilterMenu(false);
+                setCategorize(2);
+                setFilterType("Type");
+                setFilterFarmer("Farmer");
+                setViewFilter(false);
+              } else setShowFilterMenu(true);
+            }}>
 
-          {categorize === 0 && viewFilter === true ? (
-            <div>
-              <Form>
+            {filterIcon} {showFilterMenu ? <> x </> : <>Filters</>}
+          </Button>
+          {showFilterMenu ? (
+            <>
+              <Form className='below'>
                 <Form.Control
+                  className="im-input"
                   as='select'
                   onChange={(event) => {
                     setCategorize(0);
@@ -261,7 +240,7 @@ function ClientOrder(props) {
                     setFilterType(event.target.value);
                     setViewFilter(false);
                   }}>
-                  <option value='Type'> Type</option>
+                  <option value={undefined}> Type</option>
                   {type
                     .sort((a, b) => (a.name > b.name ? 1 : -1))
                     .map((t) => (
@@ -269,223 +248,93 @@ function ClientOrder(props) {
                     ))}
                 </Form.Control>
               </Form>
-            </div>
-          ) : (
-            <div>
-              {categorize == 1 && viewFilter === true ? (
-                <div>
-                  <Form>
-                    <Form.Control
-                      as='select'
-                      onChange={(event) => {
-                        setFilterFarmer(event.target.value);
-                        setViewFilter(false);
-                      }}>
-                      <option value=''> Farmer</option>
-                      {farmers.map((t) => (
-                        <option value={t}>{t}</option>
-                      ))}
-                    </Form.Control>
-                  </Form>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
-          )}
-          {isProductListLoading ? (
-            <Container className='below'>
-              <Spinner animation='border' variant='success'></Spinner>
-            </Container>
-          ) : (
-            <Form>
-              <h3 className='thirdColor below'> List of our products: </h3>
-              <Col className='below list list-smart'>
-                <Row>
-                  {products
-                    .sort((a, b) => (a.name > b.name ? 1 : -1))
-                    .filter((t) => {
-                      if (filterType === "Type" && filterFarmer === "Farmer")
-                        return (
-                          
-                          t.name
-                            .toLowerCase()
-                            .includes(searchValue.toLowerCase()) &&
-                          t.quantity > 0
-                        );
+              <Form>
+                <Form.Control
+                  className="im-input"
+                  as='select'
+                  onChange={(event) => {
+                    setCategorize(1);
 
-                      if (filterType !== "Type" && filterFarmer === "Farmer")
-                        return (
-                          t.name == filterType &&
-                          t.name
-                            .toLowerCase()
-                            .includes(searchValue.toLowerCase()) &&
-                          t.quantity > 0
-                        );
+                    setFilterFarmer(event.target.value);
+                    setViewFilter(false);
+                  }}>
+                  <option value={undefined}> Farmer</option>
+                  {farmers.map((t) => (
+                    <option value={t}>{t}</option>
+                  ))}
+                </Form.Control>
+              </Form>
+            </>
+          ) : null}
+        </section>
 
-                      if (filterType == "Type" && filterFarmer !== "Farmer")
-                        return (
-                          t.farmer == filterFarmer &&
-                          t.name
-                            .toLowerCase()
-                            .includes(searchValue.toLowerCase()) &&
-                          t.quantity > 0
-                        );
-
-                      if (filterType !== "Type" && filterFarmer !== "Farmer")
-                        return (
-                          t.farmer == filterFarmer &&
-                          t.name == filterType &&
-                          t.name
-                            .toLowerCase()
-                            .includes(searchValue.toLowerCase())
-                        );
-                    })
-                    .map((p) => (
-                      /*   <Col className='below over p-cont mr-3 '>
-                        <Row className=' justify-content-center'>
-                          {" "}
-                          <Image
-                            src={"./img/" + p.name + ".jpeg"}
-                            className='ph-prev justify-content-center'
-                          />{" "}
-                        </Row>
-                        <Row className='justify-content-center'> {p.name}</Row>
-                        <Row className='justify-content-center'>
-                          {" "}
-                          {p.quantity}
-                        </Row>
-                        <Row className='justify-content-center'>
-                          {p.price} €/Kg
-                        </Row>
-                        <Row className='justify-content-center'>{p.farmer} </Row>
-                      </Col> */
-
-                      <Col className='below over p-cont mr-3 '>
-                        <Row className=' justify-content-center'>
-                          <Image
-                            src={"./img/" + p.name + ".jpeg"}
-                            className='ph-prev justify-content-center'
-                          />{" "}
-                        </Row>
-                        <Row className='justify-content-center'> {p.name}</Row>
-                        <Row className='justify-content-center'>
-                          {p.price} €/Kg
-                        </Row>{" "}
-                        <Row className='justify-content-center'>
-                          {" "}
-                          {p.quantity}
-                        </Row>
-                        <Row className='justify-content-center'>
-                          <Button
-                            onClick={(ev) => {
-                              if (
-                                orderProduct.filter(
-                                  (t) => t.product_id === p.id
-                                ).length === 0 ||
-                                orderProduct.filter(
-                                  (t) => t.product_id === p.id
-                                )[0].quantity > p.quantity ||
-                                orderProduct.filter(
-                                  (t) => t.product_id === p.id
-                                )[0].quantity <= 0
-                              )
-                                setErrorMessage("Wrong quantity");
-                              else {
-                                API.insertProductInBasket(
-                                  orderProduct
-                                    .filter((t) => t.product_id === p.id)
-                                    .map((t) => ({
-                                      product_id: t.product_id,
-                                      quantity: t.quantity,
-                                    }))[0]
-                                );
-
-                                setChanges((old) => !old);
-                                setOrderProduct((old) => {
-                                  return   old.map((item) => {
-                                    if (item.product_id === p.id)
-                                      return {
-                                        product_id: p.id,
-                                        confirmed: true,
-                                        quantity: item.quantity,
-                                        name: p.name,
-                                      };
-                                    else return item;
-                                  });
-                                });
-                              }
-                            }}
-                            className='spg-button'>
-                            {orderProduct.filter(
-                              (t) =>
-                                t.product_id === p.id && t.confirmed
-                            ).length === 0
-                              ? "ADD"
-                              : "MODIFY"}
-                          </Button>
-                        </Row>
-                        <Row className='justify-content-center '>
-                          <Form.Group>
-                            <Form.Control
-                              onChange={(ev) => {
-                                if (isNaN(parseInt(ev.target.value)))
-                                  setErrorMessage("not a number");
-                                else {
-                                  if (
-                                    orderProduct.filter(
-                                      (t) => t.product_id === p.id
-                                    ).length !== 0
-                                  ) {
-                                    setOrderProduct((old) => {
-                                      return  old.map((item) => {
-                                        if (item.product_id === p.id)
-                                          return {
-                                            product_id: p.id,
-                                            confirmed: item.confirmed,
-                                            quantity: parseInt(ev.target.value),
-                                            name: p.name,
-                                          };
-                                        else return item;
-                                      });
-                                    });
-                                  } else {
-                                    setOrderProduct((old) => [
-                                      {
-                                        product_id: p.id,
-                                        confirmed: false,
-                                        quantity: parseInt(ev.target.value),
-                                        name: p.name,
-                                      },
-                                      ...old,
-                                    ]);
-                                  }
-                                }
-                              }}
-                              id={p.id}
-                              size='sm'
-                            />
-                          </Form.Group>
-                        </Row>
-                      </Col>
+        {categorize === 0 && viewFilter === true ? (
+          <Form>
+            <Form.Control
+              as='select'
+              onChange={(event) => {
+                setCategorize(0);
+                setViewFilter(true);
+                setFilterType(event.target.value);
+                setViewFilter(false);
+              }}>
+              <option value='Type'> Type</option>
+              {type
+                .sort((a, b) => (a.name > b.name ? 1 : -1))
+                .map((t) => (
+                  <option value={t}>{t}</option>
+                ))}
+            </Form.Control>
+          </Form>
+        ) : (
+          <>
+            {categorize === 1 && viewFilter === true ? (
+              <div>
+                <Form>
+                  <Form.Control
+                    as='select'
+                    onChange={(event) => {
+                      setFilterFarmer(event.target.value);
+                      setViewFilter(false);
+                    }}>
+                    <option value=''> Farmer</option>
+                    {farmers.map((t) => (
+                      <option value={t}>{t}</option>
                     ))}
-                </Row>
-              </Col>
-            </Form>
-          )}
-        </Col>
+                  </Form.Control>
+                </Form>
+              </div>
+            ) : (
+              ""
+            )}
+          </>
+        )}
+        {isProductListLoading ? (
+          <Container className='below'>
+            <Spinner animation='border' variant='success'></Spinner>
+          </Container>
+        ) :
+          <>
+            <h3 className='thirdColor below'> List of our products: </h3>
+            <ProductsList
+              products={products}
+              setErrorMessage={setErrorMessage}
+              updateRequestedQuantity={updateRequestedQuantity}
+              filter={{ type: filterType, farmer: filterFarmer, search: searchValue }}
+              orderedProducts={orderedProducts}
+            />
+          </>
+        }
+      </PageSection>
 
-        <Col sm={4} className='ml-3 p-2'>
-          <Basket
-            props={props}
-            changes={changes}
-            handleSubmit={handleSubmit}
-            setOrderProduct={setOrderProduct}
-            isBasketLoading={isBasketLoading}
-          />
-        </Col>
-      </Container>
-    </>
+      <Basket
+        style={{ flex: "1 1 0px" }}
+        props={props}
+        changes={changes}
+        handleSubmit={handleSubmit}
+        isBasketLoading={isBasketLoading}
+      />
+    </section>
   );
 }
 

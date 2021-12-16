@@ -1,11 +1,10 @@
 import { Container, Row, Image, Col } from "react-bootstrap";
-
-import "../css/custom.css";
+import { Page} from "../ui-components/Page";
 
 function AboutPage(props) {
   return (
-    <>
-      {" "}
+    <Page>
+      
       <Container className='text-dark below'>
         <Col>
           <Row className='justify-content-left '>
@@ -24,7 +23,7 @@ function AboutPage(props) {
               exchange experiences and live in community spirit. However, that’s
               not all. Apart from what has already been said, our every purchase
               contributes to development of a particular production, economical
-              and social model.{" "}
+              and social model.
             </p>
             <Image
               className='mx-auto below ph-au-f'
@@ -60,7 +59,7 @@ function AboutPage(props) {
           </Row>
         </Col>
       </Container>
-    </>
+    </Page>
   );
 }
 

@@ -1,27 +1,29 @@
 import { React, useState, useEffect } from "react";
 import { Container, Row } from "react-bootstrap";
-import { LoginForm } from "./pages/Login";
-import { ShopEmployee } from "./pages/ShopEmployeePage";
-import { ClientPage } from "./pages/ClientPage";
-import { HomePage } from "./pages/HomePage";
-import { FarmerPage } from "./pages/FarmerPage";
-import { AboutPage } from "./pages/AboutPage";
-import { RegistrationForm } from "./ui-components/RegistrationForm";
 import dayjs from "dayjs";
-import { WarehousePage } from "./pages/WarehousePage";
-
 import {
   BrowserRouter,
   Route,
   Routes,
   Navigate,
 } from "react-router-dom";
-import MyNavbar from "./ui-components/MyNavbar";
-
 import "bootstrap/dist/css/bootstrap.min.css";
+
+import { LoginForm } from "./pages/Login";
+import { ShopEmployee } from "./pages/ShopEmployeePage";
+import { ClientPage } from "./pages/ClientPage";
+import { HomePage } from "./pages/HomePage";
+import { FarmerPage } from "./pages/FarmerPage";
+import { AboutPage } from "./pages/AboutPage";
+import { WarehousePage } from "./pages/WarehousePage";
+import { RegistrationForm } from "./ui-components/RegistrationForm";
+import { BrowserProducts } from "./ui-components/BrowseProducts";
+import MyNavbar from "./ui-components/MyNavbar";
 import "./css/custom.css";
 import API from "./API";
-import { BrowserProducts } from "./ui-components/BrowseProducts";
+
+
+import GlobalState from './utility/GlobalState';
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -88,173 +90,153 @@ const App = () => {
     return () => clearInterval(interval);
   }, [timeDateOffset]);
 
+
+  const [state, setState] = useState({
+    useHistoryBack: false
+  });
+
   return (
-    <BrowserRouter>
+    <GlobalState.Provider value={[state, setState]}>
+      <BrowserRouter>
 
-      <MyNavbar
-        doLogOut={doLogOut}
-        loggedIn={loggedIn}
-        closeMessage={closeMessage}
-        changeTimeDate={setTimeDateOffset}
-        virtualTimeDate={virtualTimeDate}
-      />
+        <MyNavbar
+          doLogOut={doLogOut}
+          loggedIn={loggedIn}
+          closeMessage={closeMessage}
+          changeTimeDate={setTimeDateOffset}
+          virtualTimeDate={virtualTimeDate}
+        />
 
-      <Routes>
-
-        <Route
-          exact
-          path='/'
-          element={
-            <Container fluid className='justify-content-center d-flex w-100'>
+        <Routes>
+          <Route
+            exact
+            path='/'
+            element={
               <HomePage className='w-100' />
-            </Container>
-          }
-        />
+            }
+          />
 
-        <Route
-          exact
-          path='/products'
-          element={
-            <Container fluid className='justify-content-center d-flex w-100'>
+          <Route
+            exact
+            path='/products'
+            element={
               <BrowserProducts />
-            </Container>
-          }
-        />
-
-
-        <Route
-          exact
-          path='/shopemployee'
-          element={
-            <>
-              {user !== null && user.role === "1" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ShopEmployee
-                    hour={virtualTimeDate.format("H")}
-                    dow={virtualTimeDate.format("dddd")}
-                    user={user}
-                    loggedIn={loggedIn}
-                  />
-                </Container>
-              ) : (
-                <Navigate to='/login' />
-              )}
-            </>
-          }
-        />
-        <Route
-          exact
-          path='/warehouse'
-          element={
-            <>
-              {user !== null && user.role === "3" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
-                </Container>
-              ) : (
-                <Navigate to='/login' />
-              )}
-            </>
-          }
-        />
-        <Route
-          exact
-          path='/signup'
-          element={
-            <Container fluid className='justify-content-center d-flex w-100'>
-              <RegistrationForm
-                className='below'
-                loggedIn={loggedIn}
-                doLogin={doLogin}
-              />
-            </Container>
-          }
-        />
-
-        <Route
-          exact
-          path='/farmerpage'
-          element={
-            <>
-              {user !== null && user.role === "2" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <FarmerPage
-                    hour={virtualTimeDate.format("H")}
-                    dow={virtualTimeDate.format("dddd")}
-                    user={user}
-                  />
-                </Container>
-              ) : (
-                <Navigate to='/login' />
-              )}
-            </>
-          }
-        />
-
-        <Route
-          exact
-          path='/clientpage'
-          element={
-            <>
-              {" "}
-              {user !== null && user.role === "0" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ClientPage
-                    virtualTimeDate={virtualTimeDate}
-                    hour={virtualTimeDate.format("H")}
-                    dow={virtualTimeDate.format("dddd")}
-                    user={user}
-                  />
-                </Container>
-              ) : (
-                <Navigate to='/login' />
-              )}
-            </>
-          }
-        />
-
-        <Route
-          exact
-          path='/about'
-          element={
-            <Container fluid className='justify-content-center d-flex'>
-              {/* inserire controllo loggedIn e ruolo*/}{" "}
-              <AboutPage user={user} />
-            </Container>
-          }
-        />
-
-        <Route
-          path='/login'
-          element={
-            <Container fluid className='justify-content-center d-flex'>
-              <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null ? (
-                  <>
-                    {" "}
-
-                    {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
-                    {user.role === "0" ? <Navigate to='/clientpage' /> : null}
-                    {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
-                    {user.role === "3" ? <Navigate to='/warehouse' /> : null}
-                  </>
+            }
+          />
+          <Route
+            exact
+            path='/shopemployee'
+            element={
+              <>
+                {user !== null && user.role === "1" ? (
+                <ShopEmployee
+                  hour={virtualTimeDate.format("H")}
+                  dow={virtualTimeDate.format("dddd")}
+                  user={user}
+                  loggedIn={loggedIn}
+                />
                 ) : (
-                  <LoginForm
-                    closeMessage={closeMessage}
-                    message={message}
-                    login={doLogin}
-                  />
+                <Navigate to='/login' />
                 )}
-              </Row>
-            </Container>
-          }
-        />
+              </>
+            }
+          />
+          <Route
+            exact
+            path='/warehouse'
+            element={
+              <>
+                {user !== null && user.role === "3" ? (
+                    <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
+          <Route
+            exact
+            path='/signup'
+            element={
+                <RegistrationForm
+                  className='below'
+                  loggedIn={loggedIn}
+                  doLogin={doLogin}
+                />
+            }
+          />
 
-      </Routes>
-    </BrowserRouter>
+          <Route
+            exact
+            path='/farmerpage'
+            element={
+              <>
+                {user !== null && user.role === "2" ? (
+                    <FarmerPage
+                      hour={virtualTimeDate.format("H")}
+                      dow={virtualTimeDate.format("dddd")}
+                      user={user}
+                    />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path='/clientpage'
+            element={
+              <>
+                {user !== null && user.role === "0" ? (
+                    <ClientPage
+                      virtualTimeDate={virtualTimeDate}
+                      hour={virtualTimeDate.format("H")}
+                      dow={virtualTimeDate.format("dddd")}
+                      user={user}
+                    />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
+
+          <Route
+            exact
+            path='/about'
+            element={
+                <AboutPage user={user} />
+            }
+          />
+          <Route
+            path='/login'
+            element={
+              <Container fluid className='justify-content-center d-flex'>
+                <Row className='vh-100vh mt-10'>
+                  {loggedIn && user !== null ? (
+                    <>
+                      {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
+                      {user.role === "0" ? <Navigate to='/clientpage' /> : null}
+                      {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
+                      {user.role === "3" ? <Navigate to='/warehouse' /> : null}
+                    </>
+                  ) : (
+                    <LoginForm
+                      closeMessage={closeMessage}
+                      message={message}
+                      login={doLogin}
+                    />
+                  )}
+                </Row>
+              </Container>
+            }
+          />
+
+        </Routes>
+      </BrowserRouter>
+    </GlobalState.Provider>
   );
 };
 

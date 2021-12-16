@@ -1,7 +1,7 @@
-import { Container, Row, Button, Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import "../css/custom.css";
 import warehouseAPI from "../api/warehouse";
+import { BlockTitle, PageSection } from "../ui-components/Page";
 
 function ManageDelivery(props) {
   const [deliveries, setDeliveries] = useState([]);
@@ -23,50 +23,46 @@ function ManageDelivery(props) {
   };
 
   return (
-    <>
-      <Row className='justify-content-center'>
-        {" "}
-        <h2> Manage Deliveries</h2>{" "}
-      </Row>
-      <Container className='justify-content-center cont'>
-        {deliveries.length ? (
-          <>
-            <Table responsive size='sm'>
-              <thead>
+    <PageSection>
+
+      <BlockTitle>Manage Deliveries</BlockTitle>
+      {deliveries.length ? (
+        <>
+          <Table responsive size='sm'>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Farmer</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {deliveries.map((d) => (
                 <tr>
-                  <th></th>
-                  <th>Farmer</th>
-                  <th>Product</th>
-                  <th>Quantity</th>
-                  <th></th>
+                  <td></td>
+                  <td>{d.farmer}</td>
+                  <td>{d.productName}</td>
+                  <td>{d.quantity}</td>
+                  <td>
+
+                    <Button
+                      className='im-button im-animate'
+                      onClick={() => handleConfirm(d.id)}
+                    >
+                      Confirm
+                    </Button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {deliveries.map((d) => (
-                  <tr>
-                    <td></td>
-                    <td>{d.farmer}</td>
-                    <td>{d.productName}</td>
-                    <td>{d.quantity}</td>
-                    <td>
-                      {" "}
-                      <Button
-                        className='spg-button'
-                        onClick={() => handleConfirm(d.id)}>
-                        {" "}
-                        Confirm
-                      </Button>
-                    </td>
-                  </tr>
-                ))}{" "}
-              </tbody>
-            </Table>
-          </>
-        ) : (
-          <> No deliveries</>
-        )}
-      </Container>
-    </>
+              ))}
+            </tbody>
+          </Table>
+        </>
+      ) : (
+        <> No deliveries</>
+      )}
+    </PageSection>
   );
 }
 export { ManageDelivery };

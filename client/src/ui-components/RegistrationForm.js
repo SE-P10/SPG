@@ -1,18 +1,19 @@
 import {
-  Container,
   Row,
   Form,
   Col,
   Button,
-  Alert,
   Card,
   Modal,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import API from "../API";
+import { ToastNotification } from "./ToastNotification";
+import { BlockTitle, PageSection } from "./Page";
 
 function RegistrationForm(props) {
+
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [username, setUsername] = useState("");
@@ -65,33 +66,21 @@ function RegistrationForm(props) {
     }
   };
 
-  const goToLogin = () => {
-    history.push("/login");
-  };
-  const goToRoot = () => {
-    history.push("/");
-  };
-
   return (
     <>
-      <Container className='justify-content-center below'>
-        {errorMessage ? (
-          <Alert
-            variant='danger'
-            onClose={() => setErrorMessage("")}
-            dismissible>
-            {" "}
-            {errorMessage}{" "}
-          </Alert>
-        ) : (
-          ""
-        )}
-        <Card className='below'>
+      <ToastNotification
+        variant='error'
+        onSet={() => setErrorMessage("")}
+        message={errorMessage}
+      />
+      <PageSection>
+        <BlockTitle>Registration form</BlockTitle>
+        <Card>
           <Card.Header as='h5'>Fill the form</Card.Header>
           <Card.Body>
             <Form>
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridName'>
+                <Form.Group as={Col} controlId='formGridName' sm>
                   <Form.Label>Name</Form.Label>
                   <Form.Control
                     required
@@ -101,8 +90,7 @@ function RegistrationForm(props) {
                     placeholder='Enter Name'
                   />
                 </Form.Group>
-
-                <Form.Group as={Col} controlId='formGridSurname'>
+                <Form.Group as={Col} controlId='formGridSurname' sm>
                   <Form.Label>Surname</Form.Label>
                   <Form.Control
                     required
@@ -115,7 +103,7 @@ function RegistrationForm(props) {
               </Row>
 
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridUsername'>
+                <Form.Group as={Col} controlId='formGridUsername' sm>
                   <Form.Label>Username</Form.Label>
                   <Form.Control
                     required
@@ -126,7 +114,7 @@ function RegistrationForm(props) {
                   />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId='formGridEmail'>
+                <Form.Group as={Col} controlId='formGridEmail' sm>
                   <Form.Label>Email</Form.Label>
                   <Form.Control
                     required
@@ -139,7 +127,7 @@ function RegistrationForm(props) {
               </Row>
 
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridPassword'>
+                <Form.Group as={Col} controlId='formGridPassword' sm>
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     required
@@ -150,7 +138,7 @@ function RegistrationForm(props) {
                   />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId='formGridConfirmPassword'>
+                <Form.Group as={Col} controlId='formGridConfirmPassword' sm>
                   <Form.Label>Confirm Password</Form.Label>
                   <Form.Control
                     required
@@ -163,27 +151,32 @@ function RegistrationForm(props) {
               </Row>
             </Form>
           </Card.Body>
+          <Card.Footer className="d-flex justify-content-center">
+            <Button className='im-button im-animate' onClick={registrationSubmit}>
+              Register
+            </Button>
+          </Card.Footer>
         </Card>
-        <Row className='justify-content-center'>
-          <Button className='spg-button below' onClick={registrationSubmit}>
-            Register
-          </Button>
-        </Row>
+
         <Modal show={show} onHide={handleModalClose}>
           <Modal.Header>
             <Modal.Title>Registration was successful</Modal.Title>
           </Modal.Header>
           <Modal.Body>Do you want to login,now?</Modal.Body>
           <Modal.Footer>
-            <Button className='spg-button below' onClick={goToLogin}>
+            <Button className='below im-button im-animate' onClick={() => {
+              history.push("/login");
+            }}>
               YES
             </Button>
-            <Button className='below' variant='danger' onClick={goToRoot}>
+            <Button className='below im-button im-animate' variant='danger' onClick={() => {
+              history.push("/");
+            }}>
               NO
             </Button>
           </Modal.Footer>
         </Modal>
-      </Container>
+      </PageSection>
     </>
   );
 }
