@@ -96,14 +96,14 @@ function HomePage(props) {
         </Row>
       </Container>
 
-      <Col className='d-flex justify-content-center below'>
-        <Link to={"/about"} >
-          <Button className='spg-button mr-1'>
+      <Col className='d-flex justify-content-evenly below'>
+        <Link to={"/about"} className="">
+          <Button className='im-button im-animate'>
             About us
           </Button>
         </Link>
         <Link to={"/products"} >
-          <Button className='spg-button'>
+          <Button className='im-button im-animate'>
             Our Products
           </Button>
         </Link>

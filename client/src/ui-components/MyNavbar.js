@@ -131,7 +131,7 @@ function MyNavbar(props) {
                         />
                         <br />
                         <Container className="d-flex w-100 justify-content-center">
-                          <Button variant="outline-danger" className='im-button im-animate'
+                          <Button variant="danger" 
                             onClick={async () => {
 
                               let timeoffset = await API.setTime(getVirtualTimeTMP().toDate());

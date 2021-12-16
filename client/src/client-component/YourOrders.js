@@ -128,7 +128,7 @@ function YourOrders(props) {
               <>
                 <BlockTitle> No orders found! Purchaise a &nbsp;
                   <Button
-                    className='spg-button'
+                    className='im-button'
                     onClick={() => props.changeAction(2)}>
 
                     New Order
