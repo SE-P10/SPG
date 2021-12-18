@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import dayjs from "dayjs";
 import API from "./../API";
@@ -187,7 +188,9 @@ function YourOrders(props) {
                   onClick={() => {
                     setOpenDeliveryForm(true);
                     setOpenPickupForm(false);
-                  }}></Form.Check>
+                  }}>
+
+                </Form.Check>
               </Row>
             </Form.Group>
 

@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import { deliveryIcon } from "../ui-components/Icons";
 import { ManageDelivery } from "../warehouse-component/ManageDelivery";
 import GlobalState from '../utility/GlobalState';
-import { SVGIcon, Page, PageTitle, PageContainer, PageSection } from "../ui-components/Page";
+import { SVGIcon, Page, PageTitle, PageContainer, PageSeparator } from "../ui-components/Page";
 
 function WarehousePage(props) {
 
@@ -18,26 +18,30 @@ function WarehousePage(props) {
   return (
     <Page>
 
-      {props.user.name ? <PageTitle>{props.user.name}</PageTitle> : null}
+      {props.user.name ? (
+        <>
+          <PageSeparator hidden />
+          <PageTitle>{props.user.name}</PageTitle>
+        </>
+      )
+        : null}
 
       {actionC === 0 ? (
         <PageContainer>
-          <PageSection >
-            <Button
-              className='im-button im-button-ticket im-animate'
-              onClick={() => {
-                setActionC(1);
-              }}>
-              <Col className='justify-content-center'>
-                <Row className='justify-content-center'>
-                  <SVGIcon icon={deliveryIcon} width='80px' height='80px' />
-                </Row>
-                <Row className='justify-content-center'>
-                  Manage Deliveries
-                </Row>
-              </Col>
-            </Button>
-          </PageSection>
+          <Button
+            className='im-button im-button-ticket im-animate'
+            onClick={() => {
+              setActionC(1);
+            }}>
+            <Col className='justify-content-center'>
+              <Row className='justify-content-center'>
+                <SVGIcon icon={deliveryIcon} width='80px' height='80px' />
+              </Row>
+              <Row className='justify-content-center'>
+                Manage Deliveries
+              </Row>
+            </Col>
+          </Button>
         </PageContainer>
       ) : (
         <></>

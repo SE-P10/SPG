@@ -10,7 +10,7 @@ import {
   mailIcon,
 } from "../ui-components/Icons.js";
 import { ClientNotifications } from "../client-component/ClientNotifications";
-import { SVGIcon, Page, PageTitle, PageContainer } from "../ui-components/Page";
+import { SVGIcon, Page, PageTitle, PageContainer, PageSeparator } from "../ui-components/Page";
 import { ToastNotification } from "../ui-components/ToastNotification";
 import GlobalState from '../utility/GlobalState';
 import API from "../API";
@@ -48,10 +48,11 @@ function ClientPage(props) {
   return (
     <Page>
       <ToastNotification variant='success' onSet={() => { setMessage("") }} message={message} />
-
       {
-        props.user.name ? (
+        props.user.name ? (<>
+          <PageSeparator hidden />
           <PageTitle>{props.user.name} personal page</PageTitle>
+        </>
         ) : null
       }
 

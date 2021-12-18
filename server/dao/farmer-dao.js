@@ -63,9 +63,9 @@ exports.getProducts = async (farmerID) => {
 
   let products = await getQuerySQL(
     db,
-    "SELECT products.id, products_details.name, products.quantity FROM products_details, products WHERE products.id = products_details.id AND products.farmer_id = ?",
+    "SELECT products.id, products_details.name, products.quantity, products.price FROM products_details, products WHERE products.id = products_details.id AND products.farmer_id = ?",
     [farmerID],
-    { id: 0, name: "", quantity: -1 }
+    { id: 0, name: "", quantity: 0 , price: 0}
   );
 
   return products;

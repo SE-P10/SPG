@@ -4,7 +4,7 @@ import { useState, useEffect, useContext } from "react";
 import { updateIcon, confirmIcon } from "../ui-components/Icons";
 import { UpdateAvailability } from "../farmer-component/UpdateAvailability";
 import { ConfirmProducts } from "../farmer-component/ConfirmProducts";
-import { SVGIcon, Page, PageTitle, PageContainer } from "../ui-components/Page";
+import { SVGIcon, Page, PageTitle, PageContainer, PageSeparator } from "../ui-components/Page";
 import { ToastNotification } from "../ui-components/ToastNotification";
 import GlobalState from '../utility/GlobalState';
 
@@ -30,7 +30,10 @@ function FarmerPage(props) {
       <ToastNotification variant='success' onSet={() => { setMessage("") }} message={message} />
       {
         props.user.name ? (
+          <>
+          <PageSeparator hidden/>
           <PageTitle>{props.user.name} farmer personal page</PageTitle>
+          </>
         ) : null
       }
  

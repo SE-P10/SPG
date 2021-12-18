@@ -4,7 +4,7 @@ const IS_DEBUG = false;
 const DEBUG_ALLOW_DIRTY = IS_DEBUG;
 const DEBUG_PROCESS = IS_DEBUG;
 
-const ENABLE_CRON = false;
+const ENABLE_CRON = true;
 
 const express = require("express");
 const morgan = require("morgan"); // logging middleware

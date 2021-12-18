@@ -2,7 +2,8 @@ import {
   Button,
   Form,
   Container,
-  Spinner
+  Spinner,
+  Row
 } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { Basket } from "../client-component/Basket";
@@ -25,7 +26,7 @@ function ClientOrder(props) {
   const [filterFarmer, setFilterFarmer] = useState("Farmer"); // Farmer -> all farmers
   const [mailInserted, setMailInserted] = useState(undefined);
   const [isProductListLoading, setIsProductListLoading] = useState(true);
-  const [changes, setChanges] = useState(false);
+  const [updateBasket, setUpdateBasket] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [walletValue, setWalletValue] = useState(null);
@@ -57,13 +58,16 @@ function ClientOrder(props) {
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
 
       if (modifyOrder > 0) {
+
         let oldOrder = await API.getOrder(modifyOrder);
+
         for (let p of oldOrder.products) {
           await API.insertProductInBasket({
             product_id: p.product_id,
             quantity: p.quantity,
           });
         }
+        setUpdateBasket((old) => !old)
       }
 
       setOrderedProducts(await API.getBasketProducts());
@@ -106,7 +110,7 @@ function ClientOrder(props) {
       }
     } else userId = props.user.id;
 
-    if (!updatingOrder && (!basket || basket.length === 0)) {
+    if (!basket || basket.length === 0) {
       setErrorMessage("No products found in the basket!");
       return;
     }
@@ -159,9 +163,9 @@ function ClientOrder(props) {
 
       await API.insertProductInBasket({ product_id: product.id, quantity: quantity });
 
-      setOrderedProducts((await API.getBasketProducts()));
+      setOrderedProducts(await API.getBasketProducts());
 
-      setChanges((old) => !old);
+      setUpdateBasket((old) => !old);
 
       return true;
     }
@@ -202,17 +206,24 @@ function ClientOrder(props) {
               setSearchValue={setSearchValue}
               onSearchSubmit={() => { console.log("testSubmit") }}
             />
-            {Number.parseInt(props.user.role) === 0 ? <div className='margin-yourwallet'>
-              <h4 className='font-color'>Your Wallet</h4>
-              {isWalletLoading ? (
-                <Spinner
-                  animation='border'
-                  variant='success'
-                  size='sm'></Spinner>
-              ) : (
-                <div className='margin-walletvalue'>{walletValue}€</div>
-              )}
-            </div> : <></>}
+            {
+              Number.parseInt(props.user.role) === 0 ?
+                <Row className="d-flex justify-content-end">
+                  <div className='im-yourwallet'>
+                    <h4 className='font-color'>Your Wallet</h4>
+                    {isWalletLoading ? (
+                      <Spinner
+                        animation='border'
+                        variant='success'
+                        size='sm'></Spinner>
+                    ) : (
+                      <div>{walletValue}€</div>
+                    )}
+                  </div>
+                </Row>
+                :
+                <></>
+            }
           </section>
           <Button
             className='below im-button im-animate'
@@ -329,7 +340,7 @@ function ClientOrder(props) {
 
       <Basket
         style={{ flex: "1 1 0px" }}
-        changes={changes}
+        changes={updateBasket}
         handleSubmit={handleBasketSubmit}
         handleChange={handleBasketChange}
       />

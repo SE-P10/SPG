@@ -88,8 +88,8 @@ function ConfirmProducts(props) {
           <thead>
             <th>Name </th>
             <th>Ordered </th>
-            <th> Confirmed </th>
-            <th> Confirm</th>
+            <th>Confirmed </th>
+            <th>Confirm</th>
           </thead>
           <tbody>
             {productQ
@@ -102,6 +102,7 @@ function ConfirmProducts(props) {
                     <td> {getQuantityConfirmed(p.id)} </td>
                     <td>
                       <Form.Control
+                      className="im-input"
                         defaultValue={p.quantity}
                         type='number'
                         min={0}

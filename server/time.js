@@ -30,7 +30,7 @@ exports.is_possible = (req) => {
         clients_pickup_orders: false
     };
 
-    if ((d == 1 && h > 9) || (d < 5) || (d == 6 && h < 9)) {
+    if ((d == 5 && h >= 18) || (d == 6 && h < 9)) {
         possible.farmer_estimation = true;
     }
 
