@@ -34,6 +34,60 @@ function checkType(res, types) {
 
 // UNIT test begin
 
+/* 
+
+
+  ## farmer-dao.js - Ale
+   GET /api/products/farmer/:farmer_id
+   POST /api/farmer/products/update
+   GET /api/orderProducts
+   GET /api/farmerOrders
+   POST /api/farmerOrders
+   GET /api/farmerOrders/open
+
+  ## notification-dao.js - Desi
+  POST /api/notification/:user_id
+  PUT /api/notification/:id
+  GET /api/notification/:user_id
+
+
+  ## orders-dao.js - Desi
+  PUT /api/orders/:order_id
+  POST /api/orders/:user_id
+  GET /api/orders/:filter?
+
+  ## products-dao.js - Ale
+  GET /api/products
+  POST /api/basketProduct
+  DELETE /api/basketProduct
+  GET /api/basketProduct
+
+  ## test-dao.js
+
+  ## user-dao.js - Desi
+  GET /api/users/:id
+  POST /api/newClient
+
+  ## wallet-dao.js - Desi
+  POST /api/wallet/update
+  GET /api/wallet/:mail
+  
+  ## warehouse-dao.js - Desi
+  GET /api/warehouse/openDeliveries
+  PUT /api/warehouse/openDeliveries/:delivery_id
+
+
+  ## server.js
+  PUT /api/debug/time/:time -  Desi
+  GET /api/debug/time - Desi
+  POST /api/sessions - Ale
+  DELETE /api/sessions/current - Ale
+  GET /api/sessions/current - Ale
+  DELETE /api/clients/:email - Ale
+  DELETE /api/test/restoretables - Ale
+
+*/
+
 // LOGIN as SHOPEMPLOYEE
 describe("Login as SHOPEMPLOYEE", function () {
   const credentials = {
