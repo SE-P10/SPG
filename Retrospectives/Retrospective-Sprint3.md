@@ -82,7 +82,7 @@ Time is a difficult aspect to manage, to not be understimate and take in account
   We could improve testing now that we have more people involved
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.) 
-<br> We want to better manage our time<br>
+<br> We want to better manage our time, trying to estimate better our time during the sprint planning<br>
 
 
 - One thing you are proud of as a Team!!<br>
