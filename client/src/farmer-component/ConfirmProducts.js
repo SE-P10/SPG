@@ -1,9 +1,4 @@
-import {
-  Alert,
-  Form,
-  Button,
-  Table,
-} from "react-bootstrap";
+import { Alert, Form, Button, Table, Spinner } from "react-bootstrap";
 import { useEffect, useState } from "react";
 
 import { PageSection, BlockTitle } from "../ui-components/Page";
@@ -14,6 +9,7 @@ function ConfirmProducts(props) {
   const [confirmedProductQ, setConfirmedProductQ] = useState([]);
   const [productQ, setProductQ] = useState([]);
   const [confirmedQ, setConfirmedQ] = useState([]);
+  const [isProductsListLoading, setIsProductsListLoading] = useState(true);
   // prendo i prodotti e le quantita dal db (productQ)
   // copio i valori in confirmedProductQ
   // se cambia qualcosa con i Form Control modifico confirmedProductQ
@@ -29,6 +25,7 @@ function ConfirmProducts(props) {
 
     const confirmedQe = async () => {
       const confirmedQo = await API.getFarmerOpenDeliveries();
+      if (confirmedQo) setIsProductsListLoading(false);
       setConfirmedQ(confirmedQo);
     };
     confirmedQe();
@@ -37,7 +34,7 @@ function ConfirmProducts(props) {
   const handleConfirm = async () => {
     // prodotti da mandare al db per delivery
     for (let product of confirmedProductQ) {
-       await API.confirmFarmerOrder(product.id, product.quantity);
+      await API.confirmFarmerOrder(product.id, product.quantity);
     }
 
     props.addMessage("Confirmation ok");
@@ -68,60 +65,64 @@ function ConfirmProducts(props) {
 
   return (
     <PageSection>
-      <BlockTitle >
-        Confirm Products
-      </BlockTitle>
+      <BlockTitle>Confirm Products</BlockTitle>
       {errorMessage ? (
-        <Alert
-          variant='danger'
-          onClose={() => setErrorMessage("")}
-          dismissible>
-
+        <Alert variant='danger' onClose={() => setErrorMessage("")} dismissible>
           {errorMessage}
         </Alert>
       ) : (
         ""
       )}
 
-      {productQ ? (
-        <Table responsive size='sm' className='below'>
-          <thead>
-            <th>Name </th>
-            <th>Ordered </th>
-            <th>Confirmed </th>
-            <th>Confirm</th>
-          </thead>
-          <tbody>
-            {productQ
-              .filter((t) => t.quantity > 0)
-              .map((p) => (
-                <>
-                  <tr>
-                    <td>{p.product} </td>
-                    <td>{p.quantity} </td>
-                    <td> {getQuantityConfirmed(p.id)} </td>
-                    <td>
-                      <Form.Control
-                      className="im-input"
-                        defaultValue={p.quantity}
-                        type='number'
-                        min={0}
-                        max={p.quantity}
-                        onChange={(ev) => {
-                          changeQ(ev, p);
-                        }}></Form.Control>
-                    </td>
-                  </tr>
-                </>
-              ))}
-          </tbody>
-        </Table>
+      {isProductsListLoading ? (
+        <Spinner animation='border' variant='success' size='sm'></Spinner>
       ) : (
-        <> No orders for you this week!</>
+        <>
+          {productQ ? (
+            <>
+              <Table responsive size='sm' className='below'>
+                <thead>
+                  <th>Name </th>
+                  <th>Ordered </th>
+                  <th>Confirmed </th>
+                  <th>Confirm</th>
+                </thead>
+                <tbody>
+                  {productQ
+                    .filter((t) => t.quantity > 0)
+                    .map((p) => (
+                      <>
+                        <tr>
+                          <td>{p.product} </td>
+                          <td>{p.quantity} </td>
+                          <td> {getQuantityConfirmed(p.id)} </td>
+                          <td>
+                            <Form.Control
+                              className='im-input'
+                              defaultValue={p.quantity}
+                              type='number'
+                              min={0}
+                              max={p.quantity}
+                              onChange={(ev) => {
+                                changeQ(ev, p);
+                              }}></Form.Control>
+                          </td>
+                        </tr>
+                      </>
+                    ))}
+                </tbody>
+              </Table>
+              <Button
+                className='below im-button im-animate'
+                onClick={handleConfirm}>
+                Confirm
+              </Button>{" "}
+            </>
+          ) : (
+            <> No orders for you this week!</>
+          )}{" "}
+        </>
       )}
-      <Button className='below im-button im-animate' onClick={handleConfirm}>
-        Confirm
-      </Button>
     </PageSection>
   );
 }
