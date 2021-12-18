@@ -32,55 +32,56 @@ function LoginForm(props) {
   };
 
   return (
-    <Page>
+    <Page style={{ maxWidth: "400px" }}>
+      <ToastNotification
+        variant='danger'
+        onSet={closeErrorMessage}
+        content={errorMessage}
+      />
+      <Form className='im-container im-container--filled'>
         <ToastNotification
-          variant='danger'
-          onSet={closeErrorMessage}
-          content={errorMessage}
+          variant='error'
+          onSet={props.closeMessage}
+          message={props.message.msg}
         />
-        <Form className='im-container im-container--filled'>
-          <ToastNotification
-            variant='error'
-            onSet={props.closeMessage}
-            message={props.message.msg}
-          />
-          <Container>
-            <Container className='mx-auto'>
-              <Row className='align-center'>
-                <div className="mx-auto im-svg-icon" style={{ width: '80px', height: '80px' }}>{plantIcon}</div>
-              </Row>
-              <Row className=''>
-                <h2 className='navbar-link'> Log In </h2>
-              </Row>
-              <Form.Group controlId='username' className='mt-4'>
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type='text'
-                  value={username}
-                  onChange={(ev) => setUsername(ev.target.value)}
-                  required
-                />
-              </Form.Group>
-            </Container>
-            <Container className='mx-auto'>
-              <Form.Group controlId='password'>
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type='password'
-                  value={password}
-                  onChange={(ev) => setPassword(ev.target.value)}
-                />
-              </Form.Group>
-              <Button
-                variant='dark'
-                className='below im-button im-animate mx-auto'
-                onClick={handleSubmit}>
-                Login
-              </Button>
-            </Container>
+        <Container className="over below">
+          <Container className='mx-auto'>
+            <Row className='align-center'>
+              <div className="mx-auto im-svg-icon" style={{ width: '80px', height: '80px' }}>{plantIcon}</div>
+            </Row>
+            <Row className=''>
+              <h2 className='navbar-link text-center'> Log In </h2>
+            </Row>
+            <Form.Group controlId='username' className='mt-4'>
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                className="im-input im-animate"
+                type='text'
+                value={username}
+                onChange={(ev) => setUsername(ev.target.value)}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId='password'>
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                className="im-input im-animate"
+                type='password'
+                value={password}
+                onChange={(ev) => setPassword(ev.target.value)}
+              />
+            </Form.Group>
           </Container>
-          <br />
-        </Form>
+          <Container className='mx-auto d-flex justify-content-center'>
+            <Button
+              variant='dark'
+              className='below im-button im-animate mx-auto '
+              onClick={handleSubmit}>
+              Login
+            </Button>
+          </Container>
+        </Container>
+      </Form>
     </Page>
   );
 }

@@ -1,5 +1,4 @@
 import { React, useState, useEffect } from "react";
-import { Container, Row } from "react-bootstrap";
 import dayjs from "dayjs";
 import {
   BrowserRouter,
@@ -19,11 +18,9 @@ import { WarehousePage } from "./pages/WarehousePage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
 import { BrowserProducts } from "./ui-components/BrowseProducts";
 import MyNavbar from "./ui-components/MyNavbar";
-import "./css/custom.css";
-import API from "./API";
-
-
 import GlobalState from './utility/GlobalState';
+import API from "./API";
+import "./css/custom.css";
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -90,7 +87,6 @@ const App = () => {
     return () => clearInterval(interval);
   }, [timeDateOffset]);
 
-
   const [state, setState] = useState({
     useHistoryBack: false
   });
@@ -129,14 +125,14 @@ const App = () => {
             element={
               <>
                 {user !== null && user.role === "1" ? (
-                <ShopEmployee
-                  hour={virtualTimeDate.format("H")}
-                  dow={virtualTimeDate.format("dddd")}
-                  user={user}
-                  loggedIn={loggedIn}
-                />
+                  <ShopEmployee
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                    loggedIn={loggedIn}
+                  />
                 ) : (
-                <Navigate to='/login' />
+                  <Navigate to='/login' />
                 )}
               </>
             }
@@ -147,7 +143,7 @@ const App = () => {
             element={
               <>
                 {user !== null && user.role === "3" ? (
-                    <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
+                  <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
                 ) : (
                   <Navigate to='/login' />
                 )}
@@ -158,11 +154,11 @@ const App = () => {
             exact
             path='/signup'
             element={
-                <RegistrationForm
-                  className='below'
-                  loggedIn={loggedIn}
-                  doLogin={doLogin}
-                />
+              <RegistrationForm
+                className='below'
+                loggedIn={loggedIn}
+                doLogin={doLogin}
+              />
             }
           />
 
@@ -172,11 +168,11 @@ const App = () => {
             element={
               <>
                 {user !== null && user.role === "2" ? (
-                    <FarmerPage
-                      hour={virtualTimeDate.format("H")}
-                      dow={virtualTimeDate.format("dddd")}
-                      user={user}
-                    />
+                  <FarmerPage
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                  />
                 ) : (
                   <Navigate to='/login' />
                 )}
@@ -190,12 +186,12 @@ const App = () => {
             element={
               <>
                 {user !== null && user.role === "0" ? (
-                    <ClientPage
-                      virtualTimeDate={virtualTimeDate}
-                      hour={virtualTimeDate.format("H")}
-                      dow={virtualTimeDate.format("dddd")}
-                      user={user}
-                    />
+                  <ClientPage
+                    virtualTimeDate={virtualTimeDate}
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                  />
                 ) : (
                   <Navigate to='/login' />
                 )}
@@ -207,30 +203,28 @@ const App = () => {
             exact
             path='/about'
             element={
-                <AboutPage user={user} />
+              <AboutPage user={user} />
             }
           />
           <Route
             path='/login'
             element={
-              <Container fluid className='justify-content-center d-flex'>
-                <Row className='vh-100vh mt-10'>
-                  {loggedIn && user !== null ? (
-                    <>
-                      {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
-                      {user.role === "0" ? <Navigate to='/clientpage' /> : null}
-                      {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
-                      {user.role === "3" ? <Navigate to='/warehouse' /> : null}
-                    </>
-                  ) : (
-                    <LoginForm
-                      closeMessage={closeMessage}
-                      message={message}
-                      login={doLogin}
-                    />
-                  )}
-                </Row>
-              </Container>
+              <>
+                {loggedIn && user !== null ? (
+                  <>
+                    {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Navigate to='/clientpage' /> : null}
+                    {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
+                    {user.role === "3" ? <Navigate to='/warehouse' /> : null}
+                  </>
+                ) : (
+                  <LoginForm
+                    closeMessage={closeMessage}
+                    message={message}
+                    login={doLogin}
+                  />
+                )}
+              </>
             }
           />
 

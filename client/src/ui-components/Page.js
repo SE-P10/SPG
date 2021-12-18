@@ -62,20 +62,11 @@ const Page = (props) => {
 
   let [style, className] = processProps(props);
 
-  className += " im-responsive"
+  className += " mx-auto im-responsive";
 
-  return (
-    <Container className={className} style={{ ...style }} >
-      {props.children}
-    </Container>
-  );
-}
-
-const PageContainer = (props) => {
-
-  let [style, className] = processProps(props);
-
-  className += " im-container im-responsive im-grid justify-content-center"
+  if (props.fullscreen) {
+    className += " im-responsive--fullscreen";
+  }
 
   return (
     <section className={className} style={{ ...style }} >
@@ -84,13 +75,31 @@ const PageContainer = (props) => {
   );
 }
 
+const PageContainer = (props) => {
 
+  let [style, className] = processProps(props);
+
+  if (!props.fullscreen) {
+    className += " im-container im-responsive im-grid justify-content-center";
+  }
+
+  return (
+    <section className={className} style={{ ...style }} >
+      {props.children}
+    </section>
+  );
+}
 
 const PageSeparator = (props) => {
 
   let [style, className] = processProps(props);
 
-  className += " im-separator"
+  if (props.hidden) {
+    className += " im-separator--hidden";
+  }
+  else {
+    className += " im-separator";
+  }
 
   return (
     <div className={className} style={{ ...style }} />

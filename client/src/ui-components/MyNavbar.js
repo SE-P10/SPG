@@ -167,7 +167,7 @@ function MyNavbar(props) {
           )
         }
       </div>
-      <div style={{ with: "100%", height: "120px" }} />
+      <div style={{ with: "100%", height: "115px" }} />
     </>
   );
 }

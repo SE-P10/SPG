@@ -2,15 +2,18 @@ import {
   Button,
   Row,
   Card,
+  Col,
+  InputGroup,
+  FormControl
 } from "react-bootstrap";
+import ProgressBar from 'react-bootstrap/ProgressBar'
 import { useState, useEffect } from "react";
-import "../css/custom.css";
 
 const ProductsList = (props) => {
 
   const setErrorMessage = props.setErrorMessage;
   const updateRequestedQuantity = props.updateRequestedQuantity;
-  const orderedProducts = props.orderedProducts || [];
+  const orderedProducts = props.orderedProducts;
 
   let justShow = props.justShow || !updateRequestedQuantity;
 
@@ -45,13 +48,19 @@ const ProductsList = (props) => {
       {
         products.map((p) => {
 
-          let requestedQuantity = 0, requestedProduct = orderedProducts.filter((x) => { return x.id === p.id });
+          let requestedQuantity = 0;
 
-          if (requestedProduct[0]) {
-            requestedQuantity = requestedProduct[0].quantity || 0;
+          if (!justShow) {
+
+            let requestedProduct = orderedProducts.filter((x) => { return x.id === p.id });
+
+            if (requestedProduct[0]) {
+              requestedQuantity = requestedProduct[0].quantity || 0;
+            }
           }
 
           return (<ProductCard
+            key={p.id}
             product={p}
             setErrorMessage={setErrorMessage}
             updateRequestedQuantity={updateRequestedQuantity}
@@ -70,8 +79,8 @@ const ProductCard = (props) => {
   const product = props.product;
   const setErrorMessage = props.setErrorMessage;
 
-  const [requestedQuantity, setRequestedQuantity] = useState(props.requestedQuantity || 0);
-  const [requestedQuantityTMP, setRequestedQuantityTMP] = useState(props.requestedQuantity || 0);
+  const [requestedQuantity, setRequestedQuantity] = useState(props.requestedQuantity);
+  const [requestedQuantityTMP, setRequestedQuantityTMP] = useState(props.requestedQuantity);
 
   const updateRequestedQuantity = props.updateRequestedQuantity;
 
@@ -84,36 +93,110 @@ const ProductCard = (props) => {
 
   }, [props.requestedQuantity]);
 
-  if (!product) {
+  if (!product || !product.id) {
     return (<></>)
   }
+
+  const UpdateProductOrder = (value) => {
+
+    if (requestedQuantityTMP + value < 0) {
+      setErrorMessage("Quantity inserted is not valid!");
+      return;
+    }
+
+    if (requestedQuantityTMP + value > product.quantity) {
+      setErrorMessage("Quantity inserted is too much!");
+      return;
+    }
+
+    setRequestedQuantityTMP(requestedQuantityTMP + value);
+  }
+
+  const availableQuantity = product.quantity - requestedQuantityTMP;
+  const availablePercent = availableQuantity <= 0 ? 0 : availableQuantity / product.quantity * 100;
 
   return (
     <Card className="im-productcard im-animate">
       <Card.Img variant="top" className="im-productcard__image" src={"./img/" + product.name + ".jpeg"} loading="lazy" />
       <Card.Body>
-        <Card.Title className='d-flex justify-content-between'><span>{product.name}</span><span>{product.quantity}</span></Card.Title>
-        <Card.Text>
-          <Row className='justify-content-center'>
-            {product.price} €/Kg
+
+        <Card.Title>
+          <Row className='d-flex justify-content-between mb-1'>
+            <Col><strong>{product.name}</strong></Col>
+            <Col className="im-product-price"><strong>{product.price}</strong>€/<small>Kg</small></Col>
           </Row>
+        </Card.Title>
+
+        <Card.Text>
           {
             justShow ? <></>
               :
-              <Row className='justify-content-center '>
-                <input type="number"
-                  onChange={(ev) => {
-                    if (isNaN(parseInt(ev.target.value))) { setErrorMessage("not a number"); }
-                    else {
-                      setRequestedQuantityTMP(parseInt(ev.target.value));
-                    }
-                  }}
-                  id={product.id}
-                  value={requestedQuantityTMP}
-                  min={0}
-                />
-              </Row>
+              <>
+                <Row className='justify-content-center'>
+                  <small>{product.farmer}</small>
+                </Row>
+                <InputGroup className="below d-flex justify-content-center text-center">
+
+                  <Button
+                    disabled={product.quantity === 0}
+                    variant="outline-secondary"
+                    onClick={() => UpdateProductOrder(-1)}
+                  >
+                    -
+                  </Button>
+                  <FormControl
+                    className="im-input im-input--silent text-center"
+                    style={{ maxWidth: "55px", maxHeight: "38px" }}
+                    id={product.id}
+                    onChange={(ev) => {
+
+                      const value = ev.target.value;
+
+                      if (value === '') {
+                        setRequestedQuantityTMP('');
+                        return;
+                      }
+
+                      if (!(/^[0-9,.]*$/.test(value))) {
+                        setErrorMessage("Quantity inserted is not number!");
+                        return;
+                      }
+
+                      if ((/[,.]{1}$/.test(value)) && !(/[,.]{1}$/.test(Number.parseFloat(value).toString()))) {
+                        setRequestedQuantityTMP(value);
+                        return;
+                      }
+
+                      const parsed = Number.parseFloat(value);
+
+                      if (!isNaN(parsed)) {
+                        setRequestedQuantityTMP(parsed);
+                      }
+                      else {
+                        setErrorMessage("Quantity inserted is not valid!");
+                      }
+                    }}
+                    disabled={product.quantity === 0}
+                    value={requestedQuantityTMP}
+                    min={0}
+                    autoComplete="off"
+                  />
+                  <Button
+                    disabled={product.quantity === 0}
+                    variant="outline-secondary"
+                    onClick={() => UpdateProductOrder(1)}
+                  >
+                    +
+                  </Button>
+                </InputGroup >
+              </>
           }
+
+          <div className="text-center below">
+            <ProgressBar className="im-progressbar" now={availablePercent} visuallyHidden />
+            <small className="text-end"><strong>{availableQuantity > 0 ? availableQuantity : 0} left</strong> of {product.quantity} available</small>
+          </div>
+
         </Card.Text>
       </Card.Body>
       <Card.Footer className="d-flex">
@@ -122,13 +205,19 @@ const ProductCard = (props) => {
             :
             <Button
               className='im-button im-animate mx-auto'
-              onClick={(ev) => {
+              onClick={async (ev) => {
+
+                let oldRequestedQuantityTMP = requestedQuantity;
 
                 setRequestedQuantity(requestedQuantityTMP);
 
-                if (!updateRequestedQuantity(product, requestedQuantityTMP)) {
-                  setErrorMessage("Wrong quantity");
+                let updateRes = await updateRequestedQuantity(product, requestedQuantityTMP);
+
+                if (!updateRes) {
+                  setErrorMessage("Quantity inserted is not valid!");
+                  setRequestedQuantity(oldRequestedQuantityTMP);
                 }
+
               }}>
               {requestedQuantity > 0 ? "MODIFY" : "ADD"}
             </Button>

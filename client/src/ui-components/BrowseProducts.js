@@ -5,7 +5,7 @@ import SearchForm from "./SearchForm";
 import { ProductsList } from "./Products";
 import { ToastNotification } from "./ToastNotification";
 import API from "../API";
-import { PageSection, BlockTitle } from "./Page";
+import { PageSection, BlockTitle, PageSeparator } from "./Page";
 
 function BrowserProducts(props) {
 
@@ -52,6 +52,7 @@ function BrowserProducts(props) {
               setSearchValue={setSearchValue}
               onSearchSubmit={handleSearchSubmit}
             />
+            <PageSeparator hidden/>
             <ProductsList
               products={products}
               setErrorMessage={setErrorMessage}

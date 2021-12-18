@@ -1,6 +1,5 @@
 import {
   Button,
-  Alert,
   Form,
   Container,
   Spinner
@@ -11,8 +10,8 @@ import API from "../API";
 import { filterIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
 import { ProductsList } from "../ui-components/Products";
-import {ToastNotification}from "../ui-components/ToastNotification";
-import { PageSection, BlockTitle, PageSeparator } from "../ui-components/Page";
+import { ToastNotification } from "../ui-components/ToastNotification";
+import { PageSection, BlockTitle, PageSeparator, PageTitle } from "../ui-components/Page";
 
 function ClientOrder(props) {
   const [errorMessage, setErrorMessage] = useState("");
@@ -31,7 +30,6 @@ function ClientOrder(props) {
   const [searchValue, setSearchValue] = useState("");
   const [walletValue, setWalletValue] = useState(null);
   const [isWalletLoading, setIsWalletLoading] = useState(true);
-  const [isBasketLoading, setIsBasketLoading] = useState(true);
 
   useEffect(() => {
 
@@ -57,8 +55,9 @@ function ClientOrder(props) {
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      if (modifyOrder !== -1) {
-        let oldOrder = (await API.getOrder(modifyOrder)) || [];
+
+      if (modifyOrder > 0) {
+        let oldOrder = await API.getOrder(modifyOrder);
         for (let p of oldOrder.products) {
           await API.insertProductInBasket({
             product_id: p.product_id,
@@ -67,99 +66,100 @@ function ClientOrder(props) {
         }
       }
 
-      let basketTmp = await API.getBasketProducts();
-
-      if (basketTmp) {
-        setIsBasketLoading(false);
-        setOrderedProducts(basketTmp);
-      }
+      setOrderedProducts(await API.getBasketProducts());
 
       if (Number.parseInt(user.role) === 0) {
         const walletValueT = await API.getWalletByMail(user.email);
         setWalletValue(walletValueT);
         if (walletValueT) setIsWalletLoading(old => !old);
       }
-      setChanges((old) => !old);
     };
 
     fillTables(props.user, props.modifyOrder);
 
   }, [props.user, props.modifyOrder]);
 
-  const handleSubmit = async (event, propsN) => {
+  const handleBasketSubmit = async (basket) => {
 
-    event.preventDefault();
-    let userId;
-    let orderOk = true;
+    let userId = 0, user = {};
+    const updatingOrder = props.modifyOrder > 0;
 
     if (Number.parseInt(props.user.role) === 1) {
       if (!mailInserted) {
         setErrorMessage("You have to insert an email!");
-        orderOk = false;
+        return;
       } else {
-        let user = await API.getUserId(mailInserted);
+        try {
+          user = await API.getUserId(mailInserted);
+        }
+        catch (e) {
+          setErrorMessage("User not found");
+          return;
+        }
+
         if (Number.parseInt(user.role) !== 0) {
           setErrorMessage("Invalid user");
-          orderOk = false;
+          return;
         } else {
           userId = user.id;
         }
       }
     } else userId = props.user.id;
 
-    let basketTmp = await API.getBasketProducts();
+    if (!updatingOrder && (!basket || basket.length === 0)) {
+      setErrorMessage("No products found in the basket!");
+      return;
+    }
 
-    if (orderOk) {
-      //metti a 0 elemtni vecchi eliminati
+    let finalOrder = basket.map((t) => ({
+      product_id: t.id,
+      quantity: t.quantity,
+    }));
 
-      let finalOrder = basketTmp.map((t) => ({
-        product_id: t.id,
-        confirmed: true,
-        quantity: t.quantity,
-        name: t.name,
-      }));
+    if (!updatingOrder) {
 
-      if (props.modifyOrder === -1) {
-        let result = await API.insertOrder(userId, finalOrder);
-        if (result) {
-          API.deleteAllBasket();
-          propsN.addMessage("Request sent correctly!");
-          propsN.changeAction(0);
-        } else {
-          setErrorMessage("Server error during insert order. ");
-        }
+      let result = await API.insertOrder(userId, finalOrder);
+      if (result) {
+        API.deleteAllBasket();
+        props.addMessage("Request sent correctly!");
+        props.changeAction(0);
       } else {
-        //fare chiamata ad update order
-        API.updateOrderProducts(props.modifyOrder, finalOrder)
-          .then(() => {
-            propsN.addMessage("Request sent correctly!");
-            API.deleteAllBasket();
-            propsN.changeAction(0);
-          })
-
-          .catch((err) => {
-            setErrorMessage("Server error during insert order. " + err);
-          });
-        propsN.changeAction(0);
+        setErrorMessage("Server error during insert order. ");
       }
+
+    } else {
+      //fare chiamata ad update order
+      API.updateOrderProducts(props.modifyOrder, finalOrder)
+        .then(() => {
+          props.addMessage("Request sent correctly!");
+          API.deleteAllBasket();
+          props.changeAction(0);
+        })
+        .catch((err) => {
+          setErrorMessage("Server error during insert order. " + err);
+        });
+
+      props.changeAction(0);
     }
   };
 
+  const handleBasketChange = async (basket) => {
+
+    setOrderedProducts(basket);
+  }
+
   const updateRequestedQuantity = async (product, quantity) => {
 
-    let requestedProduct = products.filter(
-      (t) => t.id === product.id
-    );
+    let requestedProduct = products.filter((t) => { return t.id === product.id })[0];
 
-    if (
-      requestedProduct.length === 0 ||
-      quantity > requestedProduct.quantity ||
-      quantity <= 0
-    )
+    if (!requestedProduct || quantity > requestedProduct.quantity || quantity <= 0) {
       return false;
-
+    }
     else {
+
       await API.insertProductInBasket({ product_id: product.id, quantity: quantity });
+
+      setOrderedProducts((await API.getBasketProducts()));
 
       setChanges((old) => !old);
 
@@ -170,9 +170,9 @@ function ClientOrder(props) {
   return (
     <section className="im-clientOrderWrapper">
       <PageSection style={{ flex: "1 1 800px" }}>
-        <BlockTitle>
+        <PageTitle className="over-2">
           Issue Order
-        </BlockTitle>
+        </PageTitle>
 
         <ToastNotification
           variant='error'
@@ -315,7 +315,7 @@ function ClientOrder(props) {
           </Container>
         ) :
           <>
-            <h3 className='thirdColor below'> List of our products: </h3>
+            <BlockTitle className='thirdColor below-2 over-2'> List of our products: </BlockTitle>
             <ProductsList
               products={products}
               setErrorMessage={setErrorMessage}
@@ -329,10 +329,9 @@ function ClientOrder(props) {
 
       <Basket
         style={{ flex: "1 1 0px" }}
-        props={props}
         changes={changes}
-        handleSubmit={handleSubmit}
-        isBasketLoading={isBasketLoading}
+        handleSubmit={handleBasketSubmit}
+        handleChange={handleBasketChange}
       />
     </section>
   );

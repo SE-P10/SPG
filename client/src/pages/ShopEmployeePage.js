@@ -19,17 +19,17 @@ import { PendingOrders } from "../shopEmployee-component/PendingOrders.js";
 import { ClientOrder } from "../client-component/ClientOrder";
 import GlobalState from '../utility/GlobalState';
 
-import { SVGIcon, Page, PageTitle, PageContainer } from "../ui-components/Page";
+import { SVGIcon, Page, PageContainer } from "../ui-components/Page";
 
 function ShopEmployee(props) {
 
   const [message, setMessage] = useState("");
   const [actionS, setActionS] = useState(0);
-  const [actionName, setActionName] = useState("");
 
   const addMessage = (messageN) => {
     setMessage(messageN);
   };
+
 
   const [state, setState] = useContext(GlobalState);
 
@@ -38,16 +38,9 @@ function ShopEmployee(props) {
   }, [actionS, setState]);
 
   return (
-    <Page>
+    <Page fullscreen>
       <ToastNotification variant='success' onSet={() => { setMessage("") }} message={message} />
       <>
-        {
-          actionName ?
-            <PageTitle>
-              {actionName}
-            </PageTitle>
-            : <></>
-        }
         {
           (actionS === 0) ? (
 
@@ -154,7 +147,7 @@ function ShopEmployee(props) {
         }
       </>
 
-      <PageContainer>
+      <PageContainer fullscreen>
         {actionS === 1 ? (
           <RegistrationForm
             loggedIn={props.loggedIn}
