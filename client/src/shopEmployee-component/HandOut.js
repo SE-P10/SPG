@@ -25,7 +25,7 @@ function HandOut(props) {
     else {
       let ordersTm = [];
       setOrders(ordersTm);
-      API.getOrders(email)
+      API.getOrders(email, true)
         .then((ordersTml) => {
           if (ordersTml.length === 0) setErrorMessage("No orders found");
           else {
@@ -55,7 +55,7 @@ function HandOut(props) {
           .map((order) => (
             <Row className='below'>
               <Col> id : {order.id}</Col>
-              <Col>price : {order.price < 0.01 ? 0 : order.price }</Col>
+              <Col>price : {order.price < 0.01 ? 0 : order.price}</Col>
               <Col>status : {order.status}</Col>
               <Col>
                 <Button
