@@ -95,6 +95,7 @@
   "price": 0,
   "pickup_time": "",
   "pickup_place": "",
+  "timestamp": 0,
   "user": {
             "username": "",
             "email": "",
