@@ -9,16 +9,16 @@ import { handleFetch, parseResponse } from "./utility";
  * @param {String} method
  * @returns {*}
  */
-async function handleOrderAction(
-  filter,
-  products = [],
-  order_details = {},
-  method = "POST"
-) {
+async function handleOrderAction(filter, products = [], order_details = {}, method = "POST") {
+
   if (typeof order_details === "number") {
     order_details = { id: order_details };
   } else {
     order_details = Object.assign({ id: 0 }, order_details);
+  }
+
+  if (Array.isArray(filter)) {
+    filter = filter.join('/');
   }
 
   return handleFetch(
@@ -33,7 +33,12 @@ async function handleOrderAction(
  * @param {Number | String} filter user_email|orderID|order_status
  * @returns {Array} [{ id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}, ...]
  */
-async function getOrders(filter) {
+async function getOrders(filter, ofThisWeek = false) {
+
+  if (!ofThisWeek) {
+    filter = [filter, 'all'];
+  }
+
   return parseResponse(
     await handleOrderAction(filter, [], {}, "GET"),
     "array",
@@ -59,8 +64,8 @@ async function getOrder(orderID) {
  *
  * @returns {Array} orders in pending status
  */
-async function getPendingOrders() {
-  return getOrders("pending");
+async function getPendingOrders(ofThisWeek = false) {
+  return getOrders("pending", ofThisWeek);
 }
 
 /**

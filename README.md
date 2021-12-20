@@ -1,8 +1,10 @@
 # SPG - Solidarity Purchasing Group
 
 ## TEAM P10
- 
+
+
 ### MEMBERS
+
 
 | NAME               | ID      |
 | ------------------ | ------- |
@@ -13,11 +15,11 @@
 | Desirè Damino      | s279575 |
 | Michele Basilico   | s282513 |
 
-### [Database structure](./Documentation/databe_structure.md)
+### [Database structure](./Documentation/database_structure.md)
 
 ### [Front-end structure](./Documentation/front-end.md)
 
-### [Users Credentials](./Documentation/credentials.md)
+### [Users Credentials](./Documentation/users.md)
 
 ### API
 

@@ -24,16 +24,16 @@
 * Request params: **orderID**
 * return: as defined **{ id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}**
 
-## API.getOrders(filter = '')
+## API.getOrders(filter = '', ofThisWeek = false)
 
 * Description: get orders matching filter
-* Request params: filter (**email** or **order status**)
+* Request params: filter (**email** or **order status**), ofThisWeek = true will return orders only of this week
 * return: a list of orders as defined **[{ id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}, ...]**
 
-## API.getPendingOrders()
+## API.getPendingOrders(ofThisWeek = false)
 
 * Description: return a list of pending orders
-* Request params: none
+* Request params: ofThisWeek = true will return orders only of this week
 * return: a list of orders as defined **[{ id: 0, user_id: 0, status: '', price: 0, pickup_time: '', pickup_place: '', 'user':{id: 0, username: '', email: '', name: '', surname: ''}, 'products': [{order_id: 0,product_id: '', quantity: 0}]}, ...]**
 
 ## API.updateOrder(orderID, products = [])

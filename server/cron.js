@@ -6,6 +6,7 @@ const dayjs = require("dayjs");
 const md5 = require("md5");
 
 const db = require("./db");
+const { getVirtualTimestamp } = require("./time");
 const {
   json,
   getQuerySQL,
@@ -14,7 +15,6 @@ const {
   isNumber,
   isObject,
 } = require("./utility");
-const { getVirtualTimestamp } = require("./time");
 
 const cronClass = {
   /**
@@ -50,24 +50,13 @@ const cronClass = {
   },
 
   load: async function () {
-    let crons = await getQuerySQL(
-      db,
-      "SELECT * FROM options WHERE name = ?",
-      ["cron"],
-      {
-        id: 0,
-        name: "",
-        value: "",
-      },
-      null,
-      true
-    );
+    let crons = await getQuerySQL(db, "SELECT * FROM options WHERE name = ?", ["cron"], { id: 0, name: "", value: "", }, null, true);
 
     if (crons) {
       this.activity = json.parse(crons.value, {});
     } else {
       /**
-       * reset database
+       * reset database on db error
        */
       await runQuerySQL(
         db,
@@ -133,6 +122,13 @@ const cronClass = {
     return wd0N >= wd1N && wd0N <= wd2N;
   },
 
+  isBefore: function (weekday1, weekday2) {
+    let wd1N = this.weekdayToNumber(weekday1);
+    let wd2N = this.weekdayToNumber(weekday2);
+
+    return wd1N < wd2N;
+  },
+
   exec: function (virtualTime) {
     let crons = removeEmpty(this.activity, {}, true);
 
@@ -154,26 +150,17 @@ const cronClass = {
 
       if (isNumber(cron.interval)) {
         allowExec = cron.time + cron.interval <= virtualTime;
-      } else if (cron.time + 2 <= virtualTime) {
-        let dispathRealExecution = 0;
+      } else if (cron.time + 3 <= virtualTime) {
 
         if (isObject(cron.interval)) {
-          /*
-                    {
-                        from: {day: 0, hour: 0},
-                        to: {day: 0, hour: 0}
-                    }
-                    */
 
           let execFrom = cron.interval.from;
           let execTo = cron.interval.to;
 
           if (execFrom.day && execTo.day) {
-            allowExec = this.isBetween(
-              vtime.format("dd"),
-              execFrom.day,
-              execTo.day
-            );
+
+            // 2part checks if last call has been run on last day call
+            allowExec = this.isBetween(vtime.format("dd"), execFrom.day, execTo.day) || this.isBefore(lastCallTime.format("dd"), execTo.day);
 
             if (allowExec && execFrom.hour && execTo.hour) {
               if (vtime.format("dd") === execFrom.day) {
@@ -190,33 +177,24 @@ const cronClass = {
           }
 
           if (!allowExec) {
-            // calc how many days are from last execution and scheduled execution
-            dispathRealExecution =
-              this.weekdayToNumber(lastCallTime.format("dd")) -
-              this.weekdayToNumber(execFrom.day);
+
           }
         } else {
           allowExec = vtime.format("dd") === cron.interval;
-
-          if (!allowExec) {
-            // calc how many days are from last execution and scheduled execution
-            dispathRealExecution =
-              this.weekdayToNumber(lastCallTime.format("dd")) -
-              this.weekdayToNumber(cron.interval);
-          }
         }
 
         if (!allowExec) {
+
+          // calc how many days are from last execution and scheduled execution
+          let dispathRealExecution = this.calcDateDiff(lastCallTime, vtime);
+
           // fix future relative problems
           if (dispathRealExecution < 0) {
             dispathRealExecution = 0;
           }
 
           // last execution time if on scheduled day
-          let lastScheduledCallTime = lastCallTime.subtract(
-            dispathRealExecution,
-            "day"
-          );
+          let lastScheduledCallTime = lastCallTime.subtract(dispathRealExecution, "day");
 
           allowExec = this.calcDateDiff(lastScheduledCallTime, vtime) >= 7;
         }
@@ -225,12 +203,9 @@ const cronClass = {
       if (allowExec) {
         // try to exec the callback
         if (cron.callback) {
+
           if (VC_DEBUG) {
-            console.log(
-              "\nRUNNING CRON JOB. Last call:",
-              lastCallTime.format("YYYY-MM-DD <HH:mm:ss>"),
-              cron.args || []
-            );
+            console.log("\nRUNNING CRON JOB. Last call:", lastCallTime.format("YYYY-MM-DD <HH:mm:ss>"), "virtual time:", vtime.format("YYYY-MM-DD <HH:mm:ss>"), cron.args || []);
           }
 
           if (typeof cron.callback === "function") {

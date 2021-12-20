@@ -1,7 +1,8 @@
 import { useState, React } from "react";
-import { Form, Button, Row, Col, Container, Alert } from "react-bootstrap";
+import { Form, Button, Row, Container } from "react-bootstrap";
 import { plantIcon } from "../ui-components/Icons";
-import "../css/custom.css";
+import { ToastNotification } from "../ui-components/ToastNotification";
+import { Page } from "../ui-components/Page";
 
 function LoginForm(props) {
   const [username, setUsername] = useState("");
@@ -31,72 +32,58 @@ function LoginForm(props) {
   };
 
   return (
-    <Container>
-      {errorMessage !== "" ? (
-        <Alert
-          className='justify-content-center below'
-          variant='danger'
-          onClose={closeErrorMessage}
-          dismissible>
-          {" "}
-          {errorMessage}{" "}
-        </Alert>
-      ) : (
-        <></>
-      )}
-      <Form className='below  cont'>
-        {props.message !== "" ? (
-          <Alert
-            className='justify-content-center below'
-            variant={props.message.type}
-            onClose={props.closeMessage}
-            dismissible>
-            {" "}
-            {props.message.msg}{" "}
-          </Alert>
-        ) : (
-          <></>
-        )}
-
-        <Row>
-          <Col sm={8} className='mx-auto'>
-            <Row className=' mx-auto justify-content-center'>
-              <h1 className='navbar-link'> {plantIcon}</h1>
+    <Page style={{ maxWidth: "400px" }}>
+      <ToastNotification
+        variant='danger'
+        onSet={closeErrorMessage}
+        content={errorMessage}
+      />
+      <Form className='im-container im-container--filled'>
+        <ToastNotification
+          variant='error'
+          onSet={props.closeMessage}
+          message={props.message.msg}
+        />
+        <Container className="over below">
+          <Container className='mx-auto'>
+            <Row className='align-center'>
+              <div className="mx-auto im-svg-icon" style={{ width: '80px', height: '80px' }}>{plantIcon}</div>
             </Row>
-            <Row className=' mx-auto justify-content-center'>
-              <h2 className='navbar-link'> Log In </h2>
+            <Row className=''>
+              <h2 className='navbar-link text-center'> Log In </h2>
             </Row>
             <Form.Group controlId='username' className='mt-4'>
               <Form.Label>Email</Form.Label>
               <Form.Control
+                className="im-input im-animate"
                 type='text'
                 value={username}
                 onChange={(ev) => setUsername(ev.target.value)}
                 required
               />
             </Form.Group>
-          </Col>
-          <Col sm={8} className='mx-auto'>
             <Form.Group controlId='password'>
               <Form.Label>Password</Form.Label>
               <Form.Control
+                className="im-input im-animate"
                 type='password'
                 value={password}
                 onChange={(ev) => setPassword(ev.target.value)}
               />
             </Form.Group>
+          </Container>
+          <Container className='mx-auto d-flex justify-content-center'>
             <Button
               variant='dark'
-              className='mainColor below spg-button border mx-auto'
+              className='below im-button im-animate mx-auto '
               onClick={handleSubmit}>
               Login
             </Button>
-          </Col>
-        </Row>
-        <br />
+          </Container>
+        </Container>
       </Form>
-    </Container>
+    </Page>
   );
 }
 
-export {LoginForm};
+export { LoginForm };
