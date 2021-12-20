@@ -4,11 +4,8 @@ const IS_DEBUG = false;
 const DEBUG_ALLOW_DIRTY = IS_DEBUG;
 const DEBUG_PROCESS = IS_DEBUG;
 
-<<<<<<< HEAD
-=======
 const ENABLE_CRON = true;
 
->>>>>>> origin/improvments--adjust-graphic
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
@@ -105,39 +102,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-<<<<<<< HEAD
-app.use(
-  virtualCron.run(() => {
-    // reset all cron jobs on server restart
-    virtualCron.unscheduleAll();
-
-    virtualCron.schedule(
-      {
-        from: { day: virtualCron.schedules.MONDAY, hour: 9 },
-        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-      },
-      (virtualTime, lastExecutionTime, ...args) => {
-        
-        ordersDao.confrimOrders();
-      },
-      [],
-      false
-    );
-
-    virtualCron.schedule(
-      {
-        from: { day: virtualCron.schedules.MONDAY, hour: 23 },
-        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-      },
-      (virtualTime, lastExecutionTime, ...args) => {
-        ordersDao.deletePendingOrders();
-      },
-      [],
-      false
-    );
-  })
-);
-=======
 if (ENABLE_CRON) {
   app.use(
     virtualCron.run(() => {
@@ -171,7 +135,6 @@ if (ENABLE_CRON) {
     })
   );
 }
->>>>>>> origin/improvments--adjust-graphic
 
 // API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);

@@ -64,7 +64,8 @@
     "report-dir": "cypress-coverage"
   },
   "devDependencies": {
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@testing-library/jest-dom": "^5.16.1",
-    "@testing-library/react": "^12.1.2"
-  }
+    "@testing-library/react": "^12.1.2",
+    "react-refresh": "^0.11.0"  }
 }

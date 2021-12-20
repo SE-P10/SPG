@@ -176,11 +176,7 @@ function RegistrationForm(props) {
             </Button>
           </Modal.Footer>
         </Modal>
-<<<<<<< HEAD
-      </Container>
-=======
       </PageSection>
->>>>>>> origin/improvments--adjust-graphic
     </>
   );
 }

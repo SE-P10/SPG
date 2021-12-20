@@ -1,7 +1,4 @@
 import { React, useState, useEffect } from "react";
-<<<<<<< HEAD
-import { Container, Row } from "react-bootstrap";
-=======
 import dayjs from "dayjs";
 import {
   BrowserRouter,
@@ -11,7 +8,6 @@ import {
 } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
->>>>>>> origin/improvments--adjust-graphic
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";

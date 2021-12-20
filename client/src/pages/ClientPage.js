@@ -13,7 +13,6 @@ import { ClientNotifications } from "../client-component/ClientNotifications";
 import { SVGIcon, Page, PageTitle, PageContainer, PageSeparator } from "../ui-components/Page";
 import { ToastNotification } from "../ui-components/ToastNotification";
 import GlobalState from '../utility/GlobalState';
-import API from "../API";
 
 import API from "../API";
 function ClientPage(props) {

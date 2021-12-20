@@ -1,12 +1,5 @@
 import { useState, React } from "react";
-<<<<<<< HEAD
-import { Form, Row } from "react-bootstrap";
-
-import "../css/custom.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-=======
 import { Form } from "react-bootstrap";
->>>>>>> origin/improvments--adjust-graphic
 import { searchIcon } from "./Icons";
 import { SVGIcon } from "../ui-components/Page";
 
