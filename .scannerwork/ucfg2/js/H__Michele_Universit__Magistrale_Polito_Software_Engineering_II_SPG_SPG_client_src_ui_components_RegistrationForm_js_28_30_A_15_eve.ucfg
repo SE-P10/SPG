@@ -1,0 +1,476 @@
+
+ÉH__Michele_Universit__Magistrale_Polito_Software_Engineering_II_SPG_SPG_client_src_ui_components_RegistrationForm_js_28_30_A_15_eve
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js (("s4_1*“
+s4_1
+<synthetic> (C
+A
+
+__unknown_file (	
+%global"__id**
+
+%env"
+globalL
+J
+
+__unknown_file (	
+%expr_0"__id**
+
+event"
+preventDefaultƒ"¡
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js
+ (
+
+%methRes_0*
+
+event"
+preventDefault2	
+
+event2
+
+%envm
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_0"__id***(
+
+%env"
+%scope-FD_2_RegistrationForm[
+Y
+
+__unknown_file (
+
+%leftAnd_0"__id*)*'
+
+%sc-FD_2_RegistrationForm_0"
+name*
+s4_2
+s4_11*ø
+s4_2
+<synthetic> (m
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_1"__id***(
+
+%env"
+%scope-FD_2_RegistrationForm_
+]
+
+__unknown_file (
+%rightAnd_0"__id*,**
+
+%sc-FD_2_RegistrationForm_1"	
+surnameA
+?
+
+__unknown_file (
+
+%leftAnd_1"__id*
+
+%rightAnd_0*
+s4_3
+s4_11*¿
+s4_3
+<synthetic> (m
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_2"__id***(
+
+%env"
+%scope-FD_2_RegistrationForm`
+^
+
+__unknown_file (
+%rightAnd_1"__id*-*+
+
+%sc-FD_2_RegistrationForm_2"
+
+usernameA
+?
+
+__unknown_file (
+
+%leftAnd_2"__id*
+
+%rightAnd_1*
+s4_4
+s4_11*Ω
+s4_4
+<synthetic> (m
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_3"__id***(
+
+%env"
+%scope-FD_2_RegistrationForm]
+[
+
+__unknown_file (
+%rightAnd_2"__id***(
+
+%sc-FD_2_RegistrationForm_3"
+emailA
+?
+
+__unknown_file (
+
+%leftAnd_3"__id*
+
+%rightAnd_2*
+s4_5
+s4_11*¿
+s4_5
+<synthetic> (m
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_4"__id***(
+
+%env"
+%scope-FD_2_RegistrationForm`
+^
+
+__unknown_file (
+%rightAnd_3"__id*-*+
+
+%sc-FD_2_RegistrationForm_4"
+
+passwordA
+?
+
+__unknown_file (
+
+%leftAnd_4"__id*
+
+%rightAnd_3*
+s4_6
+s4_11*Ñ
+s4_6
+<synthetic> (m
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_5"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormg
+e
+
+__unknown_file (
+%rightAnd_4"__id*4*2
+
+%sc-FD_2_RegistrationForm_5"
+confirmPassword*
+s4_7
+s4_11*ˆ
+s4_7
+<synthetic> (m
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_6"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormm
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_7"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormÀ
+»
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js 
+  (&
+%fieldAccess_0"__id*-*+
+
+%sc-FD_2_RegistrationForm_6"
+
+password“
+œ
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js 
+  (&
+%fieldAccess_1"__id*4*2
+
+%sc-FD_2_RegistrationForm_7"
+confirmPassword«
+ƒ
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js 
+  (&
+%binOpRes_0"
+__js_equal*
+
+%fieldAccess_0*
+
+%fieldAccess_1*
+s4_8
+s4_9*è
+s4_8
+<synthetic>
+ 
+(m
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_8"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormm
+k
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_9"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormn
+l
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_10"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormn
+l
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_11"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormn
+l
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_12"__id***(
+
+%env"
+%scope-FD_2_RegistrationForm°û
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js# )(	
+	%object_0Object"Object÷
+”
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js$
+ $(
+
+	%object_0Object"
+email"__id***(
+
+%sc-FD_2_RegistrationForm_8"
+email‹
+Ÿ
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js%
+ %(!
+
+	%object_0Object"
+
+password"__id*-*+
+
+%sc-FD_2_RegistrationForm_9"
+
+password›
+⁄
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js&
+ &(!
+
+	%object_0Object"
+
+username"__id*.*,
+
+%sc-FD_2_RegistrationForm_10"
+
+username’
+“
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js'
+ '(
+
+	%object_0Object"
+name"__id***(
+
+%sc-FD_2_RegistrationForm_11"
+name€
+ÿ
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js(
+ (( 
+
+	%object_0Object"	
+surname"__id*-*+
+
+%sc-FD_2_RegistrationForm_12"	
+surnameµ
+≤
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js# #(
+%newClient~iSc_2"__id*
+
+	%object_0ObjectI
+G
+
+__unknown_file (
+	%sc-P_2_0"__id**
+
+%env"
+
+%scope-P_2E
+C
+
+__unknown_file (	
+%expr_1"__id**
+
+	%sc-P_2_0"
+APII
+G
+
+__unknown_file (	
+%expr_2"__id**
+	
+%expr_1"
+	addClientŸ"÷
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js* *(
+
+%methRes_1*
+	
+%expr_1"
+	addClient2
+	
+%expr_12
+
+%env2
+
+%newClient~iSc_2≈
+¬
+
+__unknown_file (	
+%func_0"__declareFunction*áÑ
+ÅH__Michele_Universit__Magistrale_Polito_Software_Engineering_II_SPG_SPG_client_src_ui_components_RegistrationForm_js_43_17_A_16_efd
+
+__unknown_file (/
+%functionPrototype_0%SonarFunctionPrototype"%SonarFunctionPrototypes
+q
+
+__unknown_file (	
+%void_0"
+__setProto*
+	
+%func_0*1
+/
+%functionPrototype_0%SonarFunctionPrototypeƒ"¡
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js+ +(
+
+%funcRes_0"	
+%func_02
+	
+%global2
+
+%env2
+
+
+%methRes_1≈
+¬
+
+__unknown_file (	
+%func_1"__declareFunction*áÑ
+ÅH__Michele_Universit__Magistrale_Polito_Software_Engineering_II_SPG_SPG_client_src_ui_components_RegistrationForm_js_54_18_A_17_efd
+
+__unknown_file (/
+%functionPrototype_1%SonarFunctionPrototype"%SonarFunctionPrototypes
+q
+
+__unknown_file (	
+%void_1"
+__setProto*
+	
+%func_1*1
+/
+%functionPrototype_1%SonarFunctionPrototypeƒ"¡
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js6 6(
+
+%funcRes_1"	
+%func_12
+	
+%global2
+
+%env2
+
+
+%funcRes_0*
+s4_10*˛
+s4_9
+<synthetic>	 	(n
+l
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_13"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormn
+l
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_14"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormı"Ú
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js< <(
+
+%funcRes_2*3
+
+%sc-FD_2_RegistrationForm_14"
+setErrorMessage2
+	
+%global2
+
+%env2
+Password Mismatch*
+s4_10*'
+s4_10
+<synthetic> (*
+s4_12*ê
+s4_11
+<synthetic> (n
+l
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_15"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormn
+l
+
+__unknown_file (
+%sc-FD_2_RegistrationForm_16"__id***(
+
+%env"
+%scope-FD_2_RegistrationFormÜ"É
+
+uH:/Michele/Universit√†/Magistrale Polito/Software Engineering II/SPG/SPG/client/src/ui-components/RegistrationForm.js@ @(
+
+%funcRes_3*3
+
+%sc-FD_2_RegistrationForm_16"
+setErrorMessage2
+	
+%global2
+
+%env2&$
+"Missing Data, check all the fields*
+s4_12*>
+s4_12
+<synthetic> ("
+
+__unknown_file ( :
+%env:
+eventB 
