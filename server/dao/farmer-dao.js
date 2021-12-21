@@ -39,11 +39,8 @@ const confirmFarmerProduct = async (farmer, product, quantity) => {
 };
 
 const getOpenDeliveries = async (farmer) => {
-  let query =
-    "SELECT fp.id, p.id AS product, fp.quantity FROM farmer_payments fp, products p ";
-  query +=
-    "WHERE fp.user_id = ? AND status = 'confirmed' AND fp.product_id = p.id";
-  console.log(query);
+  let query = 
+  "SELECT fp.id, p.id AS product, fp.quantity FROM farmer_payments fp, products p WHERE fp.user_id = ? AND status = 'confirmed' AND fp.product_id = p.id";
   return getQuerySQL(
     db,
     query,
@@ -65,7 +62,7 @@ exports.getProducts = async (farmerID) => {
     db,
     "SELECT products.id, products_details.name, products.quantity, products.price FROM products_details, products WHERE products.id = products_details.id AND products.farmer_id = ?",
     [farmerID],
-    { id: 0, name: "", quantity: 0 , price: 0}
+    { id: 0, name: "", quantity: 0, price: 0 }
   );
 
   return products;
