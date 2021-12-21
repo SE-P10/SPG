@@ -74,7 +74,7 @@ exports.getProducts = async (farmerID) => {
 exports.updateProducts = async (farmerID, productID, newAmount, price) => {
   let dinoSQL = dynamicSQL(
     "UPDATE products SET",
-    { quantity: newAmount, price: price },
+    { quantity: newAmount, estimated_quantity: newAmount, price: price },
     { farmer_id: farmerID, id: productID }
   );
 

@@ -144,8 +144,10 @@ if (ENABLE_CRON) {
 
           let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
 
-          if (days > 0 && (days > 0 || virtualTime.hour() > 9))
+          if (days > 0 && (days > 0 || virtualTime.hour() > 9)) {
             notifyTelegram();
+          }
+          
         },
         [],
         false

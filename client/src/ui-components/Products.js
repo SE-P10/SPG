@@ -113,7 +113,7 @@ const ProductCard = (props) => {
   }
 
   const availableQuantity = product.quantity - requestedQuantityTMP;
-  const availablePercent = availableQuantity <= 0 ? 0 : availableQuantity / product.quantity * 100;
+  const availablePercent = availableQuantity <= 0 ? 0 : availableQuantity / product.estimated_quantity * 100;
 
   return (
     <Card className="im-productcard im-animate">
@@ -194,7 +194,7 @@ const ProductCard = (props) => {
 
           <div className="text-center below">
             <ProgressBar className="im-progressbar" now={availablePercent} visuallyHidden />
-            <small className="text-end"><strong>{availableQuantity > 0 ? availableQuantity : 0} left</strong> of {product.quantity} available</small>
+            <small className="text-end"><strong>{availableQuantity > 0 ? availableQuantity : 0} left</strong> of {product.estimated_quantity} available</small>
           </div>
 
         </Card.Text>

@@ -4,13 +4,14 @@ const { check, validationResult } = require("express-validator");
 const listProducts = () => {
   return new Promise((resolve, reject) => {
     const sql =
-      "select p.id AS idP, quantity, price, u.name AS fname, u.surname AS fsurname, u.id AS farmerID, pd.name as product from products p, users u, products_details pd where p.farmer_id = u.id and p.details_id = pd.id";
+      "select p.id AS idP, quantity, estimated_quantity, price, u.name AS fname, u.surname AS fsurname, u.id AS farmerID, pd.name as product from products p, users u, products_details pd where p.farmer_id = u.id and p.details_id = pd.id";
     db.all(sql, [], (err, rows) => {
       if (err) reject(err);
       else {
         const Products = rows.map((p) => ({
           id: p.idP,
           quantity: p.quantity,
+          estimated_quantity: p.estimated_quantity,
           price: p.price,
           name: p.product,
           farmer: p.fname  + ' ' + p.fsurname,
