@@ -1,11 +1,10 @@
 const db = require("./../db");
-const bcrypt = require("bcrypt");
 const { check, validationResult } = require("express-validator");
 
 const listProducts = () => {
   return new Promise((resolve, reject) => {
     const sql =
-      "select p.id AS idP, quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_details pd where p.farmer_id = u.id and p.details_id = pd.id";
+      "select p.id AS idP, quantity, price, u.name AS fname, u.surname AS fsurname, u.id AS farmerID, pd.name as product from products p, users u, products_details pd where p.farmer_id = u.id and p.details_id = pd.id";
     db.all(sql, [], (err, rows) => {
       if (err) reject(err);
       else {
@@ -14,7 +13,8 @@ const listProducts = () => {
           quantity: p.quantity,
           price: p.price,
           name: p.product,
-          Farmer: p.farmer + p.surname,
+          farmer: p.fname  + ' ' + p.fsurname,
+          farmer_id: p.farmerID
         }));
         resolve(Products);
       }
@@ -56,7 +56,7 @@ const deleteAllBasket = (userId) => {
 const listProductsBasket = (userId) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "select p.id AS idP, b.quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_details pd, basket b where p.farmer_id = u.id and p.details_id = pd.id and p.id = b.product_id and b.user_id = ?";
+      "select p.id AS idP, b.quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_details pd, basket b where p.farmer_id = u.id and p.details_id = pd.id and p.id = b.product_id and b.user_id = ? ORDER BY b.id DESC";
     db.all(sql, [userId], (err, rows) => {
       if (err) reject(err);
       else {

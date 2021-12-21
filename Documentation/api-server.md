@@ -82,9 +82,9 @@
 ```
 ---
 
-## Get /api/orders/:filter
+## Get /api/orders/:filter?/:all?
 * Description: get all orders based on the filter
-* Request params: **orderID** *(will return only an object)* or **user_email** or **order status** *(like: pending)* 
+* Request params: Filter (**orderID** *(will return only an object)* or **user_email** or **order status** *(like: pending)*), if **all** is passed will return all orders otherwise only of the current week
 * Return: an array of objects or a single one as defined below
 * HTTP Response: 200 success, 404 order not found, 422 Unprocessable Request, 500 Server Error
 ```json
@@ -95,6 +95,7 @@
   "price": 0,
   "pickup_time": "",
   "pickup_place": "",
+  "timestamp": 0,
   "user": {
             "username": "",
             "email": "",

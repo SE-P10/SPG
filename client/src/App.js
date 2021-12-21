@@ -1,27 +1,26 @@
 import { React, useState, useEffect } from "react";
-import { Container, Row } from "react-bootstrap";
+import dayjs from "dayjs";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";
 import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
-import { RegistrationForm } from "./ui-components/RegistrationForm";
-import dayjs from "dayjs";
 import { WarehousePage } from "./pages/WarehousePage";
-
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from "react-router-dom";
-import MyNavbar from "./ui-components/MyNavbar";
-
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./css/custom.css";
-import API from "./API";
+import { RegistrationForm } from "./ui-components/RegistrationForm";
 import { BrowserProducts } from "./ui-components/BrowseProducts";
+import MyNavbar from "./ui-components/MyNavbar";
+import GlobalState from './utility/GlobalState';
+import API from "./API";
+import "./css/custom.css";
 
 const App = () => {
   const [message, setMessage] = useState("");
@@ -88,162 +87,135 @@ const App = () => {
     return () => clearInterval(interval);
   }, [timeDateOffset]);
 
+  const [state, setState] = useState({
+    useHistoryBack: false
+  });
+
   return (
-    <Router>
-      <MyNavbar
-        doLogOut={doLogOut}
-        loggedIn={loggedIn}
-        closeMessage={closeMessage}
-        changeTimeDate={setTimeDateOffset}
-        virtualTimeDate={virtualTimeDate}
-      />
+    <GlobalState.Provider value={[state, setState]}>
+      <BrowserRouter>
 
-      <Switch>
-        
-
-        <Route
-          exact
-          path='/'
-          render={() => (
-            <>
-              <Container fluid className='justify-content-center d-flex w-100'>
-                <HomePage className='w-100' />
-              </Container>
-            </>
-          )}
+        <MyNavbar
+          doLogOut={doLogOut}
+          loggedIn={loggedIn}
+          closeMessage={closeMessage}
+          changeTimeDate={setTimeDateOffset}
+          virtualTimeDate={virtualTimeDate}
         />
 
-        <Route
-          exact
-          path='/products'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex w-100'>
+        <Routes>
+          <Route
+            exact
+            path='/'
+            element={
+              <HomePage className='w-100' />
+            }
+          />
+
+          <Route
+            exact
+            path='/products'
+            element={
               <BrowserProducts />
-            </Container>
-          )}
-        />
-
-
-        <Route
-          exact
-          path='/shopemployee'
-          render={() => (
-            <>
-              {user !== null && user.role === "1" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
+            }
+          />
+          <Route
+            exact
+            path='/shopemployee'
+            element={
+              <>
+                {user !== null && user.role === "1" ? (
                   <ShopEmployee
                     hour={virtualTimeDate.format("H")}
                     dow={virtualTimeDate.format("dddd")}
                     user={user}
                     loggedIn={loggedIn}
                   />
-                </Container>
-              ) : (
-                <Redirect to='/login' />
-              )}
-            </>
-          )}
-        />
-        <Route
-          exact
-          path='/warehouse'
-          render={() => (
-            <>
-              {user !== null && user.role === "3" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  <WarehousePage user={user}  hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
-                </Container>
-              ) : (
-                <Redirect to='/login' />
-              )}
-            </>
-          )}
-        />
-        <Route
-          exact
-          path='/signup'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex w-100'>
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
+          <Route
+            exact
+            path='/warehouse'
+            element={
+              <>
+                {user !== null && user.role === "3" ? (
+                  <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
+          <Route
+            exact
+            path='/signup'
+            element={
               <RegistrationForm
                 className='below'
                 loggedIn={loggedIn}
                 doLogin={doLogin}
               />
-            </Container>
-          )}
-        />
+            }
+          />
 
-        <Route
-          exact
-          path='/farmerpage'
-          render={() => (
-            <>
-              {user !== null && user.role === "2" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
+          <Route
+            exact
+            path='/farmerpage'
+            element={
+              <>
+                {user !== null && user.role === "2" ? (
                   <FarmerPage
                     hour={virtualTimeDate.format("H")}
                     dow={virtualTimeDate.format("dddd")}
                     user={user}
                   />
-                </Container>
-              ) : (
-                <Redirect to='/login' />
-              )}
-            </>
-          )}
-        />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
 
-        <Route
-          exact
-          path='/clientpage'
-          render={() => (
-            <>
-              {" "}
-              {user !== null && user.role === "0" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
+          <Route
+            exact
+            path='/clientpage'
+            element={
+              <>
+                {user !== null && user.role === "0" ? (
                   <ClientPage
                     virtualTimeDate={virtualTimeDate}
                     hour={virtualTimeDate.format("H")}
                     dow={virtualTimeDate.format("dddd")}
                     user={user}
                   />
-                </Container>
-              ) : (
-                <Redirect to='/login' />
-              )}
-            </>
-          )}
-        />
-
-        <Route
-          exact
-          path='/about'
-          render={() => (
-            <>
-              <Container fluid className='justify-content-center d-flex'>
-                {/* inserire controllo loggedIn e ruolo*/}{" "}
-                <AboutPage user={user} />
-              </Container>
-            </>
-          )}
-        />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
 
           <Route
-          path='/'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              <Row className='vh-100vh mt-10'>
+            exact
+            path='/about'
+            element={
+              <AboutPage user={user} />
+            }
+          />
+          <Route
+            path='/login'
+            element={
+              <>
                 {loggedIn && user !== null ? (
                   <>
-                    {" "}
-                    
-                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
-                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
-                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
-                    {user.role === "3" ? <Redirect to='/warehouse' /> : null}
+                    {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Navigate to='/clientpage' /> : null}
+                    {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
+                    {user.role === "3" ? <Navigate to='/warehouse' /> : null}
                   </>
                 ) : (
                   <LoginForm
@@ -252,13 +224,13 @@ const App = () => {
                     login={doLogin}
                   />
                 )}
-              </Row>
-            </Container>
-          )}
-        />
+              </>
+            }
+          />
 
-      </Switch>
-    </Router>
+        </Routes>
+      </BrowserRouter>
+    </GlobalState.Provider>
   );
 };
 

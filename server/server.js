@@ -4,6 +4,8 @@ const IS_DEBUG = false;
 const DEBUG_ALLOW_DIRTY = IS_DEBUG;
 const DEBUG_PROCESS = IS_DEBUG;
 
+const ENABLE_CRON = true;
+
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
@@ -102,53 +104,55 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(
-  virtualCron.run(() => {
-    // reset all cron jobs on server restart
-    virtualCron.unscheduleAll();
+if (ENABLE_CRON) {
+  app.use(
+    virtualCron.run(() => {
+      // reset all cron jobs on server restart
+      virtualCron.unscheduleAll();
 
-    virtualCron.schedule(
-      {
-        from: { day: virtualCron.schedules.MONDAY, hour: 9 },
-        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-      },
-      (virtualTime, lastExecutionTime, ...args) => {
+      virtualCron.schedule(
+        {
+          from: { day: virtualCron.schedules.MONDAY, hour: 9 },
+          to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+        },
+        (virtualTime, lastExecutionTime, ...args) => {
 
-        ordersDao.confrimOrders();
-      },
-      [],
-      false
-    );
+          ordersDao.confrimOrders();
+        },
+        [],
+        false
+      );
 
-    virtualCron.schedule(
-      {
-        from: { day: virtualCron.schedules.MONDAY, hour: 23 },
-        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-      },
-      (virtualTime, lastExecutionTime, ...args) => {
-        ordersDao.deletePendingOrders();
-      },
-      [],
-      false
-    );
+      virtualCron.schedule(
+        {
+          from: { day: virtualCron.schedules.MONDAY, hour: 23 },
+          to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+        },
+        (virtualTime, lastExecutionTime, ...args) => {
+          ordersDao.deletePendingOrders();
+        },
+        [],
+        false
+      );
 
-    /**
-     * Telegram Cron Job
-    */
-    virtualCron.schedule(
-      virtualCron.schedules.SATURDAY,
-      (virtualTime, lastExecutionTime, ...args) => {
+      /**
+       * Telegram Cron Job
+      */
+      virtualCron.schedule(
+        virtualCron.schedules.SATURDAY,
+        (virtualTime, lastExecutionTime, ...args) => {
 
-        let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+          let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
 
-        if(days > 0 && (days > 0 || virtualTime.hour() > 9))
-          notifyTelegram();
-      },
-      [],
-      false
-    );
-  })
-);
+          if (days > 0 && (days > 0 || virtualTime.hour() > 9))
+            notifyTelegram();
+        },
+        [],
+        false
+      );
+    })
+  );
+}
 
 // API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);

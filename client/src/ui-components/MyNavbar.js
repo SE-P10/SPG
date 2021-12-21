@@ -1,13 +1,14 @@
-import { React, useState, useEffect } from "react";
-import { Nav, Navbar, Container, Modal, Button, Card } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { userIcon, plantIcon, logOutIcon } from "./Icons";
-import "../css/custom.css";
+import { React, useState, useEffect, useContext } from "react";
+import { Nav, Navbar, Container, Modal, Button } from "react-bootstrap";
+import { userIcon, plantIcon, logOutIcon, backIcon } from "./Icons";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
+import GlobalState from '../utility/GlobalState';
+
 import API from "../API";
 import dayjs from "dayjs";
+import { SVGIcon } from "./Page";
 
 function MyNavbar(props) {
 
@@ -20,154 +21,153 @@ function MyNavbar(props) {
 
   }, [props.virtualTimeDate]);
 
-  const getVirtualTimeTMP  = () => {
+  const getVirtualTimeTMP = () => {
     return virtualTimeTMP || virtualTime || dayjs();
   }
 
-
   const [showVCModal, setShowVCModal] = useState(props.showVCModal || false);
+
+  const [state] = useContext(GlobalState);
 
   return (
     <>
-      <Navbar
-        collapseOnSelect
-        expand='sm'
-        className='SGP-Navbar'
-        variant='dark'>
-        <Nav.Item>
-          <Link to={"/"}>
-            {" "}
-            <Navbar.Brand className='mainColor'>
-              {" "}
-              {plantIcon} &nbsp;SPG
-            </Navbar.Brand>{" "}
-          </Link>
-        </Nav.Item>
+      <div className="im-spgNavbarWraper">
+        <Navbar
+          collapseOnSelect
+          expand='sm'
+          className='im-spgNavbar'>
 
-        {props.loggedIn ? (
-          <>
-            <Modal
-              show={showVCModal}
-              onHide={() => setShowVCModal(false)}
-              className='virtualClockModal'>
-              <Modal.Header closeButton>
-                <Modal.Title>Virtual Clock</Modal.Title>
-              </Modal.Header>
-              <Modal.Body align='center'>
-                <input
-                  id='setHour'
-                  style={{ width: "100%", padding: "2px 17px" }}
-                  placeholder='Set hour'
-                  type='time'
-                  onChange={async (e) => {
-                    let value = e.target.value;
+          <Container fluid className='w-100' style={{ maxWidth: "1280px" }}>
 
-                    if (
-                      /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(
-                        value
-                      )
-                    ) {
-                      let comps = value.split(":");
-                      setVirtualTimeTMP(getVirtualTimeTMP()
-                        .set("hour", comps[0])
-                        .set("minute", comps[1]));
-                    }
-                  }}
-                  value={getVirtualTimeTMP().format("HH:mm")}
-                />
-                <br /> <br />
-                <Calendar
-                  minDate={virtualTime.toDate()}
-                  onClickDay={async (value, event) => {
-                    let newDate = dayjs(value);
+            <Nav.Link href="/">
+              <Navbar.Brand className='mainColor'>
+                <SVGIcon width='30px' height='30px' icon={plantIcon} />SPG
+              </Navbar.Brand>
+            </Nav.Link>
 
-                    setVirtualTimeTMP(getVirtualTimeTMP()
-                      .set("year", newDate.year())
-                      .set("month", newDate.month())
-                      .set("date", newDate.date())
-                    );
-
-                  }}
-                  value={getVirtualTimeTMP().toDate()}
-                />
-              </Modal.Body>
-              <Button variant="outline-danger"
-                onClick={async () => {
-
-                  let timeoffset = await API.setTime(getVirtualTimeTMP().toDate());
-
-                  setVirtualTime(getVirtualTimeTMP());
-
-                  props.changeTimeDate(timeoffset);
-
-                  setShowVCModal(false)
-                }}>
-                SET
-              </Button>
-            </Modal>
-          </>
-        ) : (
-          <></>
-        )}
-
-        <Navbar.Toggle aria-controls='responsive-navbar-nav' className='mb-2' />
-        <Navbar.Collapse id='responsive-navbar-nav '>
-          {props.loggedIn ? (
-            <>
-              <Container className='ml-auto'>
-                <Nav.Item className='ml-auto mr-3 mainColor'>
-                  {" "}
-                  <Link to={"/personalpage"} className='text-white'>
-                    {" "}
-                    {userIcon}{" "}
-                  </Link>{" "}
-                </Nav.Item>
-                <Link
-                  to={"/"}
-                  className='text-white'
-                  onClick={() => {
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" className='mb-2' />
+            <Navbar.Collapse id="responsive-navbar-nav" className="flex-grow-0">
+              <Nav>
+                {props.loggedIn ? (<>
+                  <Nav.Link href="/login" className="mainColor"> <SVGIcon width='30px' height='30px' icon={userIcon} /></Nav.Link>
+                  <Nav.Link href="/" onClick={() => {
                     props.closeMessage();
                     props.doLogOut();
-                  }}>
-                  {logOutIcon}{" "}
-                </Link>
-              </Container>
-            </>
+                  }} className="mainColor">
+                    <SVGIcon width='30px' height='30px' icon={logOutIcon} />
+                  </Nav.Link>
+                </>) : (
+                  <>
+                    <Nav.Link href="/login" className="mainColor"> Login </Nav.Link>
+                    <Nav.Link href="/signup" className="mainColor"> Sign up </Nav.Link>
+                  </>
+                )}
+              </Nav>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
+        {
+          props.loggedIn || state.useHistoryBack ? (
+            <div className="im-subNavbar">
+              {
+                state.useHistoryBack ? (
+                  <Button
+                    className='im-button im-animate im-historyBackButton'
+                    onClick={() => {
+                      if (typeof state.useHistoryBack === 'function')
+                        state.useHistoryBack()
+                    }}>
+                    {backIcon}
+                  </Button>
+                ) : (<></>)
+              }
+              {
+                props.loggedIn ? (<>
+                  <Modal
+                    show={showVCModal}
+                    onHide={() => setShowVCModal(false)}
+                    className='virtualClockModal im-modal'>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Virtual Clock</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body align='center' className="im-modal__content">
+                      <Container fluid >
+                        <input
+                          id='setHour'
+                          className="im-input"
+                          style={{ width: "100%", padding: "2px 17px" }}
+                          placeholder='Set hour'
+                          type='time'
+                          onChange={async (e) => {
+                            let value = e.target.value;
+
+                            if (
+                              /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(
+                                value
+                              )
+                            ) {
+                              let comps = value.split(":");
+                              setVirtualTimeTMP(getVirtualTimeTMP()
+                                .set("hour", comps[0])
+                                .set("minute", comps[1]));
+                            }
+                          }}
+                          value={getVirtualTimeTMP().format("HH:mm")}
+                        />
+                        <br />
+                        <Calendar className={"im-calendar light-shadow"}
+                          minDate={virtualTime.toDate()}
+                          onClickDay={async (value, event) => {
+                            let newDate = dayjs(value);
+
+                            setVirtualTimeTMP(getVirtualTimeTMP()
+                              .set("year", newDate.year())
+                              .set("month", newDate.month())
+                              .set("date", newDate.date())
+                            );
+
+                          }}
+                          value={getVirtualTimeTMP().toDate()}
+                        />
+                        <br />
+                        <Container className="d-flex w-100 justify-content-center">
+                          <Button variant="danger" 
+                            onClick={async () => {
+
+                              let timeoffset = await API.setTime(getVirtualTimeTMP().toDate());
+
+                              setVirtualTime(getVirtualTimeTMP());
+
+                              props.changeTimeDate(timeoffset);
+
+                              setShowVCModal(false)
+                            }}>
+                            SET
+                          </Button>
+                        </Container>
+                      </Container>
+                    </Modal.Body>
+                  </Modal>
+                  <div >
+                    {virtualTime.format("DD-MM-YYYY HH:mm:ss")}
+                    <>&nbsp;</>
+                    <Button 
+                      variant='danger'
+                      onClick={() => setShowVCModal(true)}>
+                      set
+                    </Button>
+                  </div>
+                </>
+                )
+                  : <></>
+              }
+            </div>
           ) : (
-            <>
-              {" "}
-              <Container className='ml-auto'>
-                <Nav.Item className='ml-auto mainColor'>
-                  <Link className='mainColor' to='login'>
-                    Login &nbsp;{" "}
-                  </Link>
-                </Nav.Item>
-                <Nav.Item className=' mainColor'>
-                  <Link className='mainColor' to='signup'>
-                    Sign up{" "}
-                  </Link>
-                </Nav.Item>
-              </Container>
-            </>
-          )}
-        </Navbar.Collapse>
-      </Navbar>
-      {props.loggedIn ? (
-        <Card>
-          <Card.Body align='center' style={{ padding: "8px" }}>
-            {" "}
-            {virtualTime.format("DD-MM-YYYY HH:mm:ss")}
-            <>&nbsp;</>
-            <Button
-              variant='outline-danger'
-              onClick={() => setShowVCModal(true)}>
-              set
-            </Button>
-          </Card.Body>
-        </Card>
-      ) : (
-        <></>
-      )}
+            <></>
+          )
+        }
+      </div>
+      <div style={{ with: "100%", height: "115px" }} />
     </>
   );
 }
