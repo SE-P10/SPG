@@ -87,7 +87,7 @@ function YourOrders(props) {
                   <tbody>
                     {orders.map((order) => (
                       <tr className='over'>
-                        <td> {order.price}€</td>
+                        <td> {order.price < 0.01 ? 0 : order.price}€</td>
                         <td> {order.status}</td>
                         {order.status === "booked" &&
                           ((props.dow === "Saturday" && props.hour >= 9) ||

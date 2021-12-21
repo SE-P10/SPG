@@ -38,8 +38,8 @@ function UpdateAvailability(props) {
       if (product.quantity < 0 || product.price < 0) {
         setErrorMessage(
           "You have negative quantities and/or negative price for " +
-            product.name +
-            "."
+          product.name +
+          "."
         );
         continue;
       }
@@ -105,14 +105,16 @@ function UpdateAvailability(props) {
               type='number'
               onChange={(ev) => {
                 if (!/^[0-9]*$/.test(ev.target.value)) {
-                  setErrorMessage("Quantity inserted is not number!");
+                  setErrorMessage("Quantity inserted is not valid!");
                   return;
                 }
 
-                setSelectedProduct({
-                  ...selectedProduct,
-                  quantity: ev.target.value,
-                });
+                if (Number.parseFloat(ev.target.value) >= 0) {
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    quantity: ev.target.value,
+                  });
+                }
               }}
               id={selectedProduct.id}
               size='sm'></Form.Control>
@@ -123,14 +125,16 @@ function UpdateAvailability(props) {
               type='number'
               onChange={(ev) => {
                 if (!/^[0-9,.]*$/.test(ev.target.value)) {
-                  setErrorMessage("Quantity inserted is not number!");
+                  setErrorMessage("Price inserted is not valid!");
                   return;
                 }
 
-                setSelectedProduct({
-                  ...selectedProduct,
-                  price: ev.target.value,
-                });
+                if (Number.parseFloat(ev.target.value) > 0) {
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    price: ev.target.value,
+                  });
+                }
               }}
               id={selectedProduct.id}
               size='sm'></Form.Control>
