@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import { ToastProvider } from 'react-toast-notifications';
 import "./css/index.css";
 import App from "./App";
-import 'react-datepicker/dist/react-datepicker.css'
 
 ReactDOM.render(
   <React.StrictMode>

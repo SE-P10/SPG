@@ -251,7 +251,7 @@ function ClientOrder(props) {
                     setFilterType(event.target.value);
                     setViewFilter(false);
                   }}>
-                  <option value='Type'> Type</option>
+                  <option value={undefined}> Type</option>
                   {type
                     .sort((a, b) => (a.name > b.name ? 1 : -1))
                     .map((t) => (

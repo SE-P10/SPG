@@ -6,6 +6,7 @@ const DEBUG_PROCESS = IS_DEBUG;
 
 const ENABLE_CRON = true;
 
+const db = require("./db");
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
@@ -15,6 +16,7 @@ const session = require("express-session");
 const sqliteStoreFactory = require("express-session-sqlite").default;
 const sqlite3 = require("sqlite3");
 const dayjs = require("dayjs");
+const { runQuerySQL, getQuerySQL } = require("./utility");
 
 const productsDao = require("./dao/products-dao");
 const userDao = require("./dao/user-dao");
@@ -27,6 +29,8 @@ const testDao = require("./dao/test-dao.js");
 const time = require("./time.js");
 const { virtualCron } = require("./cron");
 const { isNumber } = require("./utility");
+
+const { notifyTelegram } = require("./telegram");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -128,6 +132,48 @@ if (ENABLE_CRON) {
         },
         (virtualTime, lastExecutionTime, ...args) => {
           ordersDao.deletePendingOrders();
+        },
+        [],
+        false
+      );
+
+      /**
+      * delete unretrived orders
+      */
+      virtualCron.schedule(
+        virtualCron.schedules.FRIDAY,
+        (virtualTime, lastExecutionTime, ...args) => {
+
+          let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+          if (days > 0 && (days > 0 || virtualTime.hour() >= 23)) {
+
+            (async () => {
+              
+              await runQuerySQL(db, "UPDATE orders SET status = 'deleted' WHERE status = 'confirmed'", []);
+
+            })();
+
+          }
+
+        },
+        [],
+        false
+      );
+
+      /**
+       * Telegram Cron Job
+      */
+      virtualCron.schedule(
+        virtualCron.schedules.SATURDAY,
+        (virtualTime, lastExecutionTime, ...args) => {
+
+          let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+          if (days > 0 && (days > 0 || virtualTime.hour() > 9)) {
+            notifyTelegram();
+          }
+
         },
         [],
         false

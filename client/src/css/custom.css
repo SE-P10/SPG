@@ -71,6 +71,7 @@ body {
 .dropdown-menu .show {
   padding: 0;
 }
+
 .ph-prev {
   height: 100px;
   width: 150px;
@@ -102,13 +103,6 @@ footer {
   width: 100%;
   bottom: 0px;
   background-color: #009378d9;
-}
-footer {
-  clear: both;
-  position: relative;
-  width: 100%;
-  bottom: 0px;
-  background-color: #009378;
 }
 
 .list {
@@ -144,6 +138,14 @@ footer {
 
 .over-3 {
   margin-bottom: 60px !important;
+}
+
+.over-2 {
+  margin-bottom: 40px !important;
+}
+
+.telegramColor{
+  color:#28a0d8 !important
 }
 
 .margin-yourwallet {

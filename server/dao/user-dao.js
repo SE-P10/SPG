@@ -103,7 +103,7 @@ const addClient = async (newClient) => {
       else if (rows.length) reject("Email already in use!");
       else {
         const sql1 =
-          "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0)";
+          "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0, 0)";
         const sql2 =
           "INSERT into users_meta VALUES((SELECT MAX(id)+1 FROM users_meta), (SELECT MAX(id) FROM users), 'wallet', 0)";
         bcrypt.hash(newClient.password, 10).then((passwordHash) => {
