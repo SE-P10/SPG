@@ -40,7 +40,7 @@ function ClientOrder(props) {
       setProducts(productsTmp);
       const farmersTmp = productsTmp
         .map((t) => t.farmer)
-        .filter(function (item, pos) {
+        .filter(function(item, pos) {
           return productsTmp.map((t) => t.farmer).indexOf(item) === pos;
         });
 
@@ -49,7 +49,7 @@ function ClientOrder(props) {
 
       const typesTmp = productsTmp
         .map((t) => t.name)
-        .filter(function (item, pos) {
+        .filter(function(item, pos) {
           return productsTmp.map((t) => t.name).indexOf(item) === pos;
         });
 
@@ -109,7 +109,7 @@ function ClientOrder(props) {
         }
       }
     } else userId = props.user.id;
-    const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
+    // const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
 
     if (!basket || basket.length === 0) {
       setErrorMessage("No products found in the basket!");
