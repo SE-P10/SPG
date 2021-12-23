@@ -554,6 +554,10 @@ footer {
   justify-content: center;
 }
 
+.react-toast-notifications__container{
+  z-index: 99999 !important;
+}
+
 @media (max-width: 768px) {
   .im-modal {
     width: 100%;

@@ -27,6 +27,7 @@ function UpdateAvailability(props) {
   }, [props.user.id]);
 
   const handleSubmit = async (event, propsN) => {
+
     if (Object.keys(orderProduct).length === 0) {
       setErrorMessage("You have not updated any product.");
       return;
@@ -109,10 +110,12 @@ function UpdateAvailability(props) {
                   return;
                 }
 
-                if (Number.parseFloat(ev.target.value) >= 0) {
+                let value = Number.parseFloat(ev.target.value);
+
+                if (!isNaN(value) && value >= 0) {
                   setSelectedProduct({
                     ...selectedProduct,
-                    quantity: ev.target.value,
+                    quantity: value,
                   });
                 }
               }}
@@ -129,10 +132,12 @@ function UpdateAvailability(props) {
                   return;
                 }
 
-                if (Number.parseFloat(ev.target.value) > 0) {
+                let value = Number.parseFloat(ev.target.value);
+
+                if (!isNaN(value) && value > 0) {
                   setSelectedProduct({
                     ...selectedProduct,
-                    price: ev.target.value,
+                    price: value,
                   });
                 }
               }}
@@ -144,7 +149,7 @@ function UpdateAvailability(props) {
               className='im-button im-animate'
               variant='secondary'
               onClick={handleClose}>
-              Update
+              Edit
             </Button>
           </Modal.Footer>
         </Modal>
@@ -174,7 +179,7 @@ function UpdateAvailability(props) {
             {products.map((p) => {
               let product = orderProduct[p.id] || p;
               return (
-                <Row className='over'>
+                <Row className='over below'>
                   <Col>{product.name} </Col>
                   <Col>{product.quantity} </Col>
                   <Col>{product.price} €</Col>
@@ -183,7 +188,7 @@ function UpdateAvailability(props) {
                       className='im-button im-animate'
                       id='CheckBoxItem'
                       onClick={() => setSelectedProduct(product)}>
-                      Update
+                      Edit
                     </Button>
                   </Col>
                 </Row>
