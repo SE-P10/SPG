@@ -1,8 +1,27 @@
+function getDefaultProps(width, heigth = null) {
+  if (!heigth) {
+    heigth = 16;
+  }
+
+  return {
+    xmlns: "http://www.w3.org/2000/svg",
+    "aria-hidden": true,
+    height: heigth,
+    width: width,
+    viewBox: `0 0 ${width}  ${heigth}`,
+    style: {
+      display: "inline-block",
+      verticalAlign: "text-top",
+      fill: "currentColor",
+    },
+  };
+}
+
 const userIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='32'
-    height='32'
+    width='100%'
+    height='100%'
     fill='currentColor'
     className='bi bi-person-circle'
     viewBox='0 0 16 16'>
@@ -17,8 +36,8 @@ const userIcon = (
 const plantIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='40'
-    height='40'
+    width='100%'
+    height='100%'
     fill='#f7aa00'
     class='bi bi-flower3'
     viewBox='0 0 16 16'>
@@ -29,8 +48,8 @@ const plantIcon = (
 const logOutIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='32'
-    height='32'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-box-arrow-in-right'
     viewBox='0 0 16 16'>
@@ -48,8 +67,8 @@ const logOutIcon = (
 const registerIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-pen'
     viewBox='0 0 16 16'>
@@ -60,8 +79,8 @@ const registerIcon = (
 const newIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-plus-circle'
     viewBox='0 0 16 16'>
@@ -73,8 +92,8 @@ const newIcon = (
 const updateIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-arrow-repeat'
     viewBox='0 0 16 16'>
@@ -89,8 +108,8 @@ const updateIcon = (
 const handOutIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-truck'
     viewBox='0 0 16 16'>
@@ -117,8 +136,8 @@ const pigIcon = (
 const browseIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-search'
     viewBox='0 0 16 16'>
@@ -129,8 +148,8 @@ const browseIcon = (
 const searchIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='32'
-    height='32'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-search'
     viewBox='0 0 16 16'>
@@ -141,8 +160,8 @@ const searchIcon = (
 const checkIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-card-checklist'
     viewBox='0 0 16 16'>
@@ -154,8 +173,8 @@ const checkIcon = (
 const pendingIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-hourglass-split'
     viewBox='0 0 16 16'>
@@ -166,8 +185,8 @@ const pendingIcon = (
 const backIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-arrow-left-circle'
     viewBox='0 0 16 16'>
@@ -194,8 +213,8 @@ const filterIcon = (
 const basketIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='48'
-    height='48'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-cart'
     viewBox='0 0 16 16'>
@@ -206,8 +225,8 @@ const basketIcon = (
 const deleteIcon = (
   <svg
     xmlns='http://www.w3.org/2000/svg'
-    width='16'
-    height='16'
+    width='100%'
+    height='100%'
     fill='currentColor'
     class='bi bi-x-circle'
     viewBox='0 0 16 16'>
@@ -216,7 +235,106 @@ const deleteIcon = (
   </svg>
 );
 
+const confirmIcon = (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='100%'
+    height='100%'
+    fill='currentColor'
+    class='bi bi-check-square'
+    viewBox='0 0 16 16'>
+    <path d='M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z' />
+    <path d='M10.97 4.97a.75.75 0 0 1 1.071 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.235.235 0 0 1 .02-.022z' />
+  </svg>
+);
+
+const deliveryIcon = (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='100%'
+    height='100%'
+    fill='currentColor'
+    class='bi bi-truck'
+    viewBox='0 0 16 16'>
+    <path d='M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5v-7zm1.294 7.456A1.999 1.999 0 0 1 4.732 11h5.536a2.01 2.01 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456zM12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12v4zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z' />
+  </svg>
+);
+
+const editIcon = (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='16'
+    height='16'
+    fill='currentColor'
+    class='bi bi-pencil-square'
+    viewBox='0 0 16 16'>
+    <path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z' />
+    <path
+      fill-rule='evenodd'
+      d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z'
+    />
+  </svg>
+);
+
+const mailIcon = (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='48'
+    height='48'
+    fill='currentColor'
+    class='bi bi-envelope-check'
+    viewBox='0 0 16 16'>
+    <path d='M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm3.708 6.208L1 11.105V5.383l4.708 2.825ZM1 4.217V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.217l-7 4.2-7-4.2Z' />
+    <path d='M16 12.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Zm-1.993-1.679a.5.5 0 0 0-.686.172l-1.17 1.95-.547-.547a.5.5 0 0 0-.708.708l.774.773a.75.75 0 0 0 1.174-.144l1.335-2.226a.5.5 0 0 0-.172-.686Z' />
+  </svg>
+);
+
+const AlertIcon = (props) => (
+  <svg {...getDefaultProps(16)} {...props}>
+    <path
+      fillRule='evenodd'
+      d='M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z'
+    />
+  </svg>
+);
+const CheckIcon = (props) => (
+  <svg {...getDefaultProps(12)} {...props}>
+    <path fillRule='evenodd' d='M12 5.5l-8 8-4-4L1.5 8 4 10.5 10.5 4 12 5.5z' />
+  </svg>
+);
+const FlameIcon = (props) => (
+  <svg {...getDefaultProps(12)} {...props}>
+    <path
+      fillRule='evenodd'
+      d='M5.05.01c.81 2.17.41 3.38-.52 4.31C3.55 5.37 1.98 6.15.9 7.68c-1.45 2.05-1.7 6.53 3.53 7.7-2.2-1.16-2.67-4.52-.3-6.61-.61 2.03.53 3.33 1.94 2.86 1.39-.47 2.3.53 2.27 1.67-.02.78-.31 1.44-1.13 1.81 3.42-.59 4.78-3.42 4.78-5.56 0-2.84-2.53-3.22-1.25-5.61-1.52.13-2.03 1.13-1.89 2.75.09 1.08-1.02 1.8-1.86 1.33-.67-.41-.66-1.19-.06-1.78C8.18 5.01 8.68 2.15 5.05.02L5.03 0l.02.01z'
+    />
+  </svg>
+);
+const InfoIcon = (props) => {
+  return (
+    <svg {...getDefaultProps(14)} {...props}>
+      <path
+        fillRule='evenodd'
+        d='M6.3 5.71a.942.942 0 0 1-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 0 1-.7.3c-.28 0-.52-.11-.7-.3zM8 8.01c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V8v.01zM7 2.32C3.86 2.32 1.3 4.86 1.3 8c0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 1c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z'
+      />
+    </svg>
+  );
+};
+const CloseIcon = (props) => (
+  <svg {...getDefaultProps(14)} {...props}>
+    <path
+      fillRule='evenodd'
+      d='M7.71 8.23l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75L1 11.98l3.75-3.75L1 4.48 2.48 3l3.75 3.75L9.98 3l1.48 1.48-3.75 3.75z'
+    />
+  </svg>
+);
+
 export {
+  CloseIcon,
+  InfoIcon,
+  FlameIcon,
+  CheckIcon,
+  AlertIcon,
   userIcon,
   plantIcon,
   logOutIcon,
@@ -233,4 +351,8 @@ export {
   basketIcon,
   deleteIcon,
   searchIcon,
+  confirmIcon,
+  deliveryIcon,
+  editIcon,
+  mailIcon,
 };

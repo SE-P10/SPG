@@ -1,3 +1,11 @@
+const dayjs = require("dayjs");
+
+const weekOfYear = require('dayjs/plugin/weekOfYear')
+dayjs.extend(weekOfYear)
+
+const weekday = require('dayjs/plugin/weekday')
+dayjs.extend(weekday)
+
 async function handleFetch(endpoint, body = {}, method = "POST") {
 
     let request;
@@ -21,6 +29,7 @@ async function handleFetch(endpoint, body = {}, method = "POST") {
                 },
                 body: JSON.stringify(body)
             };
+            
     }
 
     return new Promise((resolve, reject) => {
@@ -38,6 +47,7 @@ async function handleFetch(endpoint, body = {}, method = "POST") {
                 }
             })
             .catch(() => {
+
                 reject({ error: "Impossible to communicate with the server." });
             });
     });
@@ -51,7 +61,6 @@ async function handleFetch(endpoint, body = {}, method = "POST") {
  * @returns {*}
  */
 async function parseResponse(response, type = "boolnum", falseRes = false) {
-
     response = await response;
 
     switch (type) {
@@ -76,5 +85,24 @@ async function parseResponse(response, type = "boolnum", falseRes = false) {
     return response;
 }
 
+const getNextWeekday = (time, weekday = 1, changeWeek = true) => {
 
-export { handleFetch, parseResponse }
+    const skip = changeWeek ? 7 : 0;
+
+    return time.add((((weekday + skip - time.weekday() + 1) % 7) || skip), 'day');
+}
+
+const dateIsBetween = (cDate, date1, date2) => {
+
+    let wd0N = cDate.weekday();
+    let wd1N = date1.weekday();
+    let wd2N = date2.weekday();
+
+    if (wd2N < wd1N) {
+        return !(wd0N > wd2N && wd0N < wd1N);
+    }
+
+    return wd0N >= wd1N && wd0N <= wd2N;
+}
+
+export { handleFetch, parseResponse, getNextWeekday, dateIsBetween }

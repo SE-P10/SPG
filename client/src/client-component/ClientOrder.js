@@ -1,189 +1,233 @@
 import {
   Button,
-  Alert,
   Form,
-  Row,
-  Col,
-  Dropdown,
-  DropdownButton,
   Container,
-  Image,
   Spinner,
+  Row
 } from "react-bootstrap";
-import { useState } from "react";
-import { useEffect } from "react";
-import "../css/custom.css";
-import {Basket} from "../client-component/Basket"
+import { useState, useEffect } from "react";
+import { Basket } from "../client-component/Basket";
 import API from "../API";
 import { filterIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
+import { ProductsList } from "../ui-components/Products";
+import { ToastNotification } from "../ui-components/ToastNotification";
+import { PageSection, BlockTitle, PageSeparator, PageTitle } from "../ui-components/Page";
 
 function ClientOrder(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([]);
-  const [orderProduct, setOrderProduct] = useState([]);
   const [type, setType] = useState([]);
   const [farmers, setFarmers] = useState([]);
+  const [orderedProducts, setOrderedProducts] = useState([]);
   const [viewFilter, setViewFilter] = useState(false);
   const [categorize, setCategorize] = useState(1); //0 per prodotti 1 per farmer
   const [filterType, setFilterType] = useState("Type"); //Type -> all types
   const [filterFarmer, setFilterFarmer] = useState("Farmer"); // Farmer -> all farmers
-  const [isOrderProductDirty, setIsOrderProductDirty] = useState(true);
   const [mailInserted, setMailInserted] = useState(undefined);
   const [isProductListLoading, setIsProductListLoading] = useState(true);
-  const [changes,setChanges] = useState(false)
+  const [updateBasket, setUpdateBasket] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-
-  const setIsOrderProductDirtyOk = () => {
-    setIsOrderProductDirty(true);
-  };
+  const [walletValue, setWalletValue] = useState(null);
+  const [isWalletLoading, setIsWalletLoading] = useState(true);
 
   useEffect(() => {
-    const fillTables = async () => {
+
+    const fillTables = async (user, modifyOrder) => {
+
       const productsTmp = await API.getProducts();
       setProducts(productsTmp);
-      setIsProductListLoading(false);
       const farmersTmp = productsTmp
         .map((t) => t.farmer)
         .filter(function (item, pos) {
-          return productsTmp.map((t) => t.farmer).indexOf(item) == pos;
+          return productsTmp.map((t) => t.farmer).indexOf(item) === pos;
         });
+
       setFarmers(farmersTmp);
+      setIsProductListLoading(false);
+
       const typesTmp = productsTmp
         .map((t) => t.name)
         .filter(function (item, pos) {
-          return productsTmp.map((t) => t.name).indexOf(item) == pos;
+          return productsTmp.map((t) => t.name).indexOf(item) === pos;
         });
+
       setType(typesTmp);
       //Chiamare API che prende backet
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
-      let basketTmp = [];
-      if (props.modifyOrder == -1)
-      basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
-      else {
-              basketTmp =  [{product_id: 1,
-                quantity: 8,
-                name:"peach"},{product_id: 2,
-                  quantity: 8,
-                  name: "melon"}];
-                  //fare qui chiamata api
-              for (let p of basketTmp){
-                API.insertProductInBasket({
-                  product_id: p.product_id,
-                  quantity: p.quantity,
-                })
-              }
+
+      if (modifyOrder > 0) {
+
+        let oldOrder = await API.getOrder(modifyOrder);
+
+        for (let p of oldOrder.products) {
+          await API.insertProductInBasket({
+            product_id: p.product_id,
+            quantity: p.quantity,
+          });
         }
+        setUpdateBasket((old) => !old)
+      }
 
+      setOrderedProducts(await API.getBasketProducts());
 
-      setOrderProduct(
-        basketTmp.map((t) => ({
-          product_id: t.product_id,
-          confirmed: true,
-          quantity: t.quantity,
-          name: t.name,
-        }))
-      );
-      setChanges(old => !old);
-      console.log(orderProduct)
+      if (Number.parseInt(user.role) === 0) {
+        const walletValueT = await API.getWalletByMail(user.email);
+        setWalletValue(walletValueT);
+        if (walletValueT) setIsWalletLoading(old => !old);
+      }
     };
 
-    fillTables();
-  }, [isOrderProductDirty]);
+    fillTables(props.user, props.modifyOrder);
 
-  const handleSubmit = async (event, propsN) => {
-    event.preventDefault();
-    let userId;
-    let orderOk = true;
+  }, [props.user, props.modifyOrder]);
 
-    if (props.user.role == 1) {
+  const handleBasketSubmit = async (basket) => {
+
+    let userId = 0, user = {};
+    const updatingOrder = props.modifyOrder > 0;
+
+    if (Number.parseInt(props.user.role) === 1) {
       if (!mailInserted) {
         setErrorMessage("You have to insert an email!");
-        orderOk = false;
+        return;
       } else {
-        userId = await API.getUserId(mailInserted);
-        if (userId.length === 0 || userId[0].role != 0) {
+        try {
+          user = await API.getUserId(mailInserted);
+        }
+        catch (e) {
+          setErrorMessage("User not found");
+          return;
+        }
+
+        if (Number.parseInt(user.role) !== 0) {
           setErrorMessage("Invalid user");
-          orderOk = false;
-        } 
-        if (orderOk) userId = userId[0].id;
+          return;
+        } else {
+          userId = user.id;
+        }
       }
     } else userId = props.user.id;
     const basketTmp = await API.getBasketProducts(setIsOrderProductDirtyOk);
 
-    if (orderOk && basketTmp.length === 0) {
-      setErrorMessage("Can't issue an order without items.");
-      orderOk = false;
+    if (!basket || basket.length === 0) {
+      setErrorMessage("No products found in the basket!");
+      return;
     }
 
-    if (orderOk) {
-      API.deleteAllBasket();
-      
-      let finalOrder = basketTmp.map((t) => ({
-        product_id: t.id,
-        confirmed: true,
-        quantity: t.quantity,
-        name: t.name,
-      }))
-      if (props.modifyOrder == -1){
-      API.insertOrder(
-        userId,
-        finalOrder
-      ).then(() => {
-          propsN.addMessage("Request sent correctly!");
-        
-          propsN.changeAction(0);
+    let finalOrder = basket.map((t) => ({
+      product_id: t.id,
+      quantity: t.quantity,
+    }));
+
+    if (!updatingOrder) {
+
+      let result = await API.insertOrder(userId, finalOrder);
+      if (result) {
+        API.deleteAllBasket();
+        props.addMessage("Request sent correctly!");
+        props.changeAction(0);
+      } else {
+        setErrorMessage("Server error during insert order. ");
+      }
+
+    } else {
+      //fare chiamata ad update order
+      API.updateOrderProducts(props.modifyOrder, finalOrder)
+        .then(() => {
+          props.addMessage("Request sent correctly!");
+          API.deleteAllBasket();
+          props.changeAction(0);
         })
         .catch((err) => {
-          setErrorMessage("Server error during insert order. "+err);
-        });}
-        else { //fare chiamata ad update order
-          console.log("fare chiamta ad update order")
-          propsN.changeAction(0)
-        }
+          setErrorMessage("Server error during insert order. " + err);
+        });
+
+      props.changeAction(0);
     }
   };
 
+  const handleBasketChange = async (basket) => {
+
+    setOrderedProducts(basket);
+  }
+
+  const updateRequestedQuantity = async (product, quantity) => {
+
+    let requestedProduct = products.filter((t) => { return t.id === product.id })[0];
+
+    if (!requestedProduct || quantity > requestedProduct.quantity || quantity <= 0) {
+      return false;
+    }
+    else {
+
+      await API.insertProductInBasket({ product_id: product.id, quantity: quantity });
+
+      setOrderedProducts(await API.getBasketProducts());
+
+      setUpdateBasket((old) => !old);
+
+      return true;
+    }
+  }
+
   return (
-    <>
-      <Col className='justify-content-center cont'>
-        <Row className='justify-content-center'>
-          <h2>Issue Order</h2>
-        </Row>
-        {errorMessage ? (
-          <Alert
-            variant='danger'
-            onClose={() => setErrorMessage("")}
-            dismissible>
-            {" "}
-            {errorMessage}{" "}
-          </Alert>
-        ) : (
-          ""
-        )}
+    <section className="im-clientOrderWrapper">
+      <PageSection style={{ flex: "1 1 800px" }}>
+        <PageTitle className="over-2">
+          Issue Order
+        </PageTitle>
 
-        {props.user.role == 1 ? (
-          <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
-            <Form.Label>Client mail</Form.Label>
-            <Form.Control
-              type='email'
-              onChange={(ev) => {
-                setMailInserted(ev.target.value);
-              }}
-            />
-          </Form.Group>
-        ) : null}
+        <ToastNotification
+          variant='error'
+          onSet={() => setErrorMessage("")}
+          message={errorMessage}
+        />
 
-        <Col sm={8}>
-          <Row>
+        {
+          Number.parseInt(props.user.role) === 1 ? (
+            <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
+              <Form.Label>Client mail</Form.Label>
+              <Form.Control
+                className="im-input"
+                type='email'
+                onChange={(ev) => {
+                  setMailInserted(ev.target.value);
+                }}
+              />
+            </Form.Group>
+          ) : <></>}
+
+        <PageSeparator />
+
+        <section>
+          <section>
             <SearchForm
               setSearchValue={setSearchValue}
-              onSearchSubmit={() => {console.log("test")}}
+              onSearchSubmit={() => { console.log("testSubmit") }}
             />
-          </Row>
+            {
+              Number.parseInt(props.user.role) === 0 ?
+                <Row className="d-flex justify-content-end">
+                  <div className='im-yourwallet'>
+                    <h4 className='font-color'>Your Wallet</h4>
+                    {isWalletLoading ? (
+                      <Spinner
+                        animation='border'
+                        variant='success'
+                        size='sm'></Spinner>
+                    ) : (
+                      <div>{walletValue}€</div>
+                    )}
+                  </div>
+                </Row>
+                :
+                <></>
+            }
+          </section>
           <Button
-            className='spg-button below'
+            className='below im-button im-animate'
             onClick={() => {
               if (showFilterMenu) {
                 setShowFilterMenu(false);
@@ -193,14 +237,14 @@ function ClientOrder(props) {
                 setViewFilter(false);
               } else setShowFilterMenu(true);
             }}>
-            {" "}
+
             {filterIcon} {showFilterMenu ? <> x </> : <>Filters</>}
-          </Button>{" "}
+          </Button>
           {showFilterMenu ? (
             <>
-              {" "}
               <Form className='below'>
                 <Form.Control
+                  className="im-input"
                   as='select'
                   onChange={(event) => {
                     setCategorize(0);
@@ -218,6 +262,7 @@ function ClientOrder(props) {
               </Form>
               <Form>
                 <Form.Control
+                  className="im-input"
                   as='select'
                   onChange={(event) => {
                     setCategorize(1);
@@ -233,31 +278,29 @@ function ClientOrder(props) {
               </Form>
             </>
           ) : null}
-        </Col>
+        </section>
 
         {categorize === 0 && viewFilter === true ? (
-          <div>
-            <Form>
-              <Form.Control
-                as='select'
-                onChange={(event) => {
-                  setCategorize(0);
-                  setViewFilter(true);
-                  setFilterType(event.target.value);
-                  setViewFilter(false);
-                }}>
-                <option value='Type'> Type</option>
-                {type
-                  .sort((a, b) => (a.name > b.name ? 1 : -1))
-                  .map((t) => (
-                    <option value={t}>{t}</option>
-                  ))}
-              </Form.Control>
-            </Form>
-          </div>
+          <Form>
+            <Form.Control
+              as='select'
+              onChange={(event) => {
+                setCategorize(0);
+                setViewFilter(true);
+                setFilterType(event.target.value);
+                setViewFilter(false);
+              }}>
+              <option value='Type'> Type</option>
+              {type
+                .sort((a, b) => (a.name > b.name ? 1 : -1))
+                .map((t) => (
+                  <option value={t}>{t}</option>
+                ))}
+            </Form.Control>
+          </Form>
         ) : (
-          <div>
-            {categorize == 1 && viewFilter === true ? (
+          <>
+            {categorize === 1 && viewFilter === true ? (
               <div>
                 <Form>
                   <Form.Control
@@ -276,162 +319,33 @@ function ClientOrder(props) {
             ) : (
               ""
             )}
-          </div>
+          </>
         )}
         {isProductListLoading ? (
           <Container className='below'>
             <Spinner animation='border' variant='success'></Spinner>
           </Container>
-        ) : (
-          <Form>
-            <h3 className='thirdColor below'> List of our products: </h3>
-            <Col className='below list'>
-              {products
-                .sort((a, b) => (a.name > b.name ? 1 : -1))
-                .filter((t) => {
-                  if (filterType === "Type" && filterFarmer === "Farmer")
-                    return (
-                      true &&
-                      t.name
-                        .toLowerCase()
-                        .includes(searchValue.toLowerCase()) &&
-                      t.quantity > 0
-                    );
+        ) :
+          <>
+            <BlockTitle className='thirdColor below-2 over-2'> List of our products: </BlockTitle>
+            <ProductsList
+              products={products}
+              setErrorMessage={setErrorMessage}
+              updateRequestedQuantity={updateRequestedQuantity}
+              filter={{ type: filterType, farmer: filterFarmer, search: searchValue }}
+              orderedProducts={orderedProducts}
+            />
+          </>
+        }
+      </PageSection>
 
-                  if (filterType !== "Type" && filterFarmer === "Farmer")
-                    return (
-                      t.name == filterType &&
-                      t.name
-                        .toLowerCase()
-                        .includes(searchValue.toLowerCase()) &&
-                      t.quantity > 0
-                    );
-
-                  if (filterType == "Type" && filterFarmer !== "Farmer")
-                    return (
-                      t.farmer == filterFarmer &&
-                      t.name
-                        .toLowerCase()
-                        .includes(searchValue.toLowerCase()) &&
-                      t.quantity > 0
-                    );
-
-                  if (filterType !== "Type" && filterFarmer !== "Farmer")
-                    return (
-                      t.farmer == filterFarmer &&
-                      t.name == filterType &&
-                      t.name.toLowerCase().includes(searchValue.toLowerCase())
-                    );
-                })
-                .map((p) => (
-                  <Row className='below'>
-                    <Image
-                      src={"./img/" + p.name + ".jpeg"}
-                      className='ph-prev justify-content-center'
-                    />{" "}
-                    <Col>{p.name} </Col>
-                    <Col>{p.price} €</Col>
-                    <Col>max quantity : {p.quantity}</Col>
-                    
-                      <Button
-                        onClick={(ev) => {
-                          if (
-                            orderProduct.filter((t) => t.product_id === p.id)
-                              .length === 0 ||
-                            orderProduct.filter((t) => t.product_id === p.id)[0]
-                              .quantity > p.quantity ||
-                            orderProduct.filter((t) => t.product_id === p.id)[0]
-                              .quantity <= 0
-                          )
-                            setErrorMessage("Wrong quantity");
-                          else {
-                            
-                            API.insertProductInBasket(
-                              orderProduct
-                                .filter((t) => t.product_id === p.id)
-                                .map((t) => ({
-                                  product_id: t.product_id,
-                                  quantity: t.quantity,
-                                }))[0]
-                            );
-                            
-                            setChanges(old => !old);
-                            setOrderProduct((old) => {
-                              const list = old.map((item) => {
-                                if (item.product_id === p.id)
-                                  return {
-                                    product_id: p.id,
-                                    confirmed: true,
-                                    quantity: item.quantity,
-                                    name: p.name,
-                                  };
-                                else return item;
-                              });
-                              return list;
-                            });
-                          }
-                        }}
-                        variant='outline-secondary'>
-                        {orderProduct.filter(
-                      (t) => t.product_id === p.id && t.confirmed == true
-                    ).length === 0 ? "ADD" : "MODIFY" }
-                       </Button>
-                    
-                    <Col>
-                      
-                        <Form.Group>
-                          <Form.Control
-                            onChange={(ev) => {
-                              if (isNaN(parseInt(ev.target.value)))
-                                setErrorMessage("not a number");
-                              else {
-                                if (
-                                  orderProduct.filter(
-                                    (t) => t.product_id === p.id
-                                  ).length !== 0
-                                ) {
-                                  setOrderProduct((old) => {
-                                    const list = old.map((item) => {
-                                      if (item.product_id === p.id)
-                                        return {
-                                          product_id: p.id,
-                                          confirmed: item.confirmed,
-                                          quantity: parseInt(ev.target.value),
-                                          name: p.name,
-                                        };
-                                      else return item;
-                                    });
-                                    return list;
-                                  });
-                                } else {
-                                  setOrderProduct((old) => [
-                                    {
-                                      product_id: p.id,
-                                      confirmed: false,
-                                      quantity: parseInt(ev.target.value),
-                                      name: p.name,
-                                    },
-                                    ...old,
-                                  ]);
-                                }
-                              }
-                            }}
-                            id={p.id}
-                            size='sm'
-                          />
-                        </Form.Group>
-                      
-                    </Col>
-                  </Row>
-                ))}
-            </Col>
-          </Form>
-        )}
-      </Col>
-      <Col sm={4} className='ml-3'>
-        <Basket props={props} changes={changes} setIsOrderProductDirtyOk={setIsOrderProductDirtyOk} handleSubmit={handleSubmit} setIsOrderProductDirty={setIsOrderProductDirty} setOrderProduct={setIsOrderProductDirtyOk} />
-      </Col>
-    </>
+      <Basket
+        style={{ flex: "1 1 0px" }}
+        changes={updateBasket}
+        handleSubmit={handleBasketSubmit}
+        handleChange={handleBasketChange}
+      />
+    </section>
   );
 }
 

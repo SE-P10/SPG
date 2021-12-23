@@ -5,6 +5,7 @@
 * Description: Get user data 
 * Request params: userID or user_email
 * Return: user object as defined below
+* HTTP Response: 200 success, 404 user not found, 500 Server Error
 ```json
 {
   "id": 0,
@@ -17,6 +18,7 @@
 * Description: add new client
 * Body: user data as defined below
 * Return: success or fail
+* HTTP Response: 201 user created, 422 Unprocessable Request, 500 Server Error
 ```json
 {
   "email": "",
@@ -32,10 +34,12 @@
 * Description: set virtual time
 * Request params: a time string like *(Wed Dec 08 2021 18:00:03 GMT+0100 (Ora standard dell’Europa centrale))* or an offset in seconds or a timestamp 
 * Return: offset from real time in seconds
+* HTTP Response: 201 time updated
 
 ## GET /api/debug/time/
 * Description: get set session time
 * Return: an object as defined below
+* HTTP Response: 200 success
 ```json
 {
   "offset": 0,
@@ -49,6 +53,7 @@
 * Request params: user_id
 * Body: an object as defined below
 * Return: success or fail
+* HTTP Response: 201 notification updated, 400 Bad Request, 500 Server Error
 ```json
 {
   "message": "",
@@ -60,11 +65,13 @@
 * Description: set a notification as seen
 * Request params: notification_id
 * Return: success or fail
+* HTTP Response: 201 notification updated, 400 Bad Request, 500 Server Error
 
 ## GET /api/notification/:user_id
 * Description: get all notification for user_id
 * Request params: user_id
 * Return: an object as defined below
+* HTTP Response: 200 success, 404 user not found, 500 Server Error
 ```json
 {
   "id": 0,
@@ -75,10 +82,11 @@
 ```
 ---
 
-## Get /api/orders/:filter
+## Get /api/orders/:filter?/:all?
 * Description: get all orders based on the filter
-* Request params: **orderID** *(will return only an object)* or **user_email** or **order status** *(like: pending)* 
+* Request params: Filter (**orderID** *(will return only an object)* or **user_email** or **order status** *(like: pending)*), if **all** is passed will return all orders otherwise only of the current week
 * Return: an array of objects or a single one as defined below
+* HTTP Response: 200 success, 404 order not found, 422 Unprocessable Request, 500 Server Error
 ```json
 {
   "id": 0,
@@ -87,6 +95,7 @@
   "price": 0,
   "pickup_time": "",
   "pickup_place": "",
+  "timestamp": 0,
   "user": {
             "username": "",
             "email": "",
@@ -105,8 +114,8 @@
 * Description: insert a new order for user_id
 * Request params: **user_id** 
 * Body: an object as defined below
-* Return:success or fail
-
+* Return: success or fail
+* HTTP Response: 201 success, 400 Bad Request, 412 Precondition Failed, 422 Unprocessable Request, 500 Server Error
 ```json
 {
   "order": {
@@ -125,8 +134,8 @@
 * Description: update an order
 * Request params: **order_id** 
 * Body: an object as defined below
-* Return:success or fail
-
+* Return: success or fail
+* HTTP Response: 201 success, 400 Bad Request, 412 Precondition Failed, 422 Unprocessable Request, 500 Server Error
 ```json
 {
   "order": {

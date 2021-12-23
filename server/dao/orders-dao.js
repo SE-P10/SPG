@@ -5,8 +5,10 @@ const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const { validationResult } = require("express-validator");
+const dayjs = require("dayjs");
 
 const db = require("../db");
+const notificationDao = require("./notification-dao");
 const { getUserMeta, updateUserMeta, getUser } = require("./user-dao");
 const {
   isEmail,
@@ -22,6 +24,7 @@ const {
   debugLog,
 } = require("../utility");
 const { addNotification } = require("./notification-dao");
+const { is_possible, getVirtualTimestamp } = require("../time");
 
 const getOrder = async (orderID) => {
   if (!orderID) return null;
@@ -71,16 +74,17 @@ const getOrder = async (orderID) => {
   return order;
 };
 
-const getOrders = async (status = "") => {
+const getOrders = async (status = "", timestamp = 0) => {
+
   if (isNumber(status)) return getOrder(status);
 
-  let sql = "SELECT * FROM orders",
-    values = [];
+  let sql = "SELECT * FROM orders WHERE timestamp >= ? ",
+    values = [timestamp];
 
   if (status) {
     if (isEmail(status))
-      sql += " WHERE user_id = (SELECT id FROM users WHERE email = ?);";
-    else sql += " WHERE status = ?;";
+      sql += " AND user_id = (SELECT id FROM users WHERE email = ?);";
+    else sql += " AND status = ?;";
     values.push(status);
   }
 
@@ -95,6 +99,7 @@ const getOrders = async (status = "") => {
       price: 0,
       pickup_time: "",
       pickup_place: "",
+      timestamp: 0
     },
     null
   );
@@ -171,6 +176,24 @@ const getProduct = async (productID) => {
   );
 };
 
+const getOrderProducts = async (orderID) => {
+  if (!orderID) return null;
+  const query =
+    "SELECT op.product_id AS id, op.quantity, p.price FROM order_product op, products p WHERE op.product_id = p.id AND order_id = ?";
+  return getQuerySQL(
+    db,
+    query,
+    [orderID],
+    {
+      id: 0,
+      price: 0,
+      quantity: 0,
+    },
+    null,
+    false
+  );
+};
+
 const updateProduct = async (productID, data) => {
   if (!productID) return false;
 
@@ -213,6 +236,8 @@ const handleOrderActions = async (order, action, products = []) => {
 
   switch (action) {
     case "handout":
+      if (order.status !== "confirmed") return 0;
+
       let wallet = await getUserMeta(order.user_id, "wallet", true, 0);
 
       let productsPrice = await calcProductsPice(products);
@@ -256,7 +281,8 @@ const orderExist = async (ordeID) => {
   return await existValueInDB(db, "orders", { id: ordeID }, 0);
 };
 
-const handleOrder = async (orderRAW, products = []) => {
+const handleOrder = async (orderRAW, products = [], vTimeOffset = 0) => {
+
   if (isNumber(orderRAW)) {
     orderRAW = { id: orderRAW };
   }
@@ -350,8 +376,7 @@ const handleOrder = async (orderRAW, products = []) => {
       debugLog("Inserting order:", newOrder);
     }
 
-    let sql =
-      "INSERT INTO orders (user_id, status, price, pickup_time, pickup_place) VALUES(?, ?, ?, ?, ?)";
+    let sql = "INSERT INTO orders (user_id, status, price, pickup_time, pickup_place, timestamp) VALUES(?, ?, ?, ?, ?, ?)";
 
     return runQuerySQL(
       db,
@@ -362,6 +387,7 @@ const handleOrder = async (orderRAW, products = []) => {
         0,
         newOrder.pickup_time,
         newOrder.pickup_place,
+        vTimeOffset + dayjs().unix()
       ],
       true
     );
@@ -377,28 +403,30 @@ const handleOrderProducts = async (
     db.serialize(async () => {
       let processedProducts = [];
 
+      let insertUpdateProducts = products.map((x) => {
+        let pID = x.product_id || x.id || Object.keys(x)[0];
+        let quantity = x.quantity || x[pID] || 0;
+
+        return [pID, quantity];
+      });
+
       db.run("BEGIN TRANSACTION;");
 
       if (updatingOrder) {
-        let updateProducts = products.map((x) => {
-          let pID = x.product_id || x.id || Object.keys(x)[0];
-          let quantity = x.quantity || x[pID];
-
-          return [quantity, orderID, pID];
-        });
-
         try {
           processedProducts = await bulkSQL(
             db,
-            "UPDATE order_product SET quantity = ? WHERE order_id = ? AND product_id = ?",
-            updateProducts,
+            "REPLACE INTO order_product (order_id, product_id, quantity) VALUES(" +
+            orderID +
+            ", ?, ?)",
+            insertUpdateProducts,
             {
               /**
                * check product availability
                */
               before: async (row) => {
-                let pID = row[2],
-                  quantity = Number.parseFloat(row[0] || 0),
+                let pID = row[0],
+                  quantity = Number.parseFloat(row[1] || 0),
                   product = await getProduct(pID),
                   orderedProduct = (await getOrderProduct(orderID, pID)) || {
                     order_id: orderID,
@@ -419,7 +447,7 @@ const handleOrderProducts = async (
 
                 if (
                   Number.parseFloat(orderedProduct.quantity) +
-                    Number.parseFloat(product.quantity) <
+                  Number.parseFloat(product.quantity) <
                   Number.parseFloat(quantity)
                 ) {
                   if (AF_DEBUG) {
@@ -427,7 +455,7 @@ const handleOrderProducts = async (
                       "Product quantity error:",
                       orderedProduct,
                       Number.parseFloat(orderedProduct.quantity) +
-                        Number.parseFloat(quantity)
+                      Number.parseFloat(quantity)
                     );
                   }
 
@@ -442,13 +470,13 @@ const handleOrderProducts = async (
               after: async (row, insertedID, orderedProduct) => {
                 if (!orderedProduct) return false;
 
-                let pID = row[2],
+                let pID = row[0],
                   order = await getOrder(orderID),
                   product = await getProduct(pID),
                   availableQuantity = Number.parseFloat(product.quantity) || 0,
                   orderedQuantity =
                     Number.parseFloat(orderedProduct.quantity) || 0,
-                  updateQuantity = Number.parseFloat(row[0]) || 0;
+                  updateQuantity = Number.parseFloat(row[1]) || 0;
 
                 if (!product || !order) {
                   if (AF_DEBUG) {
@@ -467,7 +495,7 @@ const handleOrderProducts = async (
                   price:
                     Number.parseFloat(order.price) +
                     Number.parseFloat(product.price) *
-                      (updateQuantity - orderedQuantity),
+                    Number.parseFloat(updateQuantity),
                 });
 
                 if (AF_DEBUG_PROCESS) {
@@ -497,25 +525,20 @@ const handleOrderProducts = async (
           processedProducts = [];
         }
       } else {
-        let insertProducts = products.map((x) => {
-          let pID = x.product_id || x.id || Object.keys(x)[0];
-          let quantity = x.quantity || x[pID];
-
-          return [orderID, pID, quantity];
-        });
-
         try {
           processedProducts = await bulkSQL(
             db,
-            "INSERT INTO order_product (order_id, product_id, quantity) VALUES(?, ?, ?)",
-            insertProducts,
+            "INSERT INTO order_product (order_id, product_id, quantity) VALUES(" +
+            orderID +
+            ", ?, ?)",
+            insertUpdateProducts,
             {
               /**
                * check product availability
                */
               before: async (row) => {
-                let pID = row[1],
-                  quantity = Number.parseFloat(row[2] || 0),
+                let pID = row[0],
+                  quantity = Number.parseFloat(row[1] || 0),
                   product = await getProduct(pID);
 
                 if (!orderID || !product || quantity < 0) {
@@ -545,7 +568,7 @@ const handleOrderProducts = async (
                * update product availability and order price
                */
               after: async (row, insertedID, statusCheck) => {
-                let pID = row[1],
+                let pID = row[0],
                   product = await getProduct(pID),
                   order = await getOrder(orderID);
 
@@ -559,7 +582,7 @@ const handleOrderProducts = async (
                 let res = await updateProduct(pID, {
                   quantity:
                     Number.parseFloat(product.quantity) -
-                    Number.parseFloat(row[2]),
+                    Number.parseFloat(row[1]),
                 });
 
                 res *= await handleOrder({
@@ -567,7 +590,7 @@ const handleOrderProducts = async (
                   price:
                     Number.parseFloat(order.price) +
                     Number.parseFloat(product.price) *
-                      Number.parseFloat(row[2]),
+                    Number.parseFloat(row[1]),
                 });
 
                 if (!res) {
@@ -594,7 +617,7 @@ const handleOrderProducts = async (
           processedProducts = [];
         }
 
-        if (processedProducts.length !== insertProducts.length) {
+        if (processedProducts.length !== insertUpdateProducts.length) {
           if (AF_DEBUG) {
             debugLog(
               "ERROR insert order :: not all products were processed correctly"
@@ -612,7 +635,8 @@ const handleOrderProducts = async (
   });
 };
 
-const processOrder = async (userID, orderID, data = {}) => {
+const processOrder = async (userID, orderID, data = {}, vTimeOffset = 0) => {
+
   let products = data.products || [];
 
   let order = {
@@ -627,7 +651,7 @@ const processOrder = async (userID, orderID, data = {}) => {
   /**
    * Insert / Update a order {id:...}
    */
-  orderID = await handleOrder(order, products);
+  orderID = await handleOrder(order, products, vTimeOffset);
 
   if (AF_DEBUG_PROCESS) {
     debugLog("orderID: " + orderID);
@@ -657,7 +681,173 @@ const processOrder = async (userID, orderID, data = {}) => {
   return 0;
 };
 
+const getConfirmedProducts = async () => {
+
+  return getQuerySQL(
+    db,
+    "SELECT id, product_id AS product, quantity FROM farmer_payments where status = 'confirmed'",
+    [],
+    {
+      id: 0,
+      product: 0,
+      quantity: 0,
+    },
+    null,
+    false
+  );
+};
+
+exports.deletePendingOrders = async () => {
+  return db.run(
+    "UPDATE orders SET status = 'deleted' WHERE status = 'pending'"
+  );
+};
+
+exports.confrimOrders = () => {
+  return new Promise(async (resolve, reject) => {
+    db.run("BEGIN TRANSACTION;");
+    try {
+      //Get the quantities confirmed by the farmers and the related product's id
+      const confirmedProducts = getConfirmedProducts();
+      //Get all the booked orders
+      const orders = await getOrders("booked");
+      //Produce an array of objects like {id: row id, product: product id, leftQuantity: left quantity} to update farmer_payments later
+      const res = orders.reduce(async (values, order) => {
+        let newValues = (await values).map((v) => ({
+          id: v.id,
+          product: v.product,
+          leftQuantity: v.quantity,
+        }));
+        //For each order, get its product
+        const products = await getOrderProducts(order.id);
+        //For each product, update the left quantity or remove the element from the order
+        products.forEach((p) => {
+          //if the product has not been confirmed by the farmer or the quantity is not enough,
+          if (
+            !newValues.some((v) => v.product === p.id) ||
+            newValues.find((v) => v.product === p.id).leftQuantity < p.quantity
+          ) {
+            //it is removed from the order
+            runQuerySQL(
+              db,
+              "DELETE FROM order_product WHERE order_id = ? AND product_id = ?;",
+              [order.id, p.id]
+            );
+            //and the order price is decreased
+            runQuerySQL(
+              db,
+              "UPDATE orders SET price = price - ? WHERE id = ?;",
+              [p.price * p.quantity, order.id]
+            );
+            //send notification
+            const message =
+              "product code: " + p.id + "removed from order code " + order.id;
+            notificationDao.addNotification(
+              order.user_id,
+              message,
+              "product removed",
+              true
+            );
+          } //Reduce the left quantity
+          else
+            newValues = newValues.map((v) =>
+              v.product === p.id
+                ? {
+                  id: v.id,
+                  product: v.product,
+                  leftQuantity: v.leftQuantity - p.quantity,
+                }
+                : v
+            );
+        });
+        let query =
+          "SELECT meta_value FROM users_meta WHERE user_id = ? AND meta_key = 'wallet'";
+        const wallet = (
+          await getQuerySQL(
+            db,
+            query,
+            [order.user_id],
+            { meta_value: 0 },
+            null,
+            true
+          )
+        ).meta_value;
+        const price = (
+          await getQuerySQL(
+            db,
+            "SELECT price FROM orders WHERE id = ?",
+            [order.id],
+            { price: 0 },
+            null,
+            true
+          )
+        ).price;
+        let newStatus = "";
+        if (wallet < price) {
+          newStatus = "pending";
+          const message =
+            "Your order code " + order.id + " is pending, top up your wallet!";
+          notificationDao.addNotification(
+            order.user_id,
+            message,
+            "pending order",
+            true
+          );
+        } else if (price === 0) {
+          newStatus = "missing_products";
+          const message =
+            "Your order code " +
+            order.id +
+            " has been deleted because no products are available!";
+          notificationDao.addNotification(
+            order.user_id,
+            message,
+            "Order deleted",
+            true
+          );
+        } else {
+          newStatus = "confirmed";
+          //update wallet
+          updateUserMeta(order.user_id, "wallet", wallet - price);
+        }
+        runQuerySQL(db, "UPDATE orders SET status = ? WHERE id = ?", [
+          newStatus,
+          order.id,
+        ]);
+        return newValues.map((v) => ({
+          id: v.id,
+          product: v.product,
+          quantity: v.leftQuantity,
+        }));
+      }, confirmedProducts);
+      //For each product confirmed by a farmer, the status is set to 'toDeliver' and the quantity decreased to that needed
+      (await res).forEach(async (e) =>
+        runQuerySQL(
+          db,
+          "UPDATE farmer_payments SET status = 'toDeliver', quantity = ? WHERE id = ?;",
+          [
+            (await confirmedProducts).find((cp) => cp.id === e.id).quantity -
+            e.quantity,
+            e.id,
+          ]
+        )
+      );
+      runQuerySQL(
+        db,
+        "DELETE FROM farmer_payments WHERE quantity = 0;",
+        [],
+        false
+      );
+      db.run("COMMIT;");
+    } catch (err) {
+      db.run("ROLLBACK;");
+      return reject(err);
+    }
+  });
+};
+
 exports.execApi = (app, passport, isLoggedIn) => {
+
   function thereIsError(req, res, action = "") {
     if (AF_DEBUG) {
       console.log("\nProcessing " + action + " orders API ");
@@ -674,83 +864,81 @@ exports.execApi = (app, passport, isLoggedIn) => {
   }
 
   // update existing order POST /api/orders/:user_id/:order_id
-  app.put(
-    "/api/orders/:order_id",
-    AF_ALLOW_DIRTY
-      ? (req, res, next) => {
-          return next();
-        }
-      : isLoggedIn,
-    async (req, res) => {
-      if (thereIsError(req, res, "update")) {
-        return;
-      }
+  app.put("/api/orders/:order_id", AF_ALLOW_DIRTY ? (req, res, next) => { return next(); } : isLoggedIn, async (req, res) => {
 
-      try {
-        let status = await processOrder(0, req.params.order_id, req.body);
-
-        if (status) res.status(201).json(status).end();
-        else res.status(400).json({ error: "Unable to update the order" });
-      } catch (err) {
-        res.status(503).json({ error: err });
-      }
+    if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
+      return res.status(412).json({ error: "Unable to update order, wrong " });
     }
+
+    if (thereIsError(req, res, "update")) {
+      return;
+    }
+
+    try {
+      let status = await processOrder(0, req.params.order_id, req.body);
+
+      if (status) res.status(201).json(status).end();
+      else res.status(400).json({ error: "Unable to update the order" });
+    } catch (err) {
+      res.status(500).json({ error: err });
+    }
+  }
   );
 
   // insert a new POST /api/orders/:user_id
-  app.post(
-    "/api/orders/:user_id",
-    AF_ALLOW_DIRTY
-      ? (req, res, next) => {
-          return next();
-        }
-      : isLoggedIn,
-    async (req, res) => {
-      if (thereIsError(req, res, "insert")) {
-        return;
-      }
+  app.post("/api/orders/:user_id", AF_ALLOW_DIRTY ? (req, res, next) => { return next(); } : isLoggedIn, async (req, res) => {
 
-      let user = await existValueInDB(db, "users", { id: req.params.user_id });
-
-      if (!user) {
-        res.status(501).json({ error: "Invalid user ID" });
-        return;
-      }
-
-      try {
-        let status = await processOrder(req.params.user_id, 0, req.body);
-
-        if (status) res.status(201).json(status).end();
-        else res.status(400).json({ error: "Unable to insert a new order" });
-      } catch (err) {
-        debugLog(err);
-        res.status(503).json({ error: err });
-      }
+    if (thereIsError(req, res, "insert")) {
+      return;
     }
+
+    if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
+      return res.status(412).json({ error: "Unable to book order, wrong " });
+    }
+
+    let user = await existValueInDB(db, "users", { id: req.params.user_id });
+
+    if (!user) {
+      res.status(412).json({ error: "Invalid user ID" });
+      return;
+    }
+
+    let vTimeOffset = getVirtualTimestamp(req, true);
+
+    try {
+      let status = await processOrder(req.params.user_id, 0, req.body, vTimeOffset);
+
+      if (status) res.status(201).json(status).end();
+      else res.status(400).json({ error: "Unable to insert a new order" });
+    } catch (err) {
+      debugLog(err);
+      res.status(500).json({ error: err });
+    }
+  }
   );
 
   // GET order / orders /api/orders/:order_id
-  app.get(
-    "/api/orders/:filter?",
-    AF_ALLOW_DIRTY
-      ? (req, res, next) => {
-          return next();
-        }
-      : isLoggedIn,
-    async (req, res) => {
-      if (thereIsError(req, res, "get")) {
-        return;
-      }
+  app.get("/api/orders/:filter?/:all?", AF_ALLOW_DIRTY ? (req, res, next) => { return next(); } : isLoggedIn, async (req, res) => {
 
-      try {
-        let status = await getOrders(req.params.filter);
-
-        if (status) res.status(200).json(status).end();
-        else res.status(400).json({ error: "Unable to get orders" });
-      } catch (err) {
-        debugLog(err);
-        res.status(503).json({ error: err });
-      }
+    if (thereIsError(req, res, "get")) {
+      return;
     }
+
+    let vTimestamp = 0;
+
+    if (!req.params.all) {
+      vTimestamp = getVirtualTimestamp(req, false, true).startOf('week').unix();
+    }
+
+    try {
+      let status = await getOrders(req.params.filter, vTimestamp);
+
+      if (status) res.status(200).json(status).end();
+      else res.status(404).json({ error: "Unable to get orders" });
+    } catch (err) {
+      debugLog(err);
+      res.status(500).json({ error: err });
+    }
+  }
   );
 };

@@ -4,6 +4,7 @@
 const db = require("./../db");
 const { validationResult } = require("express-validator");
 const { getQuerySQL, runQuerySQL } = require("../utility")
+const { getUserMeta } = require("./user-dao")
 
 exports.updateWallet = async (ammount, client_email) => {
   return new Promise(async (resolve, reject) => {
@@ -13,7 +14,24 @@ exports.updateWallet = async (ammount, client_email) => {
       resolve({ error: "User not found." });
     } else {
       const sql = "UPDATE users_meta SET meta_value = meta_value + ? WHERE users_meta.user_id = ? and users_meta.meta_key = 'wallet';";
-      resolve(runQuerySQL(db, sql, [ammount, user_id], true));
+      try {
+        runQuerySQL(db, 'BEGIN TRANSACTION', [], true);
+        runQuerySQL(db, sql, [ammount, user_id], true);
+        const pendingOrders = await getQuerySQL(db, "SELECT id, price FROM orders WHERE status = 'pending' AND user_id = ?", [user_id], {id: 0, price: 0 }, null,  false);
+        let newWallet = (await getQuerySQL(db, "SELECT meta_value FROM users_meta WHERE meta_key = 'wallet' AND user_id = ?", [user_id], {meta_value: 0}, null, true)).meta_value;
+        pendingOrders.forEach(o => {
+          if(o.price <= newWallet){
+            runQuerySQL(db, "UPDATE orders SET status = 'confirmed' WHERE id = ?", [o.id], true);
+            newWallet -= o.price;
+          }
+        });
+        runQuerySQL(db, "UPDATE users_meta SET meta_value = ? WHERE user_id = ? AND meta_key = 'wallet'", [newWallet, user_id], true);
+        runQuerySQL(db, 'COMMIT', [], true);
+      }
+      catch(e) {
+        runQuerySQL(db, 'ROLLBACK', [], true);
+        return reject(e);
+      }
     }
   });
 };
@@ -64,6 +82,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
             res.status(200).json({ result: res1 });
           })
           .catch((err) => {
+            // console.log(err);
             res.status(503).json({ result: err });
           });
       } catch (err) {

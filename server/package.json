@@ -12,14 +12,16 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "dayjs": "^1.10.7",
-    "express": "^4.17.1",
+    "express": "^4.17.2",
     "express-session": "^1.17.2",
-    "express-validator": "^6.13.0",
+    "express-session-sqlite": "^2.0.10",
+    "express-validator": "^6.14.0",
     "md5": "^2.3.0",
     "morgan": "^1.10.0",
+    "node-telegram-bot-api": "^0.56.0",
     "nodemailer": "^6.7.1",
     "nodemon": "^2.0.15",
-    "passport": "^0.4.1",
+    "passport": "^0.5.2",
     "passport-local": "^1.0.0",
     "sqlite3": "^5.0.2"
   }

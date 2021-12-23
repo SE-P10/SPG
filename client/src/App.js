@@ -1,26 +1,26 @@
 import { React, useState, useEffect } from "react";
-import { Container, Row } from "react-bootstrap";
+import dayjs from "dayjs";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 import { LoginForm } from "./pages/Login";
 import { ShopEmployee } from "./pages/ShopEmployeePage";
 import { ClientPage } from "./pages/ClientPage";
 import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
+import { WarehousePage } from "./pages/WarehousePage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
-import dayjs from "dayjs"
-
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from "react-router-dom";
+import { BrowserProducts } from "./ui-components/BrowseProducts";
 import MyNavbar from "./ui-components/MyNavbar";
-
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./css/App.css";
-
+import GlobalState from './utility/GlobalState';
 import API from "./API";
+import "./css/custom.css";
 
 const App = () => {
 
@@ -35,7 +35,6 @@ const App = () => {
     const checkAuth = async () => {
       const userTmp = await API.getUserInfo();
       setLoggedIn(true);
-      console.log(userTmp);
       setUser(userTmp);
     };
     //fare api per prendere orario
@@ -44,9 +43,9 @@ const App = () => {
 
   const doLogin = async (credentials) => {
     try {
-      const user = await API.logIn(credentials);
+      const userTm = await API.logIn(credentials);
       setLoggedIn(true);
-      setUser(user);
+      setUser(userTm);
       setMessage({ msg: "Welcome ", type: "success" });
     } catch (err) {
       setMessage({ msg: err, type: "danger" });
@@ -68,13 +67,18 @@ const App = () => {
    * Handle VirtualTime updates
    */
   useEffect(() => {
+    let loaded = false;
 
     async function timeHandler() {
+      if (!loaded) {
+        loaded = true;
+        setTimeDateOffset(await API.getTime(true));
+      }
 
       // prevent pooling the server
-      let timeoffset = timeDateOffset || (dayjs().unix() % 30 === 0 ? (await API.getTime(true)) : 0);
+      let timeoffset = timeDateOffset || 0;
 
-      setVirtualTimeDate(dayjs().add(timeoffset, 'second'));
+      setVirtualTimeDate(dayjs().add(timeoffset, "second"));
     }
 
     timeHandler();
@@ -82,158 +86,152 @@ const App = () => {
     const interval = setInterval(timeHandler, 1000);
 
     return () => clearInterval(interval);
-
   }, [timeDateOffset]);
 
+  const [state, setState] = useState({
+    useHistoryBack: false
+  });
+
   return (
-    <Router>
-      <MyNavbar
-        doLogOut={doLogOut}
-        loggedIn={loggedIn}
-        closeMessage={closeMessage}
-        changeTimeDate={setTimeDateOffset}
-        virtualTimeDate={virtualTimeDate}
-      />
+    <GlobalState.Provider value={[state, setState]}>
+      <BrowserRouter>
 
-      <Switch>
-        <Route
-          exact
-          path='/login'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null ? (
-                  <>
-                    {" "}
-                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
-                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
-                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
-                  </>
-                ) : (
-                  <LoginForm
-                    closeMessage={closeMessage}
-                    message={message}
-                    login={doLogin}
-                  />
-                )}
-              </Row>
-            </Container>
-          )}
+        <MyNavbar
+          doLogOut={doLogOut}
+          loggedIn={loggedIn}
+          closeMessage={closeMessage}
+          changeTimeDate={setTimeDateOffset}
+          virtualTimeDate={virtualTimeDate}
         />
 
-        <Route
-          exact
-          path='/'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex w-100'>
+        <Routes>
+          <Route
+            exact
+            path='/'
+            element={
               <HomePage className='w-100' />
-            </Container>
-          )}
-        />
+            }
+          />
 
-        <Route
-          exact
-          path='/personalpage'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              <Row className='vh-100vh mt-10'>
-                {loggedIn && user !== null ? (
-                  <>
-                    {" "}
-                    {user.role === "1" ? <Redirect to='/shopemployee' /> : null}
-                    {user.role === "0" ? <Redirect to='/clientpage' /> : null}
-                    {user.role === "2" ? <Redirect to='/farmerpage' /> : null}
-                  </>
-                ) : (
-                  <LoginForm
-                    closeMessage={closeMessage}
-                    message={message}
-                    login={doLogin}
+          <Route
+            exact
+            path='/products'
+            element={
+              <BrowserProducts />
+            }
+          />
+          <Route
+            exact
+            path='/shopemployee'
+            element={
+              <>
+                {user !== null && user.role === "1" ? (
+                  <ShopEmployee
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                    loggedIn={loggedIn}
                   />
+                ) : (
+                  <Navigate to='/login' />
                 )}
-              </Row>
-            </Container>
-          )}
-        />
-
-        <Route
-          exact
-          path='/shopemployee'
-          render={() => (
-            <>
-              {user !== null && user.role === "1" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ShopEmployee hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} loggedIn={loggedIn} />
-                </Container>
-              ) : (
-                <Redirect to='/login' />
-              )}
-            </>
-          )}
-        />
-        <Route
-          exact
-          path='/signup'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex w-100'>
+              </>
+            }
+          />
+          <Route
+            exact
+            path='/warehouse'
+            element={
+              <>
+                {user !== null && user.role === "3" ? (
+                  <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
+          <Route
+            exact
+            path='/signup'
+            element={
               <RegistrationForm
                 className='below'
                 loggedIn={loggedIn}
                 doLogin={doLogin}
               />
-              )
-            </Container>
-          )}
-        />
+            }
+          />
 
-        <Route
-          exact
-          path='/farmerpage'
-          render={() => (
-            <>
-              {user !== null && user.role === "2" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <FarmerPage hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
-                </Container>
-              ) : (
-                <Redirect to='/login' />
-              )}
-            </>
-          )}
-        />
+          <Route
+            exact
+            path='/farmerpage'
+            element={
+              <>
+                {user !== null && user.role === "2" ? (
+                  <FarmerPage
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                  />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
 
-        <Route
-          exact
-          path='/clientpage'
-          render={() => (
-            <>
-              {" "}
-              {user !== null && user.role === "0" ? (
-                <Container fluid className='justify-content-center d-flex'>
-                  {/* inserire controllo loggedIn e ruolo*/}{" "}
-                  <ClientPage hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} user={user} />
-                </Container>
-              ) : (
-                <Redirect to='/login' />
-              )}
-            </>
-          )}
-        />
+          <Route
+            exact
+            path='/clientpage'
+            element={
+              <>
+                {user !== null && user.role === "0" ? (
+                  <ClientPage
+                    virtualTimeDate={virtualTimeDate}
+                    hour={virtualTimeDate.format("H")}
+                    dow={virtualTimeDate.format("dddd")}
+                    user={user}
+                  />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
 
-        <Route
-          exact
-          path='/about'
-          render={() => (
-            <Container fluid className='justify-content-center d-flex'>
-              {/* inserire controllo loggedIn e ruolo*/}{" "}
+          <Route
+            exact
+            path='/about'
+            element={
               <AboutPage user={user} />
-            </Container>
-          )}
-        />
-      </Switch>
-    </Router>
+            }
+          />
+          <Route
+            path='/login'
+            element={
+              <>
+                {loggedIn && user !== null ? (
+                  <>
+                    {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
+                    {user.role === "0" ? <Navigate to='/clientpage' /> : null}
+                    {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
+                    {user.role === "3" ? <Navigate to='/warehouse' /> : null}
+                  </>
+                ) : (
+                  <LoginForm
+                    closeMessage={closeMessage}
+                    message={message}
+                    login={doLogin}
+                  />
+                )}
+              </>
+            }
+          />
+
+        </Routes>
+      </BrowserRouter>
+    </GlobalState.Provider>
   );
 };
 

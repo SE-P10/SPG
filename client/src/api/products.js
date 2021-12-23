@@ -3,7 +3,7 @@ async function getProducts() {
     const response = await fetch('/api/products');
     const productsJson = await response.json();
     if (response.ok) {
-      	return productsJson.map(p => ({ id: p.id, quantity: p.quantity, price: p.price, name: p.name, farmer: p.Farmer }));
+      	return productsJson.map(p => ({ id: p.id, quantity: p.quantity, estimated_quantity: p.estimated_quantity ,price: p.price, name: p.name, farmer: p.farmer, farmer_id: p.farmer_id }));
     } else {
       	throw productsJson;  // an object with the error coming from the server
     }
@@ -46,12 +46,11 @@ async function deleteAllBasket() {
 }
 
 // Return all the products in the basket of the user that called the API
-async function getBasketProducts(setDirtyFalse) {
+async function getBasketProducts() {
     // call: GET /api/products
     const response = await fetch('/api/basketProduct');
     const productsJson = await response.json();
     if (response.ok) {
-		setDirtyFalse()
       	return productsJson.map(p => ({ id: p.id, quantity: p.quantity, price: p.price, name: p.name, farmer: p.farmer }));
     } else {
       	throw productsJson;  // an object with the error coming from the server

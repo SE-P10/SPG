@@ -1,9 +1,11 @@
-import { Alert, Row, Col, Container } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import API from "../API";
-import "../css/custom.css";
+import { BlockTitle, PageSection } from "../ui-components/Page";
+import { ToastNotification } from "../ui-components/ToastNotification";
 
 function PendingOrders(props) {
+  
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -18,21 +20,11 @@ function PendingOrders(props) {
 
 
   return (
-    <Container className='cont'>
-      <Row className='justify-content-center'>
-        {" "}
-        <h2> Pending Orders</h2>{" "}
-      </Row>
-      {errorMessage ? (
-        <Alert variant='danger' onClose={() => setErrorMessage("")} dismissible>
-          {" "}
-          {errorMessage}{" "}
-        </Alert>
-      ) : (
-        ""
-      )}
-
-
+    <PageSection>
+      <BlockTitle>
+        Pending Orders
+      </BlockTitle>
+      <ToastNotification variant='error' onSet={() => setErrorMessage("")} message={errorMessage} />
       <Col>
         <Row className='justify-content-center'>
           {orders.length !== 0 ? (
@@ -50,7 +42,7 @@ function PendingOrders(props) {
           </Row>
         ))}
       </Col>
-    </Container>
+    </PageSection>
   );
 }
 export { PendingOrders };
