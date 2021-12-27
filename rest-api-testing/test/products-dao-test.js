@@ -7,6 +7,7 @@ var server = supertest.agent("http://localhost:3001/");
 // POST /api/basketProduct
 // DELETE /api/basketProduct
 // GET /api/basketProduct
+// GET /api/products/unretrived
 
 describe("Login as SHOPEMPLOYEE", function() {
   const credentials = {
@@ -100,6 +101,55 @@ describe("Logout as SHOPEMPLOYEE", function() {
   });
 });
 
+// TODO add credential for MANAGER
+describe("Login as MANAGER", function() {
+  const credentials = {
+    username: "john.doe@demo01.it",
+    password: "password",
+  };
+
+  it("GET api/sessions should return logged user", function(done) {
+    server
+      .post("api/sessions")
+      .send(credentials)
+      .end(function(err, res) {
+        if (err) {
+          done(err);
+        } else {
+          done();
+        }
+      });
+  });
+});
+
+describe("Products MANAGER", function() {
+  it("GET api/products/unretrived should return a list of the products that where never been retrived", function(done) {
+    server
+      .get("api/products/unretrived")
+      .expect(200)
+      .expect("Content-type", /json/)
+      .end(function(err, res) {
+        if (err) {
+          done(err);
+        } else {
+          done();
+        }
+      });
+  });
+});
+
+describe("Logout as MANAGER", function() {
+  it("should return success", function(done) {
+    server.delete("api/sessions/current").end(function(err, res) {
+      if (err) {
+        done(err);
+      } else {
+        done();
+      }
+    });
+  });
+});
+
 describe("Products", function() {
   it("NOT POST api/basketProduct should return success or fail", function(done) {
     server
@@ -135,6 +185,19 @@ describe("Products", function() {
   it("NOT GET api/basketProduct should return the list of the products in basket associated with the user that called the API", function(done) {
     server
       .get("api/basketProduct")
+      .expect(401)
+      .end(function(err, res) {
+        if (err) {
+          done(err);
+        } else {
+          done();
+        }
+      });
+  });
+
+  it("NOT GET api/products/unretrived should return a list of the products that where never been retrived", function(done) {
+    server
+      .get("api/products/unretrived")
       .expect(401)
       .end(function(err, res) {
         if (err) {

@@ -21,6 +21,7 @@ GET /api/products
 POST /api/basketProduct
 DELETE /api/basketProduct
 GET /api/basketProduct
+GET /api/products/unretrived
 
 ## test-dao.js
 
