@@ -142,7 +142,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
   app.get("/api/orderProducts", isLoggedIn, async (req, res) => {
     if (req.user.role !== 2)
       res
-        .status(404)
+        .status(401)
         .json({ error: "Only farmers have access to this functionality" })
         .end();
     try {
