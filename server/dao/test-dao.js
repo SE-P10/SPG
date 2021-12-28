@@ -60,3 +60,18 @@ exports.restoreUsersTable = async () => {
       })
     })
   }
+
+
+  exports.restoreBasketTable = async () => {
+
+    return new Promise((resolve,reject) => {
+      const sql = "DELETE FROM basket";
+      db.run(sql,[],function(err){
+        if (err) {
+          reject(err);return;
+        }
+        resolve()
+      })
+    })
+  }
+  
