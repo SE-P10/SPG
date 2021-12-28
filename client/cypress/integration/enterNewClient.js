@@ -64,6 +64,7 @@ describe('enterNewClient_ShopEmployee', () => {
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
     })
 
+    //CONTROLLO NON EFFETTUATO
     it('a shopEmployee should be able to add a new Client (by entering already user registered) ', () => {
         //Insert the Client Info
         cy.get('#formGridName').type('Michele')
