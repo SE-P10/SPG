@@ -140,50 +140,6 @@ if (ENABLE_CRON) {
       false
     );
 
-<<<<<<< HEAD
-      /**
-      * delete unretrived orders
-      */
-      virtualCron.schedule(
-        virtualCron.schedules.FRIDAY,
-        (virtualTime, lastExecutionTime, ...args) => {
-
-          let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
-
-          if (days > 0 && (days > 0 || virtualTime.hour() >= 23)) {
-
-            (async () => {
-              
-              await runQuerySQL(db, "UPDATE orders SET status = 'deleted' WHERE status = 'confirmed'", []);
-
-            })();
-
-          }
-
-        },
-        [],
-        false
-      );
-
-      /**
-       * Telegram Cron Job
-      */
-      virtualCron.schedule(
-        virtualCron.schedules.SATURDAY,
-        (virtualTime, lastExecutionTime, ...args) => {
-
-          let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
-
-          if (days > 0 && (days > 0 || virtualTime.hour() > 9)) {
-            notifyTelegram();
-          }
-
-        },
-        [],
-        false
-      );
-    })
-=======
     /**
     * delete unretrived orders
     */
@@ -229,7 +185,6 @@ if (ENABLE_CRON) {
       false
     );
   })
->>>>>>> origin/development
   );
 }
 
