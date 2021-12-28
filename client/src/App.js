@@ -20,6 +20,7 @@ import { BrowserProducts } from "./ui-components/BrowseProducts";
 import MyNavbar from "./ui-components/MyNavbar";
 import GlobalState from './utility/GlobalState';
 import API from "./API";
+import unrtrievedAPI from "./api/unretrieved";
 import "./css/custom.css";
 
 const App = () => {
@@ -32,6 +33,8 @@ const App = () => {
   useEffect(() => {
     //per non perdere utente loggato se aggiorno pagina, da qui viene l'errore della GET 401(unhautorized)
     const checkAuth = async () => {
+      const p = await unrtrievedAPI.getUnretrievedProducts();
+      console.log(unrtrievedAPI.getSatistics(p, 'week', false));
       const userTmp = await API.getUserInfo();
       setLoggedIn(true);
       setUser(userTmp);
