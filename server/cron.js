@@ -50,6 +50,7 @@ const cronClass = {
   },
 
   load: async function () {
+
     let crons = await getQuerySQL(db, "SELECT * FROM options WHERE name = ?", ["cron"], { id: 0, name: "", value: "", }, null, true);
 
     if (crons) {
@@ -75,6 +76,7 @@ const cronClass = {
   },
 
   set: function (hook, cron, force = false) {
+
     if (!force && hook in this.activity) {
       return false;
     }
@@ -130,6 +132,7 @@ const cronClass = {
   },
 
   exec: function (virtualTime) {
+
     let crons = removeEmpty(this.activity, {}, true);
 
     let vtime = dayjs.unix(virtualTime);
@@ -138,7 +141,12 @@ const cronClass = {
      * Try to run those events
      */
     for (let key in crons) {
+
       let cron = crons[key];
+
+      if (cron.callback === null) {
+        continue;
+      }
 
       // fix removeEmpty with time=0
       cron.time = cron.time || 0;
@@ -150,7 +158,8 @@ const cronClass = {
 
       if (isNumber(cron.interval)) {
         allowExec = cron.time + cron.interval <= virtualTime;
-      } else if (cron.time + 3 <= virtualTime) {
+      }
+      else if (cron.time + 5 <= virtualTime) {
 
         if (isObject(cron.interval)) {
 
@@ -159,28 +168,33 @@ const cronClass = {
 
           if (execFrom.day && execTo.day) {
 
-            // 2part checks if last call has been run on last day call
-            allowExec = this.isBetween(vtime.format("dd"), execFrom.day, execTo.day) || this.isBefore(lastCallTime.format("dd"), execTo.day);
+            if (this.isBetween(vtime.format("dd"), execFrom.day, execTo.day)) {
 
-            if (allowExec && execFrom.hour && execTo.hour) {
-              if (vtime.format("dd") === execFrom.day) {
-                allowExec = vtime.hour() >= execFrom.hour;
-              }
+              allowExec = true;
 
-              if (vtime.format("dd") === execTo.day) {
-                allowExec = allowExec && vtime.hour() <= execTo.hour;
+              if (lastCallTime.format("dd") === vtime.format("dd") && execFrom.hour && execTo.hour) {
+
+                if (vtime.format("dd") === execFrom.day) {
+                  allowExec = vtime.hour() >= execFrom.hour;
+                }
+
+                if (vtime.format("dd") === execTo.day) {
+                  allowExec = allowExec && vtime.hour() <= execTo.hour;
+                }
+
               }
             }
+            else {
+              // checks if last call has been run on last day call
+              allowExec = this.isBefore(lastCallTime.format("dd"), execTo.day);
+            }
+
           } else if (execFrom.hour && execTo.hour) {
-            allowExec =
-              vtime.hour() >= execFrom.hour && vtime.hour() <= execTo.hour;
+            allowExec = vtime.hour() >= execFrom.hour && vtime.hour() <= execTo.hour;
           }
 
-          if (!allowExec) {
-
-          }
         } else {
-          allowExec = vtime.format("dd") === cron.interval;
+          allowExec = vtime.format("dd") === cron.interval || this.isBefore(lastCallTime.format("dd"), cron.interval);
         }
 
         if (!allowExec) {
@@ -193,10 +207,7 @@ const cronClass = {
             dispathRealExecution = 0;
           }
 
-          // last execution time if on scheduled day
-          let lastScheduledCallTime = lastCallTime.subtract(dispathRealExecution, "day");
-
-          allowExec = this.calcDateDiff(lastScheduledCallTime, vtime) >= 7;
+          allowExec = dispathRealExecution >= 7;
         }
       }
 
@@ -205,7 +216,7 @@ const cronClass = {
         if (cron.callback) {
 
           if (VC_DEBUG) {
-            console.log("\nRUNNING CRON JOB. Last call:", lastCallTime.format("YYYY-MM-DD <HH:mm:ss>"), "virtual time:", vtime.format("YYYY-MM-DD <HH:mm:ss>"), cron.args || []);
+            console.log("CRON JOB " + cron.name + ". Last call:", lastCallTime.format("YYYY-MM-DD <HH:mm:ss>"), "virtual time:", vtime.format("YYYY-MM-DD <HH:mm:ss>"), cron.args || []);
           }
 
           if (typeof cron.callback === "function") {
@@ -234,6 +245,7 @@ const cronClass = {
 
   removeHook: function (hook = null) {
     if (hook) {
+
       if (!(hook in this.activity)) {
         return false;
       }
@@ -246,8 +258,8 @@ const cronClass = {
     return true;
   },
 
-  hash: function (callback, args) {
-    return md5(callback.toString() + json.stringify(args) || "");
+  hash: function (name, args) {
+    return md5((name + json.stringify(args)) || "");
   },
 
   hookExist: function (hook) {
@@ -262,33 +274,30 @@ const cronClass = {
     return false;
   },
 
-  schedule: function (
-    callback,
-    interval,
-    args,
-    once = true,
-    time = 0,
-    env = null
-  ) {
-    let hook = this.hash(callback, args);
+  schedule: function (name, callback, interval, args, once = true, time = 0, env = null) {
+
+    let hook = this.hash(name, args);
 
     let oldCron = this.getHook(hook);
 
-    /**
-     * if null lets overwite
-     */
-    return this.set(
-      hook,
-      {
-        time: time || dayjs().unix(),
-        interval: interval || this.ONCE_A_DAY,
-        callback: callback,
-        args: args,
-        env: env,
-        once: once,
-      },
-      oldCron === null || interval !== oldCron.interval || true
-    );
+    time = Number.parseInt(time);
+
+    if (isNaN(time)) {
+      time = dayjs().unix();
+    }
+
+    let cron = {
+      name: name,
+      time: time,
+      ...(oldCron || {}),
+      interval: interval || this.ONCE_A_DAY,
+      callback: callback,
+      args: args,
+      env: env,
+      once: once
+    }
+
+    return this.set(hook, cron, true);
   },
 
   dump: function () {
@@ -296,22 +305,22 @@ const cronClass = {
   },
 
   save: async function () {
+
     if (!this.activity) {
       this.activity = {};
     }
 
-    let cron,
-      cronData = {};
+    let cron, cronData = {};
 
     for (let key in this.activity) {
-      if (!this.activity[key]) {
+
+      if (!this.activity[key] || this.activity[key].callback === null) {
         continue;
       }
 
       cron = { ...this.activity[key] };
 
-      // serialize the callback .replace(/(?:\r\n|\r|\n)/g, "").replace(/\s+/g, " ");
-      cron.callback = cron.callback.toString();
+      cron.callback = null;
 
       cronData[key] = cron;
     }
@@ -368,12 +377,12 @@ exports.virtualCron = {
     };
   },
 
-  schedule: (interval, callback, args, once = true, time = 0, env = null) => {
-    return cronClass.schedule(callback, interval, args, once, time, env);
+  schedule: (name, interval, callback, args, once = true, time = 0, env = null) => {
+    return cronClass.schedule(name, callback, interval, args, once, time, env);
   },
 
-  unschedule: (callback, args) => {
-    let hook = cronClass.hash(callback, args);
+  unschedule: (name, args) => {
+    let hook = cronClass.hash(name, args);
 
     return cronClass.removeHook(hook);
   },

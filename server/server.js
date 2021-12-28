@@ -16,7 +16,7 @@ const session = require("express-session");
 const sqliteStoreFactory = require("express-session-sqlite").default;
 const sqlite3 = require("sqlite3");
 const dayjs = require("dayjs");
-const { runQuerySQL, getQuerySQL } = require("./utility");
+const { runQuerySQL, getQuerySQL, dynamicSQL } = require("./utility");
 
 const productsDao = require("./dao/products-dao");
 const userDao = require("./dao/user-dao");
@@ -107,36 +107,40 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 if (ENABLE_CRON) {
-  app.use(
-    virtualCron.run(() => {
-      // reset all cron jobs on server restart
-      virtualCron.unscheduleAll();
+  app.use(virtualCron.run(() => {
 
-      virtualCron.schedule(
-        {
-          from: { day: virtualCron.schedules.MONDAY, hour: 9 },
-          to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-        },
-        (virtualTime, lastExecutionTime, ...args) => {
+    // reset all cron jobs on server restart
+    virtualCron.unscheduleAll();
 
-          ordersDao.confrimOrders();
-        },
-        [],
-        false
-      );
+    virtualCron.schedule("confrimOrders",
+      {
+        from: { day: virtualCron.schedules.MONDAY, hour: 9 },
+        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+      },
+      (virtualTime, lastExecutionTime, ...args) => {
 
-      virtualCron.schedule(
-        {
-          from: { day: virtualCron.schedules.MONDAY, hour: 23 },
-          to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-        },
-        (virtualTime, lastExecutionTime, ...args) => {
-          ordersDao.deletePendingOrders();
-        },
-        [],
-        false
-      );
+        console.log("A")
+        ordersDao.confrimOrders(virtualTime);
+      },
+      [],
+      false
+    );
 
+
+    virtualCron.schedule("deletePendingOrders",
+      {
+        from: { day: virtualCron.schedules.MONDAY, hour: 23 },
+        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+      },
+      (virtualTime, lastExecutionTime, ...args) => {
+        console.log("B")
+        ordersDao.deletePendingOrders();
+      },
+      [],
+      false
+    );
+
+<<<<<<< HEAD
       /**
       * delete unretrived orders
       */
@@ -179,6 +183,53 @@ if (ENABLE_CRON) {
         false
       );
     })
+=======
+    /**
+    * delete unretrived orders
+    */
+    virtualCron.schedule("unretrivedOrders",
+      virtualCron.schedules.FRIDAY,
+      (virtualTime, lastExecutionTime, ...args) => {
+
+        console.log("C")
+
+        let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+        if (days > 0 || (days === 0 && virtualTime.hour() >= 23)) {
+
+          (async () => {
+
+            await runQuerySQL(db, "UPDATE orders SET status = 'deleted' WHERE status = 'confirmed' AND timestamp <= ? ", [virtualTime.startOf('week').unix()]);
+
+          })();
+
+        }
+      },
+      [],
+      false
+    );
+
+    /**
+     * Telegram Cron Job
+    */
+    virtualCron.schedule("telegramBOT",
+      virtualCron.schedules.SATURDAY,
+      (virtualTime, lastExecutionTime, ...args) => {
+
+        console.log("D")
+
+        let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+        if (days > 0 || (days === 0 && virtualTime.hour() > 9)) {
+          notifyTelegram();
+        }
+
+      },
+      [],
+      false
+    );
+  })
+>>>>>>> origin/development
   );
 }
 

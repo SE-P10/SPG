@@ -16,17 +16,18 @@ function HandOut(props) {
     if (esito) props.addMessage("Order hands out correctly!");
     else setErrorMessage("Problem with the server");
     //API.updateOrder(idUser[0].id,[],{id:orderId, status: 'HandOut'}).then( () => props.addMessage("Order hands out correctly!")).catch((err) =>  setErrorMessage("Problem with the server") )
-
     props.changeAction(0);
   };
 
   const handleSearch = (email) => {
     if (!email) setErrorMessage("You have to insert an email!");
     else {
-      let ordersTm = [];
-      setOrders(ordersTm);
-      API.getOrders(email, true)
+      setOrders([]);
+      API.getOrders(email)
         .then((ordersTml) => {
+
+          ordersTml = ordersTml.filter((t) => t.status === "confirmed");
+
           if (ordersTml.length === 0) setErrorMessage("No orders found");
           else {
             setOrders(ordersTml);
@@ -34,7 +35,6 @@ function HandOut(props) {
           }
         })
         .catch((e) => {
-          console.log(e);
           setErrorMessage("No user found.");
         });
     }
@@ -51,10 +51,9 @@ function HandOut(props) {
       </Row>
       <Col className='below'>
         {orders
-          .filter((t) => t.status === "confirmed")
           .map((order) => (
             <Row className='below'>
-              <Col> id : {order.id}</Col>
+              <Col>id : {order.id}</Col>
               <Col>price : {order.price < 0.01 ? 0 : order.price}</Col>
               <Col>status : {order.status}</Col>
               <Col>
