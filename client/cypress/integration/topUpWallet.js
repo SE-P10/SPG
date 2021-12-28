@@ -45,7 +45,7 @@ describe('topUpWallet_ShopEmployee', () => {
     })
 
     //You can top up wallets from Saturday at 09:00 to Monday at 18:00
-
+/*
     it('a shopEmployee should not be able to top up a client wallet (from Monday at 18:00 to Saturday at 09:00)', () => {
         //Change date for managing updating(from Saturday at 09:00 to Friday at 18:00)
         cy.findByRole('button', { name: /set/i }).click()
@@ -202,32 +202,43 @@ describe('topUpWallet_ShopEmployee', () => {
         //Close Alert
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
     })
-    /*
-        //CONTROLLO NON ESEGUITO CON 0
-        it('a shopEmployee should not be able to top up a client wallet (by entering correct email)', () => {
-            //Enter email
-            cy.findByRole('textbox').type('michele@gmail.com')
-            //Click on search button
-            cy.findByRole('button', { name: /search/i }).click()
-            //Empty wallet
-            cy.get('[disabled=""]').should('have.value', '0')
-            //type a number to recharge
-            cy.findByRole('spinbutton').clear().type('20');
-            //click on recharge button
-            cy.findByRole('button', { name: /recharge the wallet/i }).click()
-            //Assertion
-            cy.findByRole('alert').should('include.text', 'successfully recharged your wallet')
-            //Close Alert
-            cy.findByText(/×/i).click()
-            //Click on topup button
-            cy.findByRole('button', { name: /topup a wallet/i }).click()
-            //Enter email
-            cy.findByRole('textbox').type('michele@gmail.com')
-            //Click on search button
-            cy.findByRole('button', { name: /search/i }).click()
-            //Check new wallet credit
-            cy.get('[disabled=""]').should('have.value', '20')
-        })
-    
-    */
+*/
+    it('a wallet should be updated after a recharge by a ShopEmployee', () => {
+
+        //Change date for managing updating(from Saturday at 09:00 to Friday at 18:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        //Next month -> Only in the first month
+        cy.get('.react-calendar__navigation__next-button').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(13)').click({ force: true })
+        cy.get('#setHour').click().type("09:00")
+        //Set the date
+        cy.get('.d-flex > .btn').click()
+
+        //Enter right email
+        cy.findByRole('textbox').type('michele@gmail.com')
+        //Click on search button
+        cy.findByRole('button', { name: /search/i }).click()
+        //Empty wallet
+        cy.get('[disabled=""]').should('have.value', '0')
+        //type a number to recharge
+        cy.findByRole('spinbutton').clear()
+        cy.get('.react-toast-notifications__toast__dismiss-icon').click()
+        cy.findByRole('spinbutton').type('100');
+
+        //click on recharge button
+        cy.findByRole('button', { name: /recharge the wallet/i }).click({ force: true })
+        //Check alert 
+        cy.get('.react-toast-notifications__toast__content').should('include.text', 'successfully recharged your wallet')
+
+        //Click on topup button
+        cy.findByRole('button', { name: /topup a wallet/i }).click({ force: true })
+        //Enter email
+        cy.findByRole('textbox').type('michele@gmail.com')
+        //Click on search button
+        cy.findByRole('button', { name: /search/i }).click()
+        //Check new wallet credit
+        cy.get('[disabled=""]').should('have.value', '100')
+    })
+
+
 })
