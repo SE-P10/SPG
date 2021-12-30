@@ -291,8 +291,9 @@ describe('enterNewClientOrder', () => {
         cy.get('.container > .im-grid > :nth-child(1)')
             .findByRole('textbox')
             .type("-10", { force: true })
-        cy.get('.container > .im-grid > :nth-child(1)')
-            .findByRole('button', { name: /add/i }).click({ force: true });
+        //NON AGGIUNGO PERCHE' STO SCRIVENDO 10
+            // cy.get('.container > .im-grid > :nth-child(1)')
+        //   .findByRole('button', { name: /add/i }).click({ force: true });
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'Quantity inserted is not number!')
         //Close Alert
