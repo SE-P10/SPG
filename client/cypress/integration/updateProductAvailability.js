@@ -18,48 +18,48 @@ describe('signUp_Client', () => {
         //Click on update button
         cy.findByRole('button', { name: /update products availability/i }).click({ force: true })
     })
-    /*
-        it('a farmer should be able to update the available quantity of products(from Friday at 18:00 to Saturday at 09:00)', () => {
-    
-            //Change date for managing updating(from Friday at 18:00 to Saturday at 09:00)
-            cy.findByRole('button', { name: /set/i }).click()
-            //Next month
-            cy.get('.react-calendar__navigation__next-button').click()
-            //Friday at 18:30
-            cy.get('.react-calendar__month-view__days > :nth-child(12)').click()
-            cy.get('#setHour').click().type("19:00")
-            cy.get('.d-flex > .btn').click()
-    
-            //Add new zucchinies
-            cy.get(':nth-child(13) > :nth-child(4) > #CheckBoxItem').click()
-            cy.get('[value="100"]').clear().type("150")
-            cy.get('[value="0.9"]').clear().type("0.9")
-            //Click on first update
-            cy.get('.modal-footer > .im-button').click()
-            //Remove some Aubergines
-            cy.get(':nth-child(14) > :nth-child(4) > #CheckBoxItem').click()
-            cy.get('[value="100"]').clear().type("50")
-            cy.get('[value="0.8"]').clear().type("0.8")
-            //Click on first update
-            cy.get('.modal-footer > .im-button').click()
-    
-            //Second Update
-            cy.get('.below.im-button').click()
-            cy.wait(1000)
-            //Check alert 
-            cy.get('.react-toast-notifications__toast__content').should('include.text', 'Request sent correctly')
-            //Close Alert
-            cy.get('.react-toast-notifications__toast__dismiss-icon').click()
-    
-            //Now let's check the quantities
-            //Click on update button
-            cy.findByRole('button', { name: /update products availability/i }).click()
-            cy.get('.list > :nth-child(13) > :nth-child(2)').should('include.text', "150")
-            cy.get('.list > :nth-child(14) > :nth-child(2)').should('include.text', "50")
-    
-        })
-    */
-    it('a farmer should  be able to update the available quantity of products from Friday at 18:00 to Saturday at 09:00', () => {
+
+    it('a farmer should be able to update the available quantity of products(from Friday at 18:00 to Saturday at 09:00)', () => {
+
+        //Change date for managing updating(from Friday at 18:00 to Saturday at 09:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        //Next month
+        cy.get('.react-calendar__navigation__next-button').click()
+        //Friday at 18:30
+        cy.get('.react-calendar__month-view__days > :nth-child(12)').click()
+        cy.get('#setHour').click().type("19:00")
+        cy.get('.d-flex > .btn').click()
+
+        //Add new zucchinies
+        cy.get(':nth-child(13) > :nth-child(4) > #CheckBoxItem').click()
+        cy.get('[value="100"]').clear().type("150")
+        cy.get('[value="0.9"]').clear().type("0.9")
+        //Click on first update
+        cy.get('.modal-footer > .im-button').click()
+        //Remove some Aubergines
+        cy.get(':nth-child(14) > :nth-child(4) > #CheckBoxItem').click()
+        cy.get('[value="100"]').clear().type("50")
+        cy.get('[value="0.8"]').clear().type("0.8")
+        //Click on first update
+        cy.get('.modal-footer > .im-button').click()
+
+        //Second Update
+        cy.get('.below.im-button').click()
+        cy.wait(1000)
+        //Check alert 
+        cy.get('.react-toast-notifications__toast__content').should('include.text', 'Request sent correctly')
+        //Close Alert
+        cy.get('.react-toast-notifications__toast__dismiss-icon').click()
+
+        //Now let's check the quantities
+        //Click on update button
+        cy.findByRole('button', { name: /update products availability/i }).click()
+        cy.get('.list > :nth-child(13) > :nth-child(2)').should('include.text', "150")
+        cy.get('.list > :nth-child(14) > :nth-child(2)').should('include.text', "50")
+
+    })
+
+    it('a farmer should be able to update the available quantity of products from Friday at 18:00 to Saturday at 09:00', () => {
 
         //Change date for managing updating(from Friday at 18:00 to Saturday at 09:00)
         cy.findByRole('button', { name: /set/i }).click()
