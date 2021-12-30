@@ -17,7 +17,7 @@ function HomePage(props) {
                   src={process.env.PUBLIC_URL + "/images/carousel1.jpg"}
                   alt='First slide'
                 />
-                <Carousel.Caption className="try">
+                <Carousel.Caption className="carousel-text">
                   <h1>SOLIDARITY</h1>
                   <p>A common shared interest</p>
                 </Carousel.Caption>
@@ -29,7 +29,7 @@ function HomePage(props) {
                   alt='Second slide'
                 />
 
-                <Carousel.Caption className="try">
+                <Carousel.Caption className="carousel-text">
                   <h1>SUSTAINABILITY</h1>
                   <p >
                     Meeting our own needs without compromising the ability of
@@ -44,7 +44,7 @@ function HomePage(props) {
                   alt='Third slide'
                 />
 
-                <Carousel.Caption className="try">
+                <Carousel.Caption className="carousel-text">
                   <h1>EQUITY</h1>
                   
                   <p>
