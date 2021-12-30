@@ -101,9 +101,9 @@ function YourOrders(props) {
                         ) : (
                           <td></td>
                         )}
-                        {order.status === "confirmed" &&
-                        ((props.dow === "Monday" && props.hour >= 9) ||
-                          (props.dow === "Tuesday" && props.hour <= 18)) ? (
+                        {order.status === "booked" &&
+                        ((props.dow === "Saturday" && props.hour >= 9) ||
+                          (props.dow === "Sunday" && props.hour <= 23)) ? (
                           <>
                             <td>
                               <Button
