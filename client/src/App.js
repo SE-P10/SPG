@@ -15,6 +15,7 @@ import { HomePage } from "./pages/HomePage";
 import { FarmerPage } from "./pages/FarmerPage";
 import { AboutPage } from "./pages/AboutPage";
 import { WarehousePage } from "./pages/WarehousePage";
+import { ManagerPage } from "./pages/ManagerPage";
 import { RegistrationForm } from "./ui-components/RegistrationForm";
 import { BrowserProducts } from "./ui-components/BrowseProducts";
 import MyNavbar from "./ui-components/MyNavbar";
@@ -155,6 +156,19 @@ const App = () => {
           />
           <Route
             exact
+            path='/manager'
+            element={
+              <>
+                {user !== null && user.role === "4" ? (
+                  <ManagerPage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
+                ) : (
+                  <Navigate to='/login' />
+                )}
+              </>
+            }
+          />
+          <Route
+            exact
             path='/signup'
             element={
               <RegistrationForm
@@ -219,6 +233,7 @@ const App = () => {
                     {user.role === "0" ? <Navigate to='/clientpage' /> : null}
                     {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
                     {user.role === "3" ? <Navigate to='/warehouse' /> : null}
+                    {user.role === "4" ? <Navigate to='/manager' /> : null}
                   </>
                 ) : (
                   <LoginForm
