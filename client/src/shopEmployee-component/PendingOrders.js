@@ -1,4 +1,4 @@
-import { Row, Col, Table, Dropdown, Button } from "react-bootstrap";
+import { Row, Col, Table, Modal , Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import API from "../API";
 import { BlockTitle, PageSection } from "../ui-components/Page";
@@ -8,7 +8,10 @@ import notificationAPI from "../api/notificationAPI";
 function PendingOrders(props) {
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [mailContactInfo,setMailContactInfo] = useState("");
+  const [show, setShow] = useState(false);
 
+  const handleClose = () => setShow(false);
   useEffect(() => {
     const fillTables = async () => {
       const ordersTmp = await API.getPendingOrders();
@@ -65,14 +68,11 @@ function PendingOrders(props) {
                 <td> {order.price}</td>
                 <td> {order.status}</td>
                 <td>
-                  <Dropdown>
-                    <Dropdown.Toggle className='im-button'>
+                  
+                    <Button className='im-button' onClick={() => {setMailContactInfo(order.user.email);setShow(true)}}>
                       Contact info
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item>{order.user.email}</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
+                    </Button>
+                                        
                 </td>{" "}
                 <td>
                   {" "}
@@ -88,6 +88,17 @@ function PendingOrders(props) {
           </tbody>
         </Table>
       </Col>
+      <Modal show={show} onHide={handleClose} animation={false}>
+        <Modal.Header closeButton>
+          <Modal.Title>User info</Modal.Title>
+        </Modal.Header>
+        <Modal.Body> <p>User mail : {mailContactInfo} </p> <p>Number : +39 123456789 </p></Modal.Body>
+        <Modal.Footer>
+          <Button className='im-button'  onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </PageSection>
   );
 }
