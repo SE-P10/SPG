@@ -45,7 +45,7 @@ function HomePage(props) {
                   alt='Third slide'
                 />
 
-                <Carousel.Caption className='text-black'>
+                <Carousel.Caption>
                   <h1>EQUITY</h1>
                   <p>
                     The fair treatment, access, opportunity, and advancement
@@ -96,7 +96,7 @@ function HomePage(props) {
         </Row>
       </Container>
 
-      <Col className='d-flex justify-content-evenly below'>
+      <Col className='d-flex justify-content-evenly below over'>
         <Link to={"/about"} className="">
           <Button className='im-button im-animate'>
             About us

@@ -3,6 +3,7 @@ const { check, validationResult } = require("express-validator");
 const { runQuerySQL, getQuerySQL, dynamicSQL } = require("../utility");
 const notificationDao = require("./notification-dao.js");
 
+
 const listProducts = () => {
   return new Promise((resolve, reject) => {
     const sql =
