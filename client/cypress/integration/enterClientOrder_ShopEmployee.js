@@ -1,4 +1,4 @@
-describe('enterNewClientOrder', () => {
+describe('enterNewClientOrder_ShopEmployee', () => {
 
     //TODO -> Clean every information added during the tests
 
@@ -62,6 +62,7 @@ describe('enterNewClientOrder', () => {
         cy.get('#formGridConfirmPassword').type('ciao')
         //Click register button
         cy.findByRole('button', { name: /register/i }).click({ force: true });
+        cy.get('.react-toast-notifications__toast__dismiss-icon').click()
 
         //AS A SHOP EMPLOYEE -> RECHARGE THE CLIENT'S WALLET
         cy.findByRole('button', { name: /topup a wallet/i }).click({ force: true });
@@ -85,6 +86,7 @@ describe('enterNewClientOrder', () => {
         cy.findByRole('button', { name: /recharge the wallet/i }).click({ force: true })
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'successfully recharged your wallet')
+        cy.get('.react-toast-notifications__toast__dismiss-icon').click()
 
         //Logout
         cy.get('.navbar-nav > [href="/"]').click()
@@ -215,6 +217,9 @@ describe('enterNewClientOrder', () => {
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'User not found')
         //Close Alert
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
+        //Clear Basket
+        cy.findByRole('button', { name: /delete/i }).click({ force: true });
+
 
 
     })
@@ -292,7 +297,7 @@ describe('enterNewClientOrder', () => {
             .findByRole('textbox')
             .type("-10", { force: true })
         //NON AGGIUNGO PERCHE' STO SCRIVENDO 10
-            // cy.get('.container > .im-grid > :nth-child(1)')
+        // cy.get('.container > .im-grid > :nth-child(1)')
         //   .findByRole('button', { name: /add/i }).click({ force: true });
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'Quantity inserted is not number!')
@@ -360,6 +365,15 @@ describe('enterNewClientOrder', () => {
 
 
     it('a client should be able to search a product', () => {
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        //Next month
+        cy.get('.react-calendar__navigation__next-button').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(13)').click()
+        cy.get('#setHour').click().type("09:30")
+        //Set the date
+        cy.get('.d-flex > .btn').click()
+
         cy.findByRole('searchbox').type('Chicken', { force: true })
         //Checking the component exists
         cy.get('.im-productcard').should('exist')
@@ -370,12 +384,12 @@ describe('enterNewClientOrder', () => {
 
         //WRONG SEARCHING
         //Search a product
-        cy.findByRole('searchbox').clear().type('Chickens', { force: true })
+        cy.findByRole('searchbox').clear({ force: true }).type('Chickens', { force: true })
         //Checking the component does not exist
         cy.get('.im-productcard').should('not.exist')
 
         //ANY ELEMENT IS SHOWN && CHECK UPPER/LOW_CASE
-        cy.findByRole('searchbox').clear().type('ch', { force: true })
+        cy.findByRole('searchbox').clear({ force: true }).type('ch', { force: true })
         cy.findByText(/cheese/i).should('exist')
         cy.findByText(/pistachio/i).should('exist')
         cy.findByText(/zucchini/i).should('exist')
@@ -385,12 +399,19 @@ describe('enterNewClientOrder', () => {
     })
 
     it('a client should be able to use a filter', () => {
-
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        //Next month
+        cy.get('.react-calendar__navigation__next-button').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(13)').click()
+        cy.get('#setHour').click().type("09:30")
+        //Set the date
+        cy.get('.d-flex > .btn').click()
         //Click filter button
         cy.get(':nth-child(4) > .below').click()
 
         //TYPE FILTER
-        cy.get('form.below > .im-input').select('Chicken')
+        cy.get('form.below > .im-input').select('Chicken',{ force: true })
         //Checking the component exist
         cy.get('.im-productcard').should('exist')
         cy.get('.im-productcard')
