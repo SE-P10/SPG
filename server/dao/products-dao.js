@@ -1,6 +1,7 @@
 const db = require("./../db");
 const { check, validationResult } = require("express-validator");
 const { runQuerySQL, getQuerySQL, dynamicSQL } = require("../utility");
+const notificationDao = require("./notification-dao.js");
 
 const listProducts = () => {
   return new Promise((resolve, reject) => {
@@ -151,3 +152,12 @@ exports.execApi = (app, passport, isLoggedIn, body) => {
   });
 
 };
+
+exports.notifyUnretireverUsers = async () => {
+  const query = "SELECT u.id, COUNT(*) AS total FROM users u, orders o WHERE status = 'deleted' AND u.id = o.user_id GROUP BY u.id HAVING COUNT(*) >= 3";
+  const unretrievedCount = await getQuerySQL(db, query, [], {id: 0, total: 0}, null, false);
+  unretrievedCount.forEach(e => {
+    const message = "Pay attention, you missed the pickup of" + (e.total === 3 ? " three " : " four ") + "orders!"
+    notificationDao.addNotification(e.id, message, "Unretrieved orders", true);
+  })
+}

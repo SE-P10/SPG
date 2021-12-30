@@ -156,6 +156,7 @@ if (ENABLE_CRON) {
           (async () => {
 
             await runQuerySQL(db, "UPDATE orders SET status = 'deleted' WHERE status = 'confirmed' AND timestamp <= ? ", [virtualTime.startOf('week').unix()]);
+            await productsDao.notifyUnretireverUsers();
 
           })();
 
