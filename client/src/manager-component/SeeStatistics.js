@@ -1,69 +1,78 @@
 import { Button, Table, Spinner } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import warehouseAPI from "../api/warehouse";
+import API from "../API";
 import { BlockTitle, PageSection } from "../ui-components/Page";
 
 function SeeStatistics(props) {
-  const [deliveries, setDeliveries] = useState([]);
-  const [isDeliveryListLoading, setIsDeliveryListLoading] = useState(true);
+  const [statistics, setStatistics] = useState([]);
+  const [filter, setFilter] = useState("month");
+  const [isStatisticsLoading, setIsStatisticsLoading] = useState(true);
 
   useEffect(() => {
-    const getDeliveries = async () => {
-      warehouseAPI.getOpenDeliveries().then((d) => {
-        setIsDeliveryListLoading(false);
-        setDeliveries(d);
-      });
+    
+    const getUnretrievedProducts = async () => {
+      let unretrievedProducts = await API.getUnretrievedProducts()
+      setIsStatisticsLoading(false);
+      let stat =  API.getSatistics(unretrievedProducts,filter);
+      setStatistics(stat);
+      //base = week month
     };
+    
+    getUnretrievedProducts();
+  }, [isStatisticsLoading]); 
 
-    getDeliveries();
-  }, [isDeliveryListLoading]);
-
-  const handleConfirm = async (deliveryId) => {
-    setIsDeliveryListLoading((old) => !old);
-    warehouseAPI.confirmDelivery(deliveryId);
-  };
+  
 
   return (
     <PageSection>
-      <BlockTitle>Manage Deliveries</BlockTitle>
+      <BlockTitle>Statistics</BlockTitle>
 
-      {isDeliveryListLoading ? (
+      {isStatisticsLoading ? (
         <Spinner animation='border' variant='success' size='sm'></Spinner>
       ) : (
         <>
-          {deliveries.length ? (
+          {statistics.length ? (
             <>
+              <Button
+                className='below im-button im-animate'
+                onClick={() => {setIsStatisticsLoading(true); setFilter("week");}}>
+                Weekly
+              </Button>
+              {" "}
+              <Button
+                className='below im-button im-animate'
+                onClick={() =>{setIsStatisticsLoading(true); setFilter("month")}}>
+                Monthly
+              </Button>
               <Table responsive size='sm'>
                 <thead>
                   <tr>
                     <th></th>
-                    <th>Farmer</th>
                     <th>Product</th>
                     <th>Quantity</th>
+                    <th>Farmer</th>
+                    <th>{filter}</th>
+                    <th>Year</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {deliveries.map((d) => (
+                  {statistics.map((d) => (
                     <tr>
                       <td></td>
-                      <td>{d.farmer}</td>
-                      <td>{d.productName}</td>
+                      <td>{d.name}</td>
                       <td>{d.quantity}</td>
-                      <td>
-                        <Button
-                          className='im-button im-animate'
-                          onClick={() => handleConfirm(d.id)}>
-                          Confirm
-                        </Button>
-                      </td>
+                      <td>{d.farmer}</td>
+                      {filter === "week" ? <td>{d.week}</td> : <td>{d.month}</td>}
+                      <td>{d.year}</td>
+                      <td></td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
             </>
           ) : (
-            <> No deliveries</>
+            <> No Statistics</>
           )}{" "}
         </>
       )}

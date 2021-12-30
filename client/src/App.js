@@ -34,8 +34,6 @@ const App = () => {
   useEffect(() => {
     //per non perdere utente loggato se aggiorno pagina, da qui viene l'errore della GET 401(unhautorized)
     const checkAuth = async () => {
-      const p = await unrtrievedAPI.getUnretrievedProducts();
-      console.log(unrtrievedAPI.getSatistics(p, 'week', false));
       const userTmp = await API.getUserInfo();
       setLoggedIn(true);
       setUser(userTmp);

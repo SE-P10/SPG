@@ -1,6 +1,6 @@
 import { Row, Button, Col } from "react-bootstrap";
 import { useState, useEffect, useContext } from "react";
-import { deliveryIcon } from "../ui-components/Icons";
+import { checkIcon, deliveryIcon } from "../ui-components/Icons";
 import { SeeStatistics } from "../manager-component/SeeStatistics";
 import GlobalState from '../utility/GlobalState';
 import { SVGIcon, Page, PageTitle, PageContainer, PageSeparator } from "../ui-components/Page";
@@ -35,7 +35,7 @@ function ManagerPage(props) {
             }}>
             <Col className='justify-content-center'>
               <Row className='justify-content-center'>
-                <SVGIcon icon={deliveryIcon} width='80px' height='80px' />
+                <SVGIcon icon={checkIcon} width='80px' height='80px' />
               </Row>
               <Row className='justify-content-center'>
                 See Statistics
