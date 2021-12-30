@@ -1,5 +1,5 @@
-import { Container, Carousel, Row, Col, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Container, Carousel, Row, Col, Button, Alert } from "react-bootstrap";
+import { Link, renderMatches } from "react-router-dom";
 import { Page } from "../ui-components/Page";
 
 function HomePage(props) {
@@ -31,11 +31,12 @@ function HomePage(props) {
 
                 <Carousel.Caption>
                   <h1>SUSTAINABILITY</h1>
-                  <p>
-                    {" "}
+                  <Alert variant="light">
+                  <p >
                     Meeting our own needs without compromising the ability of
                     future generations to meet their own needs.
                   </p>
+                  </Alert>
                 </Carousel.Caption>
               </Carousel.Item>
               <Carousel.Item>
@@ -47,6 +48,7 @@ function HomePage(props) {
 
                 <Carousel.Caption>
                   <h1>EQUITY</h1>
+                  
                   <p>
                     The fair treatment, access, opportunity, and advancement
                     for all people.
