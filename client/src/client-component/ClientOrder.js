@@ -1,10 +1,4 @@
-import {
-  Button,
-  Form,
-  Container,
-  Spinner,
-  Row
-} from "react-bootstrap";
+import { Button, Form, Container, Spinner, Row } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { Basket } from "../client-component/Basket";
 import API from "../API";
@@ -12,7 +6,12 @@ import { filterIcon } from "../ui-components/Icons";
 import SearchForm from "../ui-components/SearchForm";
 import { ProductsList } from "../ui-components/Products";
 import { ToastNotification } from "../ui-components/ToastNotification";
-import { PageSection, BlockTitle, PageSeparator, PageTitle } from "../ui-components/Page";
+import {
+  PageSection,
+  BlockTitle,
+  PageSeparator,
+  PageTitle,
+} from "../ui-components/Page";
 
 function ClientOrder(props) {
   const [errorMessage, setErrorMessage] = useState("");
@@ -33,9 +32,7 @@ function ClientOrder(props) {
   const [isWalletLoading, setIsWalletLoading] = useState(true);
 
   useEffect(() => {
-
     const fillTables = async (user, modifyOrder) => {
-
       const productsTmp = await API.getProducts();
       setProducts(productsTmp);
       const farmersTmp = productsTmp
@@ -58,7 +55,6 @@ function ClientOrder(props) {
       //{product_id : p.id , confirmed : true, quantity : item.quantity, name : p.name}
 
       if (modifyOrder > 0) {
-
         let oldOrder = await API.getOrder(modifyOrder);
 
         for (let p of oldOrder.products) {
@@ -67,7 +63,7 @@ function ClientOrder(props) {
             quantity: p.quantity,
           });
         }
-        setUpdateBasket((old) => !old)
+        setUpdateBasket((old) => !old);
       }
 
       setOrderedProducts(await API.getBasketProducts());
@@ -75,17 +71,16 @@ function ClientOrder(props) {
       if (Number.parseInt(user.role) === 0) {
         const walletValueT = await API.getWalletByMail(user.email);
         setWalletValue(walletValueT);
-        if (walletValueT) setIsWalletLoading(old => !old);
+        if (walletValueT) setIsWalletLoading((old) => !old);
       }
     };
 
     fillTables(props.user, props.modifyOrder);
-
   }, [props.user, props.modifyOrder]);
 
   const handleBasketSubmit = async (basket) => {
-
-    let userId = 0, user = {};
+    let userId = 0,
+      user = {};
     const updatingOrder = props.modifyOrder > 0;
 
     if (Number.parseInt(props.user.role) === 1) {
@@ -95,8 +90,7 @@ function ClientOrder(props) {
       } else {
         try {
           user = await API.getUserId(mailInserted);
-        }
-        catch (e) {
+        } catch (e) {
           setErrorMessage("User not found");
           return;
         }
@@ -121,7 +115,6 @@ function ClientOrder(props) {
     }));
 
     if (!updatingOrder) {
-
       let result = await API.insertOrder(userId, finalOrder);
       if (result) {
         API.deleteAllBasket();
@@ -130,7 +123,6 @@ function ClientOrder(props) {
       } else {
         setErrorMessage("Server error during insert order. ");
       }
-
     } else {
       //fare chiamata ad update order
       API.updateOrderProducts(props.modifyOrder, finalOrder)
@@ -148,20 +140,25 @@ function ClientOrder(props) {
   };
 
   const handleBasketChange = async (basket) => {
-
     setOrderedProducts(basket);
-  }
+  };
 
   const updateRequestedQuantity = async (product, quantity) => {
+    let requestedProduct = products.filter((t) => {
+      return t.id === product.id;
+    })[0];
 
-    let requestedProduct = products.filter((t) => { return t.id === product.id })[0];
-
-    if (!requestedProduct || quantity > requestedProduct.quantity || quantity <= 0) {
+    if (
+      !requestedProduct ||
+      quantity > requestedProduct.quantity ||
+      quantity <= 0
+    ) {
       return false;
-    }
-    else {
-
-      await API.insertProductInBasket({ product_id: product.id, quantity: quantity });
+    } else {
+      await API.insertProductInBasket({
+        product_id: product.id,
+        quantity: quantity,
+      });
 
       setOrderedProducts(await API.getBasketProducts());
 
@@ -169,14 +166,12 @@ function ClientOrder(props) {
 
       return true;
     }
-  }
+  };
 
   return (
-    <section className="im-clientOrderWrapper">
+    <section className='im-clientOrderWrapper'>
       <PageSection style={{ flex: "1 1 800px" }}>
-        <PageTitle className="over-2">
-          Issue Order
-        </PageTitle>
+        <PageTitle className='over-2'>Issue Order</PageTitle>
 
         <ToastNotification
           variant='error'
@@ -184,19 +179,20 @@ function ClientOrder(props) {
           message={errorMessage}
         />
 
-        {
-          Number.parseInt(props.user.role) === 1 ? (
-            <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
-              <Form.Label>Client mail</Form.Label>
-              <Form.Control
-                className="im-input"
-                type='email'
-                onChange={(ev) => {
-                  setMailInserted(ev.target.value);
-                }}
-              />
-            </Form.Group>
-          ) : <></>}
+        {Number.parseInt(props.user.role) === 1 ? (
+          <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
+            <Form.Label>Client mail</Form.Label>
+            <Form.Control
+              className='im-input'
+              type='email'
+              onChange={(ev) => {
+                setMailInserted(ev.target.value);
+              }}
+            />
+          </Form.Group>
+        ) : (
+          <></>
+        )}
 
         <PageSeparator />
 
@@ -204,26 +200,27 @@ function ClientOrder(props) {
           <section>
             <SearchForm
               setSearchValue={setSearchValue}
-              onSearchSubmit={() => { console.log("testSubmit") }}
+              onSearchSubmit={() => {
+                console.log("testSubmit");
+              }}
             />
-            {
-              Number.parseInt(props.user.role) === 0 ?
-                <Row className="d-flex justify-content-end">
-                  <div className='im-yourwallet'>
-                    <h4 className='font-color'>Your Wallet</h4>
-                    {isWalletLoading ? (
-                      <Spinner
-                        animation='border'
-                        variant='success'
-                        size='sm'></Spinner>
-                    ) : (
-                      <div>{walletValue}€</div>
-                    )}
-                  </div>
-                </Row>
-                :
-                <></>
-            }
+            {Number.parseInt(props.user.role) === 0 ? (
+              <Row className='d-flex justify-content-end'>
+                <div className='im-yourwallet'>
+                  <h4 className='font-color'>Your Wallet</h4>
+                  {isWalletLoading ? (
+                    <Spinner
+                      animation='border'
+                      variant='success'
+                      size='sm'></Spinner>
+                  ) : (
+                    <div>{walletValue}€</div>
+                  )}
+                </div>
+              </Row>
+            ) : (
+              <></>
+            )}
           </section>
           <Button
             className='below im-button im-animate'
@@ -236,14 +233,13 @@ function ClientOrder(props) {
                 setViewFilter(false);
               } else setShowFilterMenu(true);
             }}>
-
             {filterIcon} {showFilterMenu ? <> x </> : <>Filters</>}
           </Button>
           {showFilterMenu ? (
             <>
               <Form className='below'>
                 <Form.Control
-                  className="im-input"
+                  className='im-input'
                   as='select'
                   onChange={(event) => {
                     setCategorize(0);
@@ -261,7 +257,7 @@ function ClientOrder(props) {
               </Form>
               <Form>
                 <Form.Control
-                  className="im-input"
+                  className='im-input'
                   as='select'
                   onChange={(event) => {
                     setCategorize(1);
@@ -324,18 +320,25 @@ function ClientOrder(props) {
           <Container className='below'>
             <Spinner animation='border' variant='success'></Spinner>
           </Container>
-        ) :
+        ) : (
           <>
-            <BlockTitle className='thirdColor below-2 over-2'> List of our products: </BlockTitle>
+            <BlockTitle className='thirdColor below-2 over-2'>
+              {" "}
+              List of our products:{" "}
+            </BlockTitle>
             <ProductsList
               products={products}
               setErrorMessage={setErrorMessage}
               updateRequestedQuantity={updateRequestedQuantity}
-              filter={{ type: filterType, farmer: filterFarmer, search: searchValue }}
+              filter={{
+                type: filterType,
+                farmer: filterFarmer,
+                search: searchValue,
+              }}
               orderedProducts={orderedProducts}
             />
           </>
-        }
+        )}
       </PageSection>
 
       <Basket
