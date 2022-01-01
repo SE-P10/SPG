@@ -6,7 +6,7 @@ import {
   Card,
   Modal,
 } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import API from "../API";
 import { ToastNotification } from "./ToastNotification";
@@ -173,16 +173,16 @@ function RegistrationForm(props) {
 
           </Modal.Body>
           <Modal.Footer>
-            <Button className='below im-button im-animate' onClick={() => {
-              history.push("/login");
-            }}>
+          <Link to="/login" >
+             <Button className='below im-button im-animate' >
               YES
             </Button>
-            <Button className='below im-button im-animate' variant='danger' onClick={() => {
-              history.push("/");
-            }}>
+            </Link>
+            <Link to="/" >
+            <Button className='below im-button im-animate' variant='danger' >
               NO
             </Button>
+            </Link>
           </Modal.Footer>
         </Modal>
       </PageSection>
