@@ -54,7 +54,7 @@ function RegistrationForm(props) {
           })
           .catch((e) => {
             console.log(e.error);
-            setErrorMessage(e.errorno);
+            setErrorMessage(e.error);
           });
       } else {
         //password mismatch

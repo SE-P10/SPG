@@ -166,10 +166,6 @@ if (ENABLE_CRON) {
       false
     );
 
-
-    sendMail("miriam@SPG.it", "sfsfsadf");
-    
-
     /**
      * Telegram Cron Job
     */

@@ -173,24 +173,22 @@ const cronClass = {
 
               if (execFrom.hour && execTo.hour) {
 
-                if (this.isBefore(execFrom.day, vtime.format("dd"))) {
-                  allowExec = true;
+                if (vtime.format("dd") === execFrom.day) {
+                  allowExec = vtime.hour() >= execFrom.hour;
                 }
                 else {
 
-                  if (vtime.format("dd") === execFrom.day) {
-                    allowExec = vtime.hour() >= execFrom.hour;
-                  }
-
                   if (vtime.format("dd") === execTo.day) {
-                    allowExec = allowExec && vtime.hour() <= execTo.hour;
+                    allowExec = vtime.hour() < execTo.hour || this.isBefore(lastCallTime.format("dd"), execTo.day);
+                  }
+                  else {
+                    allowExec = true;
                   }
                 }
               }
               else {
                 allowExec = true;
               }
-
             }
             else {
               // checks if last call has been run on last day call
@@ -202,7 +200,7 @@ const cronClass = {
           }
 
         } else {
-          allowExec = vtime.format("dd") === cron.interval || this.isBefore(lastCallTime.format("dd"), cron.interval);
+          allowExec = vtime.format("dd") === cron.interval || (this.isBefore(cron.interval, vtime.format("dd")) && this.isBefore(lastCallTime.format("dd"), cron.interval));
         }
 
         if (!allowExec) {

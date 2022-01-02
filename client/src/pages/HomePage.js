@@ -9,7 +9,7 @@ function HomePage(props) {
     <Page>
       <Container className='justify-content-center fluid big-screen'>
         <Row className='below justify-content-center'>
-          <Col className='justify-content-center' xs={9}>
+          <Col className='justify-content-center' xs={7}>
             <Carousel lassName='below'>
               <Carousel.Item>
                 <img
