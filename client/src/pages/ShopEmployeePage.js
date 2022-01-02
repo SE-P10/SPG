@@ -176,7 +176,7 @@ function ShopEmployee(props) {
         {actionS === 4 ? (
           <>
             {(props.dow === "Saturday" && props.hour >= 9) ||
-              (props.dow === "Sunday" && props.hour <= 23) ? (
+              (props.dow === "Sunday" && props.hour < 23) ? (
               <ClientOrder
                 modifyOrder={-1}
                 changeAction={setActionS}
@@ -184,7 +184,7 @@ function ShopEmployee(props) {
                 user={props.user}
               />
             ) : (
-              "Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00"
+              "Orders can be purchased only from Saturday at 9:00 to Sunday at 22:59"
             )}
           </>
         ) : <></>}
@@ -197,11 +197,11 @@ function ShopEmployee(props) {
         {actionS === 5 ? (
           <>
             {(props.dow === "Wednesday" && props.hour >= 9) ||
-              (props.dow === "Friday" && props.hour <= 23) ||
+              (props.dow === "Friday" && props.hour < 23) ||
               props.dow === "Thursday" ? (
               <HandOut changeAction={setActionS} addMessage={addMessage} />
             ) : (
-              "You can hand out an order from Wednesday at 09:00 to Friday at 18:00"
+              "You can hand out an order from Wednesday at 09:00 to Friday at 22:59"
             )}
           </>
         ) : <></>}

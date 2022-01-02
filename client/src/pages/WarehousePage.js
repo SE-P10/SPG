@@ -50,10 +50,10 @@ function WarehousePage(props) {
         {actionC === 1 ? (
           <>
             {(props.dow === "Monday" && props.hour >= 9) ||
-              (props.dow === "Tuesday" && props.hour <= 18) ? (
+              (props.dow === "Tuesday" && props.hour < 18) ? (
               <ManageDelivery user={props.user} />
             ) : (
-              "You can ack arrivals from Monday at 09:00 to Tuesday at 18:00"
+              "You can ack arrivals from Monday at 09:00 to Tuesday at 17:59"
             )}
           </>
         ) : null}

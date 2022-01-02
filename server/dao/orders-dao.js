@@ -414,6 +414,10 @@ const handleOrderProducts = async (
 
       if (updatingOrder) {
         try {
+
+          //reset order price
+          await handleOrder({ id: orderID, price: 0 });
+
           processedProducts = await bulkSQL(
             db,
             "REPLACE INTO order_product (order_id, product_id, quantity) VALUES(" +
@@ -642,8 +646,7 @@ const processOrder = async (userID, orderID, data = {}, vTimeOffset = 0) => {
   let order = {
     ...(data.order || {}),
     id: orderID,
-    user_id: userID,
-    price: 0,
+    user_id: userID
   };
 
   let updatingOrder = orderID || false;
@@ -865,9 +868,10 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
   // update existing order POST /api/orders/:user_id/:order_id
   app.put("/api/orders/:order_id", AF_ALLOW_DIRTY ? (req, res, next) => { return next(); } : isLoggedIn, async (req, res) => {
-
-    if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
-      return res.status(412).json({ error: "Unable to update order, wrong " });
+    
+    if (!AF_ALLOW_DIRTY && (
+    !(is_possible(req).clients_pickup_orders && req.body.order.status == 'handout') && !is_possible(req).clients_send_orders)) {
+      return res.status(412).json({ error: "Operation not allowed in this moment!" });
     }
 
     if (thereIsError(req, res, "update")) {
@@ -893,7 +897,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
     }
 
     if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
-      return res.status(412).json({ error: "Unable to book order, wrong " });
+      return res.status(412).json({ error: "Operation not allowed in this moment!" });
     }
 
     let user = await existValueInDB(db, "users", { id: req.params.user_id });

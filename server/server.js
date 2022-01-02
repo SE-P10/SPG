@@ -16,7 +16,7 @@ const session = require("express-session");
 const sqliteStoreFactory = require("express-session-sqlite").default;
 const sqlite3 = require("sqlite3");
 const dayjs = require("dayjs");
-const { runQuerySQL, getQuerySQL, dynamicSQL } = require("./utility");
+const { runQuerySQL, getQuerySQL, dynamicSQL, sendMail } = require("./utility");
 
 const productsDao = require("./dao/products-dao");
 const userDao = require("./dao/user-dao");
@@ -115,12 +115,12 @@ if (ENABLE_CRON) {
     virtualCron.schedule("confrimOrders",
       {
         from: { day: virtualCron.schedules.MONDAY, hour: 9 },
-        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+        to: { day: virtualCron.schedules.WEDNESDAY, hour: 9 },
       },
       (virtualTime, lastExecutionTime, ...args) => {
 
         console.log("A")
-        ordersDao.confrimOrders(virtualTime);
+          ordersDao.confrimOrders(virtualTime);
       },
       [],
       false
@@ -165,6 +165,10 @@ if (ENABLE_CRON) {
       [],
       false
     );
+
+
+    sendMail("miriam@SPG.it", "sfsfsadf");
+    
 
     /**
      * Telegram Cron Job

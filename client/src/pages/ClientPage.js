@@ -135,7 +135,7 @@ function ClientPage(props) {
         {actionC === 2 ? (
           <>
             {(props.dow === "Saturday" && props.hour >= 9) ||
-              (props.dow === "Sunday" && props.hour <= 23) ? (
+              (props.dow === "Sunday" && props.hour < 23) ? (
               <ClientOrder
                 modifyOrder={modifyOrder}
                 user={props.user}
@@ -143,7 +143,7 @@ function ClientPage(props) {
                 addMessage={addMessage}
               />
             ) : (
-              "You can purchase an order from Saturday at 09:00 and Sunday at 23:00"
+              "You can purchase an order from Saturday at 09:00 and Sunday at 22:59"
             )}
           </>
         ) : null}

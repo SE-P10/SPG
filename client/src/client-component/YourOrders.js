@@ -90,7 +90,7 @@ function YourOrders(props) {
                         <td> {order.status}</td>
                         {order.status === "booked" &&
                         ((props.dow === "Saturday" && props.hour >= 9) ||
-                          (props.dow === "Sunday" && props.hour <= 23)) ? (
+                          (props.dow === "Sunday" && props.hour < 23)) ? (
                           <td>
                             <Button
                               className='im-button im-animate'
@@ -103,7 +103,7 @@ function YourOrders(props) {
                         )}
                         {order.status === "booked" &&
                         ((props.dow === "Saturday" && props.hour >= 9) ||
-                          (props.dow === "Sunday" && props.hour <= 23)) ? (
+                          (props.dow === "Sunday" && props.hour < 23)) ? (
                           <>
                             <td>
                               <Button

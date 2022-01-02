@@ -171,7 +171,7 @@ const cronClass = {
 
             if (this.isBetween(vtime.format("dd"), execFrom.day, execTo.day)) {
 
-              allowExec = true;
+              allowExec = !(execFrom.hour && execTo.hour);
 
               if (lastCallTime.format("dd") === vtime.format("dd") && execFrom.hour && execTo.hour) {
 
