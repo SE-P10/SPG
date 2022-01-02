@@ -171,19 +171,26 @@ const cronClass = {
 
             if (this.isBetween(vtime.format("dd"), execFrom.day, execTo.day)) {
 
-              allowExec = !(execFrom.hour && execTo.hour);
+              if (execFrom.hour && execTo.hour) {
 
-              if (lastCallTime.format("dd") === vtime.format("dd") && execFrom.hour && execTo.hour) {
-
-                if (vtime.format("dd") === execFrom.day) {
-                  allowExec = vtime.hour() >= execFrom.hour;
+                if (this.isBefore(execFrom.day, vtime.format("dd"))) {
+                  allowExec = true;
                 }
+                else {
 
-                if (vtime.format("dd") === execTo.day) {
-                  allowExec = allowExec && vtime.hour() <= execTo.hour;
+                  if (vtime.format("dd") === execFrom.day) {
+                    allowExec = vtime.hour() >= execFrom.hour;
+                  }
+
+                  if (vtime.format("dd") === execTo.day) {
+                    allowExec = allowExec && vtime.hour() <= execTo.hour;
+                  }
                 }
-
               }
+              else {
+                allowExec = true;
+              }
+
             }
             else {
               // checks if last call has been run on last day call
