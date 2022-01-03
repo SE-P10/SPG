@@ -213,7 +213,25 @@ describe('confirmOrderByFarmer', () => {
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
 
     })
+*/
+    it("a farmer should be able to confirm an order", () => {
+        //Change date for managing updating
+        cy.findByRole('button', { name: /set/i }).click()
+        //Next month
+        cy.get('.react-calendar__navigation__next-button').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(21)').click()
+        cy.get('#setHour').click().type("23:30")
+        //Set the date
+        cy.get('.d-flex > .btn').click()
+        cy.wait(1500)
+        //Confirm the order
+        cy.findByRole('button', { name: /confirm/i }).click({ force: true })
+        //Check alert 
+        cy.get('.react-toast-notifications__toast__content').should('include.text', 'Confirmation ok')
+        cy.get('.react-toast-notifications__toast__dismiss-icon').click()
 
+    })
+/*
     //UNA VOLTA ANDATI AVANTI IL CRONO ALTERA I DATI, NON TESTARE DI NUOVO TORNANDO DIETRO NEL TEMPO
     it('a farmer should be not able to confirm an order from Monday at 09:00 to Sunday at 23:00', () => {
 
@@ -260,8 +278,8 @@ describe('confirmOrderByFarmer', () => {
         cy.findByText('Apple').should("not.exist")
         cy.findByText('Banana').should("not.exist")
 
-
     })
+
 
 
 })
