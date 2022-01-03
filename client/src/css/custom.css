@@ -156,9 +156,6 @@ footer {
   margin-left: 35% !important;
 }
 
-.thirdColor {
-  color: #009378 !important;
-}
 
 @media (max-width: 480px) {
   .button-disappear {

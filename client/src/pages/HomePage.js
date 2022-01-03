@@ -1,5 +1,5 @@
-import { Container, Carousel, Row, Col, Button, Alert } from "react-bootstrap";
-import { Link, renderMatches } from "react-router-dom";
+import { Container, Carousel, Row, Col, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { Page } from "../ui-components/Page";
 
 function HomePage(props) {

@@ -18,8 +18,8 @@ function Basket(props) {
 
       let basketPrice = 0;
 
-      for (let i = 0; i < basketTmp.length; i++) {
-        basketPrice += basketTmp[i].price * basketTmp[i].quantity;
+      for (let basketVal of basketTmp) {
+        basketPrice += basketVal.price * basketVal.quantity;
       }
 
       setBasketLoading(false);

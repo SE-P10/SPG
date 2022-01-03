@@ -21,7 +21,6 @@ import { BrowserProducts } from "./ui-components/BrowseProducts";
 import MyNavbar from "./ui-components/MyNavbar";
 import GlobalState from './utility/GlobalState';
 import API from "./API";
-import unrtrievedAPI from "./api/unretrieved";
 import "./css/custom.css";
 
 const App = () => {
