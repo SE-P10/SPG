@@ -146,11 +146,11 @@ async function updateOrderProducts(orderID, products = []) {
     });
   } 
   else {
-    for (let p of oldProducts) {
+    for (let op of oldProducts) {
       let exist = false;
 
       for (let pro of products) {
-        if (pro.product_id === p.product_id) {
+        if (pro.product_id === op.product_id) {
           exist = true;
           break;
         }
@@ -158,8 +158,8 @@ async function updateOrderProducts(orderID, products = []) {
 
       if (!exist) {
         products.push({
-          order_id: p.order_id,
-          product_id: p.product_id,
+          order_id: op.order_id,
+          product_id: op.product_id,
           quantity: 0,
         });
       }

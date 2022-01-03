@@ -13,7 +13,6 @@ import { ToastNotification } from "./ToastNotification";
 import { BlockTitle, PageSection } from "./Page";
 
 function RegistrationForm(props) {
-
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [username, setUsername] = useState("");
@@ -21,11 +20,8 @@ function RegistrationForm(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const history = useNavigate();
   const [show, setShow] = useState(false);
-
   const handleModalClose = () => setShow(false);
-
   const registrationSubmit = (event) => {
     event.preventDefault();
 

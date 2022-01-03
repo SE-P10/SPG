@@ -102,7 +102,7 @@ function MyNavbar(props) {
                             let value = e.target.value;
 
                             if (
-                              /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(
+                              /^([0-1]?\d|2[0-4]):([0-5]\d)(:[0-5]\d)?$/.test(
                                 value
                               )
                             ) {

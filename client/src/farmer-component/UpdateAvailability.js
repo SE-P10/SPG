@@ -105,7 +105,7 @@ function UpdateAvailability(props) {
               defaultValue={selectedProduct.quantity}
               type='number'
               onChange={(ev) => {
-                if (!/^[0-9]*$/.test(ev.target.value)) {
+                if (!/^\d*$/.test(ev.target.value)) {
                   setErrorMessage("Quantity inserted is not valid!");
                   return;
                 }
