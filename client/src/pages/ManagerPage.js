@@ -1,19 +1,19 @@
 import { Row, Button, Col } from "react-bootstrap";
 import { useState, useEffect, useContext } from "react";
-import { checkIcon, deliveryIcon } from "../ui-components/Icons";
+import { checkIcon } from "../ui-components/Icons";
 import { SeeStatistics } from "../manager-component/SeeStatistics";
 import GlobalState from '../utility/GlobalState';
 import { SVGIcon, Page, PageTitle, PageContainer, PageSeparator } from "../ui-components/Page";
 
 function ManagerPage(props) {
 
-  const [actionC, setActionC] = useState(0);
+  const [actionM, setActionM] = useState(0);
 
-  const [state, setState] = useContext(GlobalState);
+  const [stateM, setStateM] = useContext(GlobalState);
 
   useEffect(() => {
-    setState(state => ({ ...state, useHistoryBack: actionC !== 0 ? () => { setActionC(0) } : false }))
-  }, [actionC, setState]);
+    setStateM(stateM => ({ ...stateM, useHistoryBack: actionM !== 0 ? () => { setActionM(0) } : false }))
+  }, [actionM, setStateM]);
 
   return (
     <Page>
@@ -26,12 +26,12 @@ function ManagerPage(props) {
       )
         : null}
 
-      {actionC === 0 ? (
+      {actionM === 0 ? (
         <PageContainer>
           <Button
             className='im-button im-button-ticket im-animate'
             onClick={() => {
-              setActionC(1);
+              setActionM(1);
             }}>
             <Col className='justify-content-center'>
               <Row className='justify-content-center'>
@@ -47,7 +47,7 @@ function ManagerPage(props) {
         <></>
       )}
       <PageContainer>
-        {actionC === 1 ? (
+        {actionM === 1 ? (
           <>
               <SeeStatistics user={props.user} />
           </>
