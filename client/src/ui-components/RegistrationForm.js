@@ -6,7 +6,7 @@ import {
   Card,
   Modal,
 } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import API from "../API";
 import { ToastNotification } from "./ToastNotification";
@@ -76,7 +76,7 @@ function RegistrationForm(props) {
           <Card.Body>
             <Form>
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridName' sm>
+                <Form.Group as={Col} sm>
                   <Form.Label>Name</Form.Label>
                   <Form.Control
                     required
@@ -86,7 +86,7 @@ function RegistrationForm(props) {
                     placeholder='Enter Name'
                   />
                 </Form.Group>
-                <Form.Group as={Col} controlId='formGridSurname' sm>
+                <Form.Group as={Col} sm>
                   <Form.Label>Surname</Form.Label>
                   <Form.Control
                     required
@@ -99,7 +99,7 @@ function RegistrationForm(props) {
               </Row>
 
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridUsername' sm>
+                <Form.Group as={Col} sm>
                   <Form.Label>Telegram Username</Form.Label>
                   <Form.Control
                     required
@@ -110,7 +110,7 @@ function RegistrationForm(props) {
                   />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId='formGridEmail' sm>
+                <Form.Group as={Col} sm>
                   <Form.Label>Email</Form.Label>
                   <Form.Control
                     required
@@ -123,7 +123,7 @@ function RegistrationForm(props) {
               </Row>
 
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridPassword' sm>
+                <Form.Group as={Col} sm>
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     required
@@ -134,7 +134,7 @@ function RegistrationForm(props) {
                   />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId='formGridConfirmPassword' sm>
+                <Form.Group as={Col} sm>
                   <Form.Label>Confirm Password</Form.Label>
                   <Form.Control
                     required
@@ -160,24 +160,24 @@ function RegistrationForm(props) {
           </Modal.Header>
           <Modal.Body>
             <Row className="justify-content-center">
-              <img src={process.env.PUBLIC_URL+"/images/telegram.svg"} />
+              <img src={process.env.PUBLIC_URL + "/images/telegram.svg"} alt="telegram qrcode" />
             </Row>
             <Row className="justify-content-center">
-            <p className="telegramColor">Scan the Telegram QR code, so you can recive all the updates or <a href="https://t.me/spg10_bot"> click here</a></p>
+              <p className="telegramColor">Scan the Telegram QR code, so you can recive all the updates or <a href="https://t.me/spg10_bot"> click here</a></p>
             </Row>
             Do you want to login, now?
 
           </Modal.Body>
           <Modal.Footer>
-          <Link to="/login" >
-             <Button className='below im-button im-animate' >
-              YES
-            </Button>
+            <Link to="/login" >
+              <Button className='below im-button im-animate' >
+                YES
+              </Button>
             </Link>
             <Link to="/" >
-            <Button className='below im-button im-animate' variant='danger' >
-              NO
-            </Button>
+              <Button className='below im-button im-animate' variant='danger' >
+                NO
+              </Button>
             </Link>
           </Modal.Footer>
         </Modal>

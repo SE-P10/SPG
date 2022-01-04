@@ -85,7 +85,7 @@ function YourOrders(props) {
                   </thead>
                   <tbody>
                     {orders.map((order) => (
-                      <tr className='over'>
+                      <tr className='over' key={order.id}>
                         <td> {order.price < 0.01 ? 0 : order.price}€</td>
                         <td> {order.status}</td>
                         {order.status === "booked" &&
@@ -127,7 +127,6 @@ function YourOrders(props) {
             ) : (
               <>
                 <BlockTitle>
-                  {" "}
                   No orders found! Purchaise a &nbsp;
                   <Button
                     className='im-button'
@@ -229,7 +228,7 @@ function YourOrders(props) {
             {openDeliveryForm ? (
               <Form>
                 <Row>
-                  <Form.Group as={Col} controlId='formGridName'>
+                  <Form.Group as={Col}>
                     <Row className='justify-content-center'>
                       <Form.Label className='font-color below'>
                         Address

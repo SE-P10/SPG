@@ -14,10 +14,6 @@ function BrowserProducts(props) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [searchValue, setSearchValue] = useState("");
 
-  const handleSearchSubmit = () => {
-    console.log("handle search submit")
-  };
-
   useEffect(() => {
     const fillTables = async () => {
       const productsTmp = await API.getProducts();
@@ -50,7 +46,6 @@ function BrowserProducts(props) {
           <>
             <SearchForm
               setSearchValue={setSearchValue}
-              onSearchSubmit={handleSearchSubmit}
             />
             <PageSeparator hidden/>
             <ProductsList

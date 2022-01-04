@@ -42,8 +42,7 @@ function ConfirmProducts(props) {
   };
 
   const changeQ = (ev, p) => {
-    if (parseInt(ev.target.value) < 0 || parseInt(ev.target.value) > p.quantity  ){
-      console.log("error")
+    if (parseInt(ev.target.value) < 0 || parseInt(ev.target.value) > p.quantity) {
       setErrorMessage("Quantity inserted is not valid!");
       return;
     }
@@ -86,33 +85,33 @@ function ConfirmProducts(props) {
             <>
               <Table responsive size='sm' className='below'>
                 <thead>
-                  <th>Name </th>
-                  <th>Ordered </th>
-                  <th>Confirmed </th>
-                  <th>Confirm</th>
+                  <tr>
+                    <th>Name </th>
+                    <th>Ordered </th>
+                    <th>Confirmed </th>
+                    <th>Confirm</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {productQ
                     .filter((t) => t.quantity > 0)
                     .map((p) => (
-                      <>
-                        <tr>
-                          <td>{p.product} </td>
-                          <td>{p.quantity} </td>
-                          <td> {getQuantityConfirmed(p.id)} </td>
-                          <td>
-                            <Form.Control
-                              className='im-input'
-                              defaultValue={p.quantity}
-                              type='number'
-                              min={0}
-                              max={p.quantity}
-                              onChange={(ev) => {
-                                changeQ(ev, p);
-                              }}></Form.Control>
-                          </td>
-                        </tr>
-                      </>
+                      <tr key={p.id}>
+                        <td>{p.product} </td>
+                        <td>{p.quantity} </td>
+                        <td> {getQuantityConfirmed(p.id)} </td>
+                        <td>
+                          <Form.Control
+                            className='im-input'
+                            defaultValue={p.quantity}
+                            type='number'
+                            min={0}
+                            max={p.quantity}
+                            onChange={(ev) => {
+                              changeQ(ev, p);
+                            }}></Form.Control>
+                        </td>
+                      </tr>
                     ))}
                 </tbody>
               </Table>
@@ -120,11 +119,11 @@ function ConfirmProducts(props) {
                 className='below im-button im-animate'
                 onClick={handleConfirm}>
                 Confirm
-              </Button>{" "}
+              </Button>
             </>
           ) : (
             <> No orders for you this week!</>
-          )}{" "}
+          )}
         </>
       )}
     </PageSection>

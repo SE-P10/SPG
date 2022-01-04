@@ -37,13 +37,15 @@ function CheckOrders(props) {
               <BlockTitle className="below-2"> List of orders </BlockTitle>
               <Table responsive size='sm'>
                 <thead>
-                  <th>Id</th>
-                  <th>Price</th>
-                  <th>Status</th>
+                  <tr>
+                    <th>Id</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {orders.map((order) => (
-                    <tr className='over'>
+                    <tr className='over' key={order.id}>
                       <td> {order.id}</td>
                       <td> {order.price < 0.01 ? 0 : order.price}</td>
                       <td> {order.status}</td>

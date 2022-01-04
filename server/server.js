@@ -119,7 +119,6 @@ if (ENABLE_CRON) {
       },
       (virtualTime, lastExecutionTime, ...args) => {
 
-        console.log("A")
           ordersDao.confrimOrders(virtualTime);
       },
       [],
@@ -133,7 +132,6 @@ if (ENABLE_CRON) {
         to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
       },
       (virtualTime, lastExecutionTime, ...args) => {
-        console.log("B")
         ordersDao.deletePendingOrders();
       },
       [],
@@ -146,8 +144,6 @@ if (ENABLE_CRON) {
     virtualCron.schedule("unretrivedOrders",
       virtualCron.schedules.FRIDAY,
       (virtualTime, lastExecutionTime, ...args) => {
-
-        console.log("C")
 
         let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
 
@@ -172,8 +168,6 @@ if (ENABLE_CRON) {
     virtualCron.schedule("telegramBOT",
       virtualCron.schedules.SATURDAY,
       (virtualTime, lastExecutionTime, ...args) => {
-
-        console.log("D")
 
         let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
 

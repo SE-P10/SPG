@@ -52,7 +52,7 @@ function LoginForm(props) {
             <Row className=''>
               <h2 className='navbar-link text-center'> Log In </h2>
             </Row>
-            <Form.Group controlId='username' className='mt-4'>
+            <Form.Group className='mt-4'>
               <Form.Label>Email</Form.Label>
               <Form.Control
                 className="im-input im-animate"
@@ -62,7 +62,7 @@ function LoginForm(props) {
                 required
               />
             </Form.Group>
-            <Form.Group controlId='password'>
+            <Form.Group>
               <Form.Label>Password</Form.Label>
               <Form.Control
                 className="im-input im-animate"

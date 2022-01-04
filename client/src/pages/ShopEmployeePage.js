@@ -30,11 +30,10 @@ function ShopEmployee(props) {
     setMessage(messageN);
   };
 
-
-  const [state, setState] = useContext(GlobalState);
+  const [, setState] = useContext(GlobalState);
 
   useEffect(() => {
-    setState(state => ({ ...state, useHistoryBack: actionS !== 0 ? () => { setActionS(0) } : false }))
+    setState(oldState => ({ ...oldState, useHistoryBack: actionS !== 0 ? () => { setActionS(0) } : false }))
   }, [actionS, setState]);
 
   return (

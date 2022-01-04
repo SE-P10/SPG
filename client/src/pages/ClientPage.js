@@ -39,10 +39,10 @@ function ClientPage(props) {
     setMessage(messageN);
   };
 
-  const [state, setState] = useContext(GlobalState);
+  const [, setState] = useContext(GlobalState);
 
   useEffect(() => {
-    setState(state => ({ ...state, useHistoryBack: actionC !== 0 ? () => { setActionC(0) } : false }))
+    setState(oldState => ({ ...oldState, useHistoryBack: actionC !== 0 ? () => { setActionC(0) } : false }))
   }, [actionC, setState]);
 
   return (

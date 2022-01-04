@@ -19,10 +19,10 @@ function FarmerPage(props) {
     setMessage(messageNew);
   };
 
-  const [state, setState] = useContext(GlobalState);
+  const [, setState] = useContext(GlobalState);
 
   useEffect(() => {
-    setState(state => ({ ...state, useHistoryBack: actionF !== 0 ? () => { setActionF(0) } : false }))
+    setState(oldState => ({ ...oldState, useHistoryBack: actionF !== 0 ? () => { setActionF(0) } : false }))
   }, [setState, actionF]);
 
   return (

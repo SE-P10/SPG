@@ -45,7 +45,7 @@ function ManageDelivery(props) {
                 </thead>
                 <tbody>
                   {deliveries.map((d) => (
-                    <tr>
+                    <tr key={d.id}>
                       <td></td>
                       <td>{d.farmer}</td>
                       <td>{d.productName}</td>
@@ -64,7 +64,7 @@ function ManageDelivery(props) {
             </>
           ) : (
             <> No deliveries</>
-          )}{" "}
+          )}
         </>
       )}
     </PageSection>

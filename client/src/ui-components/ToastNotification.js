@@ -1,12 +1,12 @@
 import { useToasts } from 'react-toast-notifications';
-import React, { useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 
 export const ToastNotification = (props) => {
 
-  const onSet = props.onSet || (() => { console.log("onSet") });
+  const onSet = props.onSet;
   const content = props.message || props.content || false;
   const appearance = props.appearance || props.variant || 'error';
-  const onClose = props.onClose || (() => {  console.log("onCloses") });
+  const onClose = props.onClose || undefined;
   const auothide = props.auothide || undefined;
 
   const [canNotify, setCanNotify] = useState(true)
@@ -19,17 +19,19 @@ export const ToastNotification = (props) => {
     onDismiss: onClose
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
 
     if (content && canNotify) {
       addToast(content, toastData, () => {
-        onSet();
+        if (typeof onSet === 'function') {
+          onSet();
+        }
         setCanNotify(true);
       });
 
       setCanNotify(false);
     }
-  }, [canNotify, content, toastData])
+  }, [canNotify, content, toastData, onSet])
 
   return (<></>)
 }

@@ -79,30 +79,32 @@ function ClientOrder(props) {
   }, [props.user, props.modifyOrder]);
 
   const handleBasketSubmit = async (basket) => {
-    let userId = 0,
-      user = {};
+
+    let userId = props.user.id || 0, user = {};
+
     const updatingOrder = props.modifyOrder > 0;
 
     if (Number.parseInt(props.user.role) === 1) {
+
       if (!mailInserted) {
         setErrorMessage("You have to insert an email!");
         return;
-      } else {
-        try {
-          user = await API.getUserId(mailInserted);
-        } catch (e) {
-          setErrorMessage("User not found");
-          return;
-        }
-
-        if (Number.parseInt(user.role) !== 0) {
-          setErrorMessage("Invalid user");
-          return;
-        } else {
-          userId = user.id;
-        }
       }
-    } else userId = props.user.id;
+
+      try {
+        user = await API.getUserId(mailInserted);
+      } catch (e) {
+        setErrorMessage("User not found");
+        return;
+      }
+
+      if (Number.parseInt(user.role) !== 0) {
+        setErrorMessage("Invalid user");
+        return;
+      }
+
+      userId = user.id;
+    }
 
     if (!basket || basket.length === 0) {
       setErrorMessage("No products found in the basket!");
@@ -115,14 +117,17 @@ function ClientOrder(props) {
     }));
 
     if (!updatingOrder) {
+
       let result = await API.insertOrder(userId, finalOrder);
-      if (result) {
-        API.deleteAllBasket();
-        props.addMessage("Request sent correctly!");
-        props.changeAction(0);
-      } else {
-        setErrorMessage("Server error during insert order. ");
+
+      if (!result) {
+        setErrorMessage("Server error during insert order.");
+        return;
       }
+
+      API.deleteAllBasket();
+      props.addMessage("Request sent correctly!");
+      props.changeAction(0);
     } else {
       //fare chiamata ad update order
       API.updateOrderProducts(props.modifyOrder, finalOrder)
@@ -144,28 +149,25 @@ function ClientOrder(props) {
   };
 
   const updateRequestedQuantity = async (product, quantity) => {
+
     let requestedProduct = products.filter((t) => {
       return t.id === product.id;
     })[0];
 
-    if (
-      !requestedProduct ||
-      quantity > requestedProduct.quantity ||
-      quantity <= 0
-    ) {
+    if (!requestedProduct || quantity > requestedProduct.quantity || quantity <= 0) {
       return false;
-    } else {
-      await API.insertProductInBasket({
-        product_id: product.id,
-        quantity: quantity,
-      });
-
-      setOrderedProducts(await API.getBasketProducts());
-
-      setUpdateBasket((old) => !old);
-
-      return true;
     }
+
+    await API.insertProductInBasket({
+      product_id: product.id,
+      quantity: quantity,
+    });
+
+    setOrderedProducts(await API.getBasketProducts());
+
+    setUpdateBasket((old) => !old);
+
+    return true;
   };
 
   return (
@@ -180,7 +182,7 @@ function ClientOrder(props) {
         />
 
         {Number.parseInt(props.user.role) === 1 ? (
-          <Form.Group className='mb-3' controlId='exampleForm.ControlInput1'>
+          <Form.Group className='mb-3'>
             <Form.Label>Client mail</Form.Label>
             <Form.Control
               className='im-input'
@@ -200,9 +202,6 @@ function ClientOrder(props) {
           <section>
             <SearchForm
               setSearchValue={setSearchValue}
-              onSearchSubmit={() => {
-                console.log("testSubmit");
-              }}
             />
             {Number.parseInt(props.user.role) === 0 ? (
               <Row className='d-flex justify-content-end'>
@@ -323,8 +322,8 @@ function ClientOrder(props) {
         ) : (
           <>
             <BlockTitle className='thirdColor below-2 over-2'>
-              {" "}
-              List of our products:{" "}
+
+              List of our products:
             </BlockTitle>
             <ProductsList
               products={products}

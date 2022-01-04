@@ -124,44 +124,38 @@ const App = () => {
             exact
             path='/shopemployee'
             element={
-              <>
-                {user !== null && user.role === "1" ? (
-                  <ShopEmployee
-                    hour={virtualTimeDate.format("H")}
-                    dow={virtualTimeDate.format("dddd")}
-                    user={user}
-                    loggedIn={loggedIn}
-                  />
-                ) : (
-                  <Navigate to='/login' />
-                )}
-              </>
+              user !== null && user.role === "1" ? (
+                <ShopEmployee
+                  hour={virtualTimeDate.format("H")}
+                  dow={virtualTimeDate.format("dddd")}
+                  user={user}
+                  loggedIn={loggedIn}
+                />
+              ) : (
+                <Navigate to='/login' />
+              )
             }
           />
           <Route
             exact
             path='/warehouse'
             element={
-              <>
-                {user !== null && user.role === "3" ? (
-                  <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
-                ) : (
-                  <Navigate to='/login' />
-                )}
-              </>
+              user !== null && user.role === "3" ? (
+                <WarehousePage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
+              ) : (
+                <Navigate to='/login' />
+              )
             }
           />
           <Route
             exact
             path='/manager'
             element={
-              <>
-                {user !== null && user.role === "4" ? (
-                  <ManagerPage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
-                ) : (
-                  <Navigate to='/login' />
-                )}
-              </>
+              user !== null && user.role === "4" ? (
+                <ManagerPage user={user} hour={virtualTimeDate.format("H")} dow={virtualTimeDate.format("dddd")} />
+              ) : (
+                <Navigate to='/login' />
+              )
             }
           />
           <Route
@@ -180,17 +174,15 @@ const App = () => {
             exact
             path='/farmerpage'
             element={
-              <>
-                {user !== null && user.role === "2" ? (
-                  <FarmerPage
-                    hour={virtualTimeDate.format("H")}
-                    dow={virtualTimeDate.format("dddd")}
-                    user={user}
-                  />
-                ) : (
-                  <Navigate to='/login' />
-                )}
-              </>
+              user !== null && user.role === "2" ? (
+                <FarmerPage
+                  hour={virtualTimeDate.format("H")}
+                  dow={virtualTimeDate.format("dddd")}
+                  user={user}
+                />
+              ) : (
+                <Navigate to='/login' />
+              )
             }
           />
 
@@ -198,18 +190,16 @@ const App = () => {
             exact
             path='/clientpage'
             element={
-              <>
-                {user !== null && user.role === "0" ? (
-                  <ClientPage
-                    virtualTimeDate={virtualTimeDate}
-                    hour={virtualTimeDate.format("H")}
-                    dow={virtualTimeDate.format("dddd")}
-                    user={user}
-                  />
-                ) : (
-                  <Navigate to='/login' />
-                )}
-              </>
+              user !== null && user.role === "0" ? (
+                <ClientPage
+                  virtualTimeDate={virtualTimeDate}
+                  hour={virtualTimeDate.format("H")}
+                  dow={virtualTimeDate.format("dddd")}
+                  user={user}
+                />
+              ) : (
+                <Navigate to='/login' />
+              )
             }
           />
 
@@ -223,26 +213,23 @@ const App = () => {
           <Route
             path='/login'
             element={
-              <>
-                {loggedIn && user !== null ? (
-                  <>
-                    {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
-                    {user.role === "0" ? <Navigate to='/clientpage' /> : null}
-                    {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
-                    {user.role === "3" ? <Navigate to='/warehouse' /> : null}
-                    {user.role === "4" ? <Navigate to='/manager' /> : null}
-                  </>
-                ) : (
-                  <LoginForm
-                    closeMessage={closeMessage}
-                    message={message}
-                    login={doLogin}
-                  />
-                )}
-              </>
+              loggedIn && user !== null ? (
+                <>
+                  {user.role === "0" ? <Navigate to='/clientpage' /> : null}
+                  {user.role === "1" ? <Navigate to='/shopemployee' /> : null}
+                  {user.role === "2" ? <Navigate to='/farmerpage' /> : null}
+                  {user.role === "3" ? <Navigate to='/warehouse' /> : null}
+                  {user.role === "4" ? <Navigate to='/manager' /> : null}
+                </>
+              ) : (
+                <LoginForm
+                  closeMessage={closeMessage}
+                  message={message}
+                  login={doLogin}
+                />
+              )
             }
           />
-
         </Routes>
       </BrowserRouter>
     </GlobalState.Provider>

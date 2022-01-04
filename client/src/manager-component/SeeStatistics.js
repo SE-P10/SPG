@@ -9,19 +9,17 @@ function SeeStatistics(props) {
   const [isStatisticsLoading, setIsStatisticsLoading] = useState(true);
 
   useEffect(() => {
-    
+
     const getUnretrievedProducts = async () => {
       let unretrievedProducts = await API.getUnretrievedProducts()
       setIsStatisticsLoading(false);
-      let stat =  API.getSatistics(unretrievedProducts,filter);
+      let stat = API.getSatistics(unretrievedProducts, filter);
       setStatistics(stat);
       //base = week month
     };
-    
-    getUnretrievedProducts();
-  }, [isStatisticsLoading]); 
 
-  
+    getUnretrievedProducts();
+  }, [isStatisticsLoading, filter]);
 
   return (
     <PageSection>
@@ -35,13 +33,13 @@ function SeeStatistics(props) {
             <>
               <Button
                 className='below im-button im-animate'
-                onClick={() => {setIsStatisticsLoading(true); setFilter("week");}}>
+                onClick={() => { setIsStatisticsLoading(true); setFilter("week"); }}>
                 Weekly
               </Button>
-              {" "}
+              
               <Button
                 className='below im-button im-animate'
-                onClick={() =>{setIsStatisticsLoading(true); setFilter("month")}}>
+                onClick={() => { setIsStatisticsLoading(true); setFilter("month") }}>
                 Monthly
               </Button>
               <Table responsive size='sm'>
@@ -57,8 +55,8 @@ function SeeStatistics(props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {statistics.map((d) => (
-                    <tr>
+                  {statistics.map((d, index) => (
+                    <tr key={index}>
                       <td></td>
                       <td>{d.name}</td>
                       <td>{d.quantity}</td>
@@ -73,7 +71,7 @@ function SeeStatistics(props) {
             </>
           ) : (
             <> No Statistics</>
-          )}{" "}
+          )}
         </>
       )}
     </PageSection>

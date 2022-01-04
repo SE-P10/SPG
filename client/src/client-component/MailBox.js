@@ -7,9 +7,9 @@ const MailBox = (props) => {
     const [message, setMessage] = useState('')
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
-    const handleShow = (id) => {
-        setMessage(props.mails.filter((m) => { return m.id === id })[0])
-        props.messageSeen(id);
+    const handleShow = (mail) => {
+        setMessage(mail)
+        props.messageSeen(mail.id);
         setShow(true);
     }
 
@@ -28,7 +28,7 @@ const MailBox = (props) => {
                     </thead>
                     <tbody >
                         {props.mails ? props.mails.map((m) => (
-                            <tr className={m.seen === 0 ? "bg-info text-white" : "bg-light text-dark"}>
+                            <tr className={m.seen === 0 ? "bg-info text-white" : "bg-light text-dark"} key={m.id}>
                                 <td>{m.id}</td>
                                 <td >info@SPG.com</td>
                                 <td >{props.user.email}</td>
@@ -36,7 +36,7 @@ const MailBox = (props) => {
                                 <td >
                                     <Button
                                         className='im-button im-animate'
-                                        onClick={() => handleShow(m.id)}>
+                                        onClick={() => handleShow(m)}>
                                         ReadMe!
                                     </Button>
                                 </td>
@@ -51,9 +51,9 @@ const MailBox = (props) => {
                 </Modal.Header>
                 <Modal.Body>{message ? message.message : ""}</Modal.Body>
                 <Modal.Footer>
-                    <Button 
-                     className='im-button im-animate'
-                     variant="secondary" onClick={handleClose}>
+                    <Button
+                        className='im-button im-animate'
+                        variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
                 </Modal.Footer>

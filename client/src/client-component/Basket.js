@@ -50,13 +50,13 @@ function Basket(props) {
       style={{ ...(props.style || {}) }}>
       <Card.Header as='h4' className='d-flex'>
         <div className=' mx-auto'>
-          Basket{" "}
+          Basket
           <div
             className='im-svg-icon'
             style={{ width: "30px", height: "30px" }}>
             {basketIcon}
           </div>
-        </div>{" "}
+        </div>
       </Card.Header>
       <Card.Body>
         <Card.Text>

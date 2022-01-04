@@ -91,14 +91,14 @@ const ProductCard = (props) => {
 
   useEffect(() => {
 
-    if (props.requestedQuantity == 0) {
+    if (props.requestedQuantity === 0) {
       setAvailableQuantity(product.quantity + requestedQuantity);
     }
 
     setRequestedQuantity(props.requestedQuantity);
     setRequestedQuantityTMP(props.requestedQuantity);
 
-  }, [props.requestedQuantity]);
+  }, [props.requestedQuantity, product.quantity]);
 
   if (!product || !product.id) {
     return (<></>)
@@ -106,7 +106,7 @@ const ProductCard = (props) => {
 
   const UpdateProductOrder = (value) => {
 
-    if (value < 0 || availableQuantity + value < 0) {
+    if (requestedQuantityTMP + value < 0 || availableQuantity + value < 0) {
       setErrorMessage("Quantity inserted is not valid!");
       return;
     }

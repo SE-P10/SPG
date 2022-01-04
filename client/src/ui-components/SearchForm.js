@@ -4,6 +4,7 @@ import { searchIcon } from "./Icons";
 import { SVGIcon } from "../ui-components/Page";
 
 function SearchForm(props) {
+
   const [value, setValue] = useState("");
 
   const onValueChange = (event) => {
@@ -18,12 +19,16 @@ function SearchForm(props) {
 
     props.setSearchValue(newVal);
     setValue(newVal);
-    props.onSearchSubmit();
+    if (typeof props.onSearchSubmit === 'function') {
+      props.onSearchSubmit();
+    }
   };
 
   const onSubmit = (event) => {
     event.preventDefault();
-    props.onSearchSubmit();
+    if (typeof props.onSearchSubmit === 'function') {
+      props.onSearchSubmit();
+    }
   };
 
   return (
@@ -32,7 +37,6 @@ function SearchForm(props) {
         <SVGIcon icon={searchIcon} width='22px' height='22px' style={{ margin: '10px 0 10px 20px' }} />
         <input
           className='im-search_input'
-          controlId='search'
           type='search'
           placeholder='Search'
           aria-label='Search for a product!'

@@ -45,13 +45,12 @@ function UpdateAvailability(props) {
         continue;
       }
 
-      let esito = await API.updateFarmerProducts(
+      await API.updateFarmerProducts(
         product.id,
         product.quantity,
         props.user.id,
         product.price
       );
-      if (!esito) console.log("error");
     }
     propsN.addMessage("Request sent correctly!");
 

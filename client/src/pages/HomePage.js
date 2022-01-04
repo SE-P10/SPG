@@ -10,7 +10,7 @@ function HomePage(props) {
       <Container className='justify-content-center fluid big-screen'>
         <Row className='below justify-content-center'>
           <Col className='justify-content-center' xs={7}>
-            <Carousel lassName='below'>
+            <Carousel>
               <Carousel.Item>
                 <img
                   className='d-block w-100 '
@@ -72,7 +72,7 @@ function HomePage(props) {
         <Row className='below'>
           <h1>Sustanaibility</h1>
           <p>
-            {" "}
+            
             Meeting our own needs without compromising the ability of future
             generations to meet their own needs.
           </p>

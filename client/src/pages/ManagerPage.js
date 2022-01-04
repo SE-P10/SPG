@@ -9,11 +9,11 @@ function ManagerPage(props) {
 
   const [actionM, setActionM] = useState(0);
 
-  const [stateM, setStateM] = useContext(GlobalState);
+  const [, setState] = useContext(GlobalState);
 
   useEffect(() => {
-    setStateM(stateM => ({ ...stateM, useHistoryBack: actionM !== 0 ? () => { setActionM(0) } : false }))
-  }, [actionM, setStateM]);
+    setState(oldState => ({ ...oldState, useHistoryBack: actionM !== 0 ? () => { setActionM(0) } : false }))
+  }, [actionM, setState]);
 
   return (
     <Page>
