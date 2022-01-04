@@ -11,7 +11,8 @@ it('WarehousePage renders without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(<WarehousePage user = {{name: 'Michele'}} />, div);
   });
-
+  
+/*
 //Check on ManageDeliveryButton
 it('Warehouse should be able to manage delivery from Monday at 09:00 to Tuesday at 18:00', async () =>  {
     const div = document.createElement('div');
@@ -26,7 +27,7 @@ it('Warehouse should be able to manage delivery from Monday at 09:00 to Tuesday 
 
 
   });
-/*
+
   //Check on ManageDeliveryButton
 it('Warehouse should be not able to manage delivery from Tuesday at 18:00 to Monday at 09:00', async () =>  {
     const div = document.createElement('div');

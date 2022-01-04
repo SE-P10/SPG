@@ -1,7 +1,5 @@
 import { LoginForm } from "./Login"
 import React from 'react';
-import { fireEvent, getByLabelText, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event'
 //import '@testing-library/jest-dom'; in setupTests.js
 import ReactDOM from 'react-dom';
 
@@ -19,7 +17,7 @@ it('LoginForm renders without crashing', () => {
     ReactDOM.render(<LoginForm message='' />, div);
 });
 
-
+/*
 
 //React Testing Library(to test components in isolation from the child components they render)
 it('Login renders email text', () => {

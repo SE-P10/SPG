@@ -1,6 +1,7 @@
 import { useState, React } from "react";
 import { Form, Button, Row, Container } from "react-bootstrap";
 import { plantIcon } from "../ui-components/Icons";
+import { ToastProvider } from 'react-toast-notifications';
 import { ToastNotification } from "../ui-components/ToastNotification";
 import { Page } from "../ui-components/Page";
 
@@ -33,17 +34,21 @@ function LoginForm(props) {
 
   return (
     <Page style={{ maxWidth: "400px" }}>
+      <ToastProvider>
       <ToastNotification
         variant='danger'
         onSet={closeErrorMessage}
         content={errorMessage}
       />
+      </ToastProvider>
       <Form className='im-container im-container--filled'>
+      <ToastProvider>
         <ToastNotification
           variant='error'
           onSet={props.closeMessage}
           message={props.message.msg}
         />
+        </ToastProvider>
         <Container className="over below">
           <Container className='mx-auto'>
             <Row className='align-center'>

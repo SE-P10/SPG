@@ -11,6 +11,7 @@ import {
 } from "../ui-components/Icons.js";
 import { ClientNotifications } from "../client-component/ClientNotifications";
 import { SVGIcon, Page, PageTitle, PageContainer, PageSeparator } from "../ui-components/Page";
+import { ToastProvider } from 'react-toast-notifications';
 import { ToastNotification } from "../ui-components/ToastNotification";
 import GlobalState from '../utility/GlobalState';
 import API from "../API";
@@ -47,7 +48,9 @@ function ClientPage(props) {
 
   return (
     <Page>
+      <ToastProvider>
       <ToastNotification variant='success' onSet={() => { setMessage("") }} message={message} />
+      </ToastProvider>
       {
         props.user.name ? (<>
           <PageSeparator hidden />

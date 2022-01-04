@@ -12,7 +12,7 @@ it('ShopEmployee renders without crashing', () => {
   });
 
 
-
+/*
 //React Testing Library(to test components in isolation from the child components they render)
 it('ShopEmployee renders buttons', () => {
     render(<ShopEmployee />);
@@ -37,3 +37,4 @@ it('Each button should be enabled', () => {
   expect(screen.getByText('Check Orders')).toBeEnabled();
 
 });
+*/

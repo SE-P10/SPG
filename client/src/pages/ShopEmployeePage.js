@@ -5,6 +5,7 @@ import { CheckOrders } from "../ui-components/CheckOrders";
 import { TopUpWallet } from "../shopEmployee-component/TopUpWallet.js";
 import { RegistrationForm } from "../ui-components/RegistrationForm";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
+import { ToastProvider } from 'react-toast-notifications';
 import { ToastNotification } from "../ui-components/ToastNotification";
 import {
   registerIcon,
@@ -39,7 +40,9 @@ function ShopEmployee(props) {
 
   return (
     <Page fullscreen>
+      <ToastProvider>
       <ToastNotification variant='success' onSet={() => { setMessage("") }} message={message} />
+      </ToastProvider>
       <>
         {
           (actionS === 0) ? (
