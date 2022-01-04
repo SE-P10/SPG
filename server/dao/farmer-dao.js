@@ -121,7 +121,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
   app.post("/api/farmer/products/update", isLoggedIn, async (req, res) => {
     if (!is_possible(req).farmer_estimation) {
       return res
-        .status(400)
+        .status(412)
         .json({ error: "Unable to update products, wrong time" });
     }
 
@@ -167,6 +167,9 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
   // POST /api/farmerOrders
   app.post("/api/farmerOrders", isLoggedIn, async (req, res) => {
+    if (!is_possible(req).farmer_confirm_orders) {
+      return res.status(412).json({ error: "Operation not allowed in this moment!" });
+    }
     try {
       await confirmFarmerProduct(
         req.user.id,

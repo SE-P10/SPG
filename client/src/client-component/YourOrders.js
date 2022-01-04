@@ -43,7 +43,7 @@ function YourOrders(props) {
       handleClose();
     } else if (openDeliveryForm && dateTime && address) {
       API.deliveryOrder(selectedOrderId, dateTime, address);
-      props.addMessage("Request sned correctly")
+      props.addMessage("Request sned correctly");
       handleClose();
     } else {
       setErrorMessage("Insert a valid date and/or address");
@@ -67,7 +67,6 @@ function YourOrders(props) {
   return (
     <>
       <PageSection>
-
         {isOrderListLoading ? (
           <Container className='below'>
             <Spinner animation='border' variant='success'></Spinner>
@@ -90,8 +89,8 @@ function YourOrders(props) {
                         <td> {order.price < 0.01 ? 0 : order.price}€</td>
                         <td> {order.status}</td>
                         {order.status === "booked" &&
-                          ((props.dow === "Saturday" && props.hour >= 9) ||
-                            (props.dow === "Sunday" && props.hour <= 23)) ? (
+                        ((props.dow === "Saturday" && props.hour >= 9) ||
+                          (props.dow === "Sunday" && props.hour < 23)) ? (
                           <td>
                             <Button
                               className='im-button im-animate'
@@ -102,9 +101,9 @@ function YourOrders(props) {
                         ) : (
                           <td></td>
                         )}
-                        {order.status === "confirmed" &&
-                          ((props.dow === "Monday" && props.hour >= 9) ||
-                            (props.dow === "Tuesday" && props.hour <= 18)) ? (
+                        {order.status === "booked" &&
+                        ((props.dow === "Saturday" && props.hour >= 9) ||
+                          (props.dow === "Sunday" && props.hour < 23)) ? (
                           <>
                             <td>
                               <Button
@@ -127,11 +126,12 @@ function YourOrders(props) {
               </>
             ) : (
               <>
-                <BlockTitle> No orders found! Purchaise a &nbsp;
+                <BlockTitle>
+                  {" "}
+                  No orders found! Purchaise a &nbsp;
                   <Button
                     className='im-button'
                     onClick={() => props.changeAction(2)}>
-
                     New Order
                   </Button>
                 </BlockTitle>
@@ -139,7 +139,6 @@ function YourOrders(props) {
             )}
           </>
         )}
-
       </PageSection>
 
       <Modal
@@ -147,8 +146,7 @@ function YourOrders(props) {
         onHide={handleClose}
         backdrop='static'
         keyboard={false}
-        className='im-modal'
-      >
+        className='im-modal'>
         <Modal.Header closeButton>
           <Modal.Title>
             <h3 className='font-color'>Home Delivery or Pick-Up?</h3>
@@ -160,7 +158,6 @@ function YourOrders(props) {
               variant='danger'
               onClose={() => setErrorMessage("")}
               dismissible>
-
               {errorMessage}
             </Alert>
           ) : (
@@ -188,9 +185,7 @@ function YourOrders(props) {
                   onClick={() => {
                     setOpenDeliveryForm(true);
                     setOpenPickupForm(false);
-                  }}>
-
-                </Form.Check>
+                  }}></Form.Check>
               </Row>
             </Form.Group>
 
@@ -232,7 +227,6 @@ function YourOrders(props) {
             ) : null}
 
             {openDeliveryForm ? (
-
               <Form>
                 <Row>
                   <Form.Group as={Col} controlId='formGridName'>
@@ -251,15 +245,19 @@ function YourOrders(props) {
                   </Form.Group>
                 </Row>
               </Form>
-
             ) : null}
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='danger' className='below im-button im-animate' onClick={handleClose}>
+          <Button
+            variant='danger'
+            className='below im-button im-animate'
+            onClick={handleClose}>
             Cancel
           </Button>
-          <Button className='below im-button im-animate' onClick={handleShippingInfo}>
+          <Button
+            className='below im-button im-animate'
+            onClick={handleShippingInfo}>
             Confirm
           </Button>
         </Modal.Footer>

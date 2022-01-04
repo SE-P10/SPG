@@ -25,11 +25,11 @@ function AboutPage(props) {
               contributes to development of a particular production, economical
               and social model.
             </p>
-            <Image
+            <Image style={{ width: '40rem' }}
               className='mx-auto below ph-au-f'
               src='./images/about1.jpeg'
             />
-            <Image
+            <Image  style={{ width: '40rem' }}
               className='mx-auto below ph-au-f'
               src='./images/about2.jpeg'
             />
@@ -55,7 +55,7 @@ function AboutPage(props) {
               of each product is entrusted to the sector expert Michele. Unity
               is strength and these young guys are proof of that.
             </p>
-            <Image src='./images/team.jpg' className='ph-au' />
+            <Image   src='./images/team.jpg' className='ph-au' />
           </Row>
         </Col>
       </Container>

@@ -156,9 +156,6 @@ footer {
   margin-left: 35% !important;
 }
 
-.thirdColor {
-  color: #009378 !important;
-}
 
 @media (max-width: 480px) {
   .button-disappear {
@@ -193,6 +190,9 @@ footer {
   font-size: 35px !important;
   font-weight: bold !important;
   color: darkcyan;
+  text-shadow: 2px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+}
+.carousel-text{
   text-shadow: 2px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
 }
 
@@ -342,7 +342,6 @@ footer {
 .im-search {
   margin: 10px auto;
   background: #fff;
-  margin: 0;
   display: flex;
   height: 3rem;
   border-radius: 2px;
@@ -554,6 +553,10 @@ footer {
   justify-content: center;
 }
 
+.react-toast-notifications__container{
+  z-index: 99999 !important;
+}
+
 @media (max-width: 768px) {
   .im-modal {
     width: 100%;
@@ -590,4 +593,5 @@ footer {
     margin: 0;
     padding: 20px 0;
   }
+
 }

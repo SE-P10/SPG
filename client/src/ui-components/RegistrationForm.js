@@ -6,14 +6,13 @@ import {
   Card,
   Modal,
 } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import API from "../API";
 import { ToastNotification } from "./ToastNotification";
 import { BlockTitle, PageSection } from "./Page";
 
 function RegistrationForm(props) {
-
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [username, setUsername] = useState("");
@@ -21,11 +20,8 @@ function RegistrationForm(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const history = useNavigate();
   const [show, setShow] = useState(false);
-
   const handleModalClose = () => setShow(false);
-
   const registrationSubmit = (event) => {
     event.preventDefault();
 
@@ -54,7 +50,7 @@ function RegistrationForm(props) {
           })
           .catch((e) => {
             console.log(e.error);
-            setErrorMessage(e.errorno);
+            setErrorMessage(e.error);
           });
       } else {
         //password mismatch
@@ -173,16 +169,16 @@ function RegistrationForm(props) {
 
           </Modal.Body>
           <Modal.Footer>
-            <Button className='below im-button im-animate' onClick={() => {
-              history.push("/login");
-            }}>
+          <Link to="/login" >
+             <Button className='below im-button im-animate' >
               YES
             </Button>
-            <Button className='below im-button im-animate' variant='danger' onClick={() => {
-              history.push("/");
-            }}>
+            </Link>
+            <Link to="/" >
+            <Button className='below im-button im-animate' variant='danger' >
               NO
             </Button>
+            </Link>
           </Modal.Footer>
         </Modal>
       </PageSection>

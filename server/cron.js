@@ -170,18 +170,23 @@ const cronClass = {
 
             if (this.isBetween(vtime.format("dd"), execFrom.day, execTo.day)) {
 
-              allowExec = true;
-
-              if (lastCallTime.format("dd") === vtime.format("dd") && execFrom.hour && execTo.hour) {
+              if (execFrom.hour && execTo.hour) {
 
                 if (vtime.format("dd") === execFrom.day) {
                   allowExec = vtime.hour() >= execFrom.hour;
                 }
+                else {
 
-                if (vtime.format("dd") === execTo.day) {
-                  allowExec = allowExec && vtime.hour() <= execTo.hour;
+                  if (vtime.format("dd") === execTo.day) {
+                    allowExec = vtime.hour() < execTo.hour || this.isBefore(lastCallTime.format("dd"), execTo.day);
+                  }
+                  else {
+                    allowExec = true;
+                  }
                 }
-
+              }
+              else {
+                allowExec = true;
               }
             }
             else {
@@ -194,7 +199,7 @@ const cronClass = {
           }
 
         } else {
-          allowExec = vtime.format("dd") === cron.interval || this.isBefore(lastCallTime.format("dd"), cron.interval);
+          allowExec = vtime.format("dd") === cron.interval || (this.isBefore(cron.interval, vtime.format("dd")) && this.isBefore(lastCallTime.format("dd"), cron.interval));
         }
 
         if (!allowExec) {

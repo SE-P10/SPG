@@ -9,7 +9,7 @@ function HomePage(props) {
     <Page>
       <Container className='justify-content-center fluid big-screen'>
         <Row className='below justify-content-center'>
-          <Col className='justify-content-center' xs={9}>
+          <Col className='justify-content-center' xs={7}>
             <Carousel lassName='below'>
               <Carousel.Item>
                 <img
@@ -17,7 +17,7 @@ function HomePage(props) {
                   src={process.env.PUBLIC_URL + "/images/carousel1.jpg"}
                   alt='First slide'
                 />
-                <Carousel.Caption>
+                <Carousel.Caption className="carousel-text">
                   <h1>SOLIDARITY</h1>
                   <p>A common shared interest</p>
                 </Carousel.Caption>
@@ -29,10 +29,9 @@ function HomePage(props) {
                   alt='Second slide'
                 />
 
-                <Carousel.Caption>
+                <Carousel.Caption className="carousel-text">
                   <h1>SUSTAINABILITY</h1>
-                  <p>
-                    {" "}
+                  <p >
                     Meeting our own needs without compromising the ability of
                     future generations to meet their own needs.
                   </p>
@@ -45,8 +44,9 @@ function HomePage(props) {
                   alt='Third slide'
                 />
 
-                <Carousel.Caption className='text-black'>
+                <Carousel.Caption className="carousel-text">
                   <h1>EQUITY</h1>
+                  
                   <p>
                     The fair treatment, access, opportunity, and advancement
                     for all people.
@@ -96,7 +96,7 @@ function HomePage(props) {
         </Row>
       </Container>
 
-      <Col className='d-flex justify-content-evenly below'>
+      <Col className='d-flex justify-content-evenly below over'>
         <Link to={"/about"} className="">
           <Button className='im-button im-animate'>
             About us

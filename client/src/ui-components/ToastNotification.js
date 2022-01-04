@@ -3,11 +3,10 @@ import React, { useEffect, useState } from 'react';
 
 export const ToastNotification = (props) => {
 
-  const onSet = props.onSet || (() => { });
+  const onSet = props.onSet || (() => { console.log("onSet") });
   const content = props.message || props.content || false;
-  //const title = props.title || 'SPG';
   const appearance = props.appearance || props.variant || 'error';
-  const onClose = props.onClose || (() => { });
+  const onClose = props.onClose || (() => {  console.log("onCloses") });
   const auothide = props.auothide || undefined;
 
   const [canNotify, setCanNotify] = useState(true)

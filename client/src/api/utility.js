@@ -85,11 +85,11 @@ async function parseResponse(response, type = "boolnum", falseRes = false) {
     return response;
 }
 
-const getNextWeekday = (time, weekday = 1, changeWeek = true) => {
+const getNextWeekday = (time, weekdayX = 1, changeWeek = true) => {
 
     const skip = changeWeek ? 7 : 0;
 
-    return time.add((((weekday + skip - time.weekday() + 1) % 7) || skip), 'day');
+    return time.add((((weekdayX + skip - time.weekday() + 1) % 7) || skip), 'day');
 }
 
 const dateIsBetween = (cDate, date1, date2) => {

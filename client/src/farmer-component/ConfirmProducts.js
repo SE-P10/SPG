@@ -42,6 +42,11 @@ function ConfirmProducts(props) {
   };
 
   const changeQ = (ev, p) => {
+    if (parseInt(ev.target.value) < 0 || parseInt(ev.target.value) > p.quantity  ){
+      console.log("error")
+      setErrorMessage("Quantity inserted is not valid!");
+      return;
+    }
     setConfirmedProductQ((old) =>
       old.map((o) => {
         if (o.id === p.id)
@@ -57,7 +62,6 @@ function ConfirmProducts(props) {
   };
 
   const getQuantityConfirmed = (id) => {
-    console.log(confirmedQ);
     if (!confirmedQ) return 0;
     if (!confirmedQ.some((e) => e.product === id)) return 0;
     return confirmedQ.find((e) => e.product === id).quantity;

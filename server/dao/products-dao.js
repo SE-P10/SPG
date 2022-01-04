@@ -1,5 +1,8 @@
 const db = require("./../db");
 const { check, validationResult } = require("express-validator");
+const { runQuerySQL, getQuerySQL, dynamicSQL } = require("../utility");
+const notificationDao = require("./notification-dao.js");
+
 
 const listProducts = () => {
   return new Promise((resolve, reject) => {
@@ -43,6 +46,13 @@ const updateBasketElement = (product, userId) => {
     });
   });
 };
+
+const listUnretrievedProducts = async () => {
+  const query = 
+    "SELECT (SELECT u1.email FROM users u1 WHERE u1.id = p.farmer_id) AS farmer, timestamp, op.quantity, p.id, u.email AS client, pd.name FROM orders o, order_product op, products p, products_details pd, users u WHERE status = 'deleted' AND o.id = order_id AND op.product_id = p.id AND p.details_id = pd.id AND o.user_id = u.id";
+  const products = await getQuerySQL(db, query, [], { farmer: '', timestamp: 0, quantity: 0, id: 0, client:'', name: '' }, [], false);
+  return products;
+} 
 
 const deleteAllBasket = (userId) => {
   return new Promise((resolve, reject) => {
@@ -128,4 +138,27 @@ exports.execApi = (app, passport, isLoggedIn, body) => {
       res.status(500).end();
     }
   });
+
+  // GET /api/products/unretrieved
+  app.get("/api/products/unretrieved", isLoggedIn, async (req, res) => {
+    try {console.log(req.user.role)
+      if(req.user.role != 4)
+        return res.status(401).end();
+      const Products = await listUnretrievedProducts();
+      res.json(Products);
+      res.status(200).end();
+    } catch (err) {
+      res.status(500).end();
+    }
+  });
+
 };
+
+exports.notifyUnretireverUsers = async () => {
+  const query = "SELECT u.id, COUNT(*) AS total FROM users u, orders o WHERE status = 'deleted' AND u.id = o.user_id GROUP BY u.id HAVING COUNT(*) >= 3";
+  const unretrievedCount = await getQuerySQL(db, query, [], {id: 0, total: 0}, null, false);
+  unretrievedCount.forEach(e => {
+    const message = "Pay attention, you missed the pickup of" + (e.total === 3 ? " three " : " four ") + "orders!"
+    notificationDao.addNotification(e.id, message, "Unretrieved orders", true);
+  })
+}

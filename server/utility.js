@@ -308,37 +308,45 @@ exports.sendMail = async (to, body, subject) => {
 
     return new Promise((resolve) => {
 
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 587,
-            auth: {
-                user: 'spgteamp10@gmail.com',
-                pass: 'SE2021SPGP10!',
-            },
-        });
+        try {
+            const transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                auth: {
+                    user: 'spgteamp10@gmail.com',
+                    pass: 'SE2021SPGP10!',
+                },
+                secure: false
+            });
 
-        let mailOptions = {
-            from: '"SPG-10" <spgteamp10@gmail.com>',
-            to: to,
-            subject: subject,
-        };
+            let mailOptions = {
+                from: '"SPG-10" <spgteamp10@gmail.com>',
+                to: to,
+                subject: subject,
+            };
 
-        mailOptions[this.containsHTML(body) ? 'html' : 'text'] = body;
+            mailOptions[this.containsHTML(body) ? 'html' : 'text'] = body;
 
-        transporter.verify().then(() => {
-            transporter.sendMail(mailOptions).then((info) => {
-                resolve(info);
+            transporter.verify().then(() => {
+                transporter.sendMail(mailOptions).then((info) => {
+                    resolve(info);
+                }).catch((e) => {
+                    console.log(e)
+                    resolve(false);
+                });
             }).catch((e) => {
                 console.log(e)
                 resolve(false);
             });
-        }).catch((e) => {
-            console.log(e)
-            resolve(false);
-        });
-    })
+        }
+        catch (c) {
+            console.log(c)
+        }
 
+    })
 }
+
+
 
 exports.debugLog = (...log) => {
 

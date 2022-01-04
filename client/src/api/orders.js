@@ -144,12 +144,13 @@ async function updateOrderProducts(orderID, products = []) {
     products = oldProducts.map((x) => {
       return { order_id: x.order_id, product_id: x.product_id, quantity: 0 };
     });
-  } else {
-    for (let i = 0; i < oldProducts.length; i++) {
+  } 
+  else {
+    for (let op of oldProducts) {
       let exist = false;
 
-      for (let j = 0; j < products.length; j++) {
-        if (products[j].product_id === oldProducts[i].product_id) {
+      for (let pro of products) {
+        if (pro.product_id === op.product_id) {
           exist = true;
           break;
         }
@@ -157,8 +158,8 @@ async function updateOrderProducts(orderID, products = []) {
 
       if (!exist) {
         products.push({
-          order_id: oldProducts[i].order_id,
-          product_id: oldProducts[i].product_id,
+          order_id: op.order_id,
+          product_id: op.product_id,
           quantity: 0,
         });
       }

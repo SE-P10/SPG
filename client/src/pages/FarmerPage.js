@@ -79,7 +79,9 @@ function FarmerPage(props) {
       <PageContainer>
         {actionF === 1 ? (
           <>
-            {(props.dow === "Friday" && props.hour > 18) ||
+            {(props.dow === "Wednesday" && props.hour >= 9) ||
+            props.dow === "Thursday" ||
+            props.dow === "Friday"  ||
               (props.dow === "Saturday" && props.hour < 9) ? (
               <UpdateAvailability
                 changeAction={changeAction}
@@ -87,7 +89,7 @@ function FarmerPage(props) {
                 user={props.user}
               />
             ) : (
-              "You can Update Availability from Friday at 18:00 to Saturday at 09:00"
+              "You can Update Availability from Wednesday at 09:00 to Saturday at 08:59"
             )}
           </>
         ) : null}
@@ -102,7 +104,7 @@ function FarmerPage(props) {
                 user={props.user}
               />
             ) : (
-              "You can Confirm Product between Sunday at 23:00 and Monday at 09:00"
+              "You can Confirm Product between Sunday at 23:00 and Monday at 08:59"
             )}
           </>
         ) : null}

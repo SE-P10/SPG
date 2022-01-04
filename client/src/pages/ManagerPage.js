@@ -1,19 +1,19 @@
 import { Row, Button, Col } from "react-bootstrap";
 import { useState, useEffect, useContext } from "react";
-import { deliveryIcon } from "../ui-components/Icons";
-import { ManageDelivery } from "../warehouse-component/ManageDelivery";
+import { checkIcon } from "../ui-components/Icons";
+import { SeeStatistics } from "../manager-component/SeeStatistics";
 import GlobalState from '../utility/GlobalState';
 import { SVGIcon, Page, PageTitle, PageContainer, PageSeparator } from "../ui-components/Page";
 
-function WarehousePage(props) {
+function ManagerPage(props) {
 
-  const [actionC, setActionC] = useState(0);
+  const [actionM, setActionM] = useState(0);
 
-  const [state, setState] = useContext(GlobalState);
+  const [stateM, setStateM] = useContext(GlobalState);
 
   useEffect(() => {
-    setState(state => ({ ...state, useHistoryBack: actionC !== 0 ? () => { setActionC(0) } : false }))
-  }, [actionC, setState]);
+    setStateM(stateM => ({ ...stateM, useHistoryBack: actionM !== 0 ? () => { setActionM(0) } : false }))
+  }, [actionM, setStateM]);
 
   return (
     <Page>
@@ -26,19 +26,19 @@ function WarehousePage(props) {
       )
         : null}
 
-      {actionC === 0 ? (
+      {actionM === 0 ? (
         <PageContainer>
           <Button
             className='im-button im-button-ticket im-animate'
             onClick={() => {
-              setActionC(1);
+              setActionM(1);
             }}>
             <Col className='justify-content-center'>
               <Row className='justify-content-center'>
-                <SVGIcon icon={deliveryIcon} width='80px' height='80px' />
+                <SVGIcon icon={checkIcon} width='80px' height='80px' />
               </Row>
               <Row className='justify-content-center'>
-                Manage Deliveries
+                See Statistics
               </Row>
             </Col>
           </Button>
@@ -47,14 +47,9 @@ function WarehousePage(props) {
         <></>
       )}
       <PageContainer>
-        {actionC === 1 ? (
+        {actionM === 1 ? (
           <>
-            {(props.dow === "Monday" && props.hour >= 9) ||
-              (props.dow === "Tuesday" && props.hour < 18) ? (
-              <ManageDelivery user={props.user} />
-            ) : (
-              "You can ack arrivals from Monday at 09:00 to Tuesday at 17:59"
-            )}
+              <SeeStatistics user={props.user} />
           </>
         ) : null}
       </PageContainer>
@@ -62,4 +57,4 @@ function WarehousePage(props) {
   );
 }
 
-export { WarehousePage };
+export { ManagerPage };

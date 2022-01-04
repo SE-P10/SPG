@@ -3,6 +3,9 @@
 |email|password|role|
 |---|---|---|
 paolobianchi@demo.it | password | farmer
-mariorossi@demo.it | password | client
-john.doe@demo01.it | password | shop employee
+Calvin@spg.it | password | farmer
+miriam@spg.it | password | client
+giovanni@spg.it | password | client
+mario@spg.it | password | shop employee
 warehouse1@demo.it | password | warehouse manager 
+admin@demo.it | password | manager
