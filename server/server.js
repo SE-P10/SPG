@@ -312,6 +312,7 @@ app.delete("/api/test/restoretables/", async function (req, res) {
     await testDao.restoreOrderProductTable();
     await testDao.restoreOrdersTable();
     await testDao.restoreBasketTable();
+    await testDao.restoreFarmerPayments();
 
     res.status(201).end();
   } catch (err) {

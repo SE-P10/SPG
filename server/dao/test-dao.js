@@ -61,6 +61,19 @@ exports.restoreUsersTable = async () => {
     })
   }
 
+  exports.restoreFarmerPayments = async () => {
+
+    return new Promise((resolve,reject) => {
+      const sql = "DELETE FROM farmer_payments";
+      db.run(sql,[],function(err){
+        if (err) {
+          reject(err);return;
+        }
+        resolve()
+      })
+    })
+  }
+
 
   exports.restoreBasketTable = async () => {
 

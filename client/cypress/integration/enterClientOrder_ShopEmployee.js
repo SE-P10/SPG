@@ -305,7 +305,7 @@ describe('enterNewClientOrder_ShopEmployee', () => {
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
 
     })
-    it('a shopEmployee should be able to add a new order of a client (by entering product without quantity) ', () => {
+    it('a shopEmployee should not be able to add a new order of a client (by entering product without quantity) ', () => {
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
         cy.findByRole('button', { name: /set/i }).click()
         //Next month
