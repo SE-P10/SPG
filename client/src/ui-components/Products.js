@@ -59,14 +59,16 @@ const ProductsList = (props) => {
             }
           }
 
-          return (<ProductCard
-            key={p.id}
-            product={p}
-            setErrorMessage={setErrorMessage}
-            updateRequestedQuantity={updateRequestedQuantity}
-            requestedQuantity={requestedQuantity}
-            justShow={justShow}
-          />)
+          return (
+            <ProductCard
+              key={p.id}
+              product={p}
+              setErrorMessage={setErrorMessage}
+              updateRequestedQuantity={updateRequestedQuantity}
+              requestedQuantity={requestedQuantity}
+              justShow={justShow}
+            />
+          )
         }
         )}
 
@@ -81,6 +83,7 @@ const ProductCard = (props) => {
 
   const [requestedQuantity, setRequestedQuantity] = useState(props.requestedQuantity);
   const [requestedQuantityTMP, setRequestedQuantityTMP] = useState(props.requestedQuantity);
+  const [availableQuantity, setAvailableQuantity] = useState(product.quantity);
 
   const updateRequestedQuantity = props.updateRequestedQuantity;
 
@@ -88,8 +91,12 @@ const ProductCard = (props) => {
 
   useEffect(() => {
 
+    if (props.requestedQuantity == 0) {
+      setAvailableQuantity(product.quantity + requestedQuantity);
+    }
+
     setRequestedQuantity(props.requestedQuantity);
-    setRequestedQuantityTMP(props.requestedQuantity)
+    setRequestedQuantityTMP(props.requestedQuantity);
 
   }, [props.requestedQuantity]);
 
@@ -99,20 +106,21 @@ const ProductCard = (props) => {
 
   const UpdateProductOrder = (value) => {
 
-    if (requestedQuantityTMP + value < 0) {
+    if (value < 0 || availableQuantity + value < 0) {
       setErrorMessage("Quantity inserted is not valid!");
       return;
     }
 
-    if (requestedQuantityTMP + value > product.quantity) {
+    if (value > availableQuantity) {
       setErrorMessage("Quantity inserted is too much!");
       return;
     }
 
     setRequestedQuantityTMP(requestedQuantityTMP + value);
+
+    setAvailableQuantity(old => old - value);
   }
 
-  const availableQuantity = product.quantity - requestedQuantityTMP;
   const availablePercent = availableQuantity <= 0 ? 0 : availableQuantity / product.estimated_quantity * 100;
 
   return (
@@ -154,6 +162,7 @@ const ProductCard = (props) => {
 
                       if (value === '') {
                         setRequestedQuantityTMP('');
+                        setAvailableQuantity(product.quantity + requestedQuantity);
                         return;
                       }
 
@@ -170,6 +179,7 @@ const ProductCard = (props) => {
                       const parsed = Number.parseFloat(value);
 
                       if (!isNaN(parsed)) {
+                        setAvailableQuantity(product.quantity + requestedQuantity - parsed);
                         setRequestedQuantityTMP(parsed);
                       }
                       else {
