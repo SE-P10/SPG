@@ -40,6 +40,7 @@ exports.getUser = async (userID_eMail, password = false) => {
     name: "",
     role: "client",
     email: "",
+    phone: 0
   };
 
   if (password) {
@@ -103,9 +104,9 @@ const addClient = async (newClient) => {
       else if (rows.length) reject("Email already in use!");
       else {
         const sql1 =
-          "INSERT into users VALUES((SELECT MAX(id)+1 FROM users), ?, ?, ?, 0, ?, ?, 0, 0)";
+          "INSERT into users(email, password, username, role, name, surname, approved, telegram_id, phone) VALUES(?, ?, ?, 0, ?, ?, 0, 0, ?)";
         const sql2 =
-          "INSERT into users_meta VALUES((SELECT MAX(id)+1 FROM users_meta), (SELECT MAX(id) FROM users), 'wallet', 0)";
+          "INSERT into users_meta(user_id, meta_key, meta_value) VALUES((SELECT MAX(id) FROM users), 'wallet', 0)";
         bcrypt.hash(newClient.password, 10).then((passwordHash) => {
           db.run(
             sql1,
@@ -115,6 +116,7 @@ const addClient = async (newClient) => {
               newClient.username,
               newClient.name,
               newClient.surname,
+              newClient.phone
             ],
             (err) => {
               if (err) reject(err);

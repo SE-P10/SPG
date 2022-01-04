@@ -42,7 +42,7 @@ async function deleteUser(email) {
   });
 }
 
-// The parameter is an object like email: {"new.user@demo.it", password: "password", username: "username", name: "name", surname: "surname"}
+// The parameter is an object like email: {"new.user@demo.it", password: "password", username: "username", name: "name", surname: "surname", phone: 12345}
 async function addClient(newClient) {
     return new Promise((resolve, reject) => {
 		fetch('/api/newClient', {
