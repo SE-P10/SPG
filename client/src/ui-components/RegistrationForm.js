@@ -17,6 +17,7 @@ function RegistrationForm(props) {
   const [surname, setSurname] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [phone,setPhone] = useState("")
   const [errorMessage, setErrorMessage] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,7 +26,7 @@ function RegistrationForm(props) {
   const registrationSubmit = (event) => {
     event.preventDefault();
 
-    if (name && surname && username && email && password && confirmPassword) {
+    if (name && surname && username && email && password && confirmPassword && phone) {
       if (password === confirmPassword) {
         //Need to call the API to insert into the DB
         //alert("Inserimento riuscito con successo");
@@ -35,6 +36,7 @@ function RegistrationForm(props) {
           username: username,
           name: name,
           surname: surname,
+          phone: phone,
         };
         API.addClient(newClient)
           .then((e) => {
@@ -118,6 +120,19 @@ function RegistrationForm(props) {
                     value={email}
                     onChange={(ev) => setEmail(ev.target.value)}
                     placeholder='Enter Email'
+                  />
+                </Form.Group>
+              </Row>
+
+              <Row>
+              <Form.Group as={Col} sm>
+                  <Form.Label>Phone Number</Form.Label>
+                  <Form.Control
+                    required
+                    type='number'
+                    value={phone}
+                    onChange={(ev) => setPhone(ev.target.value)}
+                    placeholder='Enter Phone Number'
                   />
                 </Form.Group>
               </Row>
