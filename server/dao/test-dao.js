@@ -87,4 +87,32 @@ exports.restoreUsersTable = async () => {
       })
     })
   }
+
+  exports.restoreOptionsTable = async () => {
+
+    return new Promise((resolve,reject) => {
+      const string = '{"bfde77f1aa9c6f991c832003131db96a":{"name":"confrimOrders","interval":{"from":{"day":"Mo","hour":9},"to":{"day":"We","hour":9}},"callback":null,"time":1643802078},"40add83788a3eaf3b8ffb8ebb58f4851":{"name":"deletePendingOrders","interval":{"from":{"day":"Mo","hour":23},"to":{"day":"Sa","hour":9}},"callback":null,"time":1643802114},"0f7c3691065eb6ded201cf77fb5ceed0":{"name":"unretrivedOrders","interval":"Fr","callback":null,"time":1643369910},"ef46220c8f30bba962155418103af18a":{"name":"telegramBOT","interval":"Sa","callback":null,"time":1643459986}}'
+      //const string = 'Ciao'
+      const sql = 'UPDATE options SET value = ? WHERE id = 1';
+      db.run(sql,[string],function(err){
+        if (err) {
+          reject(err);return;
+        }
+        console.log('Ueueee')
+        resolve()
+      })
+    })
+  }
   
+  exports.restoreNotificationsTable = async () => {
+
+    return new Promise((resolve,reject) => {
+      const sql = "DELETE FROM notifications";
+      db.run(sql,[],function(err){
+        if (err) {
+          reject(err);return;
+        }
+        resolve()
+      })
+    })
+  }
