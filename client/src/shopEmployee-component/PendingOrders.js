@@ -10,6 +10,7 @@ function PendingOrders(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [mailContactInfo, setMailContactInfo] = useState("");
   const [show, setShow] = useState(false);
+  const [userTmp, setUserTmp] = useState("")
 
   const handleClose = () => setShow(false);
   useEffect(() => {
@@ -30,6 +31,17 @@ function PendingOrders(props) {
 
     addNot.then((r) => console.log(r));
   };
+
+  const openUserInfo = async (email) =>{
+    setMailContactInfo(email);
+    API.getUserInfo(email)
+    .then((obj) => {
+    setUserTmp(obj)
+    console.log(obj)
+    setShow(true)}).catch((e)=>console.log(e))
+
+    
+  }
 
   return (
     <PageSection>
@@ -68,7 +80,7 @@ function PendingOrders(props) {
                     <td> {order.price}</td>
                     <td> {order.status}</td>
                     <td>
-                      <Button className='im-button' onClick={() => { setMailContactInfo(order.user.email); setShow(true) }}>
+                      <Button className='im-button' onClick={() => openUserInfo(order.user.email)}>
                         Contact info
                       </Button>
                     </td>
@@ -89,7 +101,7 @@ function PendingOrders(props) {
         <Modal.Header closeButton>
           <Modal.Title>User info</Modal.Title>
         </Modal.Header>
-        <Modal.Body> <p>User mail : {mailContactInfo} </p> <p>Number : +39 123456789 </p></Modal.Body>
+        <Modal.Body> <p>User mail : {mailContactInfo} </p> <p>Number : +39 {userTmp.phone} {} </p></Modal.Body>
         <Modal.Footer>
           <Button className='im-button' onClick={handleClose}>
             Close
