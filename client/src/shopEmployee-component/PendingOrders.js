@@ -87,7 +87,7 @@ function PendingOrders(props) {
                     <td>
                       <Button
                         className='im-button'
-                        onClick={() => sendNotification(order.user_id)}>
+                        onClick={() => {sendNotification(order.user_id); props.addMessage("reminder sent")}}>
                         Send a reminder
                       </Button>
                     </td>

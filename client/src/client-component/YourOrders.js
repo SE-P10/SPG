@@ -40,16 +40,19 @@ function YourOrders(props) {
 
     if (openPickupForm && dateTime) {
       API.deliveryOrder(selectedOrderId, dateTime);
+      setOpenDeliveryForm(false);
+      setOpenPickupForm(false);
       handleClose();
     } else if (openDeliveryForm && dateTime && address) {
       API.deliveryOrder(selectedOrderId, dateTime, address);
+      setOpenDeliveryForm(false);
+      setOpenPickupForm(false);
       props.addMessage("Request sned correctly");
       handleClose();
     } else {
       setErrorMessage("Insert a valid date and/or address");
     }
-    setOpenDeliveryForm(false);
-    setOpenPickupForm(false);
+    
   };
 
   useEffect(() => {

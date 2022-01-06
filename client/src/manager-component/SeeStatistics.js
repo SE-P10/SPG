@@ -3,6 +3,55 @@ import { useState, useEffect } from "react";
 import API from "../API";
 import { BlockTitle, PageSection } from "../ui-components/Page";
 
+function getMonth(num) {
+  console.log(num)
+  let v ;
+  switch(num){
+      case 0:
+      v =  "Jan"
+      break;
+      case 1:
+        v =  "Fab"
+        break;
+      case 2:
+        v =  "Mar"
+        break;
+      case 3:
+        v =  "Apr"
+        break;
+      case 4:
+        v =  "May"
+        break;
+      case 5:
+        v =  "Jun"
+        break;
+      case 6:
+        v =  "Jul"
+        break;
+      case 7:
+        v =  "Aug"
+        break;
+      case 8:
+        v =  "Sep"
+        break;
+      case 9:
+        v =  "Oct"
+        break;
+      case 10:
+        v =  "Nov"
+        break;
+      case 11:
+        v =  "Dec"
+        break;
+      
+  }
+  return v;
+
+}
+
+
+
+
 function SeeStatistics(props) {
   const [statistics, setStatistics] = useState([]);
   const [filter, setFilter] = useState("month");
@@ -61,7 +110,7 @@ function SeeStatistics(props) {
                       <td>{d.name}</td>
                       <td>{d.quantity}</td>
                       <td>{d.farmer}</td>
-                      {filter === "week" ? <td>{d.week}</td> : <td>{d.month}</td>}
+                      {filter === "week" ? <td>{d.week}</td> : <td>{getMonth(d.month)}</td>}
                       <td>{d.year}</td>
                       <td></td>
                     </tr>
