@@ -3,7 +3,7 @@ const db = require("../db");
 
 exports.restoreUsersTable = async () => {
     return new Promise((resolve, reject) => {
-      const sql1 = "DELETE FROM users WHERE id > 5 ";
+      const sql1 = "DELETE FROM users WHERE id > 6 ";
       db.all(sql1, [], (err) => {
         if (err) reject(err);
         else resolve(this.lastID);
@@ -13,7 +13,7 @@ exports.restoreUsersTable = async () => {
 
   exports.restoreUsersMetaTable = async () => {
     return new Promise((resolve, reject) => {
-      const sql1 = "DELETE FROM users_meta WHERE user_id > 5 AND meta_key = 'wallet'";
+      const sql1 = "DELETE FROM users_meta WHERE user_id > 6 AND meta_key = 'wallet'";
       db.all(sql1, [], (err) => {
         if (err) reject(err);
         else resolve(this.lastID);
@@ -37,7 +37,7 @@ exports.restoreUsersTable = async () => {
   exports.restoreOrdersTable = async () => {
 
     return new Promise((resolve,reject) => {
-      const sql = "DELETE FROM orders WHERE user_id > 5";
+      const sql = "DELETE FROM orders WHERE user_id > 6";
       db.run(sql,[],function(err){
         if (err) {
           reject(err);return;
@@ -51,7 +51,7 @@ exports.restoreUsersTable = async () => {
   exports.restoreOrderProductTable = async () => {
 
     return new Promise((resolve,reject) => {
-      const sql = "DELETE FROM order_product WHERE order_id in ( SELECT op.order_id FROM order_product AS op LEFT JOIN orders AS o ON op.order_id = o.id WHERE o.user_id > 5 )";
+      const sql = "DELETE FROM order_product WHERE order_id in ( SELECT op.order_id FROM order_product AS op LEFT JOIN orders AS o ON op.order_id = o.id WHERE o.user_id > 6 )";
       db.run(sql,[],function(err){
         if (err) {
           reject(err);return;
