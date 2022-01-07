@@ -106,81 +106,82 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-if (ENABLE_CRON) {
-  app.use(virtualCron.run(() => {
+const cronScheudules = () => {
 
-    // reset all cron jobs on server restart
-    virtualCron.unscheduleAll();
+  // reset all cron jobs on server restart
+  virtualCron.unscheduleAll();
 
-    virtualCron.schedule("confrimOrders",
-      {
-        from: { day: virtualCron.schedules.MONDAY, hour: 9 },
-        to: { day: virtualCron.schedules.WEDNESDAY, hour: 9 },
-      },
-      (virtualTime, lastExecutionTime, ...args) => {
+  virtualCron.schedule("confrimOrders",
+    {
+      from: { day: virtualCron.schedules.MONDAY, hour: 9 },
+      to: { day: virtualCron.schedules.WEDNESDAY, hour: 9 },
+    },
+    (virtualTime, lastExecutionTime, ...args) => {
 
-          ordersDao.confrimOrders(virtualTime);
-      },
-      [],
-      false
-    );
-
-
-    virtualCron.schedule("deletePendingOrders",
-      {
-        from: { day: virtualCron.schedules.MONDAY, hour: 23 },
-        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-      },
-      (virtualTime, lastExecutionTime, ...args) => {
-        ordersDao.deletePendingOrders();
-      },
-      [],
-      false
-    );
-
-    /**
-    * delete unretrived orders
-    */
-    virtualCron.schedule("unretrivedOrders",
-      virtualCron.schedules.FRIDAY,
-      (virtualTime, lastExecutionTime, ...args) => {
-
-        let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
-
-        if (days > 0 || (days === 0 && virtualTime.hour() >= 23)) {
-
-          (async () => {
-
-            await runQuerySQL(db, "UPDATE orders SET status = 'deleted' WHERE status = 'confirmed' AND timestamp <= ? ", [virtualTime.startOf('week').unix()]);
-            await productsDao.notifyUnretireverUsers();
-
-          })();
-
-        }
-      },
-      [],
-      false
-    );
-
-    /**
-     * Telegram Cron Job
-    */
-    virtualCron.schedule("telegramBOT",
-      virtualCron.schedules.SATURDAY,
-      (virtualTime, lastExecutionTime, ...args) => {
-
-        let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
-
-        if (days > 0 || (days === 0 && virtualTime.hour() > 9)) {
-          notifyTelegram();
-        }
-
-      },
-      [],
-      false
-    );
-  })
+      ordersDao.confrimOrders(virtualTime);
+    },
+    [],
+    false
   );
+
+
+  virtualCron.schedule("deletePendingOrders",
+    {
+      from: { day: virtualCron.schedules.MONDAY, hour: 23 },
+      to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+    },
+    (virtualTime, lastExecutionTime, ...args) => {
+      ordersDao.deletePendingOrders();
+    },
+    [],
+    false
+  );
+
+  /**
+  * delete unretrived orders
+  */
+  virtualCron.schedule("unretrivedOrders",
+    virtualCron.schedules.FRIDAY,
+    (virtualTime, lastExecutionTime, ...args) => {
+
+      let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+      if (days > 0 || (days === 0 && virtualTime.hour() >= 23)) {
+
+        (async () => {
+
+          await runQuerySQL(db, "UPDATE orders SET status = 'deleted' WHERE status = 'confirmed' AND timestamp <= ? ", [virtualTime.startOf('week').unix()]);
+          await productsDao.notifyUnretireverUsers();
+
+        })();
+
+      }
+    },
+    [],
+    false
+  );
+
+  /**
+   * Telegram Cron Job
+  */
+  virtualCron.schedule("telegramBOT",
+    virtualCron.schedules.SATURDAY,
+    (virtualTime, lastExecutionTime, ...args) => {
+
+      let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+      if (days > 0 || (days === 0 && virtualTime.hour() > 9)) {
+        notifyTelegram();
+      }
+
+    },
+    [],
+    false
+  );
+};
+
+if (ENABLE_CRON) {
+  app.use(virtualCron.run(cronScheudules));
 }
 
 // API implemented in DAO modules
@@ -192,6 +193,11 @@ farmerDao.execApi(app, passport, isLoggedIn);
 walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
 warehouseDao.execApi(app, passport, isLoggedIn);
+
+app.get("/api/debug/resetCron", function (req, res) {
+  virtualCron.reschedule(cronScheudules);
+  res.status(200).end();
+});
 
 //PUT /api/debug/time/
 app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {

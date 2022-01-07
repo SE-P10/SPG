@@ -250,6 +250,7 @@ const cronClass = {
   },
 
   removeHook: function (hook = null) {
+
     if (hook) {
 
       if (!(hook in this.activity)) {
@@ -343,12 +344,13 @@ const cronClass = {
  * External interface for cronjobs simulator
  */
 exports.virtualCron = {
+
   schedules: { ...cronClass.weekdays, ...cronClass.times },
 
-  init: async function (callback = null) {
+  init: async function (callback = undefined) {
     await cronClass.load();
 
-    if (callback) {
+    if (callback && typeof callback === 'function') {
       callback();
     }
 
@@ -399,6 +401,16 @@ exports.virtualCron = {
 
   debug: () => {
     cronClass.dump();
+  },
+
+  reschedule: async (callback = undefined) => {
+    cronClass.removeHook();
+
+    if (callback && typeof callback === 'function') {
+      callback();
+    }
+
+    await cronClass.save();
   },
 
   calcDateDiff: (date1, date2) => {
