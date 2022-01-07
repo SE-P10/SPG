@@ -1,4 +1,4 @@
-describe('signUp_Client', () => {
+describe('signUpClient_unregisteredUser', () => {
 
     before(() => {
 
@@ -198,7 +198,7 @@ describe('signUp_Client', () => {
         //Popup is shown
         cy.findByText(/registration was successful/i).should('exist')
         //redirect to login
-        cy.get('.modal-footer > .btn-primary').click()
+        cy.get('[href="/login"] > .below').click({ force: true })
 
         cy.on("url:changed", (newUrl) => {
             expect(newUrl).to.contain("login")

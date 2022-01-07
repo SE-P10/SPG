@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.44% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/18</span>
+                <span class='fraction'>12/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.5% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>14/16</span>
+                <span class='fraction'>12/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">40% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/5</span>
+                <span class='fraction'>2/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>16/16</span>
+                <span class='fraction'>12/16</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -101,37 +101,37 @@
 <a name='L36'></a><a href='#L36'>36</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">222x</span>
-<span class="cline-any cline-yes">222x</span>
-<span class="cline-any cline-yes">222x</span>
-<span class="cline-any cline-yes">222x</span>
-<span class="cline-any cline-yes">222x</span>
+<span class="cline-any cline-yes">660x</span>
+<span class="cline-any cline-yes">660x</span>
+<span class="cline-any cline-yes">660x</span>
+<span class="cline-any cline-yes">660x</span>
+<span class="cline-any cline-yes">660x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">222x</span>
+<span class="cline-any cline-yes">660x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">222x</span>
+<span class="cline-any cline-yes">660x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">222x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">660x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">222x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">111x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">660x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">330x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">222x</span>
+<span class="cline-any cline-yes">660x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useToasts } from 'react-toast-notifications';
 import React, { useEffect, useState } from 'react';
@@ -141,7 +141,7 @@ export const ToastNotification = (props) =&gt; {
   const onSet = props.onSet || (<span class="fstat-no" title="function not covered" ><span class="branch-1 cbranch-no" title="branch not covered" >()</span> =&gt; { <span class="cstat-no" title="statement not covered" >console.log("onSet") </span>})</span>;
   const content = props.message || props.content || false;
   const appearance = props.appearance || props.variant || <span class="branch-2 cbranch-no" title="branch not covered" >'error';</span>
-  const onClose = props.onClose || (() =&gt; {  console.log("onCloses") });
+  const onClose = props.onClose || (<span class="fstat-no" title="function not covered" >()</span> =&gt; {  <span class="cstat-no" title="statement not covered" >console.log("onCloses") </span>});
   const auothide = props.auothide || undefined;
 &nbsp;
   const [canNotify, setCanNotify] = useState(true)
@@ -156,13 +156,13 @@ export const ToastNotification = (props) =&gt; {
 &nbsp;
   useEffect(() =&gt; {
 &nbsp;
-    if (content &amp;&amp; canNotify) {
-      addToast(content, toastData, () =&gt; {
-        onSet();
-        setCanNotify(true);
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (content &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >canNotify)</span> {
+<span class="cstat-no" title="statement not covered" >      addToast(content, toastData, <span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        onSet();</span>
+<span class="cstat-no" title="statement not covered" >        setCanNotify(true);</span>
       });
 &nbsp;
-      setCanNotify(false);
+<span class="cstat-no" title="statement not covered" >      setCanNotify(false);</span>
     }
   }, [canNotify, content, toastData])
 &nbsp;
@@ -175,7 +175,7 @@ export const ToastNotification = (props) =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener">istanbul</a>
-                at Fri Jan 07 2022 11:11:17 GMT+0100 (Ora standard dell’Europa centrale)
+                at Fri Jan 07 2022 16:50:15 GMT+0100 (Ora standard dell’Europa centrale)
             </div>
         </div>
         <script src="../../prettify.js"></script>

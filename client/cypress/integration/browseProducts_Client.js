@@ -1,4 +1,4 @@
-describe('browseProducts_ShopEmployee', () => {
+describe('browseProducts_Client', () => {
 
     before(() => {
         // runs before each test in the block
@@ -20,10 +20,8 @@ describe('browseProducts_ShopEmployee', () => {
         //Popup is shown
         cy.findByText(/registration was successful/i).should('exist')
         //redirect to login
-        //NON FUNZIONA
-        //cy.findByRole('button', { name: /yes/i }).click({ force: true });
+        cy.findByRole('button', { name: /yes/i }).click({ force: true });
         //Torno al menu utente
-        cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
 
 
@@ -42,7 +40,7 @@ describe('browseProducts_ShopEmployee', () => {
         //Set the date
         cy.get('.d-flex > .btn').click()
         //Add new zucchinies
-        cy.get(':nth-child(13) > :nth-child(4) > #CheckBoxItem').click()
+        cy.get(':nth-child(11) > :nth-child(4) > #CheckBoxItem').click()
         cy.get('[value="100"]').clear().type("150")
         cy.get('[value="0.9"]').clear().type("0.9")
         //Click on first update
@@ -113,24 +111,24 @@ describe('browseProducts_ShopEmployee', () => {
             .should('exist')
         cy.get('.text-end').should('include.text', '150')
     })
-    /*
-        it('a client should be able to see the products everyday', () => {
-            //User views a products list 
-            for (let i = 15; i <= 21; i++) {
-                //Change day of the week
-                cy.findByRole('button', { name: /set/i }).click()
-                if (i === 15) {
-                    //Next month
-                    cy.get('.react-calendar__navigation__next-button').click()
-                }
-                cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
-                cy.get('.d-flex > .btn').click()
-                //Check anyday
-                for (let i = 1; i <= 50; i++) {
-                    cy.get(':nth-child(' + i + ') > .card-body')
-                        .should('exist')
-                }
+
+    it('a client should be able to see the products everyday', () => {
+        //User views a products list 
+        for (let i = 8; i <= 14; i++) {
+            //Change day of the week
+            cy.findByRole('button', { name: /set/i }).click()
+            if (i === 8) {
+                //Next month
+                cy.get('.react-calendar__navigation__next-button').click()
             }
-        })
-        */
+            cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
+            cy.get('.d-flex > .btn').click()
+            //Check anyday
+            for (let i = 1; i <= 46; i++) {
+                cy.get(':nth-child(' + i + ') > .card-body')
+                    .should('exist')
+            }
+        }
+    })
+
 })

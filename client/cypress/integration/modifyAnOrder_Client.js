@@ -1,4 +1,4 @@
-describe('newOrderByClient', () => {
+describe('modifyAnOrder_Client', () => {
 
     //TODO -> Clean every information added during the tests
 
@@ -79,7 +79,7 @@ describe('newOrderByClient', () => {
             .type(10, { force: true })
         cy.get('.container > .im-grid > :nth-child(1)')
             .findByRole('button', { name: /add/i }).click({ force: true });
-        //Aggiungo 10 mele
+        //Aggiungo 10 melon
         cy.get('.container > .im-grid > :nth-child(2)')
             .findByRole('textbox')
             .type(10, { force: true })
@@ -88,7 +88,7 @@ describe('newOrderByClient', () => {
         //click issue order button
         //Check on basket
         cy.findByText(/10 Banana/i).should('exist')
-        cy.findByText(/10 Apple/i).should('exist')
+        cy.findByText(/10 Melon/i).should('exist')
         cy.findByRole('button', { name: /issue order/i }).click({ force: true })
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'Request sent correctly')
@@ -156,7 +156,7 @@ describe('newOrderByClient', () => {
         //Check on basket
         cy.wait(5000)
         cy.findByText(/10 Banana/i).should('exist')
-        cy.findByText(/10 Apple/i).should('exist')
+        cy.findByText(/10 Melon/i).should('exist')
 
         //Aggiungo 5 banane
         cy.get('.container > .im-grid > :nth-child(1)')
@@ -165,7 +165,7 @@ describe('newOrderByClient', () => {
             .type(15, { force: true })
         cy.get('.container > .im-grid > :nth-child(1)')
             .findByRole('button', { name: /modify/i }).click({ force: true });
-        //Aggiungo 5 mele
+        //Aggiungo 5 melon
         cy.get('.container > .im-grid > :nth-child(2)')
             .findByRole('textbox')
             .clear({ force: true })
@@ -175,7 +175,7 @@ describe('newOrderByClient', () => {
         //click issue order button
         //Check on basket
         cy.findByText(/15 Banana/i).should('exist')
-        cy.findByText(/15 Apple/i).should('exist')
+        cy.findByText(/15 Melon/i).should('exist')
         cy.findByRole('button', { name: /issue order/i }).click({ force: true })
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'Request sent correctly')
@@ -208,7 +208,7 @@ describe('newOrderByClient', () => {
         //Check on basket
         cy.wait(5000)
         cy.findByText(/15 Banana/i).should('exist')
-        cy.findByText(/15 Apple/i).should('exist')
+        cy.findByText(/15 Melon/i).should('exist')
 
         //Clear the basket
         cy.get('.im-basket > .card-body > .card-text > :nth-child(1)')
@@ -248,7 +248,7 @@ describe('newOrderByClient', () => {
         //Check on basket
         cy.wait(5000)
         cy.findByText(/15 Banana/i).should('exist')
-        cy.findByText(/15 Apple/i).should('exist')
+        cy.findByText(/15 Melon/i).should('exist')
 
         //Aggiungo 1000 banane
         cy.get('.container > .im-grid > :nth-child(1)')
@@ -289,7 +289,7 @@ describe('newOrderByClient', () => {
         //Check on basket
         cy.wait(5000)
         cy.findByText(/15 Banana/i).should('exist')
-        cy.findByText(/15 Apple/i).should('exist')
+        cy.findByText(/15 Melon/i).should('exist')
 
         //Aggiungo -10 banane
         cy.get('.container > .im-grid > :nth-child(1)')
@@ -325,7 +325,7 @@ describe('newOrderByClient', () => {
         //Check on basket
         cy.wait(5000)
         cy.findByText(/15 Banana/i).should('exist')
-        cy.findByText(/15 Apple/i).should('exist')
+        cy.findByText(/15 Melon/i).should('exist')
 
         //Pulisco il campo
         cy.get('.container > .im-grid > :nth-child(1)')
@@ -364,7 +364,7 @@ describe('newOrderByClient', () => {
         //Check on basket
         cy.wait(5000)
         cy.findByText(/15 Banana/i).should('exist')
-        cy.findByText(/15 Apple/i).should('exist')
+        cy.findByText(/15 Melon/i).should('exist')
 
         //Pulisco il campo
         cy.get('.container > .im-grid > :nth-child(1)')
@@ -452,36 +452,22 @@ describe('newOrderByClient', () => {
             .findByText(/chicken/i)
             .should('exist')
 
-        //Remove the filter
-        cy.get(':nth-child(3) > .im-button').click()
+               //Remove the filter
+               cy.get('.container > :nth-child(3) > .im-button').click({ force: true })
 
-        //FARMER FILTER
-        //Click filter button
-        cy.get(':nth-child(3) > .below').click()
-        cy.get(':nth-child(3) > .im-input').select('PaoloBianchi')
-        //Checking the component exist
-
-        for (let i = 1; i <= 50; i++) {
-            cy.get('.im-grid > :nth-child(' + i + ')')
-                .should('exist')
-        }
-
-        //Remove the filter
-        cy.get(':nth-child(3) > .im-button').click()
-
-        //FARMER & TYPE FILTER
-        //DEVO AGGIUNGERE UN CHICKEN DI UN ALTRO FARMER
-        /*cy.get(':nth-child(4) > .below').click()
-        cy.get('.below > .form-control').select('Chicken')
-        cy.get(':nth-child(5) > .form-control').select('PaoloBianchi')
-        //Checking the length of the list(Should be just 1)
- 
-        cy.get('.list > :nth-child(1)')
-            .should('exist')
-        cy.get('.list > :nth-child(2)')
-            .should('not.exist')
- 
-        cy.get('.list > :nth-child(1) > :nth-child(2)').should('include.text', 'Chicken')*/
+               //FARMER FILTER
+               //Click filter button
+               cy.get(':nth-child(3) > .below').click({ force: true })
+               cy.get(':nth-child(4) > .im-input').select('Paolo Bianchi', { force: true })
+               //Checking the component exist
+       
+               for (let i = 1; i <= 46; i++) {
+                   cy.get('.im-grid > :nth-child(' + i + ')')
+                       .should('exist')
+               }
+       
+               //Remove the filter
+               cy.get('.container > :nth-child(3) > .im-button').click({ force: true })
 
     })
 
@@ -510,74 +496,58 @@ describe('newOrderByClient', () => {
         //Check on basket
         cy.wait(5000)
         cy.findByText(/15 Banana/i).should('exist')
-        cy.findByText(/15 Apple/i).should('exist')
+        cy.findByText(/15 Melon/i).should('exist')
 
-        //Check the quantity remained
+        //Check the quantity remained -> 90/100 !!!!!!!!!!!
         cy.get(':nth-child(1) > .card-body > .card-text > :nth-child(3) > .text-end')
             .should("include.text", "90 left of 100 available")
         cy.get(':nth-child(2) > .card-body > .card-text > :nth-child(3) > .text-end')
             .should("include.text", "90 left of 100 available")
     })
-/*
-    //You can purchase an order from Saturday at 09:00 and Sunday at 23:00
-    //Parto dalle 10 perchè alle 9 e mezza ho gia fatto un ordine (Problema con il crono)
-    it('a client should be able to modify an order from Saturday at 9:00 to Sunday at 23:00', () => {
+
+
+    it('a client should be able to modify an order from Saturday at 9:00 to Sunday at 22:59', () => {
 
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
         cy.findByRole('button', { name: /set/i }).click()
         //Next month
         cy.get('.react-calendar__navigation__next-button').click()
         cy.get('.react-calendar__month-view__days > :nth-child(13)').click()
+        cy.get('#setHour').click().type("09:05")
         //Set the date
         cy.get('.d-flex > .btn').click()
+        //Check the shipping info is avaialable
+        //Set the date
+        //cy.get('.container-fluid > .d-flex > .btn').click()
+        //Check the order is visible
+        cy.wait(1500)
+        cy.get('.over > :nth-child(1)').should('exist').should('include.text', '105€')
+        cy.get('.over > :nth-child(2)').should('exist').should('include.text', 'booked')
+        cy.get('.over > :nth-child(3)')
+            .findByRole('button')
+            .should('exist')
+        cy.get('.over > :nth-child(4)').should('exist')
 
-        let time = "10"
-        let hour = "0"
-
-        for (let i = 0; i < 70; i++) {
-
-            //Check on every day of the week
-            cy.findByRole('button', { name: /set/i }).click()
-
-            if (i % 2 === 0)
-                cy.get('#setHour').click().type(time + ":00")
-            else {
-                cy.get('#setHour').click().type(time + ":30")
-
-                //Solo ogni ora faccio il seguente controllo (cioè devo passare all'ora succesiva)
-                if (i >= 21) {
-                    if (i === 21) {
-                        hour = "0"
-                        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
-                    }
-                    if (hour.length === 1) {
-                        time = "0" + hour
-                    } else {
-                        time = hour
-                    }
-
-                    hour = String(parseInt(hour) + 1)
-                }
-                else
-                    time = String(parseInt(time) + 1)
-
-            }
-
-            //Set the date
-            cy.get('.container-fluid > .d-flex > .btn').click()
-            //Check the order is visible
-            cy.wait(1500)
-            cy.get('.over > :nth-child(1)').should('exist').should('include.text', '105€')
-            cy.get('.over > :nth-child(2)').should('exist').should('include.text', 'booked')
-            cy.get('.over > :nth-child(3)')
-                .findByRole('button')
-                .should('exist')
-            cy.get('.over > :nth-child(4)').should('exist')
-        }
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
+        cy.get('#setHour').click().type("22:55")
+        //Set the date
+        cy.get('.container-fluid > .d-flex > .btn')
+        //Set the date
+        //cy.get('.container-fluid > .d-flex > .btn').click()
+        //Check the order is visible
+        cy.wait(1500)
+        cy.get('.over > :nth-child(1)').should('exist').should('include.text', '105€')
+        cy.get('.over > :nth-child(2)').should('exist').should('include.text', 'booked')
+        cy.get('.over > :nth-child(3)')
+            .findByRole('button')
+            .should('exist')
+        cy.get('.over > :nth-child(4)').should('exist')
 
     })
 
-    //You can purchase an order from Saturday at 09:00 and Sunday at 23:00
+    //Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00
     it('a client should not be able to modify an order from Sunday at 23:00 to Saturday at 9:00', () => {
 
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
@@ -585,15 +555,16 @@ describe('newOrderByClient', () => {
         //Next month
         cy.get('.react-calendar__navigation__next-button').click()
         cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
-        cy.get('#setHour').click().type("23:30")
+        cy.get('#setHour').click().type("23:05")
         //Set the date
         cy.get('.d-flex > .btn').click()
+        cy.wait(1500)
         cy.get('.over > :nth-child(1)').should('exist').should('include.text', '105€')
-            cy.get('.over > :nth-child(2)').should('exist').should('include.text', 'booked')
-            cy.get('.over > :nth-child(3)')
-                .findByRole('button')
-                .should('not.exist')
-            cy.get('.over > :nth-child(4)').should('exist')
+        cy.get('.over > :nth-child(2)').should('exist').should('include.text', 'booked')
+        cy.get('.over > :nth-child(3)')
+            .findByRole('button')
+            .should('not.exist')
+        cy.get('.over > :nth-child(4)').should('exist')
 
         for (let i = 16; i < 21; i++) {
 
@@ -602,11 +573,14 @@ describe('newOrderByClient', () => {
             cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
 
             if (i === 20) {
-                cy.get('#setHour').click().type("08:30")
+                cy.get('#setHour').click().type("08:55")
             }
 
             //Set the date
             cy.get('.container-fluid > .d-flex > .btn').click()
+            //Check it's not possible to update any product
+            //Set the date
+            //cy.get('.container-fluid > .d-flex > .btn').click()
             //Check the order is not visible
             cy.wait(1500)
             cy.get('.over > :nth-child(1)').should('exist').should('include.text', '105€')
@@ -618,5 +592,7 @@ describe('newOrderByClient', () => {
         }
 
     })
-    */
+
+
+
 })

@@ -1,4 +1,4 @@
-describe('confirmOrderByFarmer', () => {
+describe('confirmOrder_Farmer', () => {
 
     before(() => {
         // runs before each test in the block
@@ -56,7 +56,7 @@ describe('confirmOrderByFarmer', () => {
         //click issue order button
         //Check on basket
         cy.findByText(/10 Banana/i).should('exist')
-        cy.findByText(/10 Apple/i).should('exist')
+        cy.findByText(/10 Melon/i).should('exist')
         cy.findByRole('button', { name: /issue order/i }).click({ force: true })
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'Request sent correctly')
@@ -82,7 +82,7 @@ describe('confirmOrderByFarmer', () => {
         //Vado sulla conferma prodotti
         cy.findByRole('button', { name: /confirm products/i }).click({ force: true })
     })
-/*
+
     //You can Confirm Product between Sunday at 23:00 and Monday at 09:00
     it('a farmer should be able to confirm an order from Sunday at 23:00 and Monday at 09:00', () => {
 
@@ -99,35 +99,14 @@ describe('confirmOrderByFarmer', () => {
         //Change date for managing updating
         cy.findByRole('button', { name: /set/i }).click()
         //Next month
-        cy.get('#setHour').click().type("23:30")
+        cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
+        cy.get('#setHour').click().type("08:55")
         //Set the date
         cy.get('.d-flex > .btn').click()
+        //cy.get('.container-fluid > .d-flex > .btn').click()
+        //Check it's not possible to update any product
         cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('not.exist')
 
-        let time = "00"
-        for (let i = 0; i < 17; i++) {
-
-            //Check on every day of the week
-            cy.findByRole('button', { name: /set/i }).click()
-
-            if (i === 0) {
-                cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
-            }
-
-
-            if (i % 2 === 0)
-                cy.get('#setHour').click().type(time + ":00")
-            else {
-                cy.get('#setHour').click().type(time + ":30")
-                time = "0" + String(parseInt(time) + 1)
-
-            }
-
-            //Set the date
-            cy.get('.container-fluid > .d-flex > .btn').click()
-            //Check it's not possible to update any product
-            cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('not.exist')
-        }
 
     })
 
@@ -142,8 +121,8 @@ describe('confirmOrderByFarmer', () => {
         //Set the date
         cy.get('.d-flex > .btn').click()
 
-        //CHECK APPLE
-        cy.get('tbody > :nth-child(1) > :nth-child(1)').should('include.text', "Apple")
+        //CHECK Melon
+        cy.get('tbody > :nth-child(1) > :nth-child(1)').should('include.text', "Melon")
         cy.get('tbody > :nth-child(1) > :nth-child(2)').should('include.text', "10")
         //CHECK BANANA
         cy.get('tbody > :nth-child(2) > :nth-child(1)').should('include.text', "Banana")
@@ -160,7 +139,7 @@ describe('confirmOrderByFarmer', () => {
         //Set the date
         cy.get('.d-flex > .btn').click()
 
-        //5/10 Apple confirmed
+        //5/10 Melon confirmed
         cy.get(':nth-child(1) > :nth-child(4) > .im-input').clear({ force: true }).type('-5', { force: true })
         //Confirm a part of the order
         cy.findByRole('button', { name: /confirm/i }).click({ force: true })
@@ -182,7 +161,7 @@ describe('confirmOrderByFarmer', () => {
         //Set the date
         cy.get('.d-flex > .btn').click()
 
-        //5/10 Apple confirmed
+        //5/10 Melon confirmed
         cy.get(':nth-child(1) > :nth-child(4) > .im-input').clear({ force: true })
         //Confirm a part of the order
         cy.findByRole('button', { name: /confirm/i }).click({ force: true })
@@ -203,7 +182,7 @@ describe('confirmOrderByFarmer', () => {
         //Set the date
         cy.get('.d-flex > .btn').click()
 
-        //5/10 Apple confirmed
+        //5/10 Melon confirmed
         cy.get(':nth-child(1) > :nth-child(4) > .im-input').clear({ force: true }).type('ciao', { force: true })
         //Confirm a part of the order
         cy.findByRole('button', { name: /confirm/i }).click({ force: true })
@@ -213,7 +192,7 @@ describe('confirmOrderByFarmer', () => {
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
 
     })
-*/
+
     it("a farmer should be able to confirm an order", () => {
         //Change date for managing updating
         cy.findByRole('button', { name: /set/i }).click()
@@ -231,38 +210,38 @@ describe('confirmOrderByFarmer', () => {
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
 
     })
-/*
-    //UNA VOLTA ANDATI AVANTI IL CRONO ALTERA I DATI, NON TESTARE DI NUOVO TORNANDO DIETRO NEL TEMPO
-    it('a farmer should be not able to confirm an order from Monday at 09:00 to Sunday at 23:00', () => {
-
-        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
-        cy.findByRole('button', { name: /set/i }).click()
-        //Next month
-        cy.get('.react-calendar__navigation__next-button').click()
-        cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
-        cy.get('#setHour').click().type("09:00")
-        //Set the date
-        cy.get('.d-flex > .btn').click()
-        cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
-
-        for (let i = 16; i < 22; i++) {
-
-            //Check on every day of the week
+    
+        //UNA VOLTA ANDATI AVANTI IL CRONO ALTERA I DATI, NON TESTARE DI NUOVO TORNANDO DIETRO NEL TEMPO
+        it('a farmer should be not able to confirm an order from Monday at 09:00 to Sunday at 23:00', () => {
+    
+            //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
             cy.findByRole('button', { name: /set/i }).click()
-            cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
-
-            if (i === 21) {
-                cy.get('#setHour').click().type("22:30")
-            }
-
+            //Next month
+            cy.get('.react-calendar__navigation__next-button').click()
+            cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
+            cy.get('#setHour').click().type("09:05")
             //Set the date
-            cy.get('.container-fluid > .d-flex > .btn').click()
-            //Check it's not possible to update any product
+            cy.get('.d-flex > .btn').click()
             cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
-        }
-
-    })
-*/
+    
+            for (let i = 16; i < 22; i++) {
+    
+                //Check on every day of the week
+                cy.findByRole('button', { name: /set/i }).click()
+                cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
+    
+                if (i === 21) {
+                    cy.get('#setHour').click().type("22:55")
+                }
+    
+                //Set the date
+                cy.get('.container-fluid > .d-flex > .btn').click()
+                //Check it's not possible to update any product
+                cy.findByText('You can Confirm Product between Sunday at 23:00 and Monday at 09:00').should('exist')
+            }
+    
+        })
+    
 
     it("a farmer should be not able to view an order performed by a client the last week", () => {
         //Change date for managing updating
@@ -274,8 +253,8 @@ describe('confirmOrderByFarmer', () => {
         //Set the date
         cy.get('.d-flex > .btn').click()
         cy.wait(1500)
-        //CHECK APPLE and BANANA do not exist
-        cy.findByText('Apple').should("not.exist")
+        //CHECK Melon and BANANA do not exist
+        cy.findByText('Melon').should("not.exist")
         cy.findByText('Banana').should("not.exist")
 
     })

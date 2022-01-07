@@ -1,4 +1,4 @@
-describe('pendingOrders', () => {
+describe('handOutOrders_ShopEmployee', () => {
 
     before(() => {
         //runs once before all tests in the block -> Add new Client

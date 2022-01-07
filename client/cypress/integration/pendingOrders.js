@@ -337,7 +337,7 @@ describe('pendingOrders', () => {
 
 
         //CHECK NOTIFICATIONS ON Michele'S PROFILE
-        /*
+        
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login as a ShopEmployee
@@ -360,16 +360,9 @@ describe('pendingOrders', () => {
         cy.get('.modal-footer')
             .findByRole('button')
             .click()
-        //Check pending order email
-        cy.get(':nth-child(2) > :nth-child(5) > .im-button').click({ force: true })
-        cy.get('.modal-title').should('include.text', 'pending order')
-        cy.get('.modal-body').should('include.text', "Your order code").should('include.text', "is pending, top up your wallet!")
-        cy.get('.modal-footer')
-            .findByRole('button')
-            .click()
         //Check the amount to recharge is correct
         cy.get('.justify-content-center > :nth-child(7)').should('include.text', '0')
-        */
+        
 
     })
 

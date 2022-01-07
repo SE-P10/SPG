@@ -63,7 +63,7 @@ describe('schedulePickUporHomeDelivery_Client', () => {
         //click issue order button
         //Check on basket
         cy.findByText(/10 Banana/i).should('exist')
-        cy.findByText(/10 Apple/i).should('exist')
+        cy.findByText(/10 Melon/i).should('exist')
         cy.findByRole('button', { name: /issue order/i }).click({ force: true })
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'Request sent correctly')
@@ -208,98 +208,61 @@ describe('schedulePickUporHomeDelivery_Client', () => {
         cy.findByRole('button', { name: /cancel/i }).click();
     })
 
-/*
-TODO -> CHECK IF YOU CAN SELECT SHIPPING INFO ONLY WHEN YOU CAN CHANGE YOUR ORDER
-    //You can ack arrivals from Monday at 09:00 to Tuesday at 18:00
-    it('a client should be able to modify an order from Monday at 09:00 to Tuesday at 18:00', () => {
+    //Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00 (The same for shipping info)
 
-        //Change date for managing updating
-        cy.findByRole('button', { name: /set/i }).click()
-        //Next month
-        cy.get('.react-calendar__navigation__next-button').click()
-        cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
-        //Set the date
-        cy.get('.d-flex > .btn').click()
-
-        let time = "09"
-        let hour = "0"
-
-        for (let i = 0; i < 60; i++) {
-
-            //Check on every day of the week
-            cy.findByRole('button', { name: /set/i }).click()
-
-            if (i % 2 === 0)
-                cy.get('#setHour').click().type(time + ":00")
-            else {
-                cy.get('#setHour').click().type(time + ":30")
-
-                //Solo ogni ora faccio il seguente controllo (cioè devo passare all'ora succesiva)
-                if (i >= 23) {
-                    if (i === 23) {
-                        hour = "0"
-                        cy.get('.react-calendar__month-view__days > :nth-child(16)').click()
-                    }
-                    if (hour.length === 1) {
-                        time = "0" + hour
-                    } else {
-                        time = hour
-                    }
-
-                    hour = String(parseInt(hour) + 1)
-                }
-                else
-                    time = String(parseInt(time) + 1)
-
-            }
-
-            cy.wait(2000)
-            //Set the date
-            cy.get('.container-fluid > .d-flex > .btn').click()
-            //Check the order is visible
-            cy.wait(1500)
-            cy.get('.over > :nth-child(1)').should('exist').should('include.text', '105€')
-            cy.get('.over > :nth-child(2)').should('exist').should('include.text', 'booked')
-            cy.get('.over > :nth-child(3)')
-                .findByRole('button')
-                .should('exist')
-            cy.get('.over > :nth-child(4)').should('exist')
-        }
-
-    })
-
-    // from Tuesday at 18:00 to Monday at 09:00
-    it('a warehouse employee should not be able to ack an order from Tuesday at 18:00 to Monday at 09:00', () => {
+    it('a client should be able to schedule pickUp or DeliveryHome from Saturday at 9:00 to Sunday at 23:00', () => {
 
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
         cy.findByRole('button', { name: /set/i }).click()
         //Next month
         cy.get('.react-calendar__navigation__next-button').click()
-        cy.get('.react-calendar__month-view__days > :nth-child(16)').click()
-        cy.get('#setHour').click().type("18:00")
+        cy.get('.react-calendar__month-view__days > :nth-child(13)').click()
+        cy.get('#setHour').click().type("09:05")
         //Set the date
         cy.get('.d-flex > .btn').click()
+        //Check the shipping info is avaialable
+        cy.findByRole('button', { name: /shipping info/i }).should('exist');
 
-        cy.findByText("You can ack arrivals from Monday at 09:00 to Tuesday at 18:00").should('exist')
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
+        cy.get('#setHour').click().type("22:55")
+        //Set the date
+        cy.get('.d-flex > .btn').click()
+        //Check the shipping info is avaialable
+        cy.findByRole('button', { name: /shipping info/i }).should('exist');
+        
+    })
 
+    //Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00
+    it('a client should not be able to schedule pickUp or DeliveryHome from Sunday at 23:00 to Saturday at 9:00', () => {
 
-        for (let i = 17; i < 23; i++) {
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        //Next month
+        cy.get('.react-calendar__navigation__next-button').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
+        cy.get('#setHour').click().type("23:05")
+        //Set the date
+        cy.get('.d-flex > .btn').click()
+        cy.findByRole('button', { name: /shipping info/i }).should('not.exist');
+
+        for (let i = 16; i < 21; i++) {
 
             //Check on every day of the week
             cy.findByRole('button', { name: /set/i }).click()
             cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
 
-            if (i === 22) {
-                cy.get('#setHour').click().type("08:30")
+            if (i === 20) {
+                cy.get('#setHour').click().type("08:55")
             }
 
             //Set the date
             cy.get('.container-fluid > .d-flex > .btn').click()
-            //Check the order is not visible
-            cy.findByText("You can ack arrivals from Monday at 09:00 to Tuesday at 18:00").should('exist')
-
+            //Check it's not possible to update any product
+            cy.findByRole('button', { name: /shipping info/i }).should('not.exist');
         }
 
     })
-        */
+        
 })

@@ -26,7 +26,7 @@ describe('newOrderByClient', () => {
         cy.get('#setHour').click().type("19:00")
         cy.get('.d-flex > .btn').click()
         //remove some zucchinies
-        cy.get(':nth-child(13) > :nth-child(4) > #CheckBoxItem').click()
+        cy.get(':nth-child(11) > :nth-child(4) > #CheckBoxItem').click()
         cy.get('[value="100"]').clear().type("20")
         cy.get('[value="0.9"]').clear().type("0.9")
         //Click on first update
@@ -109,8 +109,9 @@ describe('newOrderByClient', () => {
 
     })
 
-    //You can purchase an order from Saturday at 09:00 and Sunday at 23:00
-/*
+    //You can purchase an order from Saturday at 09:00 and Sunday at 22:59
+    //Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00 (The same for shipping info)
+
     it('a client should be able to add an order from Saturday at 9:00 to Sunday at 23:00', () => {
 
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
@@ -118,51 +119,24 @@ describe('newOrderByClient', () => {
         //Next month
         cy.get('.react-calendar__navigation__next-button').click()
         cy.get('.react-calendar__month-view__days > :nth-child(13)').click()
+        cy.get('#setHour').click().type("09:05")
         //Set the date
         cy.get('.d-flex > .btn').click()
+        //Check the shipping info is avaialable
+        cy.findByText('You can purchase an order from Saturday at 09:00 and Sunday at 22:59').should('not.exist')
 
-        let time = "09"
-        let hour = "0"
-
-        for (let i = 0; i < 72; i++) {
-
-            //Check on every day of the week
-            cy.findByRole('button', { name: /set/i }).click()
-
-
-            if (i % 2 === 0)
-                cy.get('#setHour').click().type(time + ":00")
-            else {
-                cy.get('#setHour').click().type(time + ":30")
-
-                //Solo ogni ora faccio il seguente controllo
-                if (i >= 23) {
-                    if (i === 23) {
-                        hour = "0"
-                        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
-                    }
-                    if (hour.length === 1) {
-                        time = "0" + hour
-                    } else {
-                        time = hour
-                    }
-
-                    hour = String(parseInt(hour) + 1)
-                }
-                else
-                    time = String(parseInt(time) + 1)
-
-            }
-
-            //Set the date
-            cy.get('.container-fluid > .d-flex > .btn').click()
-            //Check it's not possible to update any product
-            cy.findByText('You can purchase an order from Saturday at 09:00 and Sunday at 23:00').should('not.exist')
-        }
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        cy.get('.react-calendar__month-view__days > :nth-child(14)').click()
+        cy.get('#setHour').click().type("22:55")
+        //Set the date
+        cy.get('.container-fluid > .d-flex > .btn')
+        //Check the shipping info is avaialable
+        cy.findByText('You can purchase an order from Saturday at 09:00 and Sunday at 22:59').should('not.exist')
 
     })
 
-    //You can purchase an order from Saturday at 09:00 and Sunday at 23:00
+    //Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00
     it('a client should not be able to add an order from Sunday at 23:00 to Saturday at 9:00', () => {
 
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
@@ -170,10 +144,10 @@ describe('newOrderByClient', () => {
         //Next month
         cy.get('.react-calendar__navigation__next-button').click()
         cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
-        cy.get('#setHour').click().type("23:30")
+        cy.get('#setHour').click().type("23:05")
         //Set the date
         cy.get('.d-flex > .btn').click()
-        cy.findByText('You can purchase an order from Saturday at 09:00 and Sunday at 23:00').should('exist')
+        cy.findByText('You can purchase an order from Saturday at 09:00 and Sunday at 22:59').should('exist')
 
         for (let i = 16; i < 21; i++) {
 
@@ -182,17 +156,17 @@ describe('newOrderByClient', () => {
             cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
 
             if (i === 20) {
-                cy.get('#setHour').click().type("08:30")
+                cy.get('#setHour').click().type("08:55")
             }
 
             //Set the date
             cy.get('.container-fluid > .d-flex > .btn').click()
             //Check it's not possible to update any product
-            cy.findByText('You can purchase an order from Saturday at 09:00 and Sunday at 23:00').should('exist')
+            cy.findByText('You can purchase an order from Saturday at 09:00 and Sunday at 22:59').should('exist')
         }
 
     })
-*/
+
     it('a client should not be able to add a new order (by entering no products) ', () => {
 
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
@@ -392,21 +366,21 @@ describe('newOrderByClient', () => {
             .should('exist')
 
         //Remove the filter
-        cy.get(':nth-child(4) > .im-button').click()
+        cy.get('.container > :nth-child(3) > .im-button').click({ force: true })
 
         //FARMER FILTER
         //Click filter button
-        cy.get(':nth-child(3) > .below').click()
-        cy.get(':nth-child(3) > .im-input').select('PaoloBianchi')
+        cy.get(':nth-child(3) > .below').click({ force: true })
+        cy.get(':nth-child(4) > .im-input').select('Paolo Bianchi', { force: true })
         //Checking the component exist
 
-        for (let i = 1; i <= 50; i++) {
+        for (let i = 1; i <= 46; i++) {
             cy.get('.im-grid > :nth-child(' + i + ')')
                 .should('exist')
         }
 
         //Remove the filter
-        cy.get(':nth-child(4) > .im-button').click()
+        cy.get('.container > :nth-child(3) > .im-button').click({ force: true })
 
         //FARMER & TYPE FILTER
         //DEVO AGGIUNGERE UN CHICKEN DI UN ALTRO FARMER
@@ -452,7 +426,7 @@ describe('newOrderByClient', () => {
         //click issue order button
         //Check on basket
         cy.findByText(/10 Banana/i).should('exist')
-        cy.findByText(/10 Apple/i).should('exist')
+        cy.findByText(/10 Melon/i).should('exist')
         cy.findByRole('button', { name: /issue order/i }).click({ force: true })
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'Request sent correctly')
@@ -489,7 +463,7 @@ describe('newOrderByClient', () => {
         //Set the date
         cy.get('.d-flex > .btn').click()
 
-        cy.get(':nth-child(13) > .card-body > .card-text > :nth-child(3) > .text-end')
+        cy.get(':nth-child(11) > .card-body > .card-text > :nth-child(3) > .text-end')
             .should("include.text", "20 left of 20 available")
     })
 

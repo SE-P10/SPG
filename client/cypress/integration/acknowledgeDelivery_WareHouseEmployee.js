@@ -1,4 +1,4 @@
-describe('acknowledgeDeliveryByWarehouseEmployee', () => {
+describe('acknowledgeDelivery_WarehouseEmployee', () => {
 
     //TODO -> Clean every information added during the tests
 
@@ -8,10 +8,10 @@ describe('acknowledgeDeliveryByWarehouseEmployee', () => {
 
         //runs once before all tests in the block -> 
 
-        //AS a shopEmployee -> Add new Client
+        //AS a warehouse manager -> Add new Client
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
-        //Login as a shopEmployee
+        //Login as a warehouse manager
         cy.findByRole('textbox', { name: /email/i }).type('mario@spg.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
@@ -28,7 +28,7 @@ describe('acknowledgeDeliveryByWarehouseEmployee', () => {
         cy.findByRole('button', { name: /register/i }).click({ force: true });
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
 
-        //As a shopEmployee -> Make a new order
+        //As a warehouse manager -> Make a new order
         cy.findByRole('button', { name: /new order/i }).click({ force: true });
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
         cy.findByRole('button', { name: /set/i }).click()
@@ -55,7 +55,7 @@ describe('acknowledgeDeliveryByWarehouseEmployee', () => {
         //click issue order button
         //Check on basket
         cy.findByText(/10 Banana/i).should('exist')
-        cy.findByText(/10 Apple/i).should('exist')
+        cy.findByText(/10 Melon/i).should('exist')
         cy.findByRole('button', { name: /issue order/i }).click({ force: true })
         //Check alert 
         cy.get('.react-toast-notifications__toast__content').should('include.text', 'Request sent correctly')
@@ -109,98 +109,81 @@ describe('acknowledgeDeliveryByWarehouseEmployee', () => {
 
     })
 
-/*
-    //You can ack arrivals from Monday at 09:00 to Tuesday at 18:00
-    //Parto dalle 10 perchè alle 9 e mezza ho gia fatto un ordine (Problema con il crono)
-    it('a client should be able to modify an order from Monday at 09:00 to Tuesday at 18:00', () => {
-
-        //Change date for managing updating
+    it('a warehouse manager should be able to ack a Farmer order', () => {
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
         cy.findByRole('button', { name: /set/i }).click()
         //Next month
         cy.get('.react-calendar__navigation__next-button').click()
         cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
+        cy.get('#setHour').click().type("09:05")
         //Set the date
         cy.get('.d-flex > .btn').click()
+        cy.wait(2500)
 
-        let time = "09"
-        let hour = "0"
-
-        for (let i = 0; i < 60; i++) {
-
-            //Check on every day of the week
-            cy.findByRole('button', { name: /set/i }).click()
-
-            if (i % 2 === 0)
-                cy.get('#setHour').click().type(time + ":00")
-            else {
-                cy.get('#setHour').click().type(time + ":30")
-
-                //Solo ogni ora faccio il seguente controllo (cioè devo passare all'ora succesiva)
-                if (i >= 23) {
-                    if (i === 23) {
-                        hour = "0"
-                        cy.get('.react-calendar__month-view__days > :nth-child(16)').click()
-                    }
-                    if (hour.length === 1) {
-                        time = "0" + hour
-                    } else {
-                        time = hour
-                    }
-
-                    hour = String(parseInt(hour) + 1)
-                }
-                else
-                    time = String(parseInt(time) + 1)
-
-            }
-
-            cy.wait(2000)
-            //Set the date
-            cy.get('.container-fluid > .d-flex > .btn').click()
-            //Check the order is visible
-            cy.wait(1500)
-            cy.get('.over > :nth-child(1)').should('exist').should('include.text', '105€')
-            cy.get('.over > :nth-child(2)').should('exist').should('include.text', 'booked')
-            cy.get('.over > :nth-child(3)')
-                .findByRole('button')
-                .should('exist')
-            cy.get('.over > :nth-child(4)').should('exist')
-        }
+        //CHECK BANANA
+        cy.get('tbody > :nth-child(1) > :nth-child(2)').should('include.text', "Banana")
+        cy.get('tbody > :nth-child(1) > :nth-child(3)').should('include.text', "10")
+        cy.get(':nth-child(1) > :nth-child(5) > .im-button').click({ force: true })
+        //CHECK Melon
+        cy.get('tbody > :nth-child(1) > :nth-child(2)').should('include.text', "Melon")
+        cy.get('tbody > :nth-child(1) > :nth-child(3)').should('include.text', "10")
+        cy.get(':nth-child(1) > :nth-child(5) > .im-button').click({ force: true })
 
     })
 
-    // from Tuesday at 18:00 to Monday at 09:00
-    it('a warehouse employee should not be able to ack an order from Tuesday at 18:00 to Monday at 09:00', () => {
+
+    // You can ack arrivals from Monday at 09:00 to Tuesday at 17:59
+
+    it('a warehouse manager should be able to ack a farmer order from Monday at 09:00 to Tuesday at 17:59', () => {
+
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        //Next month
+        cy.get('.react-calendar__navigation__next-button').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(15)').click()
+        cy.get('#setHour').click().type("09:05")
+        //Set the date
+        cy.get('.d-flex > .btn').click()
+        cy.findByText('You can ack arrivals from Monday at 09:00 to Tuesday at 17:59').should('not.exist')
 
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
         cy.findByRole('button', { name: /set/i }).click()
         //Next month
         cy.get('.react-calendar__navigation__next-button').click()
         cy.get('.react-calendar__month-view__days > :nth-child(16)').click()
-        cy.get('#setHour').click().type("18:00")
+        cy.get('#setHour').click().type("17:55")
         //Set the date
         cy.get('.d-flex > .btn').click()
+        cy.findByText('You can ack arrivals from Monday at 09:00 to Tuesday at 17:59').should('not.exist')
 
-        cy.findByText("You can ack arrivals from Monday at 09:00 to Tuesday at 18:00").should('exist')
+    })
 
+    it('a warehouse manager should not be able to ack a farmer order from Tuesday at 17:59 to Monday at 09:00', () => {
 
-        for (let i = 17; i < 23; i++) {
+        //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
+        cy.findByRole('button', { name: /set/i }).click()
+        //Next month
+        cy.get('.react-calendar__navigation__next-button').click()
+        cy.get('.react-calendar__month-view__days > :nth-child(16)').click()
+        cy.get('#setHour').click().type("09:05")
+        //Set the date
+        cy.get('.d-flex > .btn').click()
+        cy.findByText('You can ack arrivals from Monday at 09:00 to Tuesday at 17:59').should('exist')
+
+        for (let i = 17; i < 22; i++) {
 
             //Check on every day of the week
             cy.findByRole('button', { name: /set/i }).click()
             cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
 
-            if (i === 22) {
-                cy.get('#setHour').click().type("08:30")
+            if (i === 21) {
+                cy.get('#setHour').click().type("08:55")
             }
 
             //Set the date
             cy.get('.container-fluid > .d-flex > .btn').click()
-            //Check the order is not visible
-            cy.findByText("You can ack arrivals from Monday at 09:00 to Tuesday at 18:00").should('exist')
-
+            //Check it's not possible to update any product
+            cy.findByText('You can ack arrivals from Monday at 09:00 to Tuesday at 17:59').should('exist')
         }
-
     })
-*/
 })

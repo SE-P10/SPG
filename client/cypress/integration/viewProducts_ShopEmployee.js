@@ -1,4 +1,4 @@
-describe('viewProductsByShopEmployee', () => {
+describe('viewProducts_ShopEmployee', () => {
 
     before(() => {
 
@@ -52,9 +52,9 @@ describe('viewProductsByShopEmployee', () => {
         cy.get('.d-flex > .btn').click()
 
         //Add new zucchinies
-        cy.get(':nth-child(13) > :nth-child(4) > #CheckBoxItem').click()
+        cy.get(':nth-child(11) > :nth-child(4) > #CheckBoxItem').click()
         cy.get('[value="100"]').clear().type("150")
-        cy.get('[value="0.3"]').clear().type("0.3")
+        cy.get('[value="0.9"]').clear().type("0.9")
 
         //Click on first update
         cy.get('.modal-footer > .im-button').click()
@@ -98,7 +98,7 @@ describe('viewProductsByShopEmployee', () => {
         //Add to basket
         cy.findByRole('button', { name: /add/i }).click()
         //Click on issue order
-        cy.wait(500)
+        cy.wait(2000)
         cy.findByRole('button', { name: /issue order/i }).click()
         //Check alert -> It's not a control on farmer
         //cy.findByRole('alert').should('include.text', 'Request sent correctly')
@@ -144,7 +144,7 @@ describe('viewProductsByShopEmployee', () => {
             }
         }
     })
-
+/*
     it("a shop employee should view a products list any momement of the day", () => {
         //User views a products list 
         for (let i = 0; i <= 48; i++) {
@@ -169,7 +169,7 @@ describe('viewProductsByShopEmployee', () => {
             }
         }
     })
-
+*/
     it('a client should be able to search a product', () => {
 
         //CORRECT SEARCHING
@@ -200,7 +200,7 @@ describe('viewProductsByShopEmployee', () => {
         //Search a product
         cy.get('.im-search_input').type('Zucchini', { force: true })
         //Checking the component exist
-        cy.get('.card-body').should('exist').should('include.text', '150')
+        cy.get('.card-body').should('exist').should('include.text', '150 left of 150 available')
     })
 
     it('a shop Employee should be able to view the rigth quantity(After a client purchase)', () => {
@@ -208,7 +208,7 @@ describe('viewProductsByShopEmployee', () => {
         //Search a product
         cy.get('.im-search_input').type('egg', { force: true })
         //Checking the component exist
-        cy.get('.card-body').should('exist').should('include.text', '98')
+        cy.get('.card-body').should('exist').should('include.text', '98 left of 100 available')
     })
 
 

@@ -1,4 +1,4 @@
-describe('addProductsToBasket', () => {
+describe('addProductsToBasket_Client', () => {
 
     before(() => {
         // runs before each test in the block
@@ -98,14 +98,14 @@ describe('addProductsToBasket', () => {
 
         //Check on basket    
         cy.findByText(/2 Banana/i).should('exist')
-        cy.findByText(/2 Apple/i).should('exist')
+        cy.findByText(/2 Melon/i).should('exist')
 
-        //Delete the product(Apple)
+        //Delete the product(Melon)
         cy.get('.im-basket > .card-body > .card-text > :nth-child(1)')
             .findByRole('button', { name: /delete/i }).click({ force: true });
         //Check on basket
         cy.findByText(/2 Banana/i).should('exist')
-        cy.findByText(/2 Apple/i).should('not.exist')
+        cy.findByText(/2 Melon/i).should('not.exist')
 
     })
 
@@ -149,7 +149,7 @@ describe('addProductsToBasket', () => {
 
 
         //Check on basket
-        cy.get('.im-text').should('include.text', "Total: 26€")
+        cy.get('.im-text').should('include.text', "Total: 20")
 
     })
 

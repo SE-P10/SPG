@@ -44,57 +44,55 @@ describe('topUpWallet_ShopEmployee', () => {
         cy.findByRole('button', { name: /topup a wallet/i }).click({ force: true })
     })
 
-    //You can top up wallets from Saturday at 09:00 to Monday at 18:00
-/*
-    it('a shopEmployee should not be able to top up a client wallet (from Monday at 18:00 to Saturday at 09:00)', () => {
-        //Change date for managing updating(from Saturday at 09:00 to Friday at 18:00)
-        cy.findByRole('button', { name: /set/i }).click()
-        //Next month -> Only in the first month
-        cy.get('.react-calendar__navigation__next-button').click()
-        cy.get('.react-calendar__month-view__days > :nth-child(8)').click({ force: true })
-        cy.get('#setHour').click().type("18:00")
-        //Set the date
-        cy.get('.d-flex > .btn').click()
-        //Check it's not possible to update any product
-        cy.findByText('You can top up wallets from Saturday at 09:00 to Monday at 18:00').should('exist')
-
-        for (let i = 9; i < 14; i++) {
-            //Check on every day of the week
+    /*
+        it('a shopEmployee should not be able to top up a client wallet (from Monday at 18:00 to Saturday at 09:00)', () => {
+            //Change date for managing updating(from Saturday at 09:00 to Friday at 18:00)
             cy.findByRole('button', { name: /set/i }).click()
-            cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click({ force: true })
-            if (i === 13) {
-                //On Saturday just to 09:00 am
-                cy.get('#setHour').click().type("08:30")
-            }
+            //Next month -> Only in the first month
+            cy.get('.react-calendar__navigation__next-button').click()
+            cy.get('.react-calendar__month-view__days > :nth-child(8)').click({ force: true })
+            cy.get('#setHour').click().type("18:00")
             //Set the date
             cy.get('.d-flex > .btn').click()
             //Check it's not possible to update any product
             cy.findByText('You can top up wallets from Saturday at 09:00 to Monday at 18:00').should('exist')
-        }
+    
+            for (let i = 9; i < 14; i++) {
+                //Check on every day of the week
+                cy.findByRole('button', { name: /set/i }).click()
+                cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click({ force: true })
+                if (i === 13) {
+                    //On Saturday just to 09:00 am
+                    cy.get('#setHour').click().type("08:30")
+                }
+                //Set the date
+                cy.get('.d-flex > .btn').click()
+                //Check it's not possible to update any product
+                cy.findByText('You can top up wallets from Saturday at 09:00 to Monday at 18:00').should('exist')
+            }
+    
+        })
+        */
 
-    })
-    //You can top up wallets from Saturday at 09:00 to Monday at 18:00
 
-    it('a shopEmployee should be able to top up a client wallet (from Saturday at 09:00 to Monday at 18:00 )', () => {
-        //Change date for managing updating(from Saturday at 09:00 to Friday at 18:00)
+    it('a shopEmployee should be able to top up a client wallet (every day of the week)', () => {
         cy.findByRole('button', { name: /set/i }).click()
         //Next month -> Only in the first month
         cy.get('.react-calendar__navigation__next-button').click()
-        cy.get('.react-calendar__month-view__days > :nth-child(13)').click({ force: true })
+        cy.get('.react-calendar__month-view__days > :nth-child(8)').click({ force: true })
         cy.get('#setHour').click().type("09:00")
         //Set the date
         cy.get('.d-flex > .btn').click()
         //Check it's not possible to update any product
-        cy.findByText('You can top up wallets from Saturday at 09:00 to Monday at 18:00').should('not.exist')
+        cy.findByText('Insert client email to procede:').should('exist')
 
-        for (let i = 14; i < 16; i++) {
+        for (let i = 9; i < 15; i++) {
             //Check on every day of the week
             cy.findByRole('button', { name: /set/i }).click()
             cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click({ force: true })
             //Set the date
             cy.get('.d-flex > .btn').click()
-            //Check it's not possible to update any product
-            cy.findByText('You can top up wallets from Saturday at 09:00 to Monday at 18:00').should('not.exist')
+            cy.findByText('Insert client email to procede:').should('exist')
         }
 
     })
@@ -202,7 +200,7 @@ describe('topUpWallet_ShopEmployee', () => {
         //Close Alert
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
     })
-*/
+
     it('a wallet should be updated after a recharge by a ShopEmployee', () => {
 
         //Change date for managing updating(from Saturday at 09:00 to Friday at 18:00)
@@ -239,6 +237,5 @@ describe('topUpWallet_ShopEmployee', () => {
         //Check new wallet credit
         cy.get('[disabled=""]').should('have.value', '100')
     })
-
 
 })
