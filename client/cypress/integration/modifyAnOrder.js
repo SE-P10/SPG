@@ -12,7 +12,7 @@ describe('newOrderByClient', () => {
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login as a client
-        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
+        cy.findByRole('textbox', { name: /email/i }).type('mario@spg.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add new Client
@@ -518,7 +518,7 @@ describe('newOrderByClient', () => {
         cy.get(':nth-child(2) > .card-body > .card-text > :nth-child(3) > .text-end')
             .should("include.text", "90 left of 100 available")
     })
-
+/*
     //You can purchase an order from Saturday at 09:00 and Sunday at 23:00
     //Parto dalle 10 perchè alle 9 e mezza ho gia fatto un ordine (Problema con il crono)
     it('a client should be able to modify an order from Saturday at 9:00 to Sunday at 23:00', () => {
@@ -618,4 +618,5 @@ describe('newOrderByClient', () => {
         }
 
     })
+    */
 })

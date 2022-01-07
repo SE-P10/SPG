@@ -11,7 +11,7 @@ describe('viewProductsByShopEmployee', () => {
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
+        cy.findByRole('textbox', { name: /email/i }).type('mario@spg.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add new Client
@@ -27,9 +27,10 @@ describe('viewProductsByShopEmployee', () => {
         cy.findByRole('button', { name: /register/i }).click()
 
         //Logout
-        cy.get('.navbar-nav > [href="/"]').click()
-        cy.wait(1000);
+        cy.get('.navbar-nav > [href="/"]').click({ force: true })
         cy.clearCookies()
+        cy.wait(1000);
+
 
 
         //UPDATE OBJECT QUANTITY BY FARMER
@@ -53,7 +54,8 @@ describe('viewProductsByShopEmployee', () => {
         //Add new zucchinies
         cy.get(':nth-child(13) > :nth-child(4) > #CheckBoxItem').click()
         cy.get('[value="100"]').clear().type("150")
-        cy.get('[value="0.9"]').clear().type("0.9")
+        cy.get('[value="0.3"]').clear().type("0.3")
+
         //Click on first update
         cy.get('.modal-footer > .im-button').click()
         //Second Update
@@ -63,9 +65,9 @@ describe('viewProductsByShopEmployee', () => {
         //Close Alert
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
         //Logout
-        cy.get('.navbar-nav > [href="/"]').click()
-        cy.wait(1000);
+        cy.get('.navbar-nav > [href="/"]').click({ force: true })
         cy.clearCookies()
+        cy.wait(1000);
 
 
         //CLIENT PURCHASE(By shop Employee)
@@ -74,7 +76,7 @@ describe('viewProductsByShopEmployee', () => {
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
+        cy.findByRole('textbox', { name: /email/i }).type('mario@spg.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //As a shopEmployee make an order for the client
@@ -88,9 +90,9 @@ describe('viewProductsByShopEmployee', () => {
         cy.get('#setHour').click().type("09:30")
         cy.get('.d-flex > .btn').click()
         //Enter the email
-        cy.findByRole('textbox', { name: /client mail/i }).type('michele@gmail.com',{ force: true })
+        cy.findByRole('textbox', { name: /client mail/i }).type('michele@gmail.com', { force: true })
         //Buy some bananas
-        cy.findByRole('searchbox', { name: /search for a product!/i }).type("egg",{ force: true })
+        cy.findByRole('searchbox', { name: /search for a product!/i }).type("egg", { force: true })
         //Add two bananas
         cy.findByRole('button', { name: /\+/i }).click().click()
         //Add to basket
@@ -103,9 +105,9 @@ describe('viewProductsByShopEmployee', () => {
         //Close Alert
         cy.get('.react-toast-notifications__toast__dismiss-icon').click()
         //Logout
-        cy.get('.navbar-nav > [href="/"]').click()
-        cy.wait(1000);
+        cy.get('.navbar-nav > [href="/"]').click({ force: true })
         cy.clearCookies()
+        cy.wait(1000);
     })
 
     beforeEach(() => {
@@ -113,7 +115,7 @@ describe('viewProductsByShopEmployee', () => {
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login
-        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
+        cy.findByRole('textbox', { name: /email/i }).type('mario@spg.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click on Browse Products
@@ -122,7 +124,7 @@ describe('viewProductsByShopEmployee', () => {
 
     it("a shop employee should view a products list", () => {
         //User views a products list  -> TODO: Redo using a for cycle and prebuilded data
-        for (let i = 1; i <= 50; i++) {
+        for (let i = 1; i <= 46; i++) {
             cy.get(':nth-child(' + i + ') > .card-body')
                 .should('exist')
         }
@@ -136,7 +138,7 @@ describe('viewProductsByShopEmployee', () => {
             cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
             cy.get('.d-flex > .btn').click()
             //Check anyday
-            for (let i = 1; i <= 50; i++) {
+            for (let i = 1; i <= 46; i++) {
                 cy.get(':nth-child(' + i + ') > .card-body')
                     .should('exist')
             }
@@ -161,7 +163,7 @@ describe('viewProductsByShopEmployee', () => {
                 cy.get('#setHour').click().type(time + ":30")
 
             cy.get('.d-flex > .btn').click()
-            for (let i = 1; i <= 50; i++) {
+            for (let i = 1; i <= 46; i++) {
                 cy.get(':nth-child(' + i + ') > .card-body')
                     .should('exist')
             }

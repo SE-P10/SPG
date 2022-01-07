@@ -33,13 +33,13 @@ describe('signUp_Client', () => {
         //Add new zucchinies
         cy.get(':nth-child(13) > :nth-child(4) > #CheckBoxItem').click()
         cy.get('[value="100"]').clear().type("150")
-        cy.get('[value="0.9"]').clear().type("0.9")
+        cy.get('[value="0.3"]').clear().type("0.3")
         //Click on first update
         cy.get('.modal-footer > .im-button').click()
         //Remove some Aubergines
         cy.get(':nth-child(14) > :nth-child(4) > #CheckBoxItem').click()
         cy.get('[value="100"]').clear().type("50")
-        cy.get('[value="0.8"]').clear().type("0.8")
+        cy.get('[value="0.9"]').clear().type("0.9")
         //Click on first update
         cy.get('.modal-footer > .im-button').click()
 
@@ -58,7 +58,7 @@ describe('signUp_Client', () => {
         cy.get('.list > :nth-child(14) > :nth-child(2)').should('include.text', "50")
 
     })
-
+/*
     it('a farmer should be able to update the available quantity of products from Friday at 18:00 to Saturday at 09:00', () => {
 
         //Change date for managing updating(from Friday at 18:00 to Saturday at 09:00)
@@ -103,6 +103,7 @@ describe('signUp_Client', () => {
         }
 
     })
+    */
     /*
         it('a farmer should not be able to update the available quantity of products(from Saturday at 09:00 to Friday at 18:00)', () => {
     

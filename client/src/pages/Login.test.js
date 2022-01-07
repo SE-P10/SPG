@@ -45,9 +45,9 @@ it("email and Password fields Should be in the document and free of text", () =>
 it("The entered email should be shown", () => {
     const utils = render(<LoginForm login={doLoginStub} message="" closeMessage={closeMessageStub} />)
     //Cambio il valore dell'input email
-    userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'john.doe@demo01.it');
+    userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'mario@spg.it');
     //Verifico che sia stato cambiato
-    expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue('john.doe@demo01.it')
+    expect(screen.getByRole('textbox', { name: /email/i })).toHaveValue('mario@spg.it')
 
 });
 
@@ -142,7 +142,7 @@ it("Login check with right data",  async () => {
         render(<LoginForm login={login} />, container);
 
         //Inserisco correttamente i dati di Login
-        userEvent.type(screen.getByLabelText("email"), 'john.doe@demo01.it');
+        userEvent.type(screen.getByLabelText("email"), 'mario@spg.it');
         userEvent.type(screen.getByLabelText("Password"), '$2b$10$OMHdOZ.PATpbMoaDz5013edi5QCTEFgpRv7Vn8OyDHQNN/4KXUKdi');
         //To Fix: Button non funziona dal setup;
         userEvent.click(screen.getByRole('button'));

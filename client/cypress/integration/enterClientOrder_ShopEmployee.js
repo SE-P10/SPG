@@ -48,7 +48,7 @@ describe('enterNewClientOrder_ShopEmployee', () => {
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
+        cy.findByRole('textbox', { name: /email/i }).type('mario@spg.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to add new Client
@@ -101,7 +101,7 @@ describe('enterNewClientOrder_ShopEmployee', () => {
         cy.visit('http://localhost:3000');
         cy.findByRole('link', { name: /login/i }).click();
         //Login as a ShopEmployee
-        cy.findByRole('textbox', { name: /email/i }).type('john.doe@demo01.it');
+        cy.findByRole('textbox', { name: /email/i }).type('mario@spg.it');
         cy.findByLabelText(/password/i).type('password');
         cy.findByRole('button', { name: /login/i }).click();
         //Click a button to hand out a order
@@ -110,7 +110,7 @@ describe('enterNewClientOrder_ShopEmployee', () => {
     })
 
     //Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00
-
+/*
     it('a shopEmployee should be able to add an order for an user from Saturday at 9:00 to Sunday at 23:00', () => {
 
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)
@@ -192,7 +192,7 @@ describe('enterNewClientOrder_ShopEmployee', () => {
         }
 
     })
-
+*/
 
     it('a shopEmployee should not be able to add a new order of a client (by entering not registered user) ', () => {
         //Change date for managing updating(from Saturday at 9:00 to Sunday at 23:00)

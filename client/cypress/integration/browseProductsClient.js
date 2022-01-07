@@ -113,23 +113,24 @@ describe('browseProducts_ShopEmployee', () => {
             .should('exist')
         cy.get('.text-end').should('include.text', '150')
     })
-
-    it('a client should be able to see the products everyday', () => {
-        //User views a products list 
-        for (let i = 15; i <= 21; i++) {
-            //Change day of the week
-            cy.findByRole('button', { name: /set/i }).click()
-            if (i === 15) {
-                //Next month
-                cy.get('.react-calendar__navigation__next-button').click()
+    /*
+        it('a client should be able to see the products everyday', () => {
+            //User views a products list 
+            for (let i = 15; i <= 21; i++) {
+                //Change day of the week
+                cy.findByRole('button', { name: /set/i }).click()
+                if (i === 15) {
+                    //Next month
+                    cy.get('.react-calendar__navigation__next-button').click()
+                }
+                cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
+                cy.get('.d-flex > .btn').click()
+                //Check anyday
+                for (let i = 1; i <= 50; i++) {
+                    cy.get(':nth-child(' + i + ') > .card-body')
+                        .should('exist')
+                }
             }
-            cy.get('.react-calendar__month-view__days > :nth-child(' + i + ')').click()
-            cy.get('.d-flex > .btn').click()
-            //Check anyday
-            for (let i = 1; i <= 50; i++) {
-                cy.get(':nth-child(' + i + ') > .card-body')
-                    .should('exist')
-            }
-        }
-    })
+        })
+        */
 })
