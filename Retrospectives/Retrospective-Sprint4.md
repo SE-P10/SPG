@@ -41,7 +41,7 @@ Team P10 RETROSPECTIVE Sprint #4
 - Unit Testing:
   - Total hours estimated : 12h
   - Total hours spent : 7h
-  - Nr of automated unit test cases : 66 old + x new
+  - Nr of automated unit test cases : 59 ( +129 E2E test )
   - Coverage  : 85.4 %
 - E2E testing:
   - Total hours estimated : 8h
