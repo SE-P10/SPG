@@ -7,7 +7,7 @@ Team P10 RETROSPECTIVE Sprint #4
 
 - Number of stories committed vs done : 3/3
 - Total points committed vs done : 34/34
-- Nr of hours planned vs spent (as a team) :  /  
+- Nr of hours planned vs spent (as a team) : 123h 30m  / 110h 25m 
 
 
 ### Definition of Done
@@ -25,15 +25,15 @@ Team P10 RETROSPECTIVE Sprint #4
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
 | 0      |         |    -   |         |    |
-| 1      |        |       |           |            |
-| 2      |        |     |          |            |
-| 3      |         |      |          |           |
+| 1      |   1     |   13    |   12        |    12        |
+| 2      |    4    |  13   |          |            |
+| 3      |     1    |   8   |          |           |
 
 
 
 
 - Hours per task (average, standard deviation) : 
-- Total task estimation error ratio: sum of total hours estimation / sum of total hours spent from previous table : 
+- Total task estimation error ratio: sum of total hours estimation / sum of total hours spent from previous table : 1.11
 
   
 ## QUALITY MEASURES 
@@ -50,11 +50,11 @@ Team P10 RETROSPECTIVE Sprint #4
   - Total hours estimated : 
   - Total hours spent : 
 - Technical Debt management:
-  - Total hours estimated : 
-  - Total hours spent : 
-  - Hours estimated for remediation by SonarQube : 6h 
+  - Total hours estimated : 4h 
+  - Total hours spent : 2h 15m
+  - Hours estimated for remediation by SonarQube : 6h  
   - Hours estimated for remediation by SonarQube only for the selected and planned issues : 1h 50m (reduce replication, delete blocker code smells , reduce critical code smells, assert no bug present) 
-  - Hours spent on remediation  : we spent x time to reduce duplications , minimize code smells and assert that there were no blocker code smells or bugs.
+  - Hours spent on remediation  : we spent 1h 30m to reduce duplications , minimize code smells and assert that there were no blocker code smells or bugs.
   - debt ratio (as reported by SonarQube under "Measures-Maintainability") :  %
   - rating for each quality characteristic reported in SonarQube under "Measures" (namely reliability, security, maintainability ) :
   <br>Reliability : A <br>Security : A
