@@ -217,12 +217,12 @@ function YourOrders(props) {
                   minDate={getNextWeekday(
                     props.virtualTimeDate,
                     2,
-                    false
+                    true
                   ).toDate()}
                   maxDate={getNextWeekday(
                     props.virtualTimeDate,
                     4,
-                    false
+                    true
                   ).toDate()}
                 />
               </>
