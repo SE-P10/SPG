@@ -1,11 +1,10 @@
 import { Container, Row, Image, Col } from "react-bootstrap";
-
-import "../css/custom.css";
+import { Page} from "../ui-components/Page";
 
 function AboutPage(props) {
   return (
-    <>
-      {" "}
+    <Page>
+      
       <Container className='text-dark below'>
         <Col>
           <Row className='justify-content-left '>
@@ -24,13 +23,13 @@ function AboutPage(props) {
               exchange experiences and live in community spirit. However, that’s
               not all. Apart from what has already been said, our every purchase
               contributes to development of a particular production, economical
-              and social model.{" "}
+              and social model.
             </p>
-            <Image
+            <Image style={{ width: '40rem' }}
               className='mx-auto below ph-au-f'
               src='./images/about1.jpeg'
             />
-            <Image
+            <Image  style={{ width: '40rem' }}
               className='mx-auto below ph-au-f'
               src='./images/about2.jpeg'
             />
@@ -56,11 +55,11 @@ function AboutPage(props) {
               of each product is entrusted to the sector expert Michele. Unity
               is strength and these young guys are proof of that.
             </p>
-            <Image src='./images/team.jpg' className='ph-au' />
+            <Image   src='./images/team.jpg' className='ph-au' />
           </Row>
         </Col>
       </Container>
-    </>
+    </Page>
   );
 }
 

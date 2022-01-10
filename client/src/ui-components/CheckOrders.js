@@ -1,10 +1,12 @@
-import { Alert, Row, Col, Container, Table } from "react-bootstrap";
+import { Row, Col, Table } from "react-bootstrap";
 import { useState } from "react";
 import { SearchComponent } from "./SearchComponent";
 import API from "./../API";
-import "../css/custom.css";
+import { BlockTitle, PageSection } from "../ui-components/Page";
+import { ToastNotification } from "../ui-components/ToastNotification";
 
 function CheckOrders(props) {
+
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -20,49 +22,44 @@ function CheckOrders(props) {
   };
 
   return (
-    <Container className='cont'>
-      <Row className='justify-content-center'>
-        {" "}
-        <h2> Check Orders</h2>{" "}
-      </Row>
-      {errorMessage ? (
-        <Alert variant='danger' onClose={() => setErrorMessage("")} dismissible>
-          {" "}
-          {errorMessage}{" "}
-        </Alert>
-      ) : (
-        ""
-      )}
+    <PageSection>
+      <BlockTitle>
+        Check Orders
+      </BlockTitle>
+      <ToastNotification variant='error' onSet={() => setErrorMessage("")} message={errorMessage} />
       <Row>
-        <SearchComponent className='mx-auto' handleSearch={handleSearch} />{" "}
+        <SearchComponent className='mx-auto' handleSearch={handleSearch} />
       </Row>
-
-      <Col>
+      <Col className="below">
         <Row className='justify-content-center'>
-          {orders.length !== 0 ? (
-            <h3 className='thirdColor'> List of orders </h3>
-          ) : (
-            ""
-          )}
+          {orders.length !== 0 ?
+            <>
+              <BlockTitle className="below-2"> List of orders </BlockTitle>
+              <Table responsive size='sm'>
+                <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orders.map((order) => (
+                    <tr className='over' key={order.id}>
+                      <td> {order.id}</td>
+                      <td> {order.price < 0.01 ? 0 : order.price}</td>
+                      <td> {order.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </>
+            :
+            <></>
+          }
         </Row>
-        <Table responsive size='sm'>
-          <thead>
-            <th>Id</th>
-            <th>Price</th>
-            <th>Status</th>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr className='over'>
-                <td> {order.id}</td>
-                <td> {order.price}</td>
-                <td> {order.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
       </Col>
-    </Container>
+    </PageSection>
   );
 }
 export { CheckOrders };

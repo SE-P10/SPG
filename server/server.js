@@ -4,6 +4,9 @@ const IS_DEBUG = false;
 const DEBUG_ALLOW_DIRTY = IS_DEBUG;
 const DEBUG_PROCESS = IS_DEBUG;
 
+const ENABLE_CRON = true;
+
+const db = require("./db");
 const express = require("express");
 const morgan = require("morgan"); // logging middleware
 const passport = require("passport");
@@ -13,6 +16,7 @@ const session = require("express-session");
 const sqliteStoreFactory = require("express-session-sqlite").default;
 const sqlite3 = require("sqlite3");
 const dayjs = require("dayjs");
+const { runQuerySQL, getQuerySQL, dynamicSQL, sendMail } = require("./utility");
 
 const productsDao = require("./dao/products-dao");
 const userDao = require("./dao/user-dao");
@@ -25,6 +29,8 @@ const testDao = require("./dao/test-dao.js");
 const time = require("./time.js");
 const { virtualCron } = require("./cron");
 const { isNumber } = require("./utility");
+
+const { notifyTelegram } = require("./telegram");
 
 /*** Set up Passport ***/
 // set up the "username and password" login strategy
@@ -100,37 +106,83 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(
-  virtualCron.run(() => {
-    // reset all cron jobs on server restart
-    virtualCron.unscheduleAll();
+const cronScheudules = () => {
 
-    virtualCron.schedule(
-      {
-        from: { day: virtualCron.schedules.MONDAY, hour: 9 },
-        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-      },
-      (virtualTime, lastExecutionTime, ...args) => {
+  // reset all cron jobs on server restart
+  virtualCron.unscheduleAll();
 
-        ordersDao.confrimOrders();
-      },
-      [],
-      false
-    );
+  virtualCron.schedule("confrimOrders",
+    {
+      from: { day: virtualCron.schedules.MONDAY, hour: 9 },
+      to: { day: virtualCron.schedules.WEDNESDAY, hour: 9 },
+    },
+    (virtualTime, lastExecutionTime, ...args) => {
 
-    virtualCron.schedule(
-      {
-        from: { day: virtualCron.schedules.MONDAY, hour: 23 },
-        to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
-      },
-      (virtualTime, lastExecutionTime, ...args) => {
-        ordersDao.deletePendingOrders();
-      },
-      [],
-      false
-    );
-  })
-);
+      ordersDao.confrimOrders(virtualTime);
+    },
+    [],
+    false
+  );
+
+
+  virtualCron.schedule("deletePendingOrders",
+    {
+      from: { day: virtualCron.schedules.MONDAY, hour: 23 },
+      to: { day: virtualCron.schedules.SATURDAY, hour: 9 },
+    },
+    (virtualTime, lastExecutionTime, ...args) => {
+      ordersDao.deletePendingOrders();
+    },
+    [],
+    false
+  );
+
+  /**
+  * delete unretrived orders
+  */
+  virtualCron.schedule("unretrivedOrders",
+    virtualCron.schedules.FRIDAY,
+    (virtualTime, lastExecutionTime, ...args) => {
+
+      let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+      if (days > 0 || (days === 0 && virtualTime.hour() >= 23)) {
+
+        (async () => {
+
+          await runQuerySQL(db, "UPDATE orders SET status = 'deleted' WHERE status = 'confirmed' AND timestamp <= ? ", [virtualTime.startOf('week').unix()]);
+          await productsDao.notifyUnretireverUsers();
+
+        })();
+
+      }
+    },
+    [],
+    false
+  );
+
+  /**
+   * Telegram Cron Job
+  */
+  virtualCron.schedule("telegramBOT",
+    virtualCron.schedules.SATURDAY,
+    (virtualTime, lastExecutionTime, ...args) => {
+
+      let days = virtualCron.calcDateDiff(virtualTime, lastExecutionTime);
+
+      if (days > 0 || (days === 0 && virtualTime.hour() > 9)) {
+        notifyTelegram();
+      }
+
+    },
+    [],
+    false
+  );
+};
+
+if (ENABLE_CRON) {
+  app.use(virtualCron.run(cronScheudules));
+}
 
 // API implemented in DAO modules
 userDao.execApi(app, passport, isLoggedIn);
@@ -141,6 +193,11 @@ farmerDao.execApi(app, passport, isLoggedIn);
 walletDao.execApi(app, passport, isLoggedIn);
 notificationDao.execApi(app, passport, isLoggedIn);
 warehouseDao.execApi(app, passport, isLoggedIn);
+
+app.get("/api/debug/resetCron", function (req, res) {
+  virtualCron.reschedule(cronScheudules);
+  res.status(200).end();
+});
 
 //PUT /api/debug/time/
 app.put("/api/debug/time/:time", isLoggedIn, function (req, res) {

@@ -40,10 +40,7 @@ const confirmFarmerProduct = async (farmer, product, quantity) => {
 
 const getOpenDeliveries = async (farmer) => {
   let query =
-    "SELECT fp.id, p.id AS product, fp.quantity FROM farmer_payments fp, products p ";
-  query +=
-    "WHERE fp.user_id = ? AND status = 'confirmed' AND fp.product_id = p.id";
-  console.log(query);
+    "SELECT fp.id, p.id AS product, fp.quantity FROM farmer_payments fp, products p WHERE fp.user_id = ? AND status = 'confirmed' AND fp.product_id = p.id";
   return getQuerySQL(
     db,
     query,
@@ -63,9 +60,9 @@ exports.getProducts = async (farmerID) => {
 
   let products = await getQuerySQL(
     db,
-    "SELECT products.id, products_details.name, products.quantity FROM products_details, products WHERE products.id = products_details.id AND products.farmer_id = ?",
+    "SELECT products.id, products_details.name, products.quantity, products.price FROM products_details, products WHERE products.id = products_details.id AND products.farmer_id = ?",
     [farmerID],
-    { id: 0, name: "", quantity: -1 }
+    { id: 0, name: "", quantity: 0, price: 0 }
   );
 
   return products;
@@ -74,7 +71,7 @@ exports.getProducts = async (farmerID) => {
 exports.updateProducts = async (farmerID, productID, newAmount, price) => {
   let dinoSQL = dynamicSQL(
     "UPDATE products SET",
-    { quantity: newAmount, price: price },
+    { quantity: newAmount, estimated_quantity: newAmount, price: price },
     { farmer_id: farmerID, id: productID }
   );
 
@@ -84,7 +81,7 @@ exports.updateProducts = async (farmerID, productID, newAmount, price) => {
 const listOrderProducts = (farmerId) => {
   return getQuerySQL(
     db,
-    "SELECT pd.name AS name, SUM(op.quantity) AS quantity FROM order_product op, products p, product_details pd GROUP BY product_id WHERE p.details.id=pd-id AND op.product_id=p.product_id AND p.farmer_id=?",
+    "SELECT pd.name AS name, SUM(op.quantity) AS quantity FROM order_product op, products p, products_details pd WHERE p.details_id=pd.id AND op.product_id=p.id AND p.farmer_id=? GROUP BY op.product_id",
     [farmerId],
     { name: "", quantity: 0 }
   );
@@ -124,7 +121,7 @@ exports.execApi = (app, passport, isLoggedIn) => {
   app.post("/api/farmer/products/update", isLoggedIn, async (req, res) => {
     if (!is_possible(req).farmer_estimation) {
       return res
-        .status(400)
+        .status(412)
         .json({ error: "Unable to update products, wrong time" });
     }
 
@@ -144,11 +141,12 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
   // GET /api/orderProducts
   app.get("/api/orderProducts", isLoggedIn, async (req, res) => {
-    if (req.user.role !== 2)
+    if (req.user.role !== 2) {
       res
         .status(404)
         .json({ error: "Only farmers have access to this functionality" })
         .end();
+    }
     try {
       const Products = await listOrderProducts(req.user.id);
       res.json(Products);
@@ -169,6 +167,9 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
   // POST /api/farmerOrders
   app.post("/api/farmerOrders", isLoggedIn, async (req, res) => {
+    if (!is_possible(req).farmer_confirm_orders) {
+      return res.status(412).json({ error: "Operation not allowed in this moment!" });
+    }
     try {
       await confirmFarmerProduct(
         req.user.id,

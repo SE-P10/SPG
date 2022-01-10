@@ -1,12 +1,11 @@
-import { Container, Row, Col, Button, Alert } from "react-bootstrap";
-
-import { useState } from "react";
+import { Row, Col, Button } from "react-bootstrap";
+import { useState, useEffect, useContext } from "react";
 import { HandOut } from "../shopEmployee-component/HandOut";
 import { CheckOrders } from "../ui-components/CheckOrders";
 import { TopUpWallet } from "../shopEmployee-component/TopUpWallet.js";
 import { RegistrationForm } from "../ui-components/RegistrationForm";
 import { BrowserProducts } from "../ui-components/BrowseProducts";
-import "../css/custom.css";
+import { ToastNotification } from "../ui-components/ToastNotification";
 import {
   registerIcon,
   newIcon,
@@ -15,284 +14,201 @@ import {
   browseIcon,
   checkIcon,
   pendingIcon,
-  backIcon,
 } from "../ui-components/Icons.js";
 import { PendingOrders } from "../shopEmployee-component/PendingOrders.js";
 import { ClientOrder } from "../client-component/ClientOrder";
+import GlobalState from '../utility/GlobalState';
+
+import { SVGIcon, Page, PageContainer } from "../ui-components/Page";
 
 function ShopEmployee(props) {
+
   const [message, setMessage] = useState("");
   const [actionS, setActionS] = useState(0);
-  const [actionName, setActionName] = useState("");
-  const changeAction = (actionN) => {
-    setActionS(actionN);
-    switch (actionN) {
-      case 1:
-        setActionName("Register a new client");
-        break;
-      case 2:
-        setActionName("Browse products");
-        break;
-      case 3:
-        setActionName("Top Up wallet");
-        break;
-      case 4:
-        setActionName("New order");
-        break;
-      case 5:
-        setActionName("Hand Out");
-        break;
-      case 6:
-        setActionName("Check orders");
-        break;
-      case 7:
-        setActionName("pending orders");
-        break;
-
-      default:
-        setActionName("");
-    }
-  };
 
   const addMessage = (messageN) => {
     setMessage(messageN);
   };
 
+  const [, setState] = useContext(GlobalState);
+
+  useEffect(() => {
+    setState(oldState => ({ ...oldState, useHistoryBack: actionS !== 0 ? () => { setActionS(0) } : false }))
+  }, [actionS, setState]);
+
   return (
-    <>
-      {actionS !== 0 ? (
-        <>
-          <Button
-            className='spg-button below back-button button-disappear'
-            onClick={() => {
-              setActionS(0);
-            }}>
-            {" "}
-            {backIcon}{" "}
-          </Button>
-        </>
-      ) : (
-        ""
-      )}{" "}
-      <Container className='below '>
-        {message ? (
-          <Alert variant='success' onClose={() => setMessage("")} dismissible>
-            {" "}
-            {message}{" "}
-          </Alert>
-        ) : (
-          ""
-        )}
+    <Page fullscreen>
+      <ToastNotification variant='success' onSet={() => { setMessage("") }} message={message} />
+      <>
+        {
+          (actionS === 0) ? (
 
-        <Row>
-          <Row>
-            <Col md='auto'>
-              <h1 className='mx-auto'> {actionName} </h1>{" "}
-            </Col>
-          </Row>
-          <Col className='ml-4'>
-            {actionS === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button '
-                  onClick={() => {
-                    setActionS(1);
-                  }}>
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>
-                      {registerIcon}{" "}
-                    </Row>
-                    <Row className='justify-content-center'>
-                      {" "}
-                      Register client{" "}
-                    </Row>
-                  </Col>
-                </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-            {actionS === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button '
-                  onClick={() => {
-                    setActionS(2);
-                  }}>
-                  {" "}
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>{browseIcon} </Row>
-                    <Row className='justify-content-center'>
-                      {" "}
-                      Browse Products{" "}
-                    </Row>
-                  </Col>
-                </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-          </Col>
-          <Col>
-            {actionS === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button'
-                  onClick={() => {
-                    setActionS(7);
-                  }}>
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>{pendingIcon} </Row>
-                    <Row className='justify-content-center'>
-                      {" "}
-                      Pending orders{" "}
-                    </Row>
-                  </Col>
-                </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-            {actionS === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button'
-                  onClick={() => {
-                    setActionS(3);
-                  }}>
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>{pigIcon} </Row>
-                    <Row className='justify-content-center'>
-                      {" "}
-                      TopUp a Wallet{" "}
-                    </Row>
-                  </Col>
-                </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-          </Col>
-          <Col>
-            {actionS === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button '
-                  onClick={() => {
-                    setActionS(4);
-                  }}>
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>{newIcon} </Row>
-                    <Row className='justify-content-center'> New Order </Row>
-                  </Col>
-                </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-            {actionS === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button '
-                  onClick={() => {
-                    setActionS(5);
-                  }}>
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>{handOutIcon} </Row>
-                    <Row className='justify-content-center'> Hand Out </Row>
-                  </Col>
-                </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-          </Col>{" "}
-          <Col>
-            {actionS === 0 ? (
-              <Row className='secondColor justify-content-center below'>
-                <Button
-                  className='se-button '
-                  onClick={() => {
-                    setActionS(6);
-                  }}>
-                  <Col className='justify-content-center'>
-                    <Row className='justify-content-center'>{checkIcon} </Row>
-                    <Row className='justify-content-center'> Check Orders </Row>
-                  </Col>
-                </Button>
-              </Row>
-            ) : (
-              ""
-            )}
-          </Col>
-        </Row>
-        <Row className='below'>
-          {actionS === 1 ? (
-            <RegistrationForm
-              loggedIn={props.loggedIn}
-              changeAction={changeAction}
-              addMessage={addMessage}
-            />
-          ) : null}
-          {actionS === 2 ? (
-            <BrowserProducts
-              changeAction={changeAction}
-              addMessage={addMessage}
-            />
-          ) : null}
-          {actionS === 3 ? (
-            <>
-              {(props.dow === "Saturday" && props.hour >= 9) ||
-              (props.dow === "Monday" && props.hour <= 18) ? (
-                <TopUpWallet
-                  changeAction={changeAction}
-                  addMessage={addMessage}
-                  className='justify-content-center'
-                />
-              ) : (
-                "You can top up wallets from Saturday at 09:00 to Monday at 18:00"
-              )}
-            </>
-          ) : null}
+            <PageContainer>
+              <Button
+                className='im-button im-button-ticket im-animate '
+                onClick={() => {
+                  setActionS(1);
+                }}>
+                <Col className='justify-content-center'>
+                  <Row className='justify-content-center'>
+                    <SVGIcon icon={registerIcon} width='80px' height='80px' />
+                  </Row>
+                  <Row className='justify-content-center'>
+                    Register client
+                  </Row>
+                </Col>
+              </Button>
+              <Button
+                className='im-button im-button-ticket im-animate'
+                onClick={() => {
+                  setActionS(2);
+                }}>
 
-          {actionS === 4 ? (
-            <>
-              {(props.dow === "Saturday" && props.hour >= 9) ||
-              (props.dow === "Sunday" && props.hour <= 23) ? (
-                <ClientOrder
-                  modifyOrder={-1}
-                  changeAction={changeAction}
-                  addMessage={addMessage}
-                  user={props.user}
-                />
-              ) : (
-                "Orders can be purchased only from Saturday at 9:00 to Sunday at 23:00"
-              )}{" "}
-            </>
-          ) : null}
-          {actionS === 7 ? (
-            <PendingOrders
-              changeAction={changeAction}
-              addMessage={addMessage}
-            />
-          ) : null}
-          {actionS === 5 ? (
-            <>
-              {(props.dow === "Wednesday" && props.hour >= 9) ||
-              (props.dow === "Friday" && props.hour <= 23) ||
+                <Col className='justify-content-center'>
+                  <Row className='justify-content-center'>
+                    <SVGIcon icon={browseIcon} width='80px' height='80px' />
+                  </Row>
+                  <Row className='justify-content-center'>
+                    Browse Products
+                  </Row>
+                </Col>
+              </Button>
+              <Button
+                className='im-button im-button-ticket im-animate'
+                onClick={() => {
+                  setActionS(7);
+                }}>
+                <Col className='justify-content-center'>
+                  <Row className='justify-content-center'>
+                    <SVGIcon icon={pendingIcon} width='80px' height='80px' />
+                  </Row>
+                  <Row className='justify-content-center'>
+
+                    Pending orders
+                  </Row>
+                </Col>
+              </Button>
+              <Button
+                className='im-button im-button-ticket im-animate'
+                onClick={() => {
+                  setActionS(3);
+                }}>
+                <Col className='justify-content-center'>
+                  <Row className='justify-content-center'>
+                    <SVGIcon icon={pigIcon} width='80px' height='80px' />
+                  </Row>
+                  <Row className='justify-content-center'>
+
+                    TopUp a Wallet
+                  </Row>
+                </Col>
+              </Button>
+              <Button
+                className='im-button im-button-ticket im-animate '
+                onClick={() => {
+                  setActionS(4);
+                }}>
+                <Col className='justify-content-center'>
+                  <Row className='justify-content-center'>
+
+                    <SVGIcon icon={newIcon} width='80px' height='80px' />
+                  </Row>
+                  <Row className='justify-content-center'> New Order </Row>
+                </Col>
+              </Button>
+              <Button
+                className='im-button im-button-ticket im-animate '
+                onClick={() => {
+                  setActionS(5);
+                }}>
+                <Col className='justify-content-center'>
+                  <Row className='justify-content-center'>
+
+                    <SVGIcon icon={handOutIcon} width='80px' height='80px' />
+
+                  </Row>
+                  <Row className='justify-content-center'> Hand Out </Row>
+                </Col>
+              </Button>
+              <Button
+                className='im-button im-button-ticket im-animate '
+                onClick={() => {
+                  setActionS(6);
+                }}>
+                <Col className='justify-content-center'>
+                  <Row className='justify-content-center'>
+                    <SVGIcon icon={checkIcon} width='80px' height='80px' />  </Row>
+                  <Row className='justify-content-center'> Check Orders </Row>
+                </Col>
+              </Button>
+            </PageContainer>
+          ) : (<></>)
+        }
+      </>
+
+      <PageContainer fullscreen>
+        {actionS === 1 ? (
+          <RegistrationForm
+            loggedIn={props.loggedIn}
+            changeAction={setActionS}
+            addMessage={addMessage}
+          />
+        ) : null}
+        {actionS === 2 ? (
+          <BrowserProducts
+            changeAction={setActionS}
+            addMessage={addMessage}
+          />
+        ) : null}
+        {actionS === 3 ? (
+          <>
+            
+              <TopUpWallet
+                changeAction={setActionS}
+                addMessage={addMessage}
+                className='justify-content-center'
+              />
+            
+          </>
+        ) : <></>}
+
+        {actionS === 4 ? (
+          <>
+            {(props.dow === "Saturday" && props.hour >= 9) ||
+              (props.dow === "Sunday" && props.hour < 23) ? (
+              <ClientOrder
+                modifyOrder={-1}
+                changeAction={setActionS}
+                addMessage={addMessage}
+                user={props.user}
+              />
+            ) : (
+              "Orders can be purchased only from Saturday at 9:00 to Sunday at 22:59"
+            )}
+          </>
+        ) : <></>}
+        {actionS === 7 ? (
+          <PendingOrders
+            changeAction={setActionS}
+            addMessage={addMessage}
+          />
+        ) : <></>}
+        {actionS === 5 ? (
+          <>
+            {(props.dow === "Wednesday" && props.hour >= 9) ||
+              (props.dow === "Friday" && props.hour < 23) ||
               props.dow === "Thursday" ? (
-                <HandOut changeAction={changeAction} addMessage={addMessage} />
-              ) : (
-                "You can hand out an order from Wednesday at 09:00 to Friday at 18:00"
-              )}
-            </>
-          ) : null}
-          {actionS === 6 ? (
-            <CheckOrders changeAction={changeAction} addMessage={addMessage} />
-          ) : null}
-        </Row>
-      </Container>
-    </>
+              <HandOut changeAction={setActionS} addMessage={addMessage} />
+            ) : (
+              "You can hand out an order from Wednesday at 09:00 to Friday at 22:59"
+            )}
+          </>
+        ) : <></>}
+        {actionS === 6 ? (
+          <CheckOrders changeAction={setActionS} addMessage={addMessage} />
+        ) : <></>}
+      </PageContainer>
+    </Page>
   );
 }
 

@@ -1,6 +1,16 @@
-import { Button, Alert, Form, Row, Container, Table } from "react-bootstrap";
+import {
+  Button,
+  Form,
+  Modal,
+  Col,
+  Row,
+  Container,
+  Spinner,
+} from "react-bootstrap";
 import React, { useState, useEffect } from "react";
-import "../css/custom.css";
+import { BlockTitle, PageSection } from "../ui-components/Page";
+import { ToastNotification } from "../ui-components/ToastNotification";
+
 import API from "../API";
 
 function UpdateAvailability(props) {
@@ -9,6 +19,7 @@ function UpdateAvailability(props) {
       //const productsTmp = await API.getProducts();
       //mettere questa chiamata API e togliere la precedwente
       const productsTmp = await API.getFarmerProducts(id);
+      if (productsTmp) setIsProductsListLoading(false);
       setProducts(productsTmp);
     };
 
@@ -16,177 +27,181 @@ function UpdateAvailability(props) {
   }, [props.user.id]);
 
   const handleSubmit = async (event, propsN) => {
-    //fare parseInt
-    let orderOk = true;
-    if (orderProduct.length === 0) {
-      setErrorMessage("you have not updated any  items.");
-      orderOk = false;
+
+    if (Object.keys(orderProduct).length === 0) {
+      setErrorMessage("You have not updated any product.");
+      return;
     }
 
-    let checkNoWrongQuantity = orderProduct.filter(
-      (t) => t.quantity < 0 || t.price < 0
-    ).length;
-    if (checkNoWrongQuantity > 0) {
-      setErrorMessage("you have negative quantities and/or negative price.");
-      orderOk = false;
-    }
+    for (let productID in orderProduct) {
+      let product = orderProduct[productID];
 
-    if (orderOk) {
-      for (let i of orderProduct) {
-        let esito = await API.updateFarmerProducts(
-          i.product_id,
-          i.quantity,
-          props.user.id,
-          i.price
+      if (product.quantity < 0 || product.price < 0) {
+        setErrorMessage(
+          "You have negative quantities and/or negative price for " +
+          product.name +
+          "."
         );
-        if (!esito) console.log("error");
+        continue;
       }
-      propsN.addMessage("Request sent correctly!");
 
-      propsN.changeAction(0);
+      await API.updateFarmerProducts(
+        product.id,
+        product.quantity,
+        props.user.id,
+        product.price
+      );
     }
+    propsN.addMessage("Request sent correctly!");
+
+    propsN.changeAction(0);
   };
 
   const [errorMessage, setErrorMessage] = useState("");
   const [products, setProducts] = useState([]);
-  const [orderProduct, setOrderProducts] = useState([]);
-  const [selectedPs, setSelectPs] = useState([]);
+  const [orderProduct, setOrderProducts] = useState({});
 
-  const selectProduct = (id) => {
-    if (selectedPs.indexOf(id) === -1) {
-      setOrderProducts((old) => [
-        ...old,
-        { product_id: id, quantity: -1, price: -1 },
-      ]);
-      setSelectPs((selectedPsn) => [...selectedPsn, id]);
-    } else {
-      setSelectPs((old) =>
-        old.filter((p) => {
-          return p !== id;
-        })
-      );
+  const [selectedProduct, setSelectedProduct] = useState(false);
+  const [isProductsListLoading, setIsProductsListLoading] = useState(true);
 
-      setOrderProducts((old) => old.filter((p) => p.product_id !== id));
-    }
+  const handleClose = () => {
+    setOrderProducts({
+      ...orderProduct,
+      [selectedProduct.id]: {
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        quantity: selectedProduct.quantity,
+        price: selectedProduct.price,
+      },
+    });
+
+    setSelectedProduct(false);
   };
 
   return (
-    <>
-      <Container className='justify-content-center cont'>
-        <Row className='justify-content-center'>
-          <h2>Update Availability</h2>
-        </Row>
-        {errorMessage ? (
-          <Alert
-            variant='danger'
-            onClose={() => setErrorMessage("")}
-            dismissible>
-            {" "}
-            {errorMessage}{" "}
-          </Alert>
-        ) : (
-          ""
-        )}
-        <Form>
-          <h3 className='thirdColor'> List of your products: </h3>
-          <Table responsive size='sm' className='below list over'>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Actual Quantity</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((p) => (
-                <tr className='over'>
-                  <td>{p.name} </td>
-                  <td>{p.quantity} </td>
-                  <td>
-                    <Form.Group>
-                      {" "}
-                      <Form.Check
-                        inline
-                        id='CheckBoxItem'
-                        onClick={() => selectProduct(p.id)}></Form.Check>{" "}
-                      {selectedPs.indexOf(p.id) !== -1 ? (
-                        <>
-                          {" "}
-                          Q:
-                          <Form.Control
-                            defaultValue={0}
-                            type='number'
-                            inline
-                            onChange={(ev) => {
-                              let error = false;
-                              if (isNaN(parseInt(ev.target.value))) {
-                                setErrorMessage("Wrong quantity");
-                                error = true;
-                              }
-                              setOrderProducts((old) => {
-                                return  old.map((item) => {
-                                  if (item.product_id === p.id)
-                                    return {
-                                      product_id: p.id,
-                                      quantity: error
-                                        ? -1
-                                        : parseInt(ev.target.value),
-                                      price: item.price,
-                                    };
-                                  else return item;
-                                });
-                                
-                              });
-                            }}
-                            id={p.id}
-                            size='sm'></Form.Control>{" "}
-                          Price:
-                          <Form.Control
-                            defaultValue={0}
-                            type='number'
-                            inline
-                            onChange={(ev) => {
-                              let errorPrice = false;
-                              if (isNaN(parseFloat(ev.target.value))) {
-                                setErrorMessage("Wrong price");
-                                errorPrice = true;
-                              }
-                              setOrderProducts((old) => {
-                                return  old.map((item) => {
-                                  if (item.product_id === p.id)
-                                    return {
-                                      product_id: p.id,
-                                      quantity: item.quantity,
-                                      price: errorPrice
-                                        ? -1
-                                        : parseFloat(ev.target.value),
-                                    };
-                                  else return item;
-                                });
-                                
-                              });
-                            }}
-                            id={p.id}
-                            size='sm'></Form.Control>{" "}
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </Form.Group>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+    <PageSection>
+      <ToastNotification
+        variant='error'
+        message={errorMessage}
+        onSet={() => setErrorMessage("")}
+      />
 
+      <BlockTitle>Update Availability</BlockTitle>
+      {
+        <Modal
+          show={!!selectedProduct}
+          onHide={() => {
+            setSelectedProduct(false);
+          }}
+          className='im-modal'>
+          <Modal.Header closeButton>
+            <Modal.Title>{selectedProduct.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Quantity:
+            <Form.Control
+              className='im-input'
+              defaultValue={selectedProduct.quantity}
+              type='number'
+              onChange={(ev) => {
+                if (!/^\d*$/.test(ev.target.value)) {
+                  setErrorMessage("Quantity inserted is not valid!");
+                  return;
+                }
+
+                let value = Number.parseFloat(ev.target.value);
+
+                if (!isNaN(value) && value >= 0) {
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    quantity: value,
+                  });
+                }
+              }}
+              id={selectedProduct.id}
+              size='sm'></Form.Control>
+            Price:
+            <Form.Control
+              className='im-input'
+              defaultValue={selectedProduct.price}
+              type='number'
+              onChange={(ev) => {
+                if (!/^[0-9,.]*$/.test(ev.target.value)) {
+                  setErrorMessage("Price inserted is not valid!");
+                  return;
+                }
+
+                let value = Number.parseFloat(ev.target.value);
+
+                if (!isNaN(value) && value > 0) {
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    price: value,
+                  });
+                }
+              }}
+              id={selectedProduct.id}
+              size='sm'></Form.Control>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              className='im-button im-animate'
+              variant='secondary'
+              onClick={handleClose}>
+              Edit
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      }
+      {isProductsListLoading ? (
+        <Spinner animation='border' variant='success' size='sm'></Spinner>
+      ) : (
+        <Form>
+          <Row>
+            <Col>
+              <strong>Name</strong>
+            </Col>
+            <Col>
+              <strong>Quantity</strong>
+            </Col>
+            <Col>
+              <strong>Price</strong>
+            </Col>
+            <Col>
+              <strong>Action</strong>
+            </Col>
+          </Row>
+          <Container
+            responsive
+            size='sm'
+            className='below list over light-shadow-inset'>
+            {products.map((p) => {
+              let product = orderProduct[p.id] || p;
+              return (
+                <Row className='over below'>
+                  <Col>{product.name} </Col>
+                  <Col>{product.quantity} </Col>
+                  <Col>{product.price} €</Col>
+                  <Col>
+                    <Button
+                      className='im-button im-animate'
+                      id='CheckBoxItem'
+                      onClick={() => setSelectedProduct(product)}>
+                      Edit
+                    </Button>
+                  </Col>
+                </Row>
+              );
+            })}
+          </Container>
           <Button
-            className='spg-button  btn-block below'
+            className='below im-button im-animate'
             onClick={(ev) => handleSubmit(ev, props)}>
             Update
           </Button>
         </Form>
-      </Container>
-    </>
+      )}
+    </PageSection>
   );
 }
 

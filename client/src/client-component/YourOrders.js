@@ -11,13 +11,13 @@ import {
 } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import dayjs from "dayjs";
-
 import API from "./../API";
 import { getNextWeekday } from "../api/utility";
 import { editIcon } from "../ui-components/Icons";
-import "../css/custom.css";
+import { PageSection, BlockTitle } from "../ui-components/Page";
 
 function YourOrders(props) {
   const [orders, setOrders] = useState([]);
@@ -40,16 +40,19 @@ function YourOrders(props) {
 
     if (openPickupForm && dateTime) {
       API.deliveryOrder(selectedOrderId, dateTime);
+      setOpenDeliveryForm(false);
+      setOpenPickupForm(false);
       handleClose();
     } else if (openDeliveryForm && dateTime && address) {
       API.deliveryOrder(selectedOrderId, dateTime, address);
-      props.addMessage("Request sned correctly")
+      setOpenDeliveryForm(false);
+      setOpenPickupForm(false);
+      props.addMessage("Request sned correctly");
       handleClose();
     } else {
       setErrorMessage("Insert a valid date and/or address");
     }
-    setOpenDeliveryForm(false);
-    setOpenPickupForm(false);
+    
   };
 
   useEffect(() => {
@@ -66,98 +69,86 @@ function YourOrders(props) {
 
   return (
     <>
-      <Col className='cont'>
-        <Row className='justify-content-center'>
-          {isOrderListLoading ? (
-            <Container className='below'>
-              <Spinner animation='border' variant='success'></Spinner>
-            </Container>
-          ) : (
-            <>
-              {orders.length !== 0 ? (
-                <>
-                  <Col>
-                    <Row>
-                      {" "}
-                      <h3 className='thirdColor mx-auto'>
-                        {" "}
-                        List of your orders{" "}
-                      </h3>{" "}
-                    </Row>
-
-                    <Table responsive size='sm'>
-                      <thead>
-                        <tr>
-                          <th>Price</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {orders.map((order) => (
-                          <tr className='over'>
-                            <td> {order.price}€</td>
-                            <td> {order.status}</td>
-                            {order.status === "booked" &&
-                            ((props.dow === "Saturday" && props.hour >= 9) ||
-                              (props.dow === "Sunday" && props.hour <= 23)) ? (
-                              <td>
-                                <Button
-                                  className='spg-button'
-                                  onClick={() => props.modifyOrder(order.id)}>
-                                  {editIcon}{" "}
-                                </Button>{" "}
-                              </td>
-                            ) : (
-                              <td></td>
-                            )}
-                            {order.status === "confirmed" &&
-                            ((props.dow === "Monday" && props.hour >= 9) ||
-                              (props.dow === "Tuesday" && props.hour <= 18)) ? (
-                              <>
-                                <td>
-                                  <Button
-                                    className='spg-button'
-                                    onClick={() => {
-                                      setShow(true);
-                                      setSelectedOrderId(order.id);
-                                    }}>
-                                    Shipping Info
-                                  </Button>
-                                </td>
-                              </>
-                            ) : (
-                              <td></td>
-                            )}
-                          </tr>
-                        ))}{" "}
-                      </tbody>
-                    </Table>
-                  </Col>
-                </>
-              ) : (
-                <>
-                  <h3 className='below'>
-                    {" "}
-                    No orders found! Purchaise a &ensp;
-                    <Button
-                      className='spg-button'
-                      onClick={() => props.changeAction(2)}>
-                      {" "}
-                      New Order{" "}
-                    </Button>
-                  </h3>
-                </>
-              )}{" "}
-            </>
-          )}
-        </Row>
-      </Col>
+      <PageSection>
+        {isOrderListLoading ? (
+          <Container className='below'>
+            <Spinner animation='border' variant='success'></Spinner>
+          </Container>
+        ) : (
+          <>
+            {orders.length !== 0 ? (
+              <>
+                <BlockTitle> List of your orders</BlockTitle>
+                <Table responsive size='sm'>
+                  <thead>
+                    <tr>
+                      <th>Price</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr className='over' key={order.id}>
+                        <td> {order.price < 0.01 ? 0 : order.price}€</td>
+                        <td> {order.status}</td>
+                        {order.status === "booked" &&
+                        ((props.dow === "Saturday" && props.hour >= 9) ||
+                          (props.dow === "Sunday" && props.hour < 23)) ? (
+                          <td>
+                            <Button
+                              className='im-button im-animate'
+                              onClick={() => props.modifyOrder(order.id)}>
+                              {editIcon}
+                            </Button>
+                          </td>
+                        ) : (
+                          <td></td>
+                        )}
+                        {order.status === "booked" &&
+                        ((props.dow === "Saturday" && props.hour >= 9) ||
+                          (props.dow === "Sunday" && props.hour < 23)) ? (
+                          <>
+                            <td>
+                              <Button
+                                className='im-button im-animate'
+                                onClick={() => {
+                                  setShow(true);
+                                  setSelectedOrderId(order.id);
+                                }}>
+                                Shipping Info
+                              </Button>
+                            </td>
+                          </>
+                        ) : (
+                          <td></td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </>
+            ) : (
+              <>
+                <BlockTitle>
+                  No orders found! Purchaise a &nbsp;
+                  <Button
+                    className='im-button'
+                    onClick={() => props.changeAction(2)}>
+                    New Order
+                  </Button>
+                </BlockTitle>
+              </>
+            )}
+          </>
+        )}
+      </PageSection>
 
       <Modal
         show={show}
         onHide={handleClose}
         backdrop='static'
-        keyboard={false}>
+        keyboard={false}
+        className='im-modal'>
         <Modal.Header closeButton>
           <Modal.Title>
             <h3 className='font-color'>Home Delivery or Pick-Up?</h3>
@@ -169,8 +160,7 @@ function YourOrders(props) {
               variant='danger'
               onClose={() => setErrorMessage("")}
               dismissible>
-              {" "}
-              {errorMessage}{" "}
+              {errorMessage}
             </Alert>
           ) : (
             ""
@@ -203,7 +193,6 @@ function YourOrders(props) {
 
             {openPickupForm || openDeliveryForm ? (
               <>
-                
                 <Row className='justify-content-center font-color'>
                   Choose A Date
                 </Row>
@@ -240,34 +229,37 @@ function YourOrders(props) {
             ) : null}
 
             {openDeliveryForm ? (
-              <>
-                <Form>
-                  <Row>
-                    <Form.Group as={Col} controlId='formGridName'>
-                      <Row className='justify-content-center'>
-                        <Form.Label className='font-color below'>
-                          Address
-                        </Form.Label>
-                      </Row>
-                      <Form.Control
-                        required
-                        type='text'
-                        value={address}
-                        onChange={(ev) => setAddress(ev.target.value)}
-                        placeholder='Enter Address'
-                      />
-                    </Form.Group>
-                  </Row>
-                </Form>
-              </>
+              <Form>
+                <Row>
+                  <Form.Group as={Col}>
+                    <Row className='justify-content-center'>
+                      <Form.Label className='font-color below'>
+                        Address
+                      </Form.Label>
+                    </Row>
+                    <Form.Control
+                      required
+                      type='text'
+                      value={address}
+                      onChange={(ev) => setAddress(ev.target.value)}
+                      placeholder='Enter Address'
+                    />
+                  </Form.Group>
+                </Row>
+              </Form>
             ) : null}
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='danger' className='below' onClick={handleClose}>
+          <Button
+            variant='danger'
+            className='below im-button im-animate'
+            onClick={handleClose}>
             Cancel
           </Button>
-          <Button className='spg-button below' onClick={handleShippingInfo}>
+          <Button
+            className='below im-button im-animate'
+            onClick={handleShippingInfo}>
             Confirm
           </Button>
         </Modal.Footer>

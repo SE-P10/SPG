@@ -1,20 +1,24 @@
 const db = require("./../db");
-const bcrypt = require("bcrypt");
-const { check, validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
+const { getQuerySQL } = require("../utility");
+const notificationDao = require("./notification-dao.js");
+
 
 const listProducts = () => {
   return new Promise((resolve, reject) => {
     const sql =
-      "select p.id AS idP, quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_details pd where p.farmer_id = u.id and p.details_id = pd.id";
+      "select p.id AS idP, quantity, estimated_quantity, price, u.name AS fname, u.surname AS fsurname, u.id AS farmerID, pd.name as product from products p, users u, products_details pd where p.farmer_id = u.id and p.details_id = pd.id ORDER BY product";
     db.all(sql, [], (err, rows) => {
       if (err) reject(err);
       else {
         const Products = rows.map((p) => ({
           id: p.idP,
           quantity: p.quantity,
+          estimated_quantity: p.estimated_quantity,
           price: p.price,
           name: p.product,
-          Farmer: p.farmer + p.surname,
+          farmer: p.fname + ' ' + p.fsurname,
+          farmer_id: p.farmerID
         }));
         resolve(Products);
       }
@@ -43,6 +47,13 @@ const updateBasketElement = (product, userId) => {
   });
 };
 
+const listUnretrievedProducts = async () => {
+  const query =
+    "SELECT (SELECT u1.email FROM users u1 WHERE u1.id = p.farmer_id) AS farmer, timestamp, op.quantity, p.id, u.email AS client, pd.name FROM orders o, order_product op, products p, products_details pd, users u WHERE status = 'deleted' AND o.id = order_id AND op.product_id = p.id AND p.details_id = pd.id AND o.user_id = u.id";
+  const products = await getQuerySQL(db, query, [], { farmer: '', timestamp: 0, quantity: 0, id: 0, client: '', name: '' }, [], false);
+  return products;
+}
+
 const deleteAllBasket = (userId) => {
   return new Promise((resolve, reject) => {
     const sql1 = "DELETE FROM basket WHERE user_id = ?";
@@ -56,7 +67,7 @@ const deleteAllBasket = (userId) => {
 const listProductsBasket = (userId) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "select p.id AS idP, b.quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_details pd, basket b where p.farmer_id = u.id and p.details_id = pd.id and p.id = b.product_id and b.user_id = ?";
+      "select p.id AS idP, b.quantity, price, u.name AS farmer, surname, pd.name as product from products p, users u, products_details pd, basket b where p.farmer_id = u.id and p.details_id = pd.id and p.id = b.product_id and b.user_id = ? ORDER BY b.id DESC";
     db.all(sql, [userId], (err, rows) => {
       if (err) reject(err);
       else {
@@ -127,4 +138,28 @@ exports.execApi = (app, passport, isLoggedIn, body) => {
       res.status(500).end();
     }
   });
+
+  // GET /api/products/unretrieved
+  app.get("/api/products/unretrieved", isLoggedIn, async (req, res) => {
+    try {
+      console.log(req.user.role)
+      if (req.user.role != 4)
+        return res.status(401).end();
+      const Products = await listUnretrievedProducts();
+      res.json(Products);
+      res.status(200).end();
+    } catch (err) {
+      res.status(500).end();
+    }
+  });
+
 };
+
+exports.notifyUnretireverUsers = async () => {
+  const query = "SELECT u.id, COUNT(*) AS total FROM users u, orders o WHERE status = 'deleted' AND u.id = o.user_id GROUP BY u.id HAVING COUNT(*) >= 3";
+  const unretrievedCount = await getQuerySQL(db, query, [], { id: 0, total: 0 }, null, false);
+  unretrievedCount.forEach(e => {
+    const message = "Pay attention, you missed the pickup of" + (e.total === 3 ? " three " : " four ") + "orders!"
+    notificationDao.addNotification(e.id, message, "Unretrieved orders", true);
+  })
+}

@@ -51,7 +51,9 @@ exports.execApi = (app, passport, isLoggedIn) => {
 
   // PUT /api/warehouse/openDeliveries/:delivery_id
   app.put('/api/warehouse/openDeliveries/:delivery_id', isLoggedIn, async (req, res) => {
-
+    if (!is_possible(req).farmer_deliver_products) {
+      return res.status(412).json({ error: "Operation not allowed in this moment!" });
+    }
     try {
       let status = await setFarmersDelivery(req.params.delivery_id);
 

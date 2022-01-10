@@ -5,6 +5,7 @@ const AF_ALLOW_DIRTY = AF_DEBUG;
 const AF_DEBUG_PROCESS = AF_DEBUG;
 
 const { validationResult } = require("express-validator");
+const dayjs = require("dayjs");
 
 const db = require("../db");
 const notificationDao = require("./notification-dao");
@@ -23,7 +24,7 @@ const {
   debugLog,
 } = require("../utility");
 const { addNotification } = require("./notification-dao");
-const { is_possible } = require("../time");
+const { is_possible, getVirtualTimestamp } = require("../time");
 
 const getOrder = async (orderID) => {
   if (!orderID) return null;
@@ -73,16 +74,17 @@ const getOrder = async (orderID) => {
   return order;
 };
 
-const getOrders = async (status = "") => {
+const getOrders = async (status = "", timestamp = 0) => {
+
   if (isNumber(status)) return getOrder(status);
 
-  let sql = "SELECT * FROM orders",
-    values = [];
+  let sql = "SELECT * FROM orders WHERE timestamp >= ? ",
+    values = [timestamp];
 
   if (status) {
     if (isEmail(status))
-      sql += " WHERE user_id = (SELECT id FROM users WHERE email = ?);";
-    else sql += " WHERE status = ?;";
+      sql += " AND user_id = (SELECT id FROM users WHERE email = ?);";
+    else sql += " AND status = ?;";
     values.push(status);
   }
 
@@ -97,6 +99,7 @@ const getOrders = async (status = "") => {
       price: 0,
       pickup_time: "",
       pickup_place: "",
+      timestamp: 0
     },
     null
   );
@@ -278,7 +281,8 @@ const orderExist = async (ordeID) => {
   return await existValueInDB(db, "orders", { id: ordeID }, 0);
 };
 
-const handleOrder = async (orderRAW, products = []) => {
+const handleOrder = async (orderRAW, products = [], vTimeOffset = 0) => {
+
   if (isNumber(orderRAW)) {
     orderRAW = { id: orderRAW };
   }
@@ -372,8 +376,7 @@ const handleOrder = async (orderRAW, products = []) => {
       debugLog("Inserting order:", newOrder);
     }
 
-    let sql =
-      "INSERT INTO orders (user_id, status, price, pickup_time, pickup_place) VALUES(?, ?, ?, ?, ?)";
+    let sql = "INSERT INTO orders (user_id, status, price, pickup_time, pickup_place, timestamp) VALUES(?, ?, ?, ?, ?, ?)";
 
     return runQuerySQL(
       db,
@@ -384,6 +387,7 @@ const handleOrder = async (orderRAW, products = []) => {
         0,
         newOrder.pickup_time,
         newOrder.pickup_place,
+        vTimeOffset + dayjs().unix()
       ],
       true
     );
@@ -410,11 +414,15 @@ const handleOrderProducts = async (
 
       if (updatingOrder) {
         try {
+
+          //reset order price
+          await handleOrder({ id: orderID, price: 0 });
+
           processedProducts = await bulkSQL(
             db,
             "REPLACE INTO order_product (order_id, product_id, quantity) VALUES(" +
-              orderID +
-              ", ?, ?)",
+            orderID +
+            ", ?, ?)",
             insertUpdateProducts,
             {
               /**
@@ -443,7 +451,7 @@ const handleOrderProducts = async (
 
                 if (
                   Number.parseFloat(orderedProduct.quantity) +
-                    Number.parseFloat(product.quantity) <
+                  Number.parseFloat(product.quantity) <
                   Number.parseFloat(quantity)
                 ) {
                   if (AF_DEBUG) {
@@ -451,7 +459,7 @@ const handleOrderProducts = async (
                       "Product quantity error:",
                       orderedProduct,
                       Number.parseFloat(orderedProduct.quantity) +
-                        Number.parseFloat(quantity)
+                      Number.parseFloat(quantity)
                     );
                   }
 
@@ -491,7 +499,7 @@ const handleOrderProducts = async (
                   price:
                     Number.parseFloat(order.price) +
                     Number.parseFloat(product.price) *
-                      Number.parseFloat(updateQuantity),
+                    Number.parseFloat(updateQuantity),
                 });
 
                 if (AF_DEBUG_PROCESS) {
@@ -525,8 +533,8 @@ const handleOrderProducts = async (
           processedProducts = await bulkSQL(
             db,
             "INSERT INTO order_product (order_id, product_id, quantity) VALUES(" +
-              orderID +
-              ", ?, ?)",
+            orderID +
+            ", ?, ?)",
             insertUpdateProducts,
             {
               /**
@@ -586,7 +594,7 @@ const handleOrderProducts = async (
                   price:
                     Number.parseFloat(order.price) +
                     Number.parseFloat(product.price) *
-                      Number.parseFloat(row[1]),
+                    Number.parseFloat(row[1]),
                 });
 
                 if (!res) {
@@ -631,14 +639,14 @@ const handleOrderProducts = async (
   });
 };
 
-const processOrder = async (userID, orderID, data = {}) => {
+const processOrder = async (userID, orderID, data = {}, vTimeOffset = 0) => {
+
   let products = data.products || [];
 
   let order = {
     ...(data.order || {}),
     id: orderID,
-    user_id: userID,
-    price: 0,
+    user_id: userID
   };
 
   let updatingOrder = orderID || false;
@@ -646,7 +654,7 @@ const processOrder = async (userID, orderID, data = {}) => {
   /**
    * Insert / Update a order {id:...}
    */
-  orderID = await handleOrder(order, products);
+  orderID = await handleOrder(order, products, vTimeOffset);
 
   if (AF_DEBUG_PROCESS) {
     debugLog("orderID: " + orderID);
@@ -677,6 +685,7 @@ const processOrder = async (userID, orderID, data = {}) => {
 };
 
 const getConfirmedProducts = async () => {
+
   return getQuerySQL(
     db,
     "SELECT id, product_id AS product, quantity FROM farmer_payments where status = 'confirmed'",
@@ -692,7 +701,6 @@ const getConfirmedProducts = async () => {
 };
 
 exports.deletePendingOrders = async () => {
-  console.log("vado");
   return db.run(
     "UPDATE orders SET status = 'deleted' WHERE status = 'pending'"
   );
@@ -748,10 +756,10 @@ exports.confrimOrders = () => {
             newValues = newValues.map((v) =>
               v.product === p.id
                 ? {
-                    id: v.id,
-                    product: v.product,
-                    leftQuantity: v.leftQuantity - p.quantity,
-                  }
+                  id: v.id,
+                  product: v.product,
+                  leftQuantity: v.leftQuantity - p.quantity,
+                }
                 : v
             );
         });
@@ -822,7 +830,7 @@ exports.confrimOrders = () => {
           "UPDATE farmer_payments SET status = 'toDeliver', quantity = ? WHERE id = ?;",
           [
             (await confirmedProducts).find((cp) => cp.id === e.id).quantity -
-              e.quantity,
+            e.quantity,
             e.id,
           ]
         )
@@ -842,6 +850,7 @@ exports.confrimOrders = () => {
 };
 
 exports.execApi = (app, passport, isLoggedIn) => {
+
   function thereIsError(req, res, action = "") {
     if (AF_DEBUG) {
       console.log("\nProcessing " + action + " orders API ");
@@ -858,93 +867,82 @@ exports.execApi = (app, passport, isLoggedIn) => {
   }
 
   // update existing order POST /api/orders/:user_id/:order_id
-  app.put(
-    "/api/orders/:order_id",
-    AF_ALLOW_DIRTY
-      ? (req, res, next) => {
-          return next();
-        }
-      : isLoggedIn,
-    async (req, res) => {
-      if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
-        return res
-          .status(412)
-          .json({ error: "Unable to update order, wrong " });
-      }
-
-      if (thereIsError(req, res, "update")) {
-        return;
-      }
-
-      try {
-        let status = await processOrder(0, req.params.order_id, req.body);
-
-        if (status) res.status(201).json(status).end();
-        else res.status(400).json({ error: "Unable to update the order" });
-      } catch (err) {
-        res.status(500).json({ error: err });
-      }
+  app.put("/api/orders/:order_id", AF_ALLOW_DIRTY ? (req, res, next) => { return next(); } : isLoggedIn, async (req, res) => {
+    
+    if (!AF_ALLOW_DIRTY && (
+    !(is_possible(req).clients_pickup_orders && req.body.order.status == 'handout') && !is_possible(req).clients_send_orders)) {
+      return res.status(412).json({ error: "Operation not allowed in this moment!" });
     }
+
+    if (thereIsError(req, res, "update")) {
+      return;
+    }
+
+    try {
+      let status = await processOrder(0, req.params.order_id, req.body);
+
+      if (status) res.status(201).json(status).end();
+      else res.status(400).json({ error: "Unable to update the order" });
+    } catch (err) {
+      res.status(500).json({ error: err });
+    }
+  }
   );
 
   // insert a new POST /api/orders/:user_id
-  app.post(
-    "/api/orders/:user_id",
-    AF_ALLOW_DIRTY
-      ? (req, res, next) => {
-          return next();
-        }
-      : isLoggedIn,
-    async (req, res) => {
-      if (thereIsError(req, res, "insert")) {
-        return;
-      }
+  app.post("/api/orders/:user_id", AF_ALLOW_DIRTY ? (req, res, next) => { return next(); } : isLoggedIn, async (req, res) => {
 
-      if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
-        return res.status(412).json({ error: "Unable to book order, wrong " });
-      }
-
-      let user = await existValueInDB(db, "users", { id: req.params.user_id });
-
-      if (!user) {
-        res.status(412).json({ error: "Invalid user ID" });
-        return;
-      }
-
-      try {
-        let status = await processOrder(req.params.user_id, 0, req.body);
-
-        if (status) res.status(201).json(status).end();
-        else res.status(400).json({ error: "Unable to insert a new order" });
-      } catch (err) {
-        debugLog(err);
-        res.status(500).json({ error: err });
-      }
+    if (thereIsError(req, res, "insert")) {
+      return;
     }
+
+    if (!AF_ALLOW_DIRTY && !is_possible(req).clients_send_orders) {
+      return res.status(412).json({ error: "Operation not allowed in this moment!" });
+    }
+
+    let user = await existValueInDB(db, "users", { id: req.params.user_id });
+
+    if (!user) {
+      res.status(412).json({ error: "Invalid user ID" });
+      return;
+    }
+
+    let vTimeOffset = getVirtualTimestamp(req, true);
+
+    try {
+      let status = await processOrder(req.params.user_id, 0, req.body, vTimeOffset);
+
+      if (status) res.status(201).json(status).end();
+      else res.status(400).json({ error: "Unable to insert a new order" });
+    } catch (err) {
+      debugLog(err);
+      res.status(500).json({ error: err });
+    }
+  }
   );
 
   // GET order / orders /api/orders/:order_id
-  app.get(
-    "/api/orders/:filter?",
-    AF_ALLOW_DIRTY
-      ? (req, res, next) => {
-          return next();
-        }
-      : isLoggedIn,
-    async (req, res) => {
-      if (thereIsError(req, res, "get")) {
-        return;
-      }
+  app.get("/api/orders/:filter?/:all?", AF_ALLOW_DIRTY ? (req, res, next) => { return next(); } : isLoggedIn, async (req, res) => {
 
-      try {
-        let status = await getOrders(req.params.filter);
-
-        if (status) res.status(200).json(status).end();
-        else res.status(404).json({ error: "Unable to get orders" });
-      } catch (err) {
-        debugLog(err);
-        res.status(500).json({ error: err });
-      }
+    if (thereIsError(req, res, "get")) {
+      return;
     }
+
+    let vTimestamp = 0;
+
+    if (!req.params.all) {
+      vTimestamp = getVirtualTimestamp(req, false, true).startOf('week').unix();
+    }
+
+    try {
+      let status = await getOrders(req.params.filter, vTimestamp);
+
+      if (status) res.status(200).json(status).end();
+      else res.status(404).json({ error: "Unable to get orders" });
+    } catch (err) {
+      debugLog(err);
+      res.status(500).json({ error: err });
+    }
+  }
   );
 };

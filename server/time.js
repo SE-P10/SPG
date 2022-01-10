@@ -30,23 +30,23 @@ exports.is_possible = (req) => {
         clients_pickup_orders: false
     };
 
-    if ((d == 1 && h > 9) || (d < 5) || (d == 6 && h < 9)) {
+    if ((d == 3 && h >= 9) || (d > 3 && d < 6) || (d == 6 && h < 9)) {
         possible.farmer_estimation = true;
     }
 
-    if ((d == 6 && h > 9) || (d == 1 && h < 9)) {
+    if ((d == 0 && h >= 23) || (d == 1 && h < 9)) {
         possible.farmer_confirm_orders = true;
     }
 
-    if ((d == 1 && h > 9) || (d == 2 && h < 23)) {
+    if ((d == 1 && h >= 9) || (d == 2 && h < 18)) {
         possible.farmer_deliver_products = true;
     }
 
-    if (!((d == 0 && h > 23) || (d == 1 && h < 9))) {
+    if ((d == 6 && h >= 9)  || (d == 0 && h < 23)) {
         possible.clients_send_orders = true;
     }
 
-    if ((d == 3 && h > 9) || (d == 4) || (d == 5 && h < 23)) {
+    if ((d == 3 && h >= 9) || (d == 4) || (d == 5 && h < 23)) {
         possible.clients_pickup_orders = true;
     }
 

@@ -1,19 +1,15 @@
-import {
-  Alert,
-  Form,
-  Row,
-  Button,
-  Container,
-  Table,
-} from "react-bootstrap";
+import { Alert, Form, Button, Table, Spinner } from "react-bootstrap";
 import { useEffect, useState } from "react";
+
+import { PageSection, BlockTitle } from "../ui-components/Page";
 import API from "./../API";
-import "../css/custom.css";
+
 function ConfirmProducts(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [confirmedProductQ, setConfirmedProductQ] = useState([]);
   const [productQ, setProductQ] = useState([]);
   const [confirmedQ, setConfirmedQ] = useState([]);
+  const [isProductsListLoading, setIsProductsListLoading] = useState(true);
   // prendo i prodotti e le quantita dal db (productQ)
   // copio i valori in confirmedProductQ
   // se cambia qualcosa con i Form Control modifico confirmedProductQ
@@ -29,24 +25,27 @@ function ConfirmProducts(props) {
 
     const confirmedQe = async () => {
       const confirmedQo = await API.getFarmerOpenDeliveries();
+      if (confirmedQo) setIsProductsListLoading(false);
       setConfirmedQ(confirmedQo);
     };
     confirmedQe();
-  }, []);
+  }, [props.user.id]);
 
   const handleConfirm = async () => {
     // prodotti da mandare al db per delivery
-    //API.confirmFarmerOrder()
-    let result;
     for (let product of confirmedProductQ) {
-      result = await API.confirmFarmerOrder(product.id, product.quantity);
-      console.log(result);
+      await API.confirmFarmerOrder(product.id, product.quantity);
     }
+
     props.addMessage("Confirmation ok");
     props.changeAction(0);
   };
 
   const changeQ = (ev, p) => {
+    if (parseInt(ev.target.value) < 0 || parseInt(ev.target.value) > p.quantity) {
+      setErrorMessage("Quantity inserted is not valid!");
+      return;
+    }
     setConfirmedProductQ((old) =>
       old.map((o) => {
         if (o.id === p.id)
@@ -62,75 +61,72 @@ function ConfirmProducts(props) {
   };
 
   const getQuantityConfirmed = (id) => {
-    console.log(confirmedQ);
     if (!confirmedQ) return 0;
     if (!confirmedQ.some((e) => e.product === id)) return 0;
     return confirmedQ.find((e) => e.product === id).quantity;
   };
 
   return (
-    <>
-      <Container className='justify-content-center cont'>
-        <Row className='justify-content-center'>
-          <h2>Confirm Products</h2>
-        </Row>
-        {errorMessage ? (
-          <Alert
-            variant='danger'
-            onClose={() => setErrorMessage("")}
-            dismissible>
-            {" "}
-            {errorMessage}{" "}
-          </Alert>
-        ) : (
-          ""
-        )}
+    <PageSection>
+      <BlockTitle>Confirm Products</BlockTitle>
+      {errorMessage ? (
+        <Alert variant='danger' onClose={() => setErrorMessage("")} dismissible>
+          {errorMessage}
+        </Alert>
+      ) : (
+        ""
+      )}
 
-        {productQ ? (
-          <>
-            <Table responsive size='sm' className='below'>
-              <thead>
-                <th>Name </th>
-
-                <th>Ordered </th>
-
-                <th> Confirmed </th>
-
-                <th> Confirm</th>
-              </thead>
-              <tbody>
-                {productQ
-                  .filter((t) => t.quantity > 0)
-                  .map((p) => (
-                    <>
-                      <tr>
-                        <td>{p.product} </td> <td>{p.quantity} </td>{" "}
+      {isProductsListLoading ? (
+        <Spinner animation='border' variant='success' size='sm'></Spinner>
+      ) : (
+        <>
+          {productQ ? (
+            <>
+              <Table responsive size='sm' className='below'>
+                <thead>
+                  <tr>
+                    <th>Name </th>
+                    <th>Ordered </th>
+                    <th>Confirmed </th>
+                    <th>Confirm</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productQ
+                    .filter((t) => t.quantity > 0)
+                    .map((p) => (
+                      <tr key={p.id}>
+                        <td>{p.product} </td>
+                        <td>{p.quantity} </td>
                         <td> {getQuantityConfirmed(p.id)} </td>
                         <td>
                           <Form.Control
+                            className='im-input'
                             defaultValue={p.quantity}
                             type='number'
                             min={0}
                             max={p.quantity}
                             onChange={(ev) => {
                               changeQ(ev, p);
-                            }}></Form.Control>{" "}
+                            }}></Form.Control>
                         </td>
-                      </tr>{" "}
-                    </>
-                  ))}
-              </tbody>
-            </Table>
-          </>
-        ) : (
-          <> No orders for you this week!</>
-        )}
-        <Button className='below btn-block spg-button' onClick={handleConfirm}>
-          {" "}
-          Confirm
-        </Button>
-      </Container>
-    </>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+              <Button
+                className='below im-button im-animate'
+                onClick={handleConfirm}>
+                Confirm
+              </Button>
+            </>
+          ) : (
+            <> No orders for you this week!</>
+          )}
+        </>
+      )}
+    </PageSection>
   );
 }
 export { ConfirmProducts };

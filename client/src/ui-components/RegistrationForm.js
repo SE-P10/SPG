@@ -1,34 +1,32 @@
 import {
-  Container,
   Row,
   Form,
   Col,
   Button,
-  Alert,
   Card,
   Modal,
 } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import API from "../API";
+import { ToastNotification } from "./ToastNotification";
+import { BlockTitle, PageSection } from "./Page";
 
 function RegistrationForm(props) {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [phone,setPhone] = useState("")
   const [errorMessage, setErrorMessage] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const history = useHistory();
   const [show, setShow] = useState(false);
-
   const handleModalClose = () => setShow(false);
-
   const registrationSubmit = (event) => {
     event.preventDefault();
 
-    if (name && surname && username && email && password && confirmPassword) {
+    if (name && surname && username && email && password && confirmPassword && phone) {
       if (password === confirmPassword) {
         //Need to call the API to insert into the DB
         //alert("Inserimento riuscito con successo");
@@ -38,6 +36,7 @@ function RegistrationForm(props) {
           username: username,
           name: name,
           surname: surname,
+          phone: phone,
         };
         API.addClient(newClient)
           .then((e) => {
@@ -65,33 +64,21 @@ function RegistrationForm(props) {
     }
   };
 
-  const goToLogin = () => {
-    history.push("/login");
-  };
-  const goToRoot = () => {
-    history.push("/");
-  };
-
   return (
     <>
-      <Container className='justify-content-center below'>
-        {errorMessage ? (
-          <Alert
-            variant='danger'
-            onClose={() => setErrorMessage("")}
-            dismissible>
-            {" "}
-            {errorMessage}{" "}
-          </Alert>
-        ) : (
-          ""
-        )}
-        <Card className='below'>
+      <ToastNotification
+        variant='error'
+        onSet={() => setErrorMessage("")}
+        message={errorMessage}
+      />
+      <PageSection>
+        <BlockTitle>Registration form</BlockTitle>
+        <Card>
           <Card.Header as='h5'>Fill the form</Card.Header>
           <Card.Body>
             <Form>
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridName'>
+                <Form.Group as={Col} sm>
                   <Form.Label>Name</Form.Label>
                   <Form.Control
                     required
@@ -101,8 +88,7 @@ function RegistrationForm(props) {
                     placeholder='Enter Name'
                   />
                 </Form.Group>
-
-                <Form.Group as={Col} controlId='formGridSurname'>
+                <Form.Group as={Col} sm>
                   <Form.Label>Surname</Form.Label>
                   <Form.Control
                     required
@@ -115,18 +101,18 @@ function RegistrationForm(props) {
               </Row>
 
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridUsername'>
-                  <Form.Label>Username</Form.Label>
+                <Form.Group as={Col} sm>
+                  <Form.Label>Telegram Username</Form.Label>
                   <Form.Control
                     required
                     type='text'
                     value={username}
                     onChange={(ev) => setUsername(ev.target.value)}
-                    placeholder='Enter Username'
+                    placeholder='Enter your Telegram Username'
                   />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId='formGridEmail'>
+                <Form.Group as={Col} sm>
                   <Form.Label>Email</Form.Label>
                   <Form.Control
                     required
@@ -138,8 +124,21 @@ function RegistrationForm(props) {
                 </Form.Group>
               </Row>
 
+              <Row>
+              <Form.Group as={Col} sm>
+                  <Form.Label>Phone Number</Form.Label>
+                  <Form.Control
+                    required
+                    type='number'
+                    value={phone}
+                    onChange={(ev) => setPhone(ev.target.value)}
+                    placeholder='Enter Phone Number'
+                  />
+                </Form.Group>
+              </Row>
+
               <Row className='mb-3'>
-                <Form.Group as={Col} controlId='formGridPassword'>
+                <Form.Group as={Col} sm>
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     required
@@ -150,7 +149,7 @@ function RegistrationForm(props) {
                   />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId='formGridConfirmPassword'>
+                <Form.Group as={Col} sm>
                   <Form.Label>Confirm Password</Form.Label>
                   <Form.Control
                     required
@@ -163,27 +162,41 @@ function RegistrationForm(props) {
               </Row>
             </Form>
           </Card.Body>
+          <Card.Footer className="d-flex justify-content-center">
+            <Button className='im-button im-animate' onClick={registrationSubmit}>
+              Register
+            </Button>
+          </Card.Footer>
         </Card>
-        <Row className='justify-content-center'>
-          <Button className='spg-button below' onClick={registrationSubmit}>
-            Register
-          </Button>
-        </Row>
+
         <Modal show={show} onHide={handleModalClose}>
           <Modal.Header>
             <Modal.Title>Registration was successful</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Do you want to login,now?</Modal.Body>
+          <Modal.Body>
+            <Row className="justify-content-center">
+              <img src={process.env.PUBLIC_URL + "/images/telegram.svg"} alt="telegram qrcode" />
+            </Row>
+            <Row className="justify-content-center">
+              <p className="telegramColor">Scan the Telegram QR code, so you can recive all the updates or <a href="https://t.me/spg10_bot"> click here</a></p>
+            </Row>
+            Do you want to login, now?
+
+          </Modal.Body>
           <Modal.Footer>
-            <Button className='spg-button below' onClick={goToLogin}>
-              YES
-            </Button>
-            <Button className='below' variant='danger' onClick={goToRoot}>
-              NO
-            </Button>
+            <Link to="/login" >
+              <Button className='below im-button im-animate' >
+                YES
+              </Button>
+            </Link>
+            <Link to="/" >
+              <Button className='below im-button im-animate' variant='danger' >
+                NO
+              </Button>
+            </Link>
           </Modal.Footer>
         </Modal>
-      </Container>
+      </PageSection>
     </>
   );
 }

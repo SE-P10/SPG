@@ -459,11 +459,9 @@ tags
 server/database.db
 
 ## OURS
-./server/database.sqbpro
-./server/package-lock.json
-
-./server/node_modules/
-./server/.DS_Store
-./server/Desktop.ini
-./server/Thumbs.db
-server/database.db
+database.sqbpro
+.DS_Store
+Desktop.ini
+Thumbs.db
+package-lock.json
+sessions.db

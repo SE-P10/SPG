@@ -1,19 +1,18 @@
-import { Row, Col, Container, Image, Spinner } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import API from "../API";
-import "../css/custom.css";
-import ErrorToast from "./ErrorToast";
+
 import SearchForm from "./SearchForm";
+import { ProductsList } from "./Products";
+import { ToastNotification } from "./ToastNotification";
+import API from "../API";
+import { PageSection, BlockTitle, PageSeparator } from "./Page";
 
 function BrowserProducts(props) {
+
   const [products, setProducts] = useState([]);
   const [isProductsListLoading, setIsProductsListLoading] = useState(true);
-  const [serverErrorMessage, setServerErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [searchValue, setSearchValue] = useState("");
-
-  const handleSearchSubmit = () => {
-    console.log("handle search submit")
-  };
 
   useEffect(() => {
     const fillTables = async () => {
@@ -21,78 +20,43 @@ function BrowserProducts(props) {
 
       setIsProductsListLoading(false);
       setProducts(productsTmp);
-      setServerErrorMessage(null);
+      setErrorMessage(null);
     };
 
     fillTables().catch((err) => {
       setProducts([]);
-      setServerErrorMessage("Server error: couldn't load products list.");
+      setErrorMessage("Server error: couldn't load products list.");
     });
   }, []);
 
   return (
-    <>
-      <Container className='justify-content-center '>
-        <Row className='justify-content-center '>
-          <h2> Our Products</h2>
-        </Row>
+    <PageSection>
+      <ToastNotification
+        message={errorMessage}
+        onSet={() => setErrorMessage("")}
+      />
+      <BlockTitle center>Our Products</BlockTitle>
+      <section className='im-list'>
 
-        <ErrorToast
-          errorMessage={serverErrorMessage}
-          autohide
-          show={serverErrorMessage !== null}
-          className='justify-content-center'
-          onClose={() => setServerErrorMessage(null)}></ErrorToast>
-
-        <Container className='list'>
-          {isProductsListLoading ? (
-            <Container>
-              <Spinner animation='border' variant='success'></Spinner>
-            </Container>
-          ) : (
-            <>
-              {" "}
-              <Row>
-                <SearchForm
-                  setSearchValue={setSearchValue}
-                  onSearchSubmit={handleSearchSubmit}
-                />
-              </Row>
-              <Row>
-                {products
-                  .sort((a, b) => (a.name > b.name ? 1 : -1))
-                  .filter(
-                    (p) =>
-                      p.name
-                        .toLowerCase()
-                        .includes(searchValue.toLowerCase()) && p.quantity > 0
-                  )
-                  .map((p) => (
-                    <Col className='below over p-cont mr-3 '>
-                      <Row className=' justify-content-center'>
-                        {" "}
-                        <Image
-                          src={"./img/" + p.name + ".jpeg"}
-                          className='ph-prev justify-content-center'
-                        />{" "}
-                      </Row>
-                      <Row className='justify-content-center'> {p.name}</Row>
-                      <Row className='justify-content-center'>
-                        {" "}
-                        {p.quantity}
-                      </Row>
-                      <Row className='justify-content-center'>
-                        {p.price} €/Kg
-                      </Row>
-                      <Row className='justify-content-center'>{p.farmer} </Row>
-                    </Col>
-                  ))}
-              </Row>
-            </>
-          )}
-        </Container>
-      </Container>
-    </>
+        {isProductsListLoading ? (
+          <Container>
+            <Spinner animation='border' variant='success'></Spinner>
+          </Container>
+        ) : (
+          <>
+            <SearchForm
+              setSearchValue={setSearchValue}
+            />
+            <PageSeparator hidden/>
+            <ProductsList
+              products={products}
+              setErrorMessage={setErrorMessage}
+              filter={{ search: searchValue }}
+            />
+          </>
+        )}
+      </section>
+    </PageSection>
   );
 }
 

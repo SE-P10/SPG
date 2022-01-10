@@ -7,7 +7,7 @@ import walletAPI from "./api/wallet.js";
 import timeAPI from "./api/time.js";
 import notificationAPI from "./api/notificationAPI";
 import warehouseAPI from "./api/warehouse";
-
+import unretrievedAPI from "./api/unretrieved"
 /**
  * USER API
  */
@@ -57,6 +57,7 @@ async function getUserInfo(userID) {
 const API = {
   ...ordersApi,
   ...productsAPI,
+  ...unretrievedAPI,
   ...farmerAPI,
   ...userAPI,
   ...testAPI,
