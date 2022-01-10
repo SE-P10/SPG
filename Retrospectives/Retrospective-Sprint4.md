@@ -5,8 +5,8 @@ Team P10 RETROSPECTIVE Sprint #4
 
 ### Macro statistics
 
-- Number of stories committed vs done : 3/
-- Total points committed vs done : 34/
+- Number of stories committed vs done : 3/3
+- Total points committed vs done : 34/34
 - Nr of hours planned vs spent (as a team) :  /  
 
 
