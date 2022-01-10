@@ -52,7 +52,7 @@ Team P10 RETROSPECTIVE Sprint #4
 - Technical Debt management:
   - Total hours estimated : 4h 
   - Total hours spent : 2h 15m (45 minutes were spent to no have too much code specialitation )
-  - Hours estimated for remediation by SonarQube : 6h  
+  - Hours estimated for remediation by SonarQube : 6h  (At the beginning of the sprint)
   - Hours estimated for remediation by SonarQube only for the selected and planned issues : 1h 50m (reduce replication, delete blocker code smells , reduce critical code smells, assert no bug present) 
   - Hours spent on remediation  : we spent 1h 30m to reduce duplications , minimize code smells and assert that there were no blocker code smells or bugs.
   - debt ratio (as reported by SonarQube under "Measures-Maintainability") : 0.3 %
@@ -63,17 +63,17 @@ Team P10 RETROSPECTIVE Sprint #4
 ## ASSESSMENT
 
 - What caused your errors in estimation (if any)? <br>
-We didn't do the squash of commit beacuse because we would not have obtained the desired result<br>
-As there have been some graphical improvements, some of the old E2E tests have had to be modified. We have decided to take time away from unit tests to dedicate it to E2E
+We didn't do the squash of commit beacuse because we would not have obtained the desired result.<br>
+As there have been some graphical improvements, some of the old E2E tests have had to be modified. We have decided to take time away from unit tests to dedicate it to E2E.
 
 
 
 - What lessons did you learn (both positive and negative) in this sprint? <br>
-
+The graphic improvment has the positive side that it makes the application much lighter and more effective, but at the same time it has the negative side that the old tests have to be modified.
 
 - Which improvement goals set in the previous retrospective were you able to achieve? <br>
   We better managed our time, in particular we saved time at the beginning of the sprint to dedicate it to tasks that arose during the sprint.
-  In the past sprints, during the planning of the hours we immediately assigned all the hours to be carried out, while in this we have taken into account the fact that different   tasks arise during development  
+  In the past sprints, during the planning of the hours we immediately assigned all the hours to be carried out, while in this we have taken into account the fact that different   tasks arise during development.  
 
 - Which ones you were not able to achieve? Why?<br> 
   None
