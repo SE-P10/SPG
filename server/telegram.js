@@ -6,12 +6,13 @@ const db = require("./db");
 const { runQuerySQL, getQuerySQL } = require("./utility");
 
 // replace the value below with the Telegram token you receive from @BotFather
-const token = false;//${{ secrets.TELEGRAMTOKEN }};
+const token = '5013251975:AAHwSiB6yIKM4yv4-TZgWyLSJ4YoKXgSXow';
+let bot;
 
 if (token) {
 
   // Create a bot that uses 'polling' to fetch new updates
-  const bot = new TelegramBot(token, { polling: true });
+  bot = new TelegramBot(token, { polling: true });
 
 
   const controll_user = async (username, chat_id) => {
