@@ -38,12 +38,12 @@ describe("Wallet", function () {
       });
   });
 
-  it("POST api/wallet/update/ should return success or fail", function (done) {
+  it("PUT api/wallet/update/ should return success or fail", function (done) {
     server
-      .post("api/wallet/update/")
+      .put("api/wallet/update/")
       .send({
         client_email: "mariorossi@demo.it",
-        amount: 10,
+        ammount: 10,
       })
       .expect(200)
       .end(function (err, res) {

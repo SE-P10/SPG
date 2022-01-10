@@ -95,9 +95,22 @@ describe("Debug time", function () {
   });
 
   const credentials = {
-    username: "paolobianchi@demo.it",
+    username: "mariorossi@demo.it",
     password: "password",
   };
+
+  it("POST api/sessions LOGIN USER should return success", function (done) {
+    server
+      .post("api/sessions")
+      .send(credentials)
+      .end(function (err, res) {
+        if (err) {
+          done(err);
+        } else {
+          done();
+        }
+      });
+  });
 
   it("PUT api/debug/time/Wed Dec 08 2021 18:00:03 GMT+0100 should return the offset from real time in seconds", function (done) {
     server

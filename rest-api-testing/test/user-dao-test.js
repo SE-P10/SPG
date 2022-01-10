@@ -40,7 +40,7 @@ describe("User", function () {
       });
   });
 
-  it("POST /api/newClient should return 201 success user created", function (done) {
+  it("POST /api/newClient should return 500 user already exists", function (done) {
     const newClient = {
       email: "new.client11@demo.it",
       password: "password",
@@ -51,7 +51,7 @@ describe("User", function () {
     server
       .post("api/newClient")
       .send(newClient)
-      .expect(201)
+      .expect(500)
       .end(function (err, res) {
         if (err) {
           done(err);
