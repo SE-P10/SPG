@@ -2,7 +2,6 @@
 
 ## TEAM P10
 
-
 ### MEMBERS
 
 
@@ -27,5 +26,3 @@
 - [API Client](./Documentation/api-client.md)
 
 ### [Docker](./Documentation/Docker.md) 
-
-
