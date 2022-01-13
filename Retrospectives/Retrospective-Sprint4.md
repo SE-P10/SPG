@@ -7,7 +7,7 @@ Team P10 RETROSPECTIVE Sprint #4
 
 - Number of stories committed vs done : 3/3
 - Total points committed vs done : 34/34
-- Nr of hours planned vs spent (as a team) : 126h 30m  / 110h 25m 
+- Nr of hours planned vs spent (as a team) : 126h 30m  / 122h 55m 
 
 
 ### Definition of Done
@@ -24,7 +24,7 @@ Team P10 RETROSPECTIVE Sprint #4
 
 | Story  | # Tasks | Points | Hours est. | Hours actual |
 |--------|---------|--------|------------|--------------|
-| 0      |    20     |    -   |   98h 30m      |  89h 40m   |
+| 0      |    20     |    -   |   98h 30m      |  102h 5m   |
 | 1      |   1     |   13    |   12h        |    12h        |
 | 2      |    4    |  13   |    12h      |     6h 45m       |
 | 3      |     1    |   8   |     4h     |     2h      |
@@ -32,8 +32,8 @@ Team P10 RETROSPECTIVE Sprint #4
 
 
 
-- Hours per task (average, standard deviation) : 4.25, 2h
-- Total task estimation error ratio: sum of total hours estimation / sum of total hours spent from previous table : 1.14
+- Hours per task (average, standard deviation) : 4.7h , h
+- Total task estimation error ratio: sum of total hours estimation / sum of total hours spent from previous table : 0.96
 
   
 ## QUALITY MEASURES 
@@ -63,18 +63,18 @@ Team P10 RETROSPECTIVE Sprint #4
 ## ASSESSMENT
 
 - What caused your errors in estimation (if any)? <br>
-We didn't do the squash of commit beacuse because we would not have obtained the desired result.<br>
+We didn't do the squash of commit beacuse we would not have obtained the desired result.<br>
 As there have been some graphical improvements, some of the old E2E tests have had to be modified. We have decided to take time away from unit tests to dedicate it to E2E.
 
 
 
 - What lessons did you learn (both positive and negative) in this sprint? <br>
-The graphic improvment has the positive side that it makes the application much lighter and more effective, but at the same time it has the negative side that the old tests have to be modified.
+The graphic improvment has the positive side that it makes the application more effective for the users, but at the same time it has the negative side that the old tests have to be modified.
 
 - Which improvement goals set in the previous retrospective were you able to achieve? <br>
   We better managed our time, in particular we saved time at the beginning of the sprint to dedicate it to tasks that arose during the sprint.
-  In the past sprints, during the planning of the hours we immediately assigned all the hours to be carried out, while in this we have taken into account the fact that different   tasks arise during development.  
-
+  In the past sprints, during the planning of the hours we immediately assigned all the hours to be carried out, while in this we have taken into account the fact that different   tasks arise during development.<br>We also defined internal deadlines so that we had enough time to test and fix bugs.
+  
 - Which ones you were not able to achieve? Why?<br> 
   None
 
