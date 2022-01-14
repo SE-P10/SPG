@@ -32,7 +32,7 @@ Team P10 RETROSPECTIVE Sprint #4
 
 
 
-- Hours per task (average, standard deviation) : 4.7h , h
+- Hours per task (average, standard deviation) : 4.7h , 1h 50m
 - Total task estimation error ratio: sum of total hours estimation / sum of total hours spent from previous table : 0.96
 
   
